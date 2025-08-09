@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Bangladesh Dot Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+    #map {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// Initialize the map
+var map = L.map('map').setView([23.6850, 90.3563], 7); // Centered on Bangladesh
+
+// Add OpenStreetMap tile layer
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap contributors',
+  maxZoom: 18,
+}).addTo(map);
+
+// Sample data: [name, latitude, longitude]
+const cities = [
+  { name: "Dhaka", lat: 23.8103, lon: 90.4125 },
+  { name: "Chittagong", lat: 22.3569, lon: 91.7832 },
+  { name: "Rajshahi", lat: 24.3745, lon: 88.6042 }
+];
+
+// Add circle markers
+cities.forEach(city => {
+  L.circleMarker([city.lat, city.lon], {
+    radius: 8,
+    fillColor: "#ff5722",
+    color: "#333",
+    weight: 1,
+    opacity: 1,
+    fillOpacity: 0.8
+  }).addTo(map)
+    .bindPopup(`<strong>${city.name}</strong>`);
+});
+</script>
+
+</body>
+</html>

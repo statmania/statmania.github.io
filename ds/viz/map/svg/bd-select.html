@@ -1,0 +1,26 @@
+<div id="map-container"></div>
+
+<script>
+  fetch('bd-district-map.svg')
+  .then(res => res.text())
+  .then(svg => {
+    document.getElementById('map-container').innerHTML = svg;
+    const svgEl = document.querySelector('#map-container svg');
+    const rajshahi = svgEl.querySelector('#path3168');
+
+    // Log bbox to get viewBox values
+    console.log('Rajshahi bbox:', rajshahi.getBBox());
+
+    // Hide others
+    svgEl.querySelectorAll('path').forEach(p => {
+      if (p.id !== 'path3168') p.style.display = 'none';
+    });
+
+    // Set viewBox to Rajshahi's bbox (change numbers after you get actual bbox)
+    svgEl.setAttribute('viewBox', '40 310 130 120');
+
+    svgEl.style.width = '100%';
+    svgEl.style.height = 'auto';
+  });
+
+</script>

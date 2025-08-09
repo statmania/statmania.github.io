@@ -1,0 +1,30 @@
+
+<style>
+
+#map-container {
+  width: 100%;
+  max-width: 900px;
+  margin: auto;
+}
+#map-container svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+</style>
+
+
+<div id="map-container"></div>
+
+<script>
+fetch('bd-district-map.svg')
+  .then(res => res.text())
+  .then(svg => {
+    document.getElementById('map-container').innerHTML = svg;
+
+    // Color all with data-division="Rajshahi"
+    document.querySelectorAll('#map-container [data-division="Chittagong Division"]')
+      .forEach(el => el.setAttribute('fill', 'grey'));
+  });
+</script>

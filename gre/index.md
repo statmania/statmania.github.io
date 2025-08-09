@@ -19,7 +19,7 @@ description: "GRE Prep"
 The GRE General Test closely reflects the kind of thinking you’ll do in today's demanding graduate school programs, including business and law. It measures your verbal reasoning, quantitative reasoning, critical thinking and analytical writing skills — skills that have been developed over a long period of time and aren’t related to a specific field of study but are important for all.
 
 
-### Test sections and timing (beginning September 22, 2023)
+### Test sections and timing (beginning September 22, 2023) {-#test-sections}
 
 The overall test time is about 1 hour and 58 minutes. There are five sections.
 
