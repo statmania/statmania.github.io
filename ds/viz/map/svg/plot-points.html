@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Bangladesh SVG Map Points</title>
+<style>
+  #map-container {
+    width: 100%;
+    height: auto;
+  }
+  .point {
+    fill: red;
+    stroke: white;
+    stroke-width: 1;
+  }
+</style>
+</head>
+<body>
+
+<div id="map-container"></div>
+
+<script>
+function latLonToSvgXY(lat, lon) {
+  const minLon = 88.01057;
+  const maxLon = 92.67366;
+  const minLat = 20.74111;
+  const maxLat = 26.63407;
+  const svgWidth = 1530.748;
+  const svgHeight = 2138;
+
+  const x = (lon - minLon) / (maxLon - minLon) * svgWidth;
+  const y = svgHeight - (lat - minLat) / (maxLat - minLat) * svgHeight;
+  return { x, y };
+}
+
+fetch('bd-district-map.svg')
+  .then(res => res.text())
+  .then(svg => {
+    document.getElementById('map-container').innerHTML = svg;
+
+    const svgEl = document.querySelector('#map-container svg');
+
+    const points = [
+      { lat: 23.8103, lon: 90.4125 }, // Dhaka
+      { lat: 22.3569, lon: 91.7832 }, // Chittagong
+      { lat: 24.8949, lon: 91.8687 }  // Sylhet
+    ];
+
+    points.forEach(pt => {
+      const { x, y } = latLonToSvgXY(pt.lat, pt.lon);
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', x);
+      circle.setAttribute('cy', y);
+      circle.setAttribute('r', 8);
+      circle.setAttribute('class', 'point');
+      svgEl.appendChild(circle);
+    });
+  });
+</script>
+
+</body>
+</html>
