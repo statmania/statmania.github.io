@@ -1,5 +1,13 @@
 # GRE Verbal {-}
 
+According to the ETS, the Verbal Reasoning section measures your ability to:
+
+- analyze and draw conclusions from discourse; reason from incomplete data; identify author's assumptions and/or perspective; understand multiple levels of meaning, such as literal, figurative and author's intent
+- select important points; distinguish major from minor or irrelevant points; summarize text; understand the structure of a text
+- understand the meaning of individual words, sentences and entire texts; understand relationships among words and among concepts
+
+[Know more](https://www.ets.org/content/ets-org/language-master/en/home/gre/test-takers/general-test/prepare/content/verbal-reasoning.html)
+
 ## GRE Word List {-}
 
 The words are taken from Magoosh list.
