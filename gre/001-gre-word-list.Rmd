@@ -1,4 +1,4 @@
-# GRE Verbal {-}
+# GRE Verbal
 
 According to the ETS, the Verbal Reasoning section measures your ability to:
 
