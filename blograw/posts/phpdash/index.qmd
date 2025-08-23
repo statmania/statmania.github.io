@@ -1,0 +1,164 @@
+---
+title: "PHP dashboard from a MySQL database"
+author: "Abdullah Al Mahmud"
+date: "2025-08-23"
+categories: [dashboard, code, php]
+image: "dash.png"
+---
+
+Let’s set up a **LAMP stack on Pop!\_OS** and make a simple **PHP dashboard from a MySQL database**.
+
+---
+
+# 🔹 Step 1: Install LAMP
+
+Open a terminal and run:
+
+```bash
+# Update package list
+sudo apt update
+
+# Install Apache
+sudo apt install apache2 -y
+
+# Install MySQL
+sudo apt install mysql-server -y
+
+# Secure MySQL (set root password, disable test DB, etc.)
+sudo mysql_secure_installation
+
+# Install PHP + common extensions
+sudo apt install php libapache2-mod-php php-mysql php-cli php-mbstring php-xml -y
+```
+
+Check versions:
+
+```bash
+apache2 -v
+php -v
+mysql --version
+```
+
+Restart services:
+
+```bash
+sudo systemctl restart apache2
+sudo systemctl enable apache2
+```
+
+---
+
+# 🔹 Step 2: Set up Database
+
+Enter MySQL shell:
+
+```bash
+sudo mysql
+```
+
+Create DB and table:
+
+```sql
+CREATE DATABASE dashboard_db;
+USE dashboard_db;
+
+CREATE TABLE stats (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50),
+    value INT
+);
+
+INSERT INTO stats (name, value) VALUES
+('Users', 120),
+('Sales', 75),
+('Visitors', 300);
+```
+
+Exit MySQL:
+
+```sql
+EXIT;
+```
+
+---
+
+# 🔹 Step 3: Set Web Root & Permissions
+
+Default root is `/var/www/html/`.
+
+Create a project folder:
+
+```bash
+sudo mkdir /var/www/html/dashboard
+sudo chown -R $USER:$USER /var/www/html/dashboard
+```
+
+---
+
+# 🔹 Step 4: PHP Dashboard Script
+
+Create `index.php` inside `dashboard/`:
+
+```php
+<?php
+$host = "localhost";
+$user = "root"; // or your MySQL user
+$pass = "";     // set if you used one in mysql_secure_installation
+$db   = "dashboard_db";
+
+// Connect
+$conn = new mysqli($host, $user, $pass, $db);
+
+// Check
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Fetch data
+$sql = "SELECT name, value FROM stats";
+$result = $conn->query($sql);
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .card { display: inline-block; margin: 20px; padding: 20px;
+                border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                background: #f8f8f8; min-width: 120px; text-align: center; }
+        h2 { margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>📊 Simple PHP Dashboard</h1>
+    <?php while($row = $result->fetch_assoc()): ?>
+        <div class="card">
+            <h2><?php echo $row['value']; ?></h2>
+            <p><?php echo $row['name']; ?></p>
+        </div>
+    <?php endwhile; ?>
+</body>
+</html>
+
+<?php $conn->close(); ?>
+```
+
+---
+
+# 🔹 Step 5: Test in Browser
+
+Visit:
+👉 `http://localhost/dashboard/`
+
+You should see 3 **cards**: Users, Sales, Visitors — styled nicely.
+
+---
+
+✅ This is a **short but comprehensive process**:
+
+* Apache, MySQL, PHP installed
+* Database + table created
+* PHP script pulling live data into dashboard
+
