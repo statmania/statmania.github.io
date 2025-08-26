@@ -1,17 +1,42 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  html, body {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+  svg {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
   .district {
-    stroke: #fff;
-    stroke-width: 0.5;
+    stroke: none; /* Hide border color */
+    stroke-width: 0;
+  }
+  .legend-text {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    fill: #333;
+  }
+  .legend-title {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    fill: #333;
   }
 </style>
 <body>
-  <svg id="map" width="800" height="600"></svg>
+  <svg id="map" width="900" height="600"></svg>
 
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script>
-    const width = 800, height = 600;
+    const width = 900, height = 600;
+    const mapWidth = 700; // Leave space for legend
 
     const svg = d3.select("#map")
                   .attr("width", width)
@@ -20,7 +45,7 @@
     const projection = d3.geoMercator()
       .center([90.3563, 23.6849]) // Center of Bangladesh
       .scale(5000)                // Adjust zoom
-      .translate([width / 2, height / 2]);
+      .translate([mapWidth / 2, height / 2]);
 
     const path = d3.geoPath().projection(projection);
 
@@ -36,8 +61,9 @@
       });
 
       // Define color scale
+      const extent = d3.extent(csvData, d => +d.Value);
       const colorScale = d3.scaleSequential()
-                           .domain(d3.extent(csvData, d => +d.Value))
+                           .domain(extent)
                            .interpolator(d3.interpolateYlOrRd);
 
       // Draw the districts
@@ -52,6 +78,71 @@
         })
         .append("title") // Tooltip
         .text(d => `${d.properties.NAME_2}: ${valueByDistrict[d.properties.NAME_2] || "N/A"}`);
+
+      // Create legend
+      const legendWidth = 20;
+      const legendHeight = 300;
+      const legendX = mapWidth + 50;
+      const legendY = (height - legendHeight) / 2;
+
+      // Create gradient for legend
+      const defs = svg.append("defs");
+      const gradient = defs.append("linearGradient")
+        .attr("id", "legend-gradient")
+        .attr("x1", "0%")
+        .attr("x2", "0%")
+        .attr("y1", "0%")
+        .attr("y2", "100%");
+
+      // Add color stops to gradient
+      const numStops = 10;
+      for (let i = 0; i <= numStops; i++) {
+        const t = i / numStops;
+        const value = extent[0] + t * (extent[1] - extent[0]);
+        gradient.append("stop")
+          .attr("offset", `${t * 100}%`)
+          .attr("stop-color", colorScale(value));
+      }
+
+      // Draw legend rectangle
+      svg.append("rect")
+        .attr("x", legendX)
+        .attr("y", legendY)
+        .attr("width", legendWidth)
+        .attr("height", legendHeight)
+        .style("fill", "url(#legend-gradient)")
+        .style("stroke", "#333")
+        .style("stroke-width", 1);
+
+      // Create scale for legend labels
+      const legendScale = d3.scaleLinear()
+        .domain(extent)
+        .range([legendY + legendHeight, legendY]);
+
+      // Add legend axis
+      const legendAxis = d3.axisRight(legendScale)
+        .ticks(6)
+        .tickFormat(d3.format(".1f"));
+
+      svg.append("g")
+        .attr("class", "legend-axis")
+        .attr("transform", `translate(${legendX + legendWidth}, 0)`)
+        .call(legendAxis)
+        .selectAll("text")
+        .attr("class", "legend-text");
+
+      // Add legend title
+      svg.append("text")
+        .attr("class", "legend-title")
+        .attr("x", legendX + legendWidth / 2)
+        .attr("y", legendY - 20)
+        .attr("text-anchor", "middle")
+        .text("Values");
+
+      // Style legend axis
+      svg.selectAll(".legend-axis path, .legend-axis line")
+        .style("stroke", "#333")
+        .style("fill", "none");
     });
   </script>
 </body>

@@ -1,0 +1,276 @@
+---
+title: "Code Snippets"
+format: html
+# css: styles.css # Link to your external CSS file
+# include-in-header: # Use include-in-header for scripts
+#  - text: | # Use 'text' to insert raw HTML
+#      <script src="script.js"></script>
+---
+
+
+## Nux
+
+### Remove blank lines
+
+```bash
+sed '/^$/d' file
+```
+
+### Add hyphen before each line
+
+```bash
+sed 's/^/-/' filename.txt
+```
+
+### Watch protected system directories
+
+```bash
+sudo nautilus # or dolphin, thunar
+```
+
+### Open in the preferred application for file
+
+```bash
+xdg-open filename
+```
+
+### Current wokring directory
+
+```bash
+pwd
+```
+
+### Rename all files sequentially
+
+The example renames `.jpg` files. Modify as per your need.
+
+```{.bash code-line-numbers="true"}
+ls -v | cat -n | while read n f; do mv -n "$f" "$n.jpg"; done
+```
+
+**To start numbering at certain number** use the following code
+
+```{.bash code-line-numbers="true"}
+num=0; for i in *; do mv "$i" "$(printf '%04d' $num).${i#*.}"; ((num++)); done
+```
+
+For more on this, [look here](https://stackoverflow.com/questions/3211595/renaming-files-in-a-folder-to-sequential-numbers)
+
+### Rename file names ("_" to "-"
+
+Modify as per need
+
+```{.bash code-line-numbers="true"}
+rename 's/\_/-/' *
+```
+
+#### Replace space with hyphen
+
+```{.bash code-line-numbers="true"}
+for file in *' '*
+do
+  mv -- "$file" "${file// /-}"
+done
+```
+
+### Rename to lowercase
+
+```{.bash code-line-numbers="true"}
+rename 'y/A-Z/a-z/' *
+```
+
+### Count files
+
+```{.bash code-line-numbers="true"}
+find . -type f | wc -l
+```
+
+### Replace new line with double new line
+
+```{.bash code-line-numbers="true"}
+`sed -i 's/$/\n/' file.txt`
+```
+
+### Convert all mp4 to mp3
+
+
+```{.bash code-line-numbers="true"}
+#!/bin/bash
+local o=$IFS
+IFS=$(echo -en "\n\b")
+
+MP4FILE=$(ls . |grep .mp4)
+for filename in $MP4FILE
+do
+name="${filename%.*}"
+ffmpeg -i ./$filename -b:a 192K -vn ./$name.mp3
+done
+
+IFS=o
+```
+
+## Latex
+
+### Long Comment
+
+```{.latex code-line-numbers="true"}
+\iffalse
+This is a long block of text that serves as a comment. It will be completely ignored by the LaTeX compiler and will not appear in the final output. You can write as many paragraphs as you like here. This is an excellent alternative to using the `comment` package.
+\fi
+```
+
+### Restart Page-numbering
+
+```{.latex code-line-numbers="true"}
+\newpage
+\setcounter{page}{1}
+```
+
+### Push contents to bottom/right of page
+
+```{.latex code-line-numbers="true"}
+\vfill contents to push to bottom
+\hfill contents to push to right
+```
+
+## R
+
+### Quit R from terminal in one go
+
+```{.r code-line-numbers="true"}
+q("no")
+```
+
+or `quit(save = "no")`
+
+## Python
+
+### Start a server
+
+```python
+python3 -m http.server
+```
+
+## Git
+
+### Undoing commit
+
+
+```{.git code-line-numbers="true"}
+git reset --soft HEAD~N
+```
+
+**Undoes the last N commits, but keeps the changes in the staging area.**
+
+```{.git code-line-numbers="true"}
+git reset --mixed HEAD~N
+```
+
+**Undoes the last N commits, and unstages the changes, leaving them in the working directory.**
+
+```{.git code-line-numbers="true"}
+git reset --hard HEAD~N
+```
+
+**Undoes the last N commits and discards all changes made in those commits from the working directory. Use with caution as this is a destructive operation.**
+
+### Rename files with git
+
+```{.git code-line-numbers="true"}
+git mv old_file new_file
+```
+
+### Pull if remote is ahead
+
+```{.git code-line-numbers="true"}
+git pull --rebase
+```
+
+
+### Revert all tracked files in the working directory
+
+```{.git code-line-numbers="true"}
+git checkout .
+```
+
+**To clean untracked files as well:**
+
+```{.git code-line-numbers="true"}
+git checkout .
+git clean -fd
+```
+
+
+### Repository-specific confiuguration
+
+```{.git code-line-numbers="true"}
+git config --local user.name 'Your Name'
+git config --local user.email 'your.work.email@company.com'
+```
+
+### Global confiuguration
+
+```{.git code-line-numbers="true"}
+`git config --global user.name 'Your Name'`
+git config --global user.email 'your.work.email@company.com'
+```
+
+## Quarto
+
+### Render all `qmd` files in the directory
+
+```{.bash code-line-numbers="true"}
+quarto render
+```
+
+
+## Excel / Google Sheet
+
+### Mode for ordinal data
+
+```{.excel code-line-numbers="true"}
+=INDEX(UNIQUE(I2:I107), MATCH(MAX(COUNTIF(I2:I107, UNIQUE(I2:I107))), COUNTIF(I2:I107, UNIQUE(I2:I107)), 0))
+```
+
+### Median for ordinal data
+```{.excel code-line-numbers="true"}
+=INDEX({"Strongly Disagree","Disagree","Neither Agree nor Disagree","Agree","Strongly Agree"}, MEDIAN(FILTER(MATCH(I1:I106, {"Strongly Disagree","Disagree","Neither Agree nor Disagree","Agree","Strongly Agree"}, 0), ISNUMBER(MATCH(I1:I106, {"Strongly Disagree","Disagree","Neither Agree nor Disagree","Agree","Strongly Agree"}, 0)))))
+```
+
+## SQL
+
+### Basic workflow
+
+#### Create DATABASE
+
+```{.sql}
+CREATE DATABASE dashboard_db;
+```
+
+### Create table
+
+```{.sql}
+CREATE TABLE stats (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50),
+    value INT
+);
+```
+
+### Put values
+
+```{.sql}
+INSERT INTO stats (name, value) VALUES
+('Users', 120),
+('Sales', 75),
+('Visitors', 300);
+```
+
+### Look and find data
+
+```{.sql}
+USE dashboard_db;
+SHOW TABLES;
+DESCRIBE stats; -- Shows stats table summary
+EXIT
+```
