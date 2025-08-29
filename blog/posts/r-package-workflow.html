@@ -6,8 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Abdullah Al Mahmud">
+<meta name="dcterms.date" content="2025-08-29">
+<meta name="description" content="The Workflow that you may follow while developing your own R package.">
 
-<title>Stat Mania</title>
+<title>R Package Development Workflow – Stat Mania</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,24 +26,22 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -68,35 +69,6 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-title','listing-author','listing-date','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
 <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-BEELJ2ZRED"></script>
 
 <script type="text/javascript">
@@ -107,50 +79,21 @@ gtag('js', new Date());
 gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
 </script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-fixed">
+<body class="nav-fixed fullcontent">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top quarto-banner">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a href="./index.html" class="navbar-brand navbar-brand-logo">
-    <img src="./logo.png" alt="Stat Mania Logo." class="navbar-logo">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../logo.png" alt="Stat Mania Logo." class="navbar-logo">
     </a>
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Stat Mania</span>
     </a>
   </div>
@@ -161,7 +104,7 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
@@ -171,7 +114,7 @@ window.Quarto = {
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item compact">
@@ -194,187 +137,95 @@ window.Quarto = {
 <!-- content -->
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-page-left">
-      <h1 class="title">Stat Mania</h1>
-                      </div>
+    <div class="quarto-title column-body">
+      <h1 class="title">R Package Development Workflow</h1>
+                  <div>
+        <div class="description">
+          The Workflow that you may follow while developing your own R package.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">R</div>
+                <div class="quarto-category">package</div>
+                <div class="quarto-category">programming</div>
+              </div>
+                  </div>
   </div>
     
   
-  <div class="quarto-title-meta column-page-left">
+  <div class="quarto-title-meta">
 
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Abdullah Al Mahmud </p>
+            </div>
+    </div>
       
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">August 29, 2025</p>
+      </div>
+    </div>
     
       
     </div>
     
   
-  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(4)</span></div><div class="category" data-category="CRAN">CRAN <span class="quarto-category-count">(1)</span></div><div class="category" data-category="R">R <span class="quarto-category-count">(2)</span></div><div class="category" data-category="code">code <span class="quarto-category-count">(1)</span></div><div class="category" data-category="dashboard">dashboard <span class="quarto-category-count">(1)</span></div><div class="category" data-category="english">english <span class="quarto-category-count">(1)</span></div><div class="category" data-category="ielts">ielts <span class="quarto-category-count">(1)</span></div><div class="category" data-category="package">package <span class="quarto-category-count">(2)</span></div><div class="category" data-category="php">php <span class="quarto-category-count">(1)</span></div><div class="category" data-category="programming">programming <span class="quarto-category-count">(1)</span></div><div class="category" data-category="submission">submission <span class="quarto-category-count">(1)</span></div><div class="category" data-category="words">words <span class="quarto-category-count">(1)</span></div></div></div>
+    
 <!-- main -->
-<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
 
 
 
+<p>Here are the key <code>devtools</code> functions important in the R package development cycle.</p>
+<section id="project-setup" class="level3">
+<h3 class="anchored" data-anchor-id="project-setup">Project Setup</h3>
+<ul>
+<li><code>usethis::create_package()</code>: Creates a new package with the correct directory structure.</li>
+<li><code>usethis::use_git()</code>: Initializes a Git repository for version control.</li>
+<li><code>usethis::use_r()</code>: Creates a new <code>.R</code> file in the <code>R/</code> directory.</li>
+</ul>
+<hr>
+</section>
+<section id="development-and-documentation" class="level3">
+<h3 class="anchored" data-anchor-id="development-and-documentation">Development and Documentation</h3>
+<ul>
+<li><code>devtools::load_all()</code>: Loads all functions in the <code>R/</code> directory, allowing you to quickly test them without installing the package.</li>
+<li><code>devtools::document()</code>: Generates documentation (<code>.Rd</code> files in the <code>man/</code> directory) and the <code>NAMESPACE</code> file from roxygen2 comments.</li>
+<li><code>devtools::install()</code>: Installs the package from the source directory, making it available for use on your system.</li>
+</ul>
+<hr>
+</section>
+<section id="testing-and-checking" class="level3">
+<h3 class="anchored" data-anchor-id="testing-and-checking">Testing and Checking</h3>
+<ul>
+<li><code>usethis::use_testthat()</code>: Sets up the <code>testthat</code> framework for unit testing.</li>
+<li><code>usethis::use_test()</code>: Creates a new test file in <code>tests/testthat/</code>.</li>
+<li><code>devtools::test()</code>: Runs all the tests in the <code>tests/testthat/</code> directory.</li>
+<li><code>devtools::check()</code>: Runs the comprehensive suite of <code>R CMD check</code> tests to identify errors, warnings, and notes.</li>
+<li><code>devtools::check_win_devel()</code>: Submits the package to the win-builder service to check for platform-specific issues on Windows.</li>
+</ul>
+<hr>
+</section>
+<section id="publishing" class="level3">
+<h3 class="anchored" data-anchor-id="publishing">Publishing</h3>
+<ul>
+<li><code>usethis::use_vignette()</code>: Creates a new vignette (<code>.Rmd</code> file) for package tutorials.</li>
+<li><code>pkgdown::build_site()</code>: Builds a complete website for your package.</li>
+<li><code>devtools::submit_cran()</code>: Helps with the final steps of submitting your package to CRAN.</li>
+</ul>
 
 
+</section>
 
-
-<div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
-<div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-categories="R,package,programming" data-listing-date-sort="1756404000000" data-listing-file-modified-sort="1756475797829" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="185">
-<a href="./posts/r-package-workflow.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="img/log.jpg" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-R Package Development Workflow
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('R'); return false;">
-R
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('package'); return false;">
-package
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('programming'); return false;">
-programming
-</div>
-</div>
-<div class="card-text listing-description">
-The Workflow that you may follow while developing your own R package.
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Abdullah Al Mahmud
-</div>
-<div class="listing-date">
-Aug 29, 2025
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="1" data-categories="R,package,CRAN,submission" data-listing-date-sort="1756404000000" data-listing-file-modified-sort="1756474899220" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="535">
-<a href="./posts/r-package-submission.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="img/log.jpg" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-CRAN Package Submission Checklist
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('R'); return false;">
-R
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('package'); return false;">
-package
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('CRAN'); return false;">
-CRAN
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('submission'); return false;">
-submission
-</div>
-</div>
-<div class="card-text listing-description">
-A comprehensive checklist for a smooth R package submission to CRAN.
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Abdullah Al Mahmud
-</div>
-<div class="listing-date">
-Aug 29, 2025
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="2" data-categories="words,english,ielts" data-listing-date-sort="1756144800000" data-listing-file-modified-sort="1756226259444" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="161">
-<a href="./posts/ielts-hyphenated-words.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./posts/welcome/thumbnail.jpg" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Common hyphenated and non-hyphenated compound
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('words'); return false;">
-words
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('english'); return false;">
-english
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('ielts'); return false;">
-ielts
-</div>
-</div>
-<div class="card-text listing-description">
-These compound words have hyphens between them.
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Abdullah Al Mahmud
-</div>
-<div class="listing-date">
-Aug 26, 2025
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="3" data-categories="dashboard,code,php" data-listing-date-sort="1755885600000" data-listing-file-modified-sort="1755918227271" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="413">
-<a href="./posts/phpdash/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./posts/phpdash/dash.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-PHP dashboard from a MySQL database
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('dashboard'); return false;">
-dashboard
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('code'); return false;">
-code
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('php'); return false;">
-php
-</div>
-</div>
-<div class="card-text listing-description">
-Let’s set up a <strong>LAMP stack on Pop!_OS</strong> and make a simple <strong>PHP dashboard from a MySQL database</strong>.
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Abdullah Al Mahmud
-</div>
-<div class="listing-date">
-Aug 23, 2025
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-</div>
-<div class="listing-no-matching d-none">
-No matching items
-</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
