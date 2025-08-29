@@ -1,0 +1,53 @@
+---
+title: "CRAN Package Submission Checklist"
+author: "Abdullah Al Mahmud"
+date: "2025-08-29"
+categories: [R, package, CRAN, submission]
+description: A comprehensive checklist for a smooth R package submission to CRAN.
+---
+
+Before submitting your R package to CRAN, you should go through a thorough checklist to ensure it meets all the requirements. Failure to meet these standards will result in rejection. The submission process is a manual review, and reviewers are strict about the rules.
+
+***
+
+### 1. Code Quality and Checks
+
+-   **Pass `R CMD check --as-cran` without any errors, warnings, or notes.** This is the most critical step. Run this command from your package's root directory. Address every single issue.
+-   **No Hardcoded Paths:** Don't use absolute paths like `C:/Users/User/my_file.csv`. Use `system.file()` to locate files within your package.
+-   **No Non-Standard Library Dependencies:** Ensure you are not using libraries that are not on CRAN or Bioconductor.
+-   **Package Size:** CRAN has a size limit, which is typically around 5 MB, though larger packages are sometimes accepted if they are well-justified.
+
+***
+
+### 2. Documentation and Metadata
+
+-   **`DESCRIPTION` File:** Ensure this file is complete and accurate.
+    -   `Version`: The version number should be in the format `A.B.C` (e.g., `1.0.0`).
+    -   `Title`: This should be concise and capitalized.
+    -   `Description`: A detailed, multi-sentence description of what your package does.
+    -   `License`: Specify a valid open-source license, such as MIT or GPL-3.
+    -   `URL` and `BugReports`: Include links to your GitHub repository or website.
+    -   `Imports`: List all packages your code uses.
+    -   `Suggests`: List packages used in examples or vignettes but not essential for core functionality.
+-   **`man/` Directory:** All functions must have a `.Rd` help file, and all function arguments should be documented. The examples in the help files should be runnable.
+-   **Vignettes:** Include at least one vignette (`.Rmd` file in the `vignettes/` directory) that provides a user-friendly introduction to your package's main features.
+-   **`NEWS.md`:** A file documenting changes between versions is highly recommended.
+-   **README File:** A comprehensive `README.md` file in the package's root directory is standard practice.
+
+***
+
+### 3. User Experience and Best Practices
+
+-   **Informative Error Messages:** Your functions should provide clear, user-friendly error messages with `stop()` and `warning()` when things go wrong.
+-   **Avoid Namespace Pollution:** Use `::` to call functions from other packages (e.g., `ggplot2::ggplot()`) unless a package is attached with `library()`. This prevents conflicts between functions with the same name.
+-   **Minimal Dependencies:** Only import packages you absolutely need to.
+-   **Unit Tests:** While not strictly required for a first submission, having a comprehensive suite of unit tests using `testthat` is highly recommended. They protect against regressions in future versions.
+-   **Data:** If your package includes data, it should be placed in the `data/` directory and documented with a `.Rd` file.
+
+***
+
+### 4. Submission
+
+-   **`cran-checks`:** Check your package against the `cran-checks` GitHub action if you've set it up.
+-   **`devtools::submit_cran()`:** This function from the `devtools` package automates much of the submission process, including creating the submission email.
+-   **Maintain Patience:** The review process can take anywhere from a few days to several weeks. Be ready to respond to reviewer feedback and make necessary changes.
