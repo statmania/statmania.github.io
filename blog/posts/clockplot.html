@@ -7,10 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Abdullah Al Mahmud">
-<meta name="dcterms.date" content="2025-08-29">
-<meta name="description" content="A comprehensive checklist for a smooth R package submission to CRAN.">
+<meta name="dcterms.date" content="2025-08-30">
+<meta name="description" content="The announcement of the clockplot package.">
 
-<title>CRAN Package Submission Checklist – Stat Mania</title>
+<title>clockplot: Plot Event Times on a 24-Hour Clock – Stat Mania</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -138,17 +138,15 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">CRAN Package Submission Checklist</h1>
+      <h1 class="title">clockplot: Plot Event Times on a 24-Hour Clock</h1>
                   <div>
         <div class="description">
-          A comprehensive checklist for a smooth R package submission to CRAN.
+          The announcement of the clockplot package.
         </div>
       </div>
                           <div class="quarto-categories">
                 <div class="quarto-category">R</div>
-                <div class="quarto-category">package</div>
-                <div class="quarto-category">CRAN</div>
-                <div class="quarto-category">submission</div>
+                <div class="quarto-category">clockplot</div>
               </div>
                   </div>
   </div>
@@ -166,7 +164,7 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">August 29, 2025</p>
+        <p class="date">August 30, 2025</p>
       </div>
     </div>
     
@@ -185,73 +183,18 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
 
 
 
-<p>Before submitting your R package to CRAN, you should go through a thorough checklist to ensure it meets all the requirements. Failure to meet these standards will result in rejection. The submission process is a manual review, and reviewers are strict about the rules.</p>
-<hr>
-<section id="code-quality-and-checks" class="level3">
-<h3 class="anchored" data-anchor-id="code-quality-and-checks">1. Code Quality and Checks</h3>
-<ul>
-<li><strong>Pass <code>R CMD check --as-cran</code> without any errors, warnings, or notes.</strong> This is the most critical step. Run this command from your package’s root directory. Address every single issue.</li>
-<li><strong>No Hardcoded Paths:</strong> Don’t use absolute paths like <code>C:/Users/User/my_file.csv</code>. Use <code>system.file()</code> to locate files within your package.</li>
-<li><strong>No Non-Standard Library Dependencies:</strong> Ensure you are not using libraries that are not on CRAN or Bioconductor.</li>
-<li><strong>Package Size:</strong> CRAN has a size limit, which is typically around 5 MB, though larger packages are sometimes accepted if they are well-justified. Use <code>devtools::check_for_size()</code></li>
-</ul>
-<hr>
-</section>
-<section id="documentation-and-metadata" class="level3">
-<h3 class="anchored" data-anchor-id="documentation-and-metadata">2. Documentation and Metadata</h3>
-<ul>
-<li><strong><code>DESCRIPTION</code> File:</strong> Ensure this file is complete and accurate.
-<ul>
-<li><code>Version</code>: The version number should be in the format <code>A.B.C</code> (e.g., <code>1.0.0</code>).</li>
-<li><code>Title</code>: This should be concise and capitalized.</li>
-<li><code>Description</code>: A detailed, multi-sentence description of what your package does.</li>
-<li><code>License</code>: Specify a valid open-source license, such as MIT or GPL-3.</li>
-<li><code>URL</code> and <code>BugReports</code>: Include links to your GitHub repository or website.</li>
-<li><code>Imports</code>: List all packages your code uses.</li>
-<li><code>Suggests</code>: List packages used in examples or vignettes but not essential for core functionality.</li>
-</ul></li>
-<li><strong><code>man/</code> Directory:</strong> All functions must have a <code>.Rd</code> help file, and all function arguments should be documented. The examples in the help files should be runnable.</li>
-<li><strong>Vignettes:</strong> Include at least one vignette (<code>.Rmd</code> file in the <code>vignettes/</code> directory) that provides a user-friendly introduction to your package’s main features.</li>
-<li><strong><code>NEWS.md</code>:</strong> A file documenting changes between versions is highly recommended.</li>
-<li><strong>README File:</strong> A comprehensive <code>README.md</code> file in the package’s root directory is standard practice.</li>
-</ul>
-<hr>
-</section>
-<section id="user-experience-and-best-practices" class="level3">
-<h3 class="anchored" data-anchor-id="user-experience-and-best-practices">3. User Experience and Best Practices</h3>
-<ul>
-<li><strong>Informative Error Messages:</strong> Your functions should provide clear, user-friendly error messages with <code>stop()</code> and <code>warning()</code> when things go wrong.</li>
-<li><strong>Avoid Namespace Pollution:</strong> Use <code>::</code> to call functions from other packages (e.g., <code>ggplot2::ggplot()</code>) unless a package is attached with <code>library()</code>. This prevents conflicts between functions with the same name.</li>
-<li><strong>Minimal Dependencies:</strong> Only import packages you absolutely need to.</li>
-<li><strong>Unit Tests:</strong> While not strictly required for a first submission, having a comprehensive suite of unit tests using <code>testthat</code> is highly recommended. They protect against regressions in future versions.</li>
-<li><strong>Data:</strong> If your package includes data, it should be placed in the <code>data/</code> directory and documented with a <code>.Rd</code> file.</li>
-</ul>
-<hr>
-</section>
-<section id="submission" class="level3">
-<h3 class="anchored" data-anchor-id="submission">4. Submission</h3>
-<ul>
-<li><strong><code>cran-checks</code>:</strong> Check your package against the <code>cran-checks</code> GitHub action if you’ve set it up.</li>
-<li><strong><code>devtools::submit_cran()</code>:</strong> This function from the <code>devtools</code> package automates much of the submission process, including creating the submission email.</li>
-<li><strong>Maintain Patience:</strong> The review process can take anywhere from a few days to several weeks. Be ready to respond to reviewer feedback and make necessary changes.</li>
-</ul>
-</section>
-<section id="hadley-recommendation" class="level3">
-<h3 class="anchored" data-anchor-id="hadley-recommendation">Hadley Recommendation</h3>
-<p><a href="https://r-pkgs.org/release.html">These are the major steps in the release process:</a></p>
-<ol type="1">
-<li>Determine the release type, which dictates the version number.</li>
-<li>If the package is already on CRAN: Do due diligence on existing CRAN results. If this is a first release: confirm you are in compliance with CRAN policies.</li>
-<li>Freshen up documentation files, such as README.md and NEWS.md.</li>
-<li>Double check() that your package is passing cleanly on multiple operating systems and on the released and development version of R.</li>
-<li>Perform reverse dependency checks, if other packages depend on yours.</li>
-<li>Submit the package to CRAN and wait for acceptance.</li>
-<li>Create a GitHub release and prepare for the next version by incrementing the version number.</li>
-<li>Publicize the new version.</li>
-</ol>
+<p>I am developing an R package, named clockplot. The primary goal of the clockplot is to plot event time on a clock chart. The length and color of the clock hands can be modified by certain qualitative and quantitative variables.</p>
+<p>Additionally, the package can make a day chart, a week chart, or a month chart, or plan events in those periods. I would like everyone to visit the package website (generated automatically by pkgdown), <a href="https://www.thinkermahmud.com/clockplot">explore the examples, and give wise advice</a></p>
+<p>To see a quick example, see the attached plot. The plot shows times of earthquakes. Points are magnified as per magnitude. Length and color denote the depth of the epicenter.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../img/cp.png" class="img-fluid figure-img"></p>
+<figcaption>clockplot</figcaption>
+</figure>
+</div>
+<p>Those having a github account, please <a href="https://github.com/mahmudstat/clockplot">visit the repo</a> and please give a star :)</p>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
