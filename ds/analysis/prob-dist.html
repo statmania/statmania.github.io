@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stat Mania - Distribution Calculator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Tailwind: bg-slate-50 */
+            color: #334155; /* Tailwind: text-slate-700 */
+        }
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0; /* Tailwind: bg-slate-200 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8; /* Tailwind: bg-slate-400 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b; /* Tailwind: bg-slate-500 */
+        }
+
+        /* Calculator specific styles, adapted for the new layout */
+        .container-calculator { /* Renamed from .container to avoid conflict */
+            background-color: #ffffff;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px; /* Keep max-width for the calculator form */
+            border: 1px solid #e2e8f0; /* Light border */
+            margin-left: auto; /* Center the calculator within its parent div */
+            margin-right: auto; /* Center the calculator within its parent div */
+        }
+        .input-group label {
+            font-weight: 600;
+            color: #4a5568; /* Darker gray for labels */
+        }
+        .input-group input[type="number"],
+        .input-group select {
+            border: 1px solid #cbd5e0; /* Light gray border */
+            border-radius: 6px;
+            padding: 10px 12px;
+            width: 100%;
+            font-size: 1rem;
+            color: #2d3748; /* Dark text */
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .input-group input[type="number"]:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #6366f1; /* Indigo focus border */
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); /* Soft focus shadow */
+        }
+        .radio-group label {
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background-color: #edf2f7; /* Light background for radio options */
+            color: #4a5568;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .radio-group input[type="radio"]:checked + label {
+            background-color: #6366f1; /* Indigo for checked radio */
+            color: #ffffff;
+            font-weight: 600;
+        }
+        .radio-group input[type="radio"] {
+            display: none; /* Hide actual radio button */
+        }
+        .result-box {
+            background-color: #e0f2fe; /* Light blue result box */
+            border: 1px solid #90cdf4; /* Blue border */
+            color: #2b6cb0; /* Darker blue text */
+            padding: 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header/Navbar -->
+    <header class="bg-white shadow-sm py-4">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <!-- Logo, Title, and Motto -->
+            <div class="flex items-center space-x-3">
+                <img src="../img/statmania_logo.png" alt="Stat Mania Logo" class="w-10 h-10 rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/40x40/4f46e5/ffffff?text=Logo';">
+                <div>
+                    <div class="text-2xl font-bold text-indigo-600">Stat Mania</div>
+                    <p class="text-sm text-slate-500">Making sense of statistics</p>
+                </div>
+            </div>
+
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="#features" class="text-slate-600 hover:text-indigo-600 transition duration-300">Features</a></li>
+                    <li><a href="#cta" class="text-slate-600 hover:text-indigo-600 transition duration-300">Contact</a></li>
+                </ul>
+            </nav>
+
+            <!-- Mobile Menu Button (Hamburger Icon) -->
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="#features" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Features</a>
+            <a href="#cta" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Contact</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section (now a compact page title section) -->
+        <section class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-8 px-4 sm:px-6 lg:px-8 rounded-b-2xl shadow-lg">
+            <div class="container mx-auto text-center max-w-4xl">
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight flex items-center justify-center">
+                    <!-- New SVG Icon for Statistical Distribution Calculator -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    Statistical Distribution Calculator
+                </h1>
+                <p class="text-lg sm:text-xl mt-2 opacity-90">
+                    Calculate probabilities for Binomial, Poisson, Normal, Uniform, and Exponential distributions.
+                </p>
+            </div>
+        </section>
+
+        <!-- Main Content Area (where password/BMI forms would go) -->
+        <section class="py-12 px-4 sm:px-6 lg:px-8 bg-white">
+            <div class="container mx-auto max-w-2xl">
+                <!-- Removed: <h2 class="text-2xl font-bold text-center text-slate-800 mb-8">Calculate Probabilities</h2> -->
+                <div class="bg-slate-50 p-8 rounded-xl shadow-md border border-slate-200 text-slate-700">
+                    <!-- Distribution Calculator content starts here -->
+                    <div class="container-calculator">
+                        <!-- Removed: <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Distribution Calculator</h1> -->
+
+                        <div class="mb-6 input-group">
+                            <label for="distributionSelect" class="block text-sm mb-2">Select Distribution:</label>
+                            <select id="distributionSelect" class="block w-full">
+                                <option value="binomial">Binomial</option>
+                                <option value="poisson">Poisson</option>
+                                <option value="normal">Normal</option>
+                                <option value="uniform">Uniform</option>
+                                <option value="exponential">Exponential</option>
+                            </select>
+                        </div>
+
+                        <div id="parameters" class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Parameters will be dynamically loaded here -->
+                            <div id="binomialParams" class="param-group">
+                                <div class="input-group mb-4">
+                                    <label for="binomialN" class="block text-sm mb-2">Number of Trials (n):</label>
+                                    <input type="number" id="binomialN" min="0" value="10" class="w-full">
+                                </div>
+                                <div class="input-group mb-4">
+                                    <label for="binomialP" class="block text-sm mb-2">Probability of Success (p):</label>
+                                    <input type="number" id="binomialP" min="0" max="1" step="0.01" value="0.5" class="w-full">
+                                </div>
+                            </div>
+
+                            <div id="poissonParams" class="param-group hidden">
+                                <div class="input-group mb-4">
+                                    <label for="poissonLambda" class="block text-sm mb-2">Average Rate (λ):</label>
+                                    <input type="number" id="poissonLambda" min="0" value="3" class="w-full">
+                                </div>
+                            </div>
+
+                            <div id="normalParams" class="param-group hidden">
+                                <div class="input-group mb-4">
+                                    <label for="normalMean" class="block text-sm mb-2">Mean (μ):</label>
+                                    <input type="number" id="normalMean" value="0" class="w-full">
+                                </div>
+                                <div class="input-group mb-4">
+                                    <label for="normalStdDev" class="block text-sm mb-2">Standard Deviation (σ):</label>
+                                    <input type="number" id="normalStdDev" min="0.01" value="1" class="w-full">
+                                </div>
+                            </div>
+
+                            <div id="uniformParams" class="param-group hidden">
+                                <div class="input-group mb-4">
+                                    <label for="uniformA" class="block text-sm mb-2">Min Value (a):</label>
+                                    <input type="number" id="uniformA" value="0" class="w-full">
+                                </div>
+                                <div class="input-group mb-4">
+                                    <label for="uniformB" class="block text-sm mb-2">Max Value (b):</label>
+                                    <input type="number" id="uniformB" value="10" class="w-full">
+                                </div>
+                            </div>
+
+                            <div id="exponentialParams" class="param-group hidden">
+                                <div class="input-group mb-4">
+                                    <label for="exponentialLambda" class="block text-sm mb-2">Rate (λ):</label>
+                                    <input type="number" id="exponentialLambda" min="0.01" value="0.5" class="w-full">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-6 input-group">
+                            <label for="xValue" class="block text-sm mb-2">Value (x):</label>
+                            <input type="number" id="xValue" value="5" class="w-full">
+                        </div>
+
+                        <div class="mb-8 flex justify-center space-x-4 radio-group">
+                            <div>
+                                <input type="radio" id="equal" name="comparison" value="equal">
+                                <label for="equal" class="inline-block px-4 py-2 rounded-md border border-gray-300">Equal To</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="lessThan" name="comparison" value="lessThan">
+                                <label for="lessThan" class="inline-block px-4 py-2 rounded-md border border-gray-300">Less Than</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="greaterThan" name="comparison" value="greaterThan">
+                                <label for="greaterThan" class="inline-block px-4 py-2 rounded-md border border-gray-300">Greater Than</label>
+                            </div>
+                        </div>
+
+                        <div id="result" class="result-box hidden">
+                            <p class="text-lg font-semibold">Result: <span id="probabilityResult"></span></p>
+                        </div>
+                    </div>
+                    <!-- Distribution Calculator content ends here -->
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Call to Action Section -->
+        <section id="cta" class="bg-indigo-700 py-16 px-4 sm:px-6 lg:px-8 text-white text-center rounded-t-2xl shadow-lg">
+            <div class="container mx-auto max-w-3xl">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-6">Explore Other Services</h2>
+                <p class="text-lg sm:text-xl mb-8 opacity-90">
+                    Learn, Grow, and Implement
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="www.statmania.info" class="inline-block bg-white text-indigo-700 hover:bg-indigo-100 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
+                        Learn
+                    </a>
+                    <a href="#" class="inline-block bg-transparent border-2 border-white text-white hover:bg-white hover:text-indigo-700 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
+                        Data Science Tools
+                    </a>
+                    <a href="#" class="inline-block bg-transparent border-2 border-white text-white hover:bg-white hover:text-indigo-700 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
+                        Services
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-white py-8 px-4 sm:px-6 lg:px-8 text-center rounded-t-lg shadow-inner">
+        <div class="container mx-auto">
+            <p class="mb-4">&copy; 2024 Stat Mania. All rights reserved.</p>
+            <div class="flex justify-center space-x-6">
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Privacy Policy</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Terms of Service</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Sitemap</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // JavaScript for mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Hide mobile menu when a link is clicked
+        const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // Helper function for factorial
+        function factorial(n) {
+            if (n < 0) return NaN;
+            if (n === 0 || n === 1) return 1;
+            let result = 1;
+            for (let i = 2; i <= n; i++) {
+                result *= i;
+            }
+            return result;
+        }
+
+        // Helper function for combinations (nCk)
+        function combinations(n, k) {
+            if (k < 0 || k > n) return 0;
+            if (k === 0 || k === n) return 1;
+            if (k > n / 2) k = n - k; // Optimization
+            return factorial(n) / (factorial(k) * factorial(n - k));
+        }
+
+        // Standard Normal CDF (Cumulative Distribution Function) - Corrected Approximation
+        function normalCDF(z) {
+            // constants for the approximation
+            const a1 = 0.254829592;
+            const a2 = -0.284496736;
+            const a3 = 1.421413741;
+            const a4 = -1.453152027;
+            const a5 = 1.061405429;
+            const p = 0.3275911;
+
+            // Sign of z
+            const sign = z >= 0 ? 1 : -1;
+            const absZ = Math.abs(z);
+
+            // Calculation using the approximation formula
+            const t = 1.0 / (1.0 + p * absZ);
+            const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-absZ * absZ / 2);
+
+            return 0.5 * (1.0 + sign * y);
+        }
+
+        // --- Distribution Calculation Functions ---
+
+        function calculateBinomial(n, p, k, comparison) {
+            if (isNaN(n) || isNaN(p) || isNaN(k) || n < 0 || p < 0 || p > 1 || k < 0) return "Invalid parameters";
+            if (k > n && comparison !== 'greaterThan') return 0; // If k > n, P(X=k) or P(X<=k) is 0
+
+            let probability = 0;
+            if (comparison === 'equal') {
+                if (k > n) return 0; // Cannot have more successes than trials
+                probability = combinations(n, k) * Math.pow(p, k) * Math.pow(1 - p, n - k);
+            } else if (comparison === 'lessThan') {
+                for (let i = 0; i <= k; i++) {
+                    probability += combinations(n, i) * Math.pow(p, i) * Math.pow(1 - p, n - i);
+                }
+            } else if (comparison === 'greaterThan') {
+                for (let i = k + 1; i <= n; i++) {
+                    probability += combinations(n, i) * Math.pow(p, i) * Math.pow(1 - p, n - i);
+                }
+            }
+            return probability;
+        }
+
+        function calculatePoisson(lambda, k, comparison) {
+            if (isNaN(lambda) || isNaN(k) || lambda < 0 || k < 0) return "Invalid parameters";
+
+            let probability = 0;
+            if (comparison === 'equal') {
+                probability = (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
+            } else if (comparison === 'lessThan') {
+                for (let i = 0; i <= k; i++) {
+                    probability += (Math.pow(lambda, i) * Math.exp(-lambda)) / factorial(i);
+                }
+            } else if (comparison === 'greaterThan') {
+                // P(X > k) = 1 - P(X <= k)
+                for (let i = 0; i <= k; i++) {
+                    probability += (Math.pow(lambda, i) * Math.exp(-lambda)) / factorial(i);
+                }
+                probability = 1 - probability;
+            }
+            return probability;
+        }
+
+        function calculateNormal(mean, stdDev, x, comparison) {
+            if (isNaN(mean) || isNaN(stdDev) || isNaN(x) || stdDev <= 0) return "Standard Deviation must be positive and all inputs must be numbers.";
+
+            const z = (x - mean) / stdDev;
+            let probability = 0;
+
+            if (comparison === 'equal') {
+                // For continuous distributions, P(X=x) is theoretically 0.
+                probability = 0;
+            } else if (comparison === 'lessThan') {
+                probability = normalCDF(z);
+            } else if (comparison === 'greaterThan') {
+                probability = 1 - normalCDF(z);
+            }
+            return probability;
+        }
+
+        function calculateUniform(a, b, x, comparison) {
+            if (isNaN(a) || isNaN(b) || isNaN(x) || a >= b) return "Invalid range (a must be less than b) and all inputs must be numbers.";
+
+            let probability = 0;
+            if (comparison === 'equal') {
+                // For continuous distributions, P(X=x) is theoretically 0.
+                probability = 0;
+            } else if (comparison === 'lessThan') {
+                if (x <= a) probability = 0;
+                else if (x >= b) probability = 1;
+                else probability = (x - a) / (b - a);
+            } else if (comparison === 'greaterThan') {
+                if (x <= a) probability = 1;
+                else if (x >= b) probability = 0;
+                else probability = (b - x) / (b - a);
+            }
+            return probability;
+        }
+
+        function calculateExponential(lambda, x, comparison) {
+            if (isNaN(lambda) || isNaN(x) || lambda <= 0 || x < 0) return "Invalid parameters and all inputs must be numbers.";
+
+            let probability = 0;
+            if (comparison === 'equal') {
+                // For continuous distributions, P(X=x) is theoretically 0.
+                probability = 0;
+            } else if (comparison === 'lessThan') {
+                // CDF: P(X <= x) = 1 - e^(-lambda * x)
+                probability = 1 - Math.exp(-lambda * x);
+            } else if (comparison === 'greaterThan') {
+                // P(X > x) = e^(-lambda * x)
+                probability = Math.exp(-lambda * x);
+            }
+            return probability;
+        }
+
+        // --- DOM Elements and Event Listeners ---
+        const distributionSelect = document.getElementById('distributionSelect');
+        const parameterInputs = document.querySelectorAll('#parameters input[type="number"]');
+        const xValueInput = document.getElementById('xValue');
+        const comparisonRadios = document.querySelectorAll('input[name="comparison"]');
+        const resultDiv = document.getElementById('result');
+        const probabilityResultSpan = document.getElementById('probabilityResult');
+
+        // Function to perform the calculation and update the result
+        function performCalculation() {
+            const selectedDistribution = distributionSelect.value;
+            const x = parseFloat(xValueInput.value);
+            const comparison = document.querySelector('input[name="comparison"]:checked').value;
+            let result = "Error: Invalid input";
+
+            try {
+                switch (selectedDistribution) {
+                    case 'binomial':
+                        const n = parseInt(document.getElementById('binomialN').value);
+                        const p = parseFloat(document.getElementById('binomialP').value);
+                        result = calculateBinomial(n, p, x, comparison);
+                        break;
+                    case 'poisson':
+                        const lambdaPoisson = parseFloat(document.getElementById('poissonLambda').value);
+                        result = calculatePoisson(lambdaPoisson, x, comparison);
+                        break;
+                    case 'normal':
+                        const mean = parseFloat(document.getElementById('normalMean').value);
+                        const stdDev = parseFloat(document.getElementById('normalStdDev').value);
+                        result = calculateNormal(mean, stdDev, x, comparison);
+                        break;
+                    case 'uniform':
+                        const a = parseFloat(document.getElementById('uniformA').value);
+                        const b = parseFloat(document.getElementById('uniformB').value);
+                        result = calculateUniform(a, b, x, comparison);
+                        break;
+                    case 'exponential':
+                        const lambdaExp = parseFloat(document.getElementById('exponentialLambda').value);
+                        result = calculateExponential(lambdaExp, x, comparison);
+                        break;
+                    default:
+                        result = "Distribution not recognized.";
+                }
+
+                if (typeof result === 'number' && !isNaN(result)) {
+                    probabilityResultSpan.textContent = result.toFixed(6); // Display with 6 decimal places
+                } else {
+                    probabilityResultSpan.textContent = result;
+                }
+            } catch (e) {
+                probabilityResultSpan.textContent = `Calculation Error: ${e.message}`;
+            }
+
+            resultDiv.classList.remove('hidden');
+        }
+
+        // Function to update parameter inputs and default radio selection based on selected distribution
+        function updateParameters() {
+            const selectedDistribution = distributionSelect.value;
+            document.querySelectorAll('.param-group').forEach(group => {
+                group.classList.add('hidden');
+            });
+            document.getElementById(`${selectedDistribution}Params`).classList.remove('hidden');
+
+            // Set default xValue step based on distribution type
+            if (selectedDistribution === 'binomial' || selectedDistribution === 'poisson') {
+                xValueInput.setAttribute('step', '1'); // Discrete
+                xValueInput.value = Math.floor(xValueInput.value); // Ensure integer
+                // For discrete, default to "Equal To"
+                document.getElementById('equal').checked = true;
+            } else {
+                xValueInput.setAttribute('step', 'any'); // Continuous
+                // For continuous, default to "Less Than"
+                document.getElementById('lessThan').checked = true;
+            }
+            performCalculation(); // Perform calculation after parameter update
+        }
+
+        // Initial call to set up parameters and perform calculation on load
+        updateParameters();
+
+        // Event listener for distribution selection change
+        distributionSelect.addEventListener('change', updateParameters);
+
+        // Event listeners for all relevant inputs to trigger calculation
+        xValueInput.addEventListener('input', performCalculation);
+        comparisonRadios.forEach(radio => {
+            radio.addEventListener('change', performCalculation);
+        });
+        parameterInputs.forEach(input => {
+            input.addEventListener('input', performCalculation);
+        });
+
+    </script>
+
+</body>
+</html>

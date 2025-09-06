@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Analysis Tool</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Font - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            @apply bg-gray-50 text-gray-800;
+        }
+        .container {
+            @apply max-w-7xl mx-auto p-6 lg:p-8;
+        }
+        .card {
+            @apply bg-white shadow-lg rounded-xl p-6 mb-8;
+        }
+        table {
+            @apply w-full border-collapse text-sm;
+        }
+        th, td {
+            @apply py-2 px-4 text-left border-b border-gray-200;
+        }
+        th {
+            @apply bg-gray-100 font-semibold text-gray-700 uppercase tracking-wider;
+        }
+        .btn {
+            @apply inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition ease-in-out duration-150;
+        }
+        .btn-secondary {
+            @apply bg-gray-500 hover:bg-gray-600;
+        }
+        .file-input-wrapper {
+            @apply relative cursor-pointer bg-white rounded-full font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500;
+        }
+        .file-input {
+            @apply absolute inset-0 w-full h-full opacity-0 cursor-pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-4xl font-extrabold text-center text-gray-900 mb-10 mt-4">Data Analysis Tool</h1>
+
+        <div class="card">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Upload Your Data (CSV)</h2>
+            <div class="flex items-center space-x-4">
+                <label class="btn cursor-pointer">
+                    <input type="file" id="csvFile" accept=".csv" class="file-input">
+                    Upload CSV File
+                </label>
+                <span id="fileName" class="text-gray-600">No file chosen</span>
+            </div>
+            <p class="text-sm text-gray-500 mt-2">Supports CSV files only for now.</p>
+        </div>
+
+        <div id="summaryDisplay" class="card hidden">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Data Summary</h2>
+            <p><strong>Number of Rows:</strong> <span id="numRows"></span></p>
+            <p><strong>Number of Variables:</strong> <span id="numVariables"></span></p>
+            <p><strong>Quantitative Variables:</strong> <span id="quantVariables"></span></p>
+            <p><strong>Qualitative Variables:</strong> <span id="qualiVariables"></span></p>
+        </div>
+
+        <div id="statsDisplay" class="card hidden">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Descriptive Statistics (Quantitative Variables)</h2>
+            <div class="overflow-x-auto rounded-lg border border-gray-200">
+                <table id="statsTable">
+                    <thead></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="dataDisplay" class="card hidden">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Raw Data Table</h2>
+            <div class="overflow-x-auto rounded-lg border border-gray-200">
+                <table id="dataTable">
+                    <thead></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Papa Parse CDN for CSV parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const csvFileInput = document.getElementById('csvFile');
+            const fileNameSpan = document.getElementById('fileName');
+            const summaryDisplay = document.getElementById('summaryDisplay');
+            const numRowsSpan = document.getElementById('numRows');
+            const numVariablesSpan = document.getElementById('numVariables');
+            const quantVariablesSpan = document.getElementById('quantVariables');
+            const qualiVariablesSpan = document.getElementById('qualiVariables');
+            const dataDisplay = document.getElementById('dataDisplay');
+            const dataTable = document.getElementById('dataTable');
+            const statsDisplay = document.getElementById('statsDisplay');
+            const statsTable = document.getElementById('statsTable');
+
+            csvFileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    fileNameSpan.textContent = file.name;
+                    PapaParse.parse(file, {
+                        header: true, // Treat the first row as headers
+                        dynamicTyping: true, // Automatically convert numbers and booleans
+                        skipEmptyLines: true,
+                        complete: function(results) {
+                            if (results.errors.length) {
+                                console.error("Parsing errors:", results.errors);
+                                const errorMessage = document.createElement('div');
+                                errorMessage.className = 'fixed inset-0 bg-red-100 bg-opacity-75 flex items-center justify-center z-50';
+                                errorMessage.innerHTML = `
+                                    <div class="bg-white p-6 rounded-lg shadow-xl border border-red-400 text-center">
+                                        <h3 class="text-lg font-medium text-red-800 mb-4">Error</h3>
+                                        <p class="text-gray-700">Error parsing CSV file. Please check the console for details.</p>
+                                        <button class="mt-4 btn bg-red-600 hover:bg-red-700" onclick="this.parentNode.parentNode.remove()">Close</button>
+                                    </div>
+                                `;
+                                document.body.appendChild(errorMessage);
+                                return;
+                            }
+                            const data = results.data;
+                            analyzeData(data);
+                            displayDataTable(data);
+                        },
+                        error: function(err) {
+                            console.error("Papa Parse error:", err);
+                            const errorMessage = document.createElement('div');
+                            errorMessage.className = 'fixed inset-0 bg-red-100 bg-opacity-75 flex items-center justify-center z-50';
+                            errorMessage.innerHTML = `
+                                <div class="bg-white p-6 rounded-lg shadow-xl border border-red-400 text-center">
+                                    <h3 class="text-lg font-medium text-red-800 mb-4">Error</h3>
+                                    <p class="text-gray-700">An error occurred during file parsing.</p>
+                                    <button class="mt-4 btn bg-red-600 hover:bg-red-700" onclick="this.parentNode.parentNode.remove()">Close</button>
+                                </div>
+                            `;
+                            document.body.appendChild(errorMessage);
+                        }
+                    });
+                } else {
+                    fileNameSpan.textContent = 'No file chosen';
+                    summaryDisplay.classList.add('hidden');
+                    dataDisplay.classList.add('hidden');
+                    statsDisplay.classList.add('hidden');
+                }
+            });
+
+            /**
+             * Analyzes the data to provide summary statistics.
+             * @param {Array<Object>} data - The array of objects representing the CSV data.
+             */
+            function analyzeData(data) {
+                if (!data || data.length === 0) {
+                    summaryDisplay.classList.add('hidden');
+                    statsDisplay.classList.add('hidden');
+                    return;
+                }
+
+                summaryDisplay.classList.remove('hidden');
+                const columns = Object.keys(data[0]);
+                const numRows = data.length;
+                const numVariables = columns.length;
+
+                let quantitativeCols = [];
+                let qualitativeCols = [];
+
+                columns.forEach(colName => {
+                    // Check if the column is quantitative by checking if all non-empty values are numbers
+                    const isQuantitative = data.every(row => {
+                        const value = row[colName];
+                        return value === null || value === '' || typeof value === 'number';
+                    });
+
+                    if (isQuantitative) {
+                        quantitativeCols.push(colName);
+                    } else {
+                        qualitativeCols.push(colName);
+                    }
+                });
+
+                numRowsSpan.textContent = numRows;
+                numVariablesSpan.textContent = numVariables;
+                quantVariablesSpan.textContent = quantitativeCols.join(', ') || 'None';
+                qualiVariablesSpan.textContent = qualitativeCols.join(', ') || 'None';
+
+                displayQuantitativeStatistics(data, quantitativeCols);
+            }
+
+            /**
+             * Displays the parsed data in an HTML table.
+             * @param {Array<Object>} data - The array of objects representing the CSV data.
+             */
+            function displayDataTable(data) {
+                if (!data || data.length === 0) {
+                    dataDisplay.classList.add('hidden');
+                    return;
+                }
+
+                dataDisplay.classList.remove('hidden');
+                const thead = dataTable.querySelector('thead');
+                const tbody = dataTable.querySelector('tbody');
+                thead.innerHTML = ''; // Clear previous headers
+                tbody.innerHTML = ''; // Clear previous data
+
+                // Create table header
+                const headers = Object.keys(data[0]);
+                const headerRow = document.createElement('tr');
+                headers.forEach(headerText => {
+                    const th = document.createElement('th');
+                    th.textContent = headerText;
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+
+                // Create table body
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    headers.forEach(headerText => {
+                        const td = document.createElement('td');
+                        // Display empty string for null/undefined values
+                        td.textContent = row[headerText] === null || row[headerText] === undefined ? '' : row[headerText];
+                        tr.appendChild(td);
+                    });
+                    tbody.appendChild(tr);
+                });
+            }
+
+            /**
+             * Calculates and displays descriptive statistics for numerical columns.
+             * @param {Array<Object>} data - The array of objects representing the CSV data.
+             * @param {Array<string>} quantitativeCols - Array of quantitative column names.
+             */
+            function displayQuantitativeStatistics(data, quantitativeCols) {
+                if (!data || data.length === 0 || quantitativeCols.length === 0) {
+                    statsDisplay.classList.add('hidden');
+                    return;
+                }
+
+                statsDisplay.classList.remove('hidden');
+                const thead = statsTable.querySelector('thead');
+                const tbody = statsTable.querySelector('tbody');
+                thead.innerHTML = '';
+                tbody.innerHTML = '';
+
+                // Define statistics to calculate
+                const statsHeaders = ['Column', 'Mean', 'Standard Deviation', 'Median'];
+
+                // Create stats table header
+                const statsHeaderRow = document.createElement('tr');
+                statsHeaders.forEach(headerText => {
+                    const th = document.createElement('th');
+                    th.textContent = headerText;
+                    statsHeaderRow.appendChild(th);
+                });
+                thead.appendChild(statsHeaderRow);
+
+                // Iterate over quantitative columns to calculate statistics
+                quantitativeCols.forEach(colName => {
+                    const values = data.map(row => row[colName]).filter(val => typeof val === 'number' && !isNaN(val));
+
+                    if (values.length > 0) {
+                        const mean = values.reduce((acc, val) => acc + val, 0) / values.length;
+
+                        // Calculate Standard Deviation
+                        const variance = values.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / values.length;
+                        const stdDev = Math.sqrt(variance);
+
+                        // Calculate Median
+                        const sortedValues = [...values].sort((a, b) => a - b);
+                        const mid = Math.floor(sortedValues.length / 2);
+                        const median = sortedValues.length % 2 === 0
+                            ? (sortedValues[mid - 1] + sortedValues[mid]) / 2
+                            : sortedValues[mid];
+
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${colName}</td>
+                            <td>${mean.toFixed(2)}</td>
+                            <td>${stdDev.toFixed(2)}</td>
+                            <td>${median.toFixed(2)}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    }
+                });
+
+                if (tbody.children.length === 0) {
+                    statsDisplay.classList.add('hidden');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

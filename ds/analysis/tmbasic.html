@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stat Mania - Text Mining Tool</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Tailwind: bg-slate-50 */
+            color: #334155; /* Tailwind: text-slate-700 */
+        }
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0; /* Tailwind: bg-slate-200 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8; /* Tailwind: bg-slate-400 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b; /* Tailwind: bg-slate-500 */
+        }
+
+        /* Styles for the Text Mining Tool (adapted from original) */
+        .text-mining-container { /* Renamed from .container to avoid conflict */
+            background-color: #ffffff;
+            border-radius: 16px; /* More rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Softer shadow */
+            padding: 30px;
+            max-width: 1200px; /* Increased max-width for 3 columns */
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 25px; /* Increased gap */
+        }
+        textarea {
+            height: 400px; /* Fixed height for textarea to match word list container */
+            resize: vertical; /* Still allow vertical resize if user wants */
+            border: 1px solid #cbd5e1; /* Lighter border */
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 1rem;
+            line-height: 1.5;
+            transition: border-color 0.2s ease-in-out;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #6366f1; /* Purple focus border */
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        .text-mining-button { /* Renamed from button to avoid global style conflict */
+            background-color: #6366f1; /* Purple button */
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+        .text-mining-button:hover {
+            background-color: #4f46e5; /* Darker purple on hover */
+            transform: translateY(-1px);
+        }
+        .text-mining-button:active {
+            transform: translateY(0);
+        }
+        .section-title {
+            font-size: 1.5rem; /* Larger titles */
+            font-weight: 700;
+            color: #334155; /* Darker text */
+            margin-bottom: 15px;
+        }
+        #wordListContainer {
+            height: 400px; /* Fixed height for word list to match textarea */
+            overflow-y: auto; /* Scrollable */
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #f8fafc; /* Slightly off-white background */
+        }
+        #wordListContainer ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        #wordListContainer li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #e2e8f0; /* Dashed separator */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #wordListContainer li:last-child {
+            border-bottom: none;
+        }
+        #wordListContainer li span:first-child {
+            font-weight: 500;
+            color: #475569;
+        }
+        #wordListContainer li span:last-child {
+            font-weight: 600;
+            color: #6366f1;
+            background-color: #e0e7ff; /* Light purple badge */
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+        canvas {
+            display: block;
+            width: 100%; /* Make canvas responsive */
+            max-width: 100%;
+            height: auto; /* Maintain aspect ratio */
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background-color: #f8fafc;
+        }
+        input[type="range"] {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 8px;
+            background: #e0e7ff; /* Light purple track */
+            border-radius: 5px;
+            outline: none;
+            transition: opacity .2s;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #6366f1; /* Purple thumb */
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #6366f1;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #475569;
+            margin-top: 10px;
+        }
+        /* Responsive adjustments for the tool itself */
+        @media (max-width: 768px) {
+            .text-mining-container {
+                padding: 20px;
+                gap: 20px;
+            }
+            .section-title {
+                font-size: 1.3rem;
+            }
+            .text-mining-button {
+                padding: 10px 20px;
+            }
+        }
+        /* 3-column layout for large screens for the tool's content */
+        @media (min-width: 1024px) { /* Tailwind's 'lg' breakpoint */
+            .text-mining-container {
+                display: grid;
+                grid-template-columns: 1fr 1fr 2fr; /* First two columns share 50%, last column is 50% */
+                gap: 25px; /* Gap between columns */
+                /* max-width is already 1200px, so it will expand within the parent */
+            }
+            .input-section, .results-section, .chart-section {
+                margin-top: 0 !important; /* Remove top margin when in grid */
+            }
+        }
+
+        /* Tooltip styles */
+        #chartTooltip {
+            position: absolute;
+            background-color: rgba(30, 41, 59, 0.9); /* Tailwind: bg-slate-800 with opacity */
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            pointer-events: none; /* Allows mouse events to pass through to the canvas */
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+            z-index: 100;
+            white-space: nowrap; /* Prevent text wrapping */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        #chartTooltip.visible {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header/Navbar -->
+    <header class="bg-white shadow-sm py-4">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <!-- Logo, Title, and Motto -->
+            <div class="flex items-center space-x-3">
+                <img src="../img/statmania_logo.png" alt="Stat Mania Logo" class="w-10 h-10 rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/40x40/4f46e5/ffffff?text=Logo';">
+                <div>
+                    <div class="text-2xl font-bold text-indigo-600">Stat Mania</div>
+                    <p class="text-sm text-slate-500">Making sense of statistics</p>
+                </div>
+            </div>
+
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="#features" class="text-slate-600 hover:text-indigo-600 transition duration-300">Features</a></li>
+                    <li><a href="#cta" class="text-slate-600 hover:text-indigo-600 transition duration-300">Contact</a></li>
+                </ul>
+            </nav>
+
+            <!-- Mobile Menu Button (Hamburger Icon) -->
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="features.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Features</a>
+            <a href="#cta" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Contact</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section (now a compact page title section) -->
+        <section class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-8 px-4 sm:px-6 lg:px-8 rounded-b-2xl shadow-lg">
+            <div class="container mx-auto text-center max-w-4xl flex items-center justify-center space-x-4">
+                <!-- Icon for Text Mining -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <div>
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight">
+                        Text Mining Tool
+                    </h1>
+                    <p class="text-lg sm:text-xl mt-2 opacity-90">
+                        Analyze text and visualize word frequencies.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content Area (where text mining tool goes) -->
+        <section class="py-8 px-4 sm:px-6 lg:px-8 bg-white flex justify-center">
+            <div class="text-mining-container">
+                <div class="input-column">
+                    <div class="input-section">
+                        <label for="textInput" class="block text-lg font-semibold text-gray-700 mb-2">Enter your text here:</label>
+                        <textarea id="textInput" class="w-full border p-4 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="Paste your text here..."></textarea>
+                        <button id="processButton" class="w-full mt-4 text-mining-button">Analyze Text</button>
+                    </div>
+                </div>
+
+                <div class="results-column">
+                    <div class="results-section">
+                        <h2 class="section-title">Word Frequencies:</h2>
+                        <div id="wordListContainer" class="bg-gray-50 p-4 rounded-lg shadow-inner">
+                            <ul id="wordList">
+                                <!-- Word frequencies will be displayed here -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-column">
+                    <div class="chart-section">
+                        <h2 class="section-title">Most Frequent Words Chart:</h2>
+                        <div class="slider-container mb-4">
+                            <label for="numWordsSlider" class="block text-lg font-semibold text-gray-700 mb-2">Number of words to plot:</label>
+                            <input type="range" id="numWordsSlider" min="1" max="20" value="10" class="w-full">
+                            <div class="slider-label">
+                                <span>1</span>
+                                <span id="sliderValue">10</span>
+                                <span>20</span>
+                            </div>
+                        </div>
+                        <canvas id="wordFrequencyChart" class="w-full h-96 bg-gray-50 rounded-lg shadow-inner"></canvas>
+                        <!-- Tooltip element -->
+                        <div id="chartTooltip" class="hidden"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Call to Action Section -->
+        <section id="cta" class="bg-indigo-700 py-16 px-4 sm:px-6 lg:px-8 text-white text-center rounded-t-2xl shadow-lg">
+            <div class="container mx-auto max-w-3xl">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-6">Explore Other Services</h2>
+                <p class="text-lg sm:text-xl mb-8 opacity-90">
+                    Learn, Grow, and Implement
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="www.statmania.info" class="inline-block bg-white text-indigo-700 hover:bg-indigo-100 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
+                        Learn
+                    </a>
+                    <a href="#" class="inline-block bg-transparent border-2 border-white text-white hover:bg-white hover:text-indigo-700 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
+                        Data Science Tools
+                    </a>
+                    <a href="#" class="inline-block bg-transparent border-2 border-white text-white hover:bg-white hover:text-indigo-700 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
+                        Services
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-white py-8 px-4 sm:px-6 lg:px-8 text-center rounded-t-lg shadow-inner">
+        <div class="container mx-auto">
+            <p class="mb-4">&copy; 2024 Stat Mania. All rights reserved.</p>
+            <div class="flex justify-center space-x-6">
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Privacy Policy</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Terms of Service</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Sitemap</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // JavaScript for mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Hide mobile menu when a link is clicked
+        const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // Text Mining Tool's JavaScript
+        const textInput = document.getElementById('textInput');
+        const processButton = document.getElementById('processButton');
+        const wordList = document.getElementById('wordList');
+        const numWordsSlider = document.getElementById('numWordsSlider');
+        const sliderValueSpan = document.getElementById('sliderValue');
+        const chartCanvas = document.getElementById('wordFrequencyChart');
+        const ctx = chartCanvas.getContext('2d');
+        const chartTooltip = document.getElementById('chartTooltip');
+
+        let wordFrequencies = []; // Stores processed word frequencies
+        let barData = []; // Stores data for each bar to detect hovers
+
+        // Function to process the input text
+        function processText() {
+            const text = textInput.value;
+            if (!text.trim()) {
+                wordList.innerHTML = '<li class="text-center text-gray-500">Please enter some text to analyze.</li>';
+                drawChart(); // Clear chart
+                return;
+            }
+
+            // Convert to lowercase, remove punctuation and numbers, then split into words
+            // \b matches word boundaries
+            // [a-z]+ matches one or more lowercase letters
+            const words = text.toLowerCase().match(/\b[a-z]+\b/g);
+
+            if (!words) {
+                wordList.innerHTML = '<li class="text-center text-gray-500">No valid words found in the text.</li>';
+                drawChart(); // Clear chart
+                return;
+            }
+
+            const frequencyMap = new Map();
+            words.forEach(word => {
+                // Filter out very short words or common single letters if desired (e.g., 'a', 'i')
+                if (word.length > 1) { // Example: only count words longer than 1 character
+                    frequencyMap.set(word, (frequencyMap.get(word) || 0) + 1);
+                }
+            });
+
+            // Convert map to array of objects and sort by frequency
+            wordFrequencies = Array.from(frequencyMap.entries())
+                .map(([word, count]) => ({ word, count }))
+                .sort((a, b) => b.count - a.count);
+
+            displayWordList();
+            drawChart();
+        }
+
+        // Function to display the word list
+        function displayWordList() {
+            wordList.innerHTML = ''; // Clear previous list
+            if (wordFrequencies.length === 0) {
+                wordList.innerHTML = '<li class="text-center text-gray-500">No words to display.</li>';
+                return;
+            }
+
+            wordFrequencies.forEach(item => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `<span>${item.word}</span><span>${item.count}</span>`;
+                wordList.appendChild(listItem);
+            });
+        }
+
+        // Function to draw the bar chart
+        function drawChart() {
+            const numWordsToPlot = parseInt(numWordsSlider.value);
+            sliderValueSpan.textContent = numWordsToPlot;
+
+            const dataToPlot = wordFrequencies.slice(0, numWordsToPlot);
+
+            // Clear canvas and set dimensions for high-DPI displays
+            const dpr = window.devicePixelRatio || 1;
+            const rect = chartCanvas.getBoundingClientRect();
+            chartCanvas.width = rect.width * dpr;
+            chartCanvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+
+            ctx.clearRect(0, 0, chartCanvas.width / dpr, chartCanvas.height / dpr);
+            barData = []; // Clear previous bar data for hover detection
+
+            if (dataToPlot.length === 0) {
+                ctx.font = '16px Inter';
+                ctx.fillStyle = '#64748b';
+                ctx.textAlign = 'center';
+                ctx.fillText('No data to display. Analyze text first.', chartCanvas.width / (2 * dpr), chartCanvas.height / (2 * dpr));
+                return;
+            }
+
+            // Define chart dimensions and margins
+            const chartWidth = chartCanvas.width / dpr;
+            const chartHeight = chartCanvas.height / dpr;
+            const margin = {
+                top: 40,
+                right: 20,
+                bottom: 60, // Sufficient bottom margin for horizontal labels
+                left: 60   // Sufficient left margin for Y-axis labels
+            };
+            const plotAreaWidth = chartWidth - margin.left - margin.right;
+            const plotAreaHeight = chartHeight - margin.top - margin.bottom;
+
+            const barPadding = 10;
+            const barWidth = (plotAreaWidth - (dataToPlot.length - 1) * barPadding) / dataToPlot.length;
+
+            const maxCount = Math.max(...dataToPlot.map(item => item.count));
+            const scaleY = plotAreaHeight / maxCount;
+
+            ctx.fillStyle = '#6366f1'; // Bar color
+            ctx.font = '12px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+
+            // Draw bars
+            dataToPlot.forEach((item, index) => {
+                const barHeight = item.count * scaleY;
+                const x = margin.left + index * (barWidth + barPadding);
+                const y = chartHeight - margin.bottom - barHeight;
+
+                ctx.fillRect(x, y, barWidth, barHeight);
+
+                // Store bar data for hover detection
+                barData.push({
+                    x: x,
+                    y: y,
+                    width: barWidth,
+                    height: barHeight,
+                    word: item.word,
+                    count: item.count
+                });
+
+                // Draw count text above bar
+                ctx.fillStyle = '#1e293b'; // Darker text for counts
+                ctx.fillText(item.count, x + barWidth / 2, y - 5);
+            });
+
+            // Draw X-axis line
+            ctx.beginPath();
+            ctx.strokeStyle = '#94a3b8'; // Light gray for axis line
+            ctx.lineWidth = 1;
+            ctx.moveTo(margin.left, chartHeight - margin.bottom);
+            ctx.lineTo(chartWidth - margin.right, chartHeight - margin.bottom); // X-axis line
+            ctx.stroke();
+
+            // Draw Y-axis line
+            ctx.beginPath();
+            ctx.moveTo(margin.left, chartHeight - margin.bottom);
+            ctx.lineTo(margin.left, margin.top); // Y-axis line
+            ctx.stroke();
+
+            // Draw X-axis labels (words)
+            ctx.fillStyle = '#475569'; // Axis label color
+            ctx.font = '14px Inter';
+
+            if (numWordsToPlot > 6) {
+                // For more than 6 words, draw labels vertically inside the bars
+                dataToPlot.forEach((item, index) => {
+                    const barHeight = item.count * scaleY;
+                    const xCenterOfBar = margin.left + index * (barWidth + barPadding) + barWidth / 2;
+                    const yTopBar = chartHeight - margin.bottom - barHeight; // Top of the bar
+                    const yCenterOfBar = yTopBar + barHeight / 2; // Vertical middle of the bar
+
+                    ctx.fillStyle = 'white'; // White text for inside the bar
+                    ctx.save(); // Save the current canvas state
+
+                    // Translate origin to the vertical middle and horizontal center of the bar
+                    ctx.translate(xCenterOfBar, yCenterOfBar);
+
+                    // Rotate 90 degrees counter-clockwise (bottom to top)
+                    ctx.rotate(-Math.PI / 2);
+
+                    // Set text alignment relative to the new rotated coordinate system
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle'; // Center the text vertically on the new origin
+
+                    // Draw text. No Y offset needed as it's already centered.
+                    ctx.fillText(item.word, 0, 0);
+                    ctx.restore(); // Restore the canvas state
+                });
+            } else {
+                // For 6 words or less, draw labels horizontally below the axis
+                ctx.textBaseline = 'top';
+                ctx.textAlign = 'center';
+                dataToPlot.forEach((item, index) => {
+                    const x = margin.left + index * (barWidth + barPadding) + barWidth / 2;
+                    const y = chartHeight - margin.bottom + 5; // 5 pixels below the axis
+                    ctx.fillText(item.word, x, y);
+                });
+            }
+
+
+            // Draw Y-axis labels (counts)
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            ctx.font = '12px Inter';
+
+            // Draw labels for 0, maxCount/2, maxCount
+            ctx.fillStyle = '#475569'; // Axis label color
+            ctx.fillText('0', margin.left - 10, chartHeight - margin.bottom);
+            ctx.fillText(Math.floor(maxCount / 2), margin.left - 10, chartHeight - margin.bottom - (maxCount / 2) * scaleY);
+            ctx.fillText(maxCount, margin.left - 10, margin.top);
+
+            // Draw X-axis label "Word"
+            ctx.fillStyle = '#334155';
+            ctx.font = '16px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText('Word', chartWidth / 2, chartHeight - margin.bottom + 30);
+
+            // Draw Y-axis label "Frequency"
+            ctx.fillStyle = '#334155';
+            ctx.font = '16px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.save();
+            ctx.translate(margin.left - 35, chartHeight / 2); // Position to the left of Y-axis, centered vertically
+            ctx.rotate(-Math.PI / 2); // Rotate 90 degrees counter-clockwise
+            ctx.fillText('Frequency', 0, 0);
+            ctx.restore();
+        }
+
+        // Function to handle mouse movement for tooltips
+        function handleMouseMove(event) {
+            const rect = chartCanvas.getBoundingClientRect();
+            const mouseX = (event.clientX - rect.left) * (chartCanvas.width / rect.width) / (window.devicePixelRatio || 1);
+            const mouseY = (event.clientY - rect.top) * (chartCanvas.height / rect.height) / (window.devicePixelRatio || 1);
+
+            let hoveredBar = null;
+            for (const bar of barData) {
+                if (mouseX >= bar.x && mouseX <= bar.x + bar.width &&
+                    mouseY >= bar.y && mouseY <= bar.y + bar.height) {
+                    hoveredBar = bar;
+                    break;
+                }
+            }
+
+            if (hoveredBar) {
+                chartTooltip.innerHTML = `<strong>${hoveredBar.word}</strong>: ${hoveredBar.count}`;
+                chartTooltip.style.left = (event.clientX + 10) + 'px';
+                chartTooltip.style.top = (event.clientY + 10) + 'px';
+                chartTooltip.classList.add('visible');
+            } else {
+                chartTooltip.classList.remove('visible');
+            }
+        }
+
+        // Event Listeners
+        processButton.addEventListener('click', processText);
+        numWordsSlider.addEventListener('input', drawChart); // Redraw chart when slider value changes
+        chartCanvas.addEventListener('mousemove', handleMouseMove);
+        chartCanvas.addEventListener('mouseout', () => {
+            chartTooltip.classList.remove('visible');
+        });
+
+
+        // Initial setup
+        // Add some default text for demonstration
+        textInput.value = "This is a simple text mining example. This example will count words and display their frequencies. This is a great way to see how text analysis works. The more words you add, the more interesting the analysis becomes. This tool helps visualize data.";
+        processText(); // Process initial text on load
+
+        // Handle canvas resizing to maintain responsiveness
+        window.addEventListener('resize', () => {
+            // Only redraw if there's data to prevent unnecessary processing
+            if (wordFrequencies.length > 0) {
+                drawChart();
+            }
+        });
+
+    </script>
+
+</body>
+</html>

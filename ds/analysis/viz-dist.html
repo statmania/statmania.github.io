@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stat Mania - Distribution Visualizer</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Tailwind: bg-slate-50 */
+            color: #334155; /* Tailwind: text-slate-700 */
+        }
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0; /* Tailwind: bg-slate-200 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8; /* Tailwind: bg-slate-400 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b; /* Tailwind: bg-slate-500 */
+        }
+
+        /* Custom styles for the canvas and overall layout of the visualizer */
+        .visualizer-content {
+            background-color: #ffffff;
+            border-radius: 1rem; /* Rounded corners */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%; /* Take full width of its parent container */
+        }
+        canvas {
+            border: 1px solid #e5e7eb; /* Light gray border for canvas */
+            background-color: #f9fafb; /* Slightly off-white canvas background */
+            border-radius: 0.5rem; /* Rounded corners for canvas */
+            width: 100%; /* Make canvas responsive */
+            height: 400px; /* Fixed height, will scale content */
+        }
+        .parameter-control {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .parameter-control label {
+            font-weight: 600;
+            color: #374151;
+        }
+        .parameter-control input[type="range"] {
+            width: 100%;
+            -webkit-appearance: none; /* Remove default slider styles */
+            height: 8px;
+            background: #d1d5db;
+            border-radius: 5px;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity .2s;
+        }
+        .parameter-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4f46e5; /* Indigo thumb */
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .parameter-control input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4f46e5;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .parameter-value {
+            font-weight: 500;
+            color: #4b5563;
+        }
+        /* Improved dropdown styling */
+        .select-wrapper {
+            position: relative;
+            width: 100%; /* Ensure it takes full width of its parent */
+        }
+        .select-wrapper::after {
+            content: '▼';
+            font-size: 0.8em;
+            color: #6b7280;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            position: absolute;
+            pointer-events: none;
+        }
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-color: #f9fafb;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            padding-right: 2.5rem; /* Space for the custom arrow */
+            font-size: 1rem;
+            line-height: 1.5rem;
+            color: #374151;
+            cursor: pointer;
+            width: 100%;
+            transition: border-color 0.2s, box-shadow 0.2s; /* Smooth transitions */
+        }
+        select:hover {
+            border-color: #9ca3af; /* Slightly darker border on hover */
+        }
+        select:focus {
+            outline: none;
+            border-color: #6366f1; /* Indigo border on focus */
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); /* Light indigo shadow on focus */
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header/Navbar -->
+    <header class="bg-white shadow-sm py-4">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <!-- Logo, Title, and Motto -->
+            <div class="flex items-center space-x-3">
+                <img src="../../img/statmania_logo.png" alt="Stat Mania Logo" class="w-10 h-10 rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/40x40/4f46e5/ffffff?text=Logo';">
+                <div>
+                    <div class="text-2xl font-bold text-indigo-600">Stat Mania</div>
+                    <p class="text-sm text-slate-500">Making sense of statistics</p>
+                </div>
+            </div>
+
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="#features" class="text-slate-600 hover:text-indigo-600 transition duration-300">Features</a></li>
+                    <li><a href="#cta" class="text-slate-600 hover:text-indigo-600 transition duration-300">Contact</a></li>
+                </ul>
+            </nav>
+
+            <!-- Mobile Menu Button (Hamburger Icon) -->
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="#features" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Features</a>
+            <a href="#cta" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Contact</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section (now a compact page title section) -->
+        <section class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-8 px-4 sm:px-6 lg:px-8 rounded-b-2xl shadow-lg">
+            <div class="container mx-auto text-center max-w-4xl">
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight flex items-center justify-center gap-3">
+                    <!-- Icon for Distribution Visualizer -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 sm:h-12 sm:w-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 3v18h18" />
+                        <path d="M18.7 8.3L12 15l-3.3-3.3c-.8-.8-2-.8-2.8 0L3 17" />
+                    </svg>
+                    Distribution Visualizer
+                </h1>
+                <p class="text-lg sm:text-xl mt-2 opacity-90">
+                    Explore how probability distributions change with parameters.
+                </p>
+            </div>
+        </section>
+
+        <!-- Main Content Area (where the Distribution Visualizer goes) -->
+        <section class="py-12 px-4 sm:px-6 lg:px-8 bg-white">
+            <div class="container mx-auto max-w-4xl"> <!-- Increased max-width for the visualizer content -->
+                <div class="visualizer-content">
+                    <!-- The Distribution Visualizer content starts here -->
+                    <!-- Removed: <h2 class="text-2xl font-extrabold text-center text-indigo-700 mb-6">Interactive Distribution Plot</h2> -->
+
+                    <!-- Main content area for two columns -->
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <!-- Left Column: Settings (Distribution Select and Parameters) -->
+                        <div class="flex-1 flex flex-col gap-6 md:w-1/3">
+                            <div class="flex flex-col gap-4">
+                                <label for="distributionSelect" class="text-lg font-semibold text-gray-700">Select Distribution:</label>
+                                <div class="select-wrapper">
+                                    <select id="distributionSelect" class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                        <option value="normal">Normal (Gaussian)</option>
+                                        <option value="exponential">Exponential</option>
+                                        <option value="uniform">Uniform</option>
+                                        <option value="beta">Beta</option>
+                                        <option value="gamma">Gamma</option>
+                                        <option value="chi-squared">Chi-squared</option>
+                                        <option value="binomial">Binomial</option>
+                                        <option value="poisson">Poisson</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="parameters" class="grid grid-cols-1 gap-6">
+                                <!-- Parameter sliders will be dynamically loaded here -->
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Graph (Canvas) -->
+                        <div class="flex-1 md:w-2/3 flex items-center justify-center">
+                            <canvas id="distributionCanvas" width="800" height="400"></canvas>
+                        </div>
+                    </div>
+                    <!-- The Distribution Visualizer content ends here -->
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Call to Action Section -->
+        <section id="cta" class="bg-indigo-700 py-16 px-4 sm:px-6 lg:px-8 text-white text-center rounded-t-2xl shadow-lg">
+            <div class="container mx-auto max-w-3xl">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-6">Explore Other Services</h2>
+                <p class="text-lg sm:text-xl mb-8 opacity-90">
+                    Learn, Grow, and Implement
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="www.statmania.info" class="inline-block bg-white text-indigo-700 hover:bg-indigo-100 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
+                        Learn
+                    </a>
+                    <a href="#" class="inline-block bg-transparent border-2 border-white text-white hover:bg-white hover:text-indigo-700 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
+                        Data Science Tools
+                    </a>
+                    <a href="#" class="inline-block bg-transparent border-2 border-white text-white hover:bg-white hover:text-indigo-700 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
+                        Services
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-white py-8 px-4 sm:px-6 lg:px-8 text-center rounded-t-lg shadow-inner">
+        <div class="container mx-auto">
+            <p class="mb-4">&copy; 2024 Stat Mania. All rights reserved.</p>
+            <div class="flex justify-center space-x-6">
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Privacy Policy</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Terms of Service</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Sitemap</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // JavaScript for mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Hide mobile menu when a link is clicked
+        const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // --- Distribution Visualizer Specific JavaScript ---
+        // Get canvas and its 2D rendering context
+        const canvas = document.getElementById('distributionCanvas');
+        const ctx = canvas.getContext('2d');
+        const parametersDiv = document.getElementById('parameters');
+        const distributionSelect = document.getElementById('distributionSelect');
+
+        // Define padding for the canvas plot
+        const padding = { top: 40, right: 40, bottom: 60, left: 60 };
+
+        // Object to store distribution definitions and their default parameters
+        const distributions = {
+            normal: {
+                type: 'continuous',
+                params: {
+                    mu: { label: 'Mean (μ)', min: -5, max: 5, step: 0.1, default: 0 },
+                    sigma: { label: 'Std Dev (σ)', min: 0.1, max: 3, step: 0.1, default: 1 }
+                },
+                pdf: (x, mu, sigma) => {
+                    return (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-((x - mu) ** 2) / (2 * sigma ** 2));
+                },
+                range: (mu, sigma) => ({ xMin: mu - 4 * sigma, xMax: mu + 4 * sigma, yMaxFactor: 1.1 })
+            },
+            exponential: {
+                type: 'continuous',
+                params: {
+                    lambda: { label: 'Rate (λ)', min: 0.1, max: 2, step: 0.05, default: 0.5 }
+                },
+                pdf: (x, lambda) => {
+                    return x >= 0 ? lambda * Math.exp(-lambda * x) : 0;
+                },
+                range: (lambda) => ({ xMin: 0, xMax: 10 / lambda, yMaxFactor: 1.1 })
+            },
+            uniform: {
+                type: 'continuous',
+                params: {
+                    a: { label: 'Min (a)', min: -5, max: 5, step: 0.1, default: -2 },
+                    b: { label: 'Max (b)', min: -5, max: 5, step: 0.1, default: 2 }
+                },
+                pdf: (x, a, b) => {
+                    if (a >= b) return 0; // Invalid range
+                    return (x >= a && x <= b) ? 1 / (b - a) : 0;
+                },
+                range: (a, b) => ({ xMin: Math.min(a, b) - 1, xMax: Math.max(a, b) + 1, yMaxFactor: 1.5 })
+            },
+            beta: {
+                type: 'continuous',
+                params: {
+                    alpha: { label: 'Alpha (α)', min: 0.1, max: 10, step: 0.1, default: 2.5 },
+                    beta: { label: 'Beta (β)', min: 0.1, max: 10, step: 0.1, default: 4.1 }
+                },
+                pdf: (x, alpha, beta) => {
+                    if (x < 0 || x > 1) return 0;
+                    const betaFunc = (alpha, beta) => (gamma(alpha) * gamma(beta)) / gamma(alpha + beta);
+                    return (x ** (alpha - 1) * (1 - x) ** (beta - 1)) / betaFunc(alpha, beta);
+                },
+                range: (alpha, beta) => ({ xMin: 0, xMax: 1, yMaxFactor: 1.1 })
+            },
+            gamma: {
+                type: 'continuous',
+                params: {
+                    k: { label: 'Shape (k)', min: 0.1, max: 10, step: 0.1, default: 2 },
+                    theta: { label: 'Scale (θ)', min: 0.1, max: 5, step: 0.1, default: 1 }
+                },
+                pdf: (x, k, theta) => {
+                    if (x < 0) return 0;
+                    return (1 / (gamma(k) * (theta ** k))) * (x ** (k - 1)) * Math.exp(-x / theta);
+                },
+                range: (k, theta) => ({ xMin: 0, xMax: (k + 4 * Math.sqrt(k)) * theta, yMaxFactor: 1.1 })
+            },
+            'chi-squared': {
+                type: 'continuous',
+                params: {
+                    k: { label: 'Degrees of Freedom (k)', min: 1, max: 20, step: 1, default: 3 }
+                },
+                pdf: (x, k) => {
+                    if (x < 0) return 0;
+                    return (1 / (Math.pow(2, k / 2) * gamma(k / 2))) * (x ** (k / 2 - 1)) * Math.exp(-x / 2);
+                },
+                range: (k) => ({ xMin: 0, xMax: k + 4 * Math.sqrt(2 * k), yMaxFactor: 1.1 })
+            },
+            binomial: {
+                type: 'discrete',
+                params: {
+                    n: { label: 'Trials (n)', min: 1, max: 30, step: 1, default: 10 },
+                    p: { label: 'Prob (p)', min: 0.01, max: 0.99, step: 0.01, default: 0.5 }
+                },
+                pmf: (k, n, p) => {
+                    if (k < 0 || k > n || !Number.isInteger(k)) return 0;
+                    return combinations(n, k) * (p ** k) * ((1 - p) ** (n - k));
+                },
+                range: (n, p) => ({ xMin: 0, xMax: n, yMaxFactor: 1.1 })
+            },
+            poisson: {
+                type: 'discrete',
+                params: {
+                    lambda: { label: 'Rate (λ)', min: 0.1, max: 10, step: 0.1, default: 3 }
+                },
+                pmf: (k, lambda) => {
+                    if (k < 0 || !Number.isInteger(k)) return 0;
+                    return (lambda ** k * Math.exp(-lambda)) / factorial(k);
+                },
+                range: (lambda) => ({ xMin: 0, xMax: Math.max(15, Math.ceil(lambda + 3 * Math.sqrt(lambda))), yMaxFactor: 1.1 })
+            }
+        };
+
+        // --- Helper Functions for Distributions ---
+
+        // Gamma function approximation (Lanczos approximation for positive real numbers)
+        // Source: https://rosettacode.org/wiki/Gamma_function#JavaScript
+        function gamma(z) {
+            const g = 7;
+            const p = [
+                0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+                771.32342877765313, -176.61502916214059, 12.507343278686905,
+                -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7
+            ];
+            if (z < 0.5) {
+                return Math.PI / (Math.sin(Math.PI * z) * gamma(1 - z));
+            }
+            z -= 1;
+            let x = p[0];
+            for (let i = 1; i < g + 2; i++) {
+                x += p[i] / (z + i);
+            }
+            const t = z + g + 0.5;
+            return Math.sqrt(2 * Math.PI) * t ** (z + 0.5) * Math.exp(-t) * x;
+        }
+
+        // Factorial function for discrete distributions
+        function factorial(n) {
+            if (n === 0 || n === 1) return 1;
+            let res = 1;
+            for (let i = 2; i <= n; i++) {
+                res *= i;
+            }
+            return res;
+        }
+
+        // Combinations (nCk) function for Binomial distribution
+        function combinations(n, k) {
+            if (k < 0 || k > n) return 0;
+            if (k === 0 || k === n) return 1;
+            if (k > n / 2) k = n - k; // Optimization
+            return factorial(n) / (factorial(k) * factorial(n - k));
+        }
+
+        // --- Canvas Drawing Functions ---
+
+        // Clear the canvas
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Draw X and Y axes
+        function drawAxes(xMin, xMax, yMax) {
+            const plotWidth = canvas.width - padding.left - padding.right;
+            const plotHeight = canvas.height - padding.top - padding.bottom;
+
+            ctx.beginPath();
+            ctx.strokeStyle = '#6b7280'; // Gray color for axes
+            ctx.lineWidth = 1;
+
+            // X-axis
+            ctx.moveTo(padding.left, canvas.height - padding.bottom);
+            ctx.lineTo(canvas.width - padding.right, canvas.height - padding.bottom);
+
+            // Y-axis
+            ctx.moveTo(padding.left, canvas.height - padding.bottom);
+            ctx.lineTo(padding.left, padding.top);
+            ctx.stroke();
+
+            ctx.fillStyle = '#374151'; // Darker text color
+            ctx.font = '12px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+
+            // X-axis labels
+            const numXLabels = 5;
+            for (let i = 0; i <= numXLabels; i++) {
+                const x = padding.left + (i / numXLabels) * plotWidth;
+                const value = xMin + (i / numXLabels) * (xMax - xMin);
+                ctx.fillText(value.toFixed(2), x, canvas.height - padding.bottom + 10);
+            }
+
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+
+            // Y-axis labels
+            const numYLabels = 5;
+            for (let i = 0; i <= numYLabels; i++) {
+                const y = canvas.height - padding.bottom - (i / numYLabels) * plotHeight;
+                const value = (i / numYLabels) * yMax;
+                ctx.fillText(value.toFixed(2), padding.left - 10, y);
+            }
+
+            // Axis titles
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText('X', canvas.width / 2, canvas.height - 10);
+            ctx.save();
+            ctx.translate(padding.left - 30, canvas.height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Probability', 0, 0);
+            ctx.restore();
+        }
+
+        // Draw a continuous curve (PDF)
+        function drawCurve(points, xMin, xMax, yMax) {
+            const plotWidth = canvas.width - padding.left - padding.right;
+            const plotHeight = canvas.height - padding.top - padding.bottom;
+
+            ctx.beginPath();
+            ctx.strokeStyle = '#4f46e5'; // Indigo color for the curve
+            ctx.lineWidth = 2;
+
+            if (points.length === 0) return;
+
+            // Move to the first point
+            let firstX = padding.left + ((points[0].x - xMin) / (xMax - xMin)) * plotWidth;
+            let firstY = canvas.height - padding.bottom - (points[0].y / yMax) * plotHeight;
+            ctx.moveTo(firstX, firstY);
+
+            // Draw lines to subsequent points
+            for (let i = 1; i < points.length; i++) {
+                const x = padding.left + ((points[i].x - xMin) / (xMax - xMin)) * plotWidth;
+                const y = canvas.height - padding.bottom - (points[i].y / yMax) * plotHeight;
+                ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        }
+
+        // Draw bars for discrete distributions (PMF)
+        function drawBars(data, xMin, xMax, yMax) {
+            const plotWidth = canvas.width - padding.left - padding.right;
+            const plotHeight = canvas.height - padding.top - padding.bottom;
+            const barWidth = Math.max(1, plotWidth / (xMax - xMin + 1) * 0.7); // Adjust bar width
+
+            ctx.fillStyle = '#4f46e5'; // Indigo color for bars
+            ctx.strokeStyle = '#3730a3'; // Darker indigo for bar borders
+            ctx.lineWidth = 1;
+
+            for (const point of data) {
+                const x = padding.left + ((point.x - xMin) / (xMax - xMin)) * plotWidth;
+                const barHeight = (point.y / yMax) * plotHeight;
+                ctx.fillRect(x - barWidth / 2, canvas.height - padding.bottom - barHeight, barWidth, barHeight);
+                ctx.strokeRect(x - barWidth / 2, canvas.height - padding.bottom - barHeight, barWidth, barHeight);
+            }
+        }
+
+        // --- Main Drawing Logic ---
+
+        // Function to draw the selected distribution
+        function drawDistribution() {
+            clearCanvas();
+
+            const selectedDistName = distributionSelect.value;
+            const dist = distributions[selectedDistName];
+
+            // Get current parameter values from sliders
+            const currentParams = {};
+            for (const paramName in dist.params) {
+                currentParams[paramName] = parseFloat(document.getElementById(`param-${paramName}`).value);
+            }
+
+            // Determine X and Y ranges for plotting
+            const { xMin, xMax, yMaxFactor } = dist.range(...Object.values(currentParams));
+            let yMax = 0;
+            const plotPoints = [];
+
+            if (dist.type === 'continuous') {
+                // For continuous distributions, calculate PDF at many points
+                const numPoints = 500;
+                for (let i = 0; i < numPoints; i++) {
+                    const x = xMin + (i / (numPoints - 1)) * (xMax - xMin);
+                    const y = dist.pdf(x, ...Object.values(currentParams));
+                    plotPoints.push({ x, y });
+                    if (y > yMax) yMax = y;
+                }
+                yMax *= yMaxFactor; // Add some padding to Y-axis max
+                drawAxes(xMin, xMax, yMax);
+                drawCurve(plotPoints, xMin, xMax, yMax);
+            } else { // Discrete distributions (PMF)
+                const discretePoints = [];
+                for (let k = Math.floor(xMin); k <= Math.ceil(xMax); k++) {
+                    const y = dist.pmf(k, ...Object.values(currentParams));
+                    if (y > 0) { // Only add points with non-zero probability
+                        discretePoints.push({ x: k, y: y });
+                        if (y > yMax) yMax = y;
+                    }
+                }
+                yMax *= yMaxFactor; // Add some padding to Y-axis max
+                drawAxes(xMin, xMax, yMax);
+                drawBars(discretePoints, xMin, xMax, yMax);
+                // Optionally draw a curve connecting the tops of the bars for discrete
+                // This can help visualize the shape
+                drawCurve(discretePoints.sort((a, b) => a.x - b.x), xMin, xMax, yMax);
+            }
+        }
+
+        // Function to update parameter sliders based on selected distribution
+        function updateParameters() {
+            parametersDiv.innerHTML = ''; // Clear existing parameters
+
+            const selectedDistName = distributionSelect.value;
+            const dist = distributions[selectedDistName];
+
+            for (const paramName in dist.params) {
+                const param = dist.params[paramName];
+
+                const controlDiv = document.createElement('div');
+                controlDiv.className = 'parameter-control';
+
+                const label = document.createElement('label');
+                label.setAttribute('for', `param-${paramName}`);
+                label.textContent = param.label;
+
+                const slider = document.createElement('input');
+                slider.type = 'range';
+                slider.id = `param-${paramName}`;
+                slider.min = param.min;
+                slider.max = param.max;
+                slider.step = param.step;
+                slider.value = param.default; // Set default value
+
+                const valueSpan = document.createElement('span');
+                valueSpan.id = `value-${paramName}`;
+                valueSpan.className = 'parameter-value text-sm';
+                valueSpan.textContent = `Value: ${slider.value}`;
+
+                // Update value span and redraw on slider input
+                slider.oninput = () => {
+                    valueSpan.textContent = `Value: ${slider.value}`;
+                    drawDistribution();
+                };
+
+                controlDiv.appendChild(label);
+                controlDiv.appendChild(slider);
+                controlDiv.appendChild(valueSpan);
+                parametersDiv.appendChild(controlDiv);
+            }
+
+            // Add specific text for Beta distribution
+            if (selectedDistName === 'beta') {
+                const betaHintDiv = document.createElement('div');
+                betaHintDiv.className = 'text-sm text-gray-600 mt-2 p-2 bg-indigo-50 rounded-md';
+                betaHintDiv.textContent = 'Try setting both parameters equal. Which distribution does it look like?';
+                parametersDiv.appendChild(betaHintDiv);
+            }
+
+            // Draw the distribution immediately after updating parameters
+            drawDistribution();
+        }
+
+        // --- Event Listeners ---
+        distributionSelect.addEventListener('change', updateParameters);
+
+        // Initial setup when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            updateParameters(); // Initialize parameters and draw the first distribution
+            // Ensure canvas is resized correctly on window resize
+            window.addEventListener('resize', () => {
+                // Re-calculate canvas dimensions based on CSS width/height
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width;
+                canvas.height = rect.height;
+                drawDistribution(); // Redraw content
+            });
+            // Initial resize call to set correct canvas dimensions
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            drawDistribution();
+        });
+    </script>
+
+</body>
+</html>
