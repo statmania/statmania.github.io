@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Scatter Plot Maker</title>
+    <!-- Google Fonts: Roboto, Open Sans, Henny Penny, and Almendra -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Almendra&family=Henny+Penny&family=Open+Sans:wght@400;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif; /* Primary font for the body */
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5; /* Light gray background */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align items to the top */
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            gap: 25px;
+            max-width: 1700px; /* Increased max-width for better fitting of 4 columns */
+            width: 100%;
+            background-color: #ffffff; /* White container background */
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            padding: 25px;
+        }
+
+        .column {
+            background-color: #f9f9f9; /* Off-white for columns */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Inner shadow for depth */
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Column Layout for Large Screens (Default: >= 992px) */
+        .left-menu-column {
+            flex: 15 1 180px; /* Adjusted flex-grow for rebalancing */
+            min-width: 180px; /* Minimum width for menu readability */
+            max-width: 220px; /* Max width for consistency */
+        }
+
+        .plot-area {
+            flex: 40 1 400px; /* flex-grow flex-shrink flex-basis. User requested 40% and 400px min-width */
+            min-width: 400px; /* Adjusted minimum width for the plot */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .data-input-column {
+            flex: 27 1 280px; /* Decreased width as requested (from 300px min-width) */
+            min-width: 280px; /* Adjusted minimum width */
+        }
+
+        .settings {
+            flex: 18 1 250px; /* Adjusted flex-grow for rebalancing */
+            min-width: 250px; /* Minimum width for settings */
+        }
+
+
+        /* Adjust column widths for Medium Screens (e.g., Tablets and smaller Laptops: 768px to 991px) */
+        @media (max-width: 991px) {
+            /* On medium screens, stack menu/data input (top row), then plot/settings (bottom row) */
+            .left-menu-column {
+                flex-basis: calc(40% - 12.5px); /* Take approx 40% of first row */
+                max-width: unset; /* Remove max-width restriction for flexibility */
+            }
+            .data-input-column {
+                flex-basis: calc(60% - 12.5px); /* Take approx 60% of first row */
+                min-width: unset; /* Remove min-width to allow shrinking */
+            }
+            .plot-area {
+                flex-basis: calc(60% - 12.5px); /* 60% of two-column layout in second row */
+                min-width: unset; /* Remove min-width to allow shrinking */
+            }
+            .settings {
+                flex-basis: calc(40% - 12.5px); /* 40% of two-column layout in second row */
+                min-width: unset; /* Remove min-width to allow shrinking */
+            }
+            .container {
+                gap: 25px; /* Revert to 25px gap for stacked sections, 1 gap for side-by-side */
+            }
+        }
+
+        /* Adjust column widths for Small Screens (e.g., Mobile: <= 767px) */
+        @media (max-width: 767px) {
+            /* On small screens, all columns stack vertically */
+            .column {
+                flex-basis: 100%;
+                min-width: unset;
+                max-width: none;
+            }
+        }
+
+        h2 {
+            font-family: 'Roboto', sans-serif; /* Consistent font for headings */
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        /* Specific style for the plot column's H2 */
+        h2.plot-main-title {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        /* Data Input Table */
+        #dataTableContainer {
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+
+        #dataTable {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+            background-color: #fff;
+        }
+
+        #dataTable th, #dataTable td {
+            border: 1px solid #e0e0e0;
+            padding: 7px 10px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        #dataTable th {
+            background-color: #fafffa;
+            font-weight: bold;
+            color: #555;
+            cursor: text;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        #dataTable td {
+            background-color: #ffffff;
+            position: relative;
+        }
+
+        /* Style for editable content */
+        [contenteditable="true"] {
+            outline: none;
+            background-color: #fafffa;
+            border-radius: 4px;
+            padding: 2px 5px;
+            min-width: 50px;
+        }
+
+        #dataTable input[type="number"] {
+            width: 100%;
+            box-sizing: border-box;
+            border: none;
+            background: transparent;
+            font-size: 1em;
+            padding: 0;
+            margin: 0;
+            outline: none;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.action-button {
+            background-color: #007bff;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        button.action-button:hover {
+            background-color: #0056b3;
+        }
+
+        button.danger {
+            background-color: #dc3545;
+            font-size: 1.2em;
+            padding: 6px 10px;
+            line-height: 1;
+        }
+        button.danger:hover {
+            background-color: #c82333;
+        }
+
+        /* Plot Area */
+        #plotContainer {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            /* Removed fixed height here */
+        }
+
+        #scatter-plot-svg {
+            background-color: #f8f8f8;
+            overflow: visible;
+        }
+
+        /* ggplot2-like axis and gridlines */
+        .axis path {
+            display: none;
+        }
+        .axis line {
+            stroke: #e0e0e0;
+            stroke-dasharray: 2 2;
+            shape-rendering: crispEdges;
+        }
+        .axis .tick line {
+            opacity: 0.7;
+        }
+        .axis text {
+            font-size: 11px;
+            fill: #555;
+        }
+        .plot-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            text-anchor: middle;
+            fill: #333;
+        }
+        .axis-label {
+            font-size: 0.9em;
+            text-anchor: middle;
+            fill: #555;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            text-align: center;
+            width: auto;
+            height: auto;
+            padding: 8px;
+            font: 12px sans-serif;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border-radius: 4px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        /* Settings Column */
+        .settings .option-group {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #e0e0e0;
+        }
+        .settings .option-group:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        /* General label and input styling */
+        .settings label {
+            display: inline-block;
+            margin-bottom: 0;
+            font-weight: bold;
+            color: #555;
+            margin-right: 5px;
+        }
+
+        .settings input[type="radio"] {
+            margin-right: 5px;
+            accent-color: #007bff;
+        }
+        .settings input[type="text"],
+        .settings select {
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9em;
+            box-sizing: border-box;
+        }
+
+        /* Specific single-line option groups */
+        .single-line-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .single-line-option input[type="text"],
+        .single-line-option select {
+            flex-grow: 1;
+            width: auto;
+        }
+
+        /* New flex container for color options row */
+        .color-options-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        /* Styles for individual radio option groups within the row */
+        .color-single-option,
+        .color-category-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 0;
+        }
+
+        /* Adjust width of the color input within its flex container */
+        .color-single-option input[type="text"] {
+            flex-grow: 1;
+            max-width: 120px;
+        }
+
+        /* Specific styles for background color input */
+        #customBackgroundColorInput {
+            margin-left: 5px;
+            flex-grow: 1;
+            max-width: 120px;
+        }
+        .background-color-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        /* Adjust width for select dropdowns to prevent excessive shrinking */
+        .settings select {
+            min-width: 120px;
+        }
+
+
+        /* Legend Styling */
+        .legend {
+            font-size: 0.85em;
+            fill: #333;
+        }
+        .legend-item {
+            cursor: pointer;
+        }
+        /* Removed rect specific styles as path will be used */
+        .legend-item path {
+            stroke: #ccc;
+            stroke-width: 0.5px;
+        }
+
+        /* --- Left Menu Specific Styles --- */
+        .left-menu-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background-color: #ffffff; /* Reverted to white background */
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.08); /* More prominent shadow */
+            color: #333; /* Default text color for menu column */
+        }
+
+        .logo-container {
+            margin-bottom: 5px; /* Reduced margin */
+        }
+
+        .logo-image {
+            width: 60px; /* Set fixed width */
+            height: 60px; /* Set fixed height */
+            border-radius: 50%; /* Make it round if it's a square image */
+            object-fit: cover; /* Ensure the image covers the area */
+            box-shadow: 0 0 0 4px #c8d9ff, 0 0 0 6px #a0c4ff; /* Rings around the logo */
+        }
+
+
+        .site-name {
+            font-family: 'Almendra', serif; /* Almendra font for site name */
+            font-size: 2.2em; /* Increased font size */
+            font-weight: 700; /* Bolder */
+            color: #2a52be; /* Reverted to deep blue */
+            margin-bottom: 0px; /* Reduced margin */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1); /* Subtle text shadow */
+        }
+
+        .slogan {
+            font-family: 'Henny Penny', cursive; /* Henny Penny font for slogan */
+            font-size: 1.2em; /* Slightly larger slogan font */
+            color: #555; /* Reverted to darker gray */
+            margin-top: 0px; /* Reduced margin */
+            margin-bottom: 15px; /* Reduced margin */
+        }
+
+        .menu-list {
+            list-style: none;
+            padding: 0;
+            width: 100%; /* Menu takes full width of its column */
+            text-align: left;
+        }
+
+        .menu-list li {
+            margin-bottom: 8px; /* Increased spacing between items */
+        }
+
+        .menu-list a, .menu-list .menu-toggle {
+            font-family: 'Open Sans', sans-serif; /* Open Sans for menu items */
+            display: block;
+            padding: 12px 18px; /* Increased padding */
+            color: #ffffff; /* White text for contrast on blue background */
+            text-decoration: none;
+            border-radius: 8px; /* More rounded corners */
+            transition: background-color 0.3s ease, color 0.3s ease, font-weight 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15); /* More pronounced shadow for blue items */
+            background-color: #0099ff; /* Blue background for menu items */
+            border: 1px solid #0088ee; /* Matching border */
+            position: relative; /* For gradient overlay */
+            overflow: hidden; /* For gradient effect */
+            z-index: 1; /* To ensure content is above pseudo-element */
+        }
+
+        /* Modern Gradient Hover Effect */
+        .menu-list a::before, .menu-list .menu-toggle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.2); /* Subtle white overlay for hover */
+            z-index: -1; /* Behind the content */
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .menu-list a:hover::before, .menu-list .menu-toggle:hover::before {
+            opacity: 1;
+        }
+
+        .menu-list a:hover, .menu-list .menu-toggle:hover {
+            color: #ffffff; /* Keep text white on hover */
+            font-weight: 600; /* Medium bold on hover */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* Stronger shadow on hover */
+            transform: translateY(-2px); /* Slight lift effect */
+        }
+        .menu-list a:active, .menu-list .menu-toggle:active {
+            transform: translateY(0); /* Return to original position */
+        }
+
+
+        .menu-list .menu-toggle {
+            font-weight: 600; /* Medium bold */
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #0099ff; /* Default blue for toggles */
+            border: 1px solid #0088ee; /* Matching border */
+            margin-bottom: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15); /* Consistent shadow for blue */
+            color: #ffffff; /* Text color for menu toggle - white */
+        }
+
+        .menu-list .menu-toggle.expanded {
+             background-color: #0077cc; /* Darker blue when expanded */
+             color: #ffffff; /* Keep text white when expanded */
+             border-color: #0066bb;
+             box-shadow: 0 2px 6px rgba(0,0,0,0.18); /* Slightly stronger shadow */
+        }
+
+
+        .menu-list .sub-menu {
+            list-style: none;
+            padding-left: 15px;
+            max-height: 0; /* Hidden by default */
+            overflow: hidden;
+            transition: max-height 0.3s ease-out; /* Smooth transition */
+            background-color: #fdfdfd;
+            border-left: 3px solid #007bff;
+            margin-top: -5px; /* Overlap with parent slightly */
+            border-radius: 0 0 8px 8px; /* Rounded bottom corners */
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.03); /* Inner shadow for depth */
+        }
+
+        .menu-list .sub-menu.show {
+            max-height: 200px; /* Adjust as needed to show all items, or use JS to calculate */
+            transition: max-height 0.3s ease-in;
+        }
+
+        .menu-list .sub-menu li a {
+            padding: 8px 15px;
+            font-size: 0.95em;
+            color: #555;
+            box-shadow: none; /* Remove shadow for sub-menu items */
+            background-color: transparent; /* Sub-menu items have transparent background by default */
+        }
+
+        .menu-list .sub-menu li a:hover {
+            background-color: #edf2f7;
+            color: #007bff;
+            font-weight: normal; /* Keep normal for sub-menu hover */
+        }
+        .menu-list .sub-menu li a::before {
+            background: none; /* Remove pseudo-element for sub-menu hover */
+            opacity: 0; /* Ensure no overlay on sub-menu items */
+        }
+
+        /* Active menu item styling */
+        .menu-list a.active-page {
+            background-color: #0077cc; /* Deeper blue for active background */
+            color: #ffffff; /* White text for active item */
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transform: translateY(-1px);
+        }
+        .menu-list a.active-page::before {
+            opacity: 1; /* Keep the gradient visible for active page */
+            background: linear-gradient(to right, #0077cc, #0055aa); /* A more saturated blue gradient */
+        }
+
+
+        /* Arrow for expandable menu - now plus/minus icon */
+        .arrow {
+            display: inline-block;
+            transition: transform 0.2s ease;
+        }
+
+        .menu-toggle.expanded .arrow {
+            transform: rotate(45deg); /* Rotate plus to form an X */
+        }
+
+        /* Style for the download button when placed directly under the plot */
+        .plot-area .action-button {
+            margin-top: 20px; /* Add some space above the button */
+            align-self: center; /* Center the button in the plot area */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Column 1: Left Menu -->
+        <div class="column left-menu-column">
+            <div class="logo-container">
+                <img src="https://avatars.githubusercontent.com/u/80940485" alt="Stat Mania Logo" class="logo-image">
+            </div>
+            <h2 class="site-name">Stat Mania</h2>
+            <p class="slogan">Making Sense of Statistics</p>
+
+            <ul class="menu-list">
+                <li><a href="#">Home</a></li>
+                <li class="has-submenu">
+                    <div class="menu-toggle" data-target="graphs-submenu">
+                        Graphs <i class="fas fa-plus arrow"></i>
+                    </div>
+                    <ul class="sub-menu" id="graphs-submenu">
+                        <li><a href="pie.html">Pie chart</a></li>
+                        <li><a href="bar.html">Bar plot</a></li>
+                        <li><a href="scatter.html" class="active-page">Scatter plot</a></li> <!-- Active page highlight -->
+                        <li><a href="hist.html">Histogram</a></li>
+                    </ul>
+                </li>
+                <li class="has-submenu">
+                    <div class="menu-toggle" data-target="data-analysis-submenu">
+                        Data Analysis <i class="fas fa-plus arrow"></i>
+                    </div>
+                    <ul class="sub-menu" id="data-analysis-submenu">
+                        <li><a href="../analysis/csv-overview.html">Summary</a></li>
+                        <!-- Add more data analysis items here -->
+                    </ul>
+                </li>
+                <!-- Add more top-level menu items here -->
+            </ul>
+        </div>
+
+        <!-- Column 2: Plot Area (now in 2nd position) -->
+        <div class="column plot-area">
+            <!-- Removed the fixed h2 title -->
+            <div id="plotContainer">
+                <svg id="scatter-plot-svg"></svg>
+            </div>
+            <p id="error-message" style="color: red; margin-top: 10px;"></p>
+            <!-- Download Plot button moved here -->
+            <button onclick="downloadPlot()" class="action-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
+                </svg>
+                Download Plot (PNG)
+            </button>
+        </div>
+
+        <!-- Column 3: Data Input (now in 3rd position) -->
+        <div class="column data-input-column">
+            <h2>Data Input</h2>
+            <div id="dataTableContainer">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th id="header-var1" contenteditable="true">Variable 1</th>
+                            <th id="header-var2" contenteditable="true">Variable 2</th>
+                            <th id="header-category" contenteditable="true">Category</th>
+                            <th></th> <!-- For delete button -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-actions">
+                <button onclick="addRow()">Add Row</button>
+                <button onclick="clearTable()" class="danger">Clear Data</button>
+            </div>
+        </div>
+
+        <!-- Column 4: Plot Settings (remains in 4th position) -->
+        <div class="column settings">
+            <h2>Plot Settings</h2>
+
+            <div class="option-group single-line-option">
+                <label for="plotTitleInput">Plot Title:</label>
+                <input type="text" id="plotTitleInput" placeholder="Enter plot title">
+            </div>
+
+            <div class="option-group single-line-option">
+                <label>Color:</label>
+                <div class="color-options-row">
+                    <div class="color-single-option">
+                        <input type="radio" id="colorBySingle" name="colorOption" value="single" checked>
+                        <label for="colorBySingle"></label>
+                        <input type="text" id="singleColorInput" value="steelblue" placeholder="e.g., #4682B4 or steelblue">
+                    </div>
+                    <div class="color-category-option">
+                        <input type="radio" id="colorByCategory" name="colorOption" value="category">
+                        <label id="colorByCategoryLabel" for="colorByCategory">Category</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="option-group single-line-option">
+                <label for="pointTypeSelect">Point Type:</label>
+                <select id="pointTypeSelect">
+                    <option value="circle">Circle</option>
+                    <option value="square">Square</option>
+                    <option value="triangle-up">Triangle Up</option>
+                    <option value="diamond">Diamond</option>
+                </select>
+            </div>
+
+            <div class="option-group" style="display: flex; align-items: center; gap: 20px;">
+                <div>
+                    <input type="checkbox" id="drawLinesCheckbox">
+                    <label for="drawLinesCheckbox">Draw Lines</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="hideGridlinesCheckbox">
+                    <label for="hideGridlinesCheckbox">Hide Gridlines</label>
+                </div>
+            </div>
+
+            <div class="option-group single-line-option">
+                <label for="backgroundColorSelect">Background Color:</label>
+                <div class="background-color-option">
+                    <select id="backgroundColorSelect">
+                        <option value="#f8f8f8">Default Gray</option>
+                        <option value="#ffffff">White</option>
+                        <option value="#000000">Black</option>
+                        <option value="#ADD8E6">Light Blue</option>
+                    </select>
+                    <input type="text" id="customBackgroundColorInput" placeholder="color name or hex">
+                </div>
+            </div>
+
+            <!-- Download Plot button moved from here -->
+        </div>
+    </div>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        // Debounce function to limit how often a function is called
+        function debounce(func, delay) {
+            let timeout;
+            return function(...args) {
+                const context = this;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), delay);
+            };
+        }
+
+        // Debounced version of generateScatterPlot
+        const debouncedGenerateScatterPlot = debounce(generateScatterPlot, 150); // Increased debounce to 150ms
+
+        // Initial sample data (now 20 entries for cubic function with larger random deviations)
+        let sampleData = [];
+        for (let i = 0; i < 20; i++) {
+            const x = i * 0.5; // Spread out x values for a smoother curve
+            // Simple cubic function: y = x^3 - 6x^2 + 9x + 5
+            let y = (x * x * x) - (6 * x * x) + (9 * x) + 5;
+
+            // Add a larger random deviation for more scatter, approx 10-20% of the y-range
+            y += (Math.random() - 0.5) * 75; // Multiplier increased to 75
+
+            sampleData.push({
+                var1: parseFloat(x.toFixed(2)), // Keep two decimal places for clarity
+                var2: parseFloat(y.toFixed(2)),
+                category: String.fromCharCode(65 + (i % 4)) // Categories A, B, C, D
+            });
+        }
+
+        // Global D3 color scale (will be initialized later)
+        let colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
+
+        // --- Data Table Management ---
+
+        /**
+         * Populates the data table with initial or updated data.
+         * @param {Array<Object>} dataArray - Array of data objects.
+         */
+        function populateTable(dataArray) {
+            const tbody = document.querySelector('#dataTable tbody');
+            tbody.innerHTML = ''; // Clear existing rows
+
+            dataArray.forEach((d, index) => {
+                const row = tbody.insertRow();
+                row.dataset.rowIndex = index; // Store index for easier deletion
+
+                // Variable 1 Cell (editable number)
+                const cell1 = row.insertCell();
+                cell1.contentEditable = "true";
+                cell1.textContent = d.var1 !== undefined ? d.var1 : '';
+                cell1.addEventListener('input', (e) => {
+                    sampleData[index].var1 = parseFloat(e.target.textContent) || 0;
+                    debouncedGenerateScatterPlot();
+                });
+
+                // Variable 2 Cell (editable number)
+                const cell2 = row.insertCell();
+                cell2.contentEditable = "true";
+                cell2.textContent = d.var2 !== undefined ? d.var2 : '';
+                cell2.addEventListener('input', (e) => {
+                    sampleData[index].var2 = parseFloat(e.target.textContent) || 0;
+                    debouncedGenerateScatterPlot();
+                });
+
+                // Category Cell (editable text)
+                const cell3 = row.insertCell();
+                cell3.contentEditable = "true";
+                cell3.textContent = d.category !== undefined ? d.category : '';
+                cell3.addEventListener('input', (e) => {
+                    sampleData[index].category = e.target.textContent.trim();
+                    debouncedGenerateScatterPlot();
+                });
+
+                // Delete Button Cell (now with icon)
+                const deleteCell = row.insertCell();
+                const deleteBtn = document.createElement('button');
+                deleteBtn.innerHTML = '&times;'; // Changed to cross symbol
+                deleteBtn.classList.add('danger');
+                deleteBtn.setAttribute('title', 'Delete Row'); // Add tooltip for accessibility
+                deleteBtn.onclick = () => deleteRow(index);
+                deleteCell.appendChild(deleteBtn);
+            });
+        }
+
+        /**
+         * Adds a new empty row to the data table and sampleData.
+         */
+        function addRow() {
+            sampleData.push({ var1: 0, var2: 0, category: "" });
+            populateTable(sampleData); // Re-render table to include new row
+            // Scroll to the bottom of the table
+            const tableContainer = document.getElementById('dataTableContainer');
+            tableContainer.scrollTop = tableContainer.scrollHeight;
+            debouncedGenerateScatterPlot(); // Trigger plot update after adding row
+        }
+
+        /**
+         * Clears all data from the table and redraws an empty plot.
+         */
+        function clearTable() {
+            sampleData = [{ var1: 0, var2: 0, category: "" }]; // Reset to one empty row
+            populateTable(sampleData);
+            debouncedGenerateScatterPlot();
+        }
+
+        /**
+         * Deletes a row from the data table and sampleData.
+         * @param {number} index - The index of the row to delete.
+         */
+        function deleteRow(index) {
+            sampleData.splice(index, 1); // Remove from the array
+            if (sampleData.length === 0) { // Ensure at least one row remains after deletion
+                sampleData.push({ var1: 0, var2: 0, category: "" });
+            }
+            populateTable(sampleData); // Re-render table to reflect deletion
+            debouncedGenerateScatterPlot(); // Update plot after data change
+        }
+
+        // --- Point Shape Data ---
+        // Defines SVG path data for various point shapes. Size 's' is half of the desired side/radius.
+        function getPointPath(type, s) {
+            switch (type) {
+                case 'circle': return `M0,0 m-${s},0 a${s},${s} 0 1,0 ${s*2},0 a${s},${s} 0 1,0 -${s*2},0`;
+                case 'square': return `M-${s},-${s}h${s*2}v${s*2}h-${s*2}z`;
+                case 'triangle-up': return `M0,-${s}L${s*Math.sqrt(3)/2},${s/2}L-${s*Math.sqrt(3)/2},${s/2}Z`;
+                case 'diamond': return `M0,-${s}L${s},0L0,${s}L-${s},0Z`;
+                default: return `M0,0 m-${s},0 a${s},${s} 0 1,0 ${s*2},0 a${s},${s} 0 1,0 -${s*2},0`; // Default to circle
+            }
+        }
+
+        // --- Plot Generation ---
+
+        function generateScatterPlot() {
+            const errorMessageDiv = document.getElementById('error-message');
+            errorMessageDiv.textContent = ''; // Clear previous errors
+
+            // 1. Read Data and Headers from Table
+            const dataToPlot = [];
+            const tbody = document.querySelector('#dataTable tbody');
+            const rows = tbody.querySelectorAll('tr');
+
+            const var1Header = document.getElementById('header-var1').textContent.trim();
+            const var2Header = document.getElementById('header-var2').textContent.trim();
+            const categoryHeader = document.getElementById('header-category').textContent.trim();
+            const plotTitleInput = document.getElementById('plotTitleInput');
+
+            // Set default plot title if empty or on initial load
+            if (plotTitleInput.value === '' || plotTitleInput.dataset.initialLoad === 'true') {
+                plotTitleInput.value = `Scatter plot`; // Changed default title
+                plotTitleInput.dataset.initialLoad = 'false'; // Mark as not initial load anymore
+            }
+
+            // Update the Category label dynamically
+            document.getElementById('colorByCategoryLabel').textContent = categoryHeader;
+
+            rows.forEach((row, rowIndex) => {
+                const cells = row.querySelectorAll('td');
+                const var1Val = parseFloat(cells[0].textContent.trim());
+                const var2Val = parseFloat(cells[1].textContent.trim());
+                const categoryVal = cells[2].textContent.trim();
+
+                if (isNaN(var1Val) || isNaN(var2Val)) {
+                    // Only display warning if there's actual data in the row, not empty rows
+                    if (cells[0].textContent.trim() !== '' || cells[1].textContent.trim() !== '' || cells[2].textContent.trim() !== '') {
+                        errorMessageDiv.textContent = `Warning: Row ${rowIndex + 1} contains invalid or incomplete data and will be skipped.`;
+                    }
+                    return; // Skip invalid rows
+                }
+                dataToPlot.push({ x: var1Val, y: var2Val, category: categoryVal });
+            });
+
+            if (dataToPlot.length === 0) {
+                errorMessageDiv.textContent = 'No valid data points to plot.';
+                // Clear SVG if no valid data
+                d3.select("#scatter-plot-svg").selectAll("*").remove();
+                return;
+            }
+
+            // Determine coloring option and point type
+            const colorOption = document.querySelector('input[name="colorOption"]:checked').value;
+            const singleColor = document.getElementById('singleColorInput').value || "steelblue";
+            const selectedPointType = document.getElementById('pointTypeSelect').value;
+            const pointSize = 6; // Base size for point shapes
+            const drawLines = document.getElementById('drawLinesCheckbox').checked; // Get line drawing state
+            const hideGridlines = document.getElementById('hideGridlinesCheckbox').checked; // Get hide gridlines state
+
+            // Get background color from the custom input, falling back to default if empty
+            let backgroundColor = document.getElementById('customBackgroundColorInput').value || '#f8f8f8';
+
+
+            // Clear previous SVG content
+            const svgElement = d3.select("#scatter-plot-svg");
+            svgElement.selectAll("*").remove(); // Remove previous elements inside SVG
+            svgElement.style("background-color", backgroundColor); // Apply background color
+
+
+            // Set up SVG dimensions and margins for the inner plot area
+            // Decreased margins for a larger graph area
+            const margin = { top: 30, right: 60, bottom: 60, left: 60 };
+
+            // Get the actual computed dimensions of the plotContainer
+            const plotContainer = document.getElementById('plotContainer');
+            const containerWidth = plotContainer.clientWidth;
+            const containerHeight = plotContainer.clientHeight;
+
+            // Calculate a square size based on the minimum of current width/height
+            // This ensures the plot remains square regardless of container's aspect ratio.
+            const squareSize = Math.min(containerWidth, containerHeight);
+
+            // Set SVG attributes based on the calculated square size
+            svgElement
+                .attr("width", squareSize)
+                .attr("height", squareSize);
+
+            // Ensure dimensions are positive before calculating inner plot area
+            if (squareSize <= 0) {
+                return;
+            }
+
+            let width = squareSize - margin.left - margin.right;
+            let height = squareSize - margin.top - margin.bottom;
+
+            // Ensure inner plot dimensions are positive after margins
+            width = Math.max(0, width);
+            height = Math.max(0, height);
+
+            const svg = svgElement.append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            // 1. Create Scales with domain padding to ensure full axis span
+            const xExtent = d3.extent(dataToPlot, d => d.x);
+            const yExtent = d3.extent(dataToPlot, d => d.y);
+
+            let xDomainMin = xExtent[0];
+            let xDomainMax = xExtent[1];
+            let yDomainMin = yExtent[0];
+            let yDomainMax = yExtent[1];
+
+            // Add buffer for single-point data or to ensure full visual span
+            if (xDomainMin === xDomainMax) {
+                xDomainMin = xDomainMin === 0 ? -1 : xDomainMin - Math.abs(xDomainMin * 0.1);
+                xDomainMax = xDomainMax === 0 ? 1 : xDomainMax + Math.abs(xDomainMax * 0.1);
+                if (xDomainMin === xDomainMax) { xDomainMin -= 0.1; xDomainMax += 0.1; } // Fallback for zero
+            } else {
+                const xBuffer = (xDomainMax - xDomainMin) * 0.1; // 10% buffer
+                xDomainMin -= xBuffer;
+                xDomainMax += xBuffer;
+            }
+
+            if (yDomainMin === yDomainMax) {
+                yDomainMin = yDomainMin === 0 ? -1 : yDomainMin - Math.abs(yDomainMin * 0.1);
+                yDomainMax = yDomainMax === 0 ? 1 : yDomainMax + Math.abs(yDomainMax * 0.1);
+                 if (yDomainMin === yDomainMax) { yDomainMin -= 0.1; yDomainMax += 0.1; } // Fallback for zero
+            } else {
+                const yBuffer = (yDomainMax - yDomainMin) * 0.1; // 10% buffer
+                yDomainMin -= yBuffer;
+                yDomainMax += yBuffer;
+            }
+
+            const xScale = d3.scaleLinear()
+                .domain([xDomainMin, xDomainMax]).nice() // Added .nice() back for cleaner ticks
+                .range([0, width]);
+
+            const yScale = d3.scaleLinear()
+                .domain([yDomainMin, yDomainMax]).nice() // Added .nice() back for cleaner ticks
+                .range([height, 0]);
+
+            // Determine colors for categories if applicable
+            if (colorOption === 'category') {
+                const uniqueCategories = Array.from(new Set(dataToPlot.map(d => d.category))).filter(c => c !== "");
+                colorScale.domain(uniqueCategories);
+            }
+
+            // Add gridlines (before axes and points so they are in the background)
+            svg.append("g")
+                .attr("class", "grid x-grid")
+                .attr("transform", `translate(0,${height})`)
+                .style("display", hideGridlines ? "none" : "block") // Conditional display
+                .call(d3.axisBottom(xScale)
+                    .ticks(10)
+                    .tickSize(-height)
+                    .tickFormat("")
+                );
+
+            svg.append("g")
+                .attr("class", "grid y-grid")
+                .style("display", hideGridlines ? "none" : "block") // Conditional display
+                .call(d3.axisLeft(yScale)
+                    .ticks(10)
+                    .tickSize(-width)
+                    .tickFormat("")
+                );
+
+            // 2. Add X-axis
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(xScale).ticks(10).tickSizeOuter(0));
+
+            // 3. Add Y-axis
+            svg.append("g")
+                .attr("class", "y axis")
+                .call(d3.axisLeft(yScale).ticks(10).tickSizeOuter(0));
+
+            // 4. Add X-axis label
+            svg.append("text")
+                .attr("class", "axis-label")
+                .attr("transform", `translate(${width / 2}, ${height + margin.bottom - 25})`)
+                .text(var1Header);
+
+            // 5. Add Y-axis label
+            svg.append("text")
+                .attr("class", "axis-label")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left + 30) /* Adjusted 'y' for label, for new left margin */
+                .attr("x", 0 - (height / 2))
+                .text(var2Header);
+
+            // 6. Add Plot Title (inside the D3 group, positioned relative to its top)
+            svg.append("text")
+                .attr("class", "plot-title")
+                .attr("x", width / 2)
+                .attr("y", 0 - (margin.top / 2) + 8) // Adjusted title Y position
+                .text(plotTitleInput.value);
+
+            // 7. Add lines if option is checked (drawn before points)
+            if (drawLines) {
+                const lineGenerator = d3.line()
+                    .x(d => xScale(d.x))
+                    .y(d => yScale(d.y));
+
+                svg.append("path")
+                    .datum(dataToPlot) // Bind all data to a single path element
+                    .attr("fill", "none")
+                    .attr("stroke", singleColor) // Use the selected single color for lines
+                    .attr("stroke-width", 1.5)
+                    .attr("d", lineGenerator);
+            }
+
+            // 8. Add points
+            const points = svg.selectAll(".data-point")
+                .data(dataToPlot)
+                .enter()
+                .append("path") // Changed to path for custom shapes
+                .attr("class", "data-point")
+                .attr("transform", d => `translate(${xScale(d.x)},${yScale(d.y)})`)
+                .attr("d", getPointPath(selectedPointType, pointSize)) // Use getPointPath
+                .attr("fill", d => colorOption === 'category' && d.category ? colorScale(d.category) : singleColor)
+                .attr("opacity", 0.8)
+                .attr("stroke", "#333") /* Changed stroke for better contrast with ggplot2 aesthetic */
+                .attr("stroke-width", 0.5)
+                .style("filter", "drop-shadow(0px 1px 2px rgba(0,0,0,0.1))"); /* Lighter shadow */
+
+            // Optional: Add basic tooltip on hover
+            const tooltip = d3.select("body").append("div")
+                .attr("class", "tooltip");
+
+            points.on("mouseover", function(event, d) {
+                    d3.select(this)
+                        .transition().duration(100)
+                        .attr("d", getPointPath(selectedPointType, pointSize * 1.2)) // Enlarge point on hover
+                        .attr("stroke-width", 1.5); // Thicker stroke on hover
+
+                    tooltip.style("opacity", 1)
+                           .html(`X: ${d.x}<br>Y: ${d.y}<br>${categoryHeader}: ${d.category || 'N/A'}`)
+                           .style("left", (event.pageX + 15) + "px")
+                           .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mouseout", function() {
+                    d3.select(this)
+                        .transition().duration(100)
+                        .attr("d", getPointPath(selectedPointType, pointSize)) // Revert to original size
+                        .attr("stroke-width", 0.5);
+                    tooltip.style("opacity", 0);
+                });
+
+            // Remove tooltip div after each plot generation to avoid duplicates
+            d3.selectAll(".tooltip").remove();
+
+
+            // 9. Add Legend (always right)
+            if (colorOption === 'category') {
+                // Hardcode position to 'right'
+                addLegend(svg, colorScale, width, height, margin, 'right', selectedPointType);
+            }
+        }
+
+        /**
+         * Adds a legend to the SVG plot.
+         * @param {d3.Selection} svg - The D3 selection of the main SVG group.
+         * @param {d3.ScaleOrdinal} colorScale - The D3 ordinal color scale.
+         * @param {number} plotWidth - The width of the plotting area.
+         * @param {number} plotHeight - The height of the plotting area.
+         * @param {Object} margin - The margins of the plot.
+         * @param {string} position - The desired position ('right', 'top', 'bottom', 'left'). (Now always 'right' internally)
+         * @param {string} pointType - The type of point shape to use for legend indicators.
+         */
+        function addLegend(svg, colorScale, plotWidth, plotHeight, margin, position, pointType) {
+            const legend = svg.append("g")
+                .attr("class", "legend");
+
+            const legendIconSize = 6; /* Size for the legend icon (equal to plot points) */
+            const legendSpacing = 15; /* Spacing between legend items */
+
+            const legendItems = legend.selectAll(".legend-item")
+                .data(colorScale.domain())
+                .enter()
+                .append("g")
+                .attr("class", "legend-item")
+                .attr("transform", (d, i) => `translate(0, ${i * (legendIconSize * 2 + legendSpacing)})`); /* Adjusted for icon size */
+
+            legendItems.append("path") /* Changed from rect to path */
+                .attr("d", getPointPath(pointType, legendIconSize)) /* Use getPointPath for icon shape */
+                .attr("transform", `translate(${legendIconSize}, ${legendIconSize / 2})`) /* Center the icon */
+                .attr("fill", colorScale)
+                .attr("stroke", "#333")
+                .attr("stroke-width", 0.5);
+
+            legendItems.append("text")
+                .attr("x", legendIconSize * 2 + legendSpacing) /* Adjusted x position */
+                .attr("y", legendIconSize / 2)
+                .attr("dy", "0.35em")
+                .text(d => d);
+
+            // Calculate legend dimensions
+            const legendBBox = legend.node().getBBox();
+            const legendWidth = legendBBox.width;
+            const legendHeight = legendBBox.height;
+
+            // Position the legend group based on selection (now hardcoded to right)
+            let legendX, legendY;
+            // Always position to the right
+            legendX = plotWidth + margin.right - legendWidth - 10;
+            legendY = (plotHeight - legendHeight) / 2;
+
+            legend.attr("transform", `translate(${legendX},${legendY})`);
+        }
+
+        /**
+         * Downloads the current plot as a PNG image.
+         */
+        function downloadPlot() {
+            const svgElement = document.getElementById('scatter-plot-svg');
+            const svgData = new XMLSerializer().serializeToString(svgElement);
+
+            // Create a temporary canvas
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+
+            // Get the current computed dimensions of the SVG for the canvas
+            const svgRect = svgElement.getBoundingClientRect();
+            canvas.width = svgRect.width;
+            canvas.height = svgRect.height;
+
+            const img = new Image();
+            // Encode SVG data to a valid Data URL
+            img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+
+            img.onload = () => {
+                context.drawImage(img, 0, 0); // Draw the SVG image onto the canvas
+
+                // Create a download link for the PNG
+                const downloadLink = document.createElement('a');
+                downloadLink.href = canvas.toDataURL('image/png'); // Get PNG data URL
+                downloadLink.download = 'scatter-plot.png'; // Default to PNG
+
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            };
+
+            img.onerror = (error) => {
+                console.error("Error loading SVG for PNG conversion:", error);
+                // Fallback for download might be needed if direct conversion fails (e.g., security restrictions)
+                // For direct download of SVG:
+                const svgBlob = new Blob([svgData], { type: 'image/svg+xml' });
+                const svgUrl = URL.createObjectURL(svgBlob);
+                const downloadLinkSvg = document.createElement('a');
+                downloadLinkSvg.href = svgUrl;
+                downloadLinkSvg.download = 'scatter-plot.svg';
+                document.body.appendChild(downloadLinkSvg);
+                downloadLinkSvg.click();
+                document.body.removeChild(downloadLinkSvg);
+                URL.revokeObjectURL(svgUrl);
+            };
+        }
+
+
+        // --- Event Listeners and Initial Setup ---
+
+        // Populate table and set up event listeners on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            populateTable(sampleData);
+            // Set initial load flag for plot title
+            document.getElementById('plotTitleInput').dataset.initialLoad = 'true';
+
+            // Check if there are valid categories to default to "By category"
+            const uniqueCategories = new Set(sampleData.map(d => d.category)).size;
+            const hasNonEmptyCategories = Array.from(new Set(sampleData.map(d => d.category))).some(c => c !== "");
+
+            if (hasNonEmptyCategories && uniqueCategories > 1) { // More than 1 unique (non-empty) category
+                document.getElementById('colorByCategory').checked = true;
+                document.getElementById('singleColorInput').disabled = true;
+            } else {
+                document.getElementById('colorBySingle').checked = true;
+                document.getElementById('singleColorInput').disabled = false;
+            }
+
+            // Event listeners for color options
+            document.querySelectorAll('input[name="colorOption"]').forEach(radio => {
+                radio.addEventListener('change', () => {
+                    // Enable/disable single color input based on radio selection
+                    document.getElementById('singleColorInput').disabled = (radio.value === 'category');
+                    debouncedGenerateScatterPlot();
+                });
+            });
+
+            // Event listener for plot title input
+            document.getElementById('plotTitleInput').addEventListener('input', debouncedGenerateScatterPlot);
+
+            // Event listener for single color input change
+            document.getElementById('singleColorInput').addEventListener('input', debouncedGenerateScatterPlot);
+
+            // Event listener for point type change
+            document.getElementById('pointTypeSelect').addEventListener('change', debouncedGenerateScatterPlot);
+
+            // Event listener for draw lines checkbox
+            document.getElementById('drawLinesCheckbox').addEventListener('change', debouncedGenerateScatterPlot);
+
+            // Event listener for hide gridlines checkbox
+            document.getElementById('hideGridlinesCheckbox').addEventListener('change', debouncedGenerateScatterPlot);
+
+
+            // Event listeners for background color options
+            const backgroundColorSelect = document.getElementById('backgroundColorSelect');
+            const customBackgroundColorInput = document.getElementById('customBackgroundColorInput');
+
+            // When a predefined color is selected from the dropdown, update the text input field
+            backgroundColorSelect.addEventListener('change', () => {
+                customBackgroundColorInput.value = backgroundColorSelect.value;
+                debouncedGenerateScatterPlot();
+            });
+
+            // The custom input directly triggers plot regeneration on input
+            customBackgroundColorInput.addEventListener('input', debouncedGenerateScatterPlot);
+
+
+            // Add event listener for header edits to update axis labels immediately
+            document.getElementById('header-var1').addEventListener('input', debouncedGenerateScatterPlot);
+            document.getElementById('header-var2').addEventListener('input', debouncedGenerateScatterPlot);
+            document.getElementById('header-category').addEventListener('input', debouncedGenerateScatterPlot);
+
+            // --- Menu Toggle Logic ---
+            document.querySelectorAll('.menu-toggle').forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const targetId = this.dataset.target;
+                    const subMenu = document.getElementById(targetId);
+                    if (subMenu) {
+                        this.classList.toggle('expanded');
+                        subMenu.classList.toggle('show');
+                        // Calculate and set max-height for smooth transition
+                        if (subMenu.classList.contains('show')) {
+                            subMenu.style.maxHeight = subMenu.scrollHeight + "px";
+                        } else {
+                            subMenu.style.maxHeight = null; // Reset to allow collapse
+                        }
+                    }
+                });
+            });
+
+            // --- Right-click save image on plot ---
+            // Removed contextmenu event listener from scatterPlotSvg
+            // The download button is now explicitly placed below the plot.
+        });
+
+        // Add a resize observer to redraw the plot when the plot container changes size
+        // This ensures the plot remains responsive to column width changes
+        const resizeObserver = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                if (entry.target.id === 'plotContainer') {
+                    debouncedGenerateScatterPlot();
+                }
+            }
+        });
+        resizeObserver.observe(document.getElementById('plotContainer'));
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plot Generator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome CDN for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Custom styles for a cleaner look */
+        body {
+            font-family: 'Inter', sans-serif;
+            @apply bg-gray-50 text-gray-800;
+        }
+        canvas {
+            display: block; /* Remove extra space below canvas */
+            width: 100%;
+            /* Height will be set by JavaScript to match width for square aspect ratio */
+            /* Adjusted max-width and max-height for a slightly smaller plot */
+            max-width: 500px; /* Reduced from 600px */
+            max-height: 500px; /* Reduced from 600px */
+        }
+        input[type="text"], textarea {
+            /* Changed border-gray-300 to border-gray-900 for black border */
+            @apply w-full p-2 border border-gray-900 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500;
+        }
+        /* Updated button styling for generatePlotBtn */
+        #generatePlotBtn {
+            @apply bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-2 px-6 rounded-lg shadow-lg hover:from-indigo-600 hover:to-purple-700 transition transform duration-200 ease-in-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 border border-indigo-700;
+        }
+        /* Updated button styling for sortAscendingBtn to be a darker gray */
+        #sortAscendingBtn {
+            @apply bg-gray-700 text-white py-2 px-6 rounded-lg shadow-md hover:bg-gray-800 transition transform duration-200 ease-in-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-50 border border-gray-600 flex items-center justify-center gap-2; /* Added flex and gap for icon */
+        }
+        /* Style for the message box */
+        #messageBox {
+            @apply fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50 hidden;
+        }
+        #messageBoxContent {
+            @apply bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center;
+        }
+        #messageBoxButton {
+            @apply mt-4 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700;
+        }
+
+        /* Table styling for input */
+        .input-table {
+            @apply w-full border-collapse;
+        }
+        .input-table th, .input-table td {
+            /* Reduced padding for smaller cells */
+            @apply border border-gray-300 px-1 py-0.5 text-sm;
+        }
+        .input-table th {
+            @apply bg-gray-100 font-semibold text-gray-700;
+            white-space: nowrap; /* Prevent wrapping of column headers */
+            width: 90px; /* Set fixed width for headers */
+            min-width: 90px;
+            max-width: 90px;
+        }
+        /* Specific widths for table headers */
+        /* These rules are now redundant if all th have width: 90px, but kept for clarity if specific widths are needed later */
+        .input-table th:nth-child(1) { /* Category */
+            width: 90px;
+        }
+        .input-table th:nth-child(2) { /* Value */
+            width: 90px;
+        }
+        .input-table th:nth-child(3) { /* Color */
+            width: 90px;
+        }
+        .input-table th:nth-child(4) { /* Width (%) */
+            width: 90px;
+        }
+
+        .input-table input[type="text"] {
+            /* Changed border-gray-200 to border-gray-900 for black border */
+            @apply w-full p-1 border border-gray-900 rounded-sm shadow-sm focus:ring-blue-300 focus:border-blue-300;
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+            min-width: 0; /* Allow inputs to shrink */
+            width: 80px; /* Adjusted input width to fit within 90px cell, considering padding/border */
+        }
+        .input-table .delete-row-btn {
+            @apply bg-red-500 text-white p-1 rounded hover:bg-red-600 transition duration-150 ease-in-out;
+            width: 28px; /* Fixed width for consistent button size */
+            height: 28px; /* Fixed height for consistent button size */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+        }
+        .add-row-btn {
+            @apply bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600 transition duration-150 ease-in-out mt-2;
+        }
+        /* Styling for the download button */
+        #downloadPlotBtn {
+            @apply bg-blue-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition transform duration-200 ease-in-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 border border-blue-700 flex items-center justify-center gap-2; /* Added flex and gap for icon */
+        }
+        /* Styling for the More Options button */
+        #moreOptionsBtn {
+            @apply bg-gray-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-gray-600 transition transform duration-200 ease-in-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50;
+        }
+        /* Initially hidden class */
+        .hidden-options {
+            display: none;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <!-- Main Container -->
+    <div class="flex flex-col md:flex-row gap-6 md:gap-8 max-w-7xl mx-auto">
+
+        <!-- Options Panel (Left/Top) -->
+        <div class="flex-shrink-0 w-full md:w-1/3 bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+            <h1 class="text-3xl font-bold text-center mb-6 md:mb-8 text-indigo-700 flex items-center justify-center">
+                Plot Generator
+            </h1>
+            <!-- The scrollable content starts below this title -->
+            <div class="max-h-[calc(100vh-8rem-6rem)] overflow-y-auto pb-4"> <!-- Added pb-4 for spacing before button -->
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Plot Settings</h2>
+
+                <!-- Plot Title Input Field (Moved here) -->
+                <div class="mb-4">
+                    <label for="plotTitleInput" class="block text-sm font-medium text-gray-700 mb-1">Plot Title:</label>
+                    <input type="text" id="plotTitleInput" value="Sample Plot" placeholder="e.g., Sales by Region">
+                </div>
+
+                <!-- Input Method Selection -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Input Method:</label>
+                    <div class="flex space-x-4">
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="inputMethod" value="commaSeparated" class="form-radio">
+                            <span class="ml-2 text-gray-700">Comma Separated</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="inputMethod" value="tableInput" class="form-radio" checked>
+                            <span class="ml-2 text-gray-700">Table Input</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Comma Separated Input Fields -->
+                <div id="commaSeparatedInput" class="input-section hidden">
+                    <div class="mb-4">
+                        <label for="categoriesInput" class="block text-sm font-medium text-gray-700 mb-1">Categories (comma-separated text):</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="text" id="categoriesInput" value="A,B,C,D,E" placeholder="e.g., Apples,Oranges,Bananas">
+                            <span id="categoriesHintDisplay" class="text-sm text-gray-600 flex-shrink-0"></span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Example: A,B,C,D,E (or ক,খ,গ,ঘ,ঙ)</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="valuesInput" class="block text-sm font-medium text-gray-700 mb-1">Values (comma-separated numbers):</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="text" id="valuesInput" value="50,70,30,90,60" placeholder="e.g., 10,20,30">
+                            <span id="valuesCountDisplay" class="text-sm text-gray-600 flex-shrink-0"></span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Example: 50,70,30,90,60 (or ৫০,৭০,৩০,৯০,৬০)</p>
+                    </div>
+                </div>
+
+                <!-- Table Input Fields -->
+                <div id="tableInput" class="input-section">
+                    <h3 class="text-lg font-semibold mb-2 text-gray-700">Data Table</h3>
+                    <table class="input-table mb-2">
+                        <thead>
+                            <tr>
+                                <!-- Editable Category Header -->
+                                <th class="category-header">
+                                    <input type="text" id="tableCategoryHeader" value="Category" class="w-full text-center bg-transparent font-semibold text-gray-700 border-none p-0 focus:ring-0 focus:border-0" style="min-width: 0;">
+                                </th>
+                                <!-- Editable Value Header -->
+                                <th class="value-header">
+                                    <input type="text" id="tableValueHeader" value="Value" class="w-full text-center bg-transparent font-semibold text-gray-700 border-none p-0 focus:ring-0 focus:border-0" style="min-width: 0;">
+                                </th>
+                                <th class="table-column-options color-header hidden-options">Color</th>
+                                <th class="table-column-options width-header hidden-options">Width (%)</th>
+                                <th></th> <!-- For delete button -->
+                            </tr>
+                        </thead>
+                        <tbody id="dataTableBody">
+                            <!-- Rows will be added here by JavaScript -->
+                        </tbody>
+                    </table>
+                    <button type="button" id="addRowBtn" class="add-row-btn">Add Row</button>
+                    <p class="text-xs text-gray-500 mt-2">You can paste data from Excel (Ctrl+V or Cmd+V) into any cell.</p>
+                </div>
+
+
+                <!-- More Options Section -->
+                <div class="mb-4 flex justify-center">
+                    <button id="moreOptionsBtn">More Options</button>
+                </div>
+
+                <div id="moreOptionsSection" class="hidden-options"> <!-- This section is hidden by default via this class -->
+                    <div class="mb-4" id="xAxisLabelDiv">
+                        <label for="xAxisLabelInput" class="block text-sm font-medium text-gray-700 mb-1">X-Axis Label:</label>
+                        <input type="text" id="xAxisLabelInput" value="Categories" placeholder="e.g., Product Types">
+                    </div>
+
+                    <div class="mb-4" id="yAxisLabelDiv">
+                        <label for="yAxisLabelInput" class="block text-sm font-medium text-gray-700 mb-1">Y-Axis Label:</label>
+                        <input type="text" id="yAxisLabelInput" value="Values" placeholder="e.g., Quantity Sold">
+                    </div>
+
+                    <div class="mb-4" id="colorsInputContainer"> <!-- Added ID for easier reference -->
+                        <label for="colorsInput" class="block text-sm font-medium text-gray-700 mb-1">Colors (optional, comma-separated, accepts hex/named colors):</label>
+                        <input type="text" id="colorsInput" value="Indigo,Violet,DeepPink,Orange,SeaGreen,RoyalBlue,Crimson,Turquoise,SlateGray" placeholder="e.g., red,blue,LightGreen">
+                        <p class="text-xs text-gray-500 mt-1">Example: Indigo,Violet,DeepPink,Orange,SeaGreen</p>
+                    </div>
+
+                    <div class="mb-6" id="widthsInputDiv">
+                        <label for="widthsInput" class="block text-sm font-medium text-gray-700 mb-1">Bar Widths (optional, comma-separated percentages 0-100):</label>
+                        <input type="text" id="widthsInput" value="50" placeholder="e.g., 50,70,90"> <!-- Changed default value to 50 -->
+                        <p class="text-xs text-gray-500 mt-1">Example: 50 (for equal width), or 70,80,90 for custom widths</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Container (Right/Bottom) -->
+        <!-- Added flex-col to stack canvas and button -->
+        <div class="flex-grow bg-white p-4 rounded-xl shadow-lg border border-gray-100 flex flex-col items-center justify-center min-h-[300px] md:min-h-[500px]">
+
+            <canvas id="barChartCanvas" class="flex-grow"></canvas>
+
+            <!-- Moved Chart Type Selection here -->
+            <div class="mt-4 w-full flex flex-wrap justify-center gap-4 px-4">
+                <div class="flex items-center space-x-4">
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="chartType" value="bar" class="form-radio" checked>
+                        <span class="ml-2 text-gray-700">Bar Chart</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="chartType" value="pie" class="form-radio">
+                        <span class="ml-2 text-gray-700">Pie Chart</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="chartType" value="donut" class="form-radio">
+                        <span class="ml-2 text-gray-700">Donut Chart</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="chartType" value="line" class="form-radio">
+                        <span class="ml-2 text-gray-700">Line Chart</span>
+                    </label>
+                </div>
+                <!-- Updated sort button with dynamic icon -->
+                <button id="sortAscendingBtn"><i class="fas fa-sort-amount-up-alt"></i> Sort Ascending</button>
+                <button id="downloadPlotBtn"><i class="fas fa-download"></i> Download</button> <!-- Added Download button with icon -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Box for alerts -->
+    <div id="messageBox">
+        <div id="messageBoxContent">
+            <p id="messageBoxText" class="text-lg font-medium mb-4"></p>
+            <button id="messageBoxButton">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // Function definitions for utility functions moved to the top for scope assurance
+        /**
+         * Converts Bangla numerals in a string to English numerals.
+         * @param {string} inputString - The string possibly containing Bangla numerals.
+         * @returns {string} The string with Bangla numerals converted to English.
+         */
+        function convertBanglaToEnglishNumerals(inputString) {
+            const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '６', '７', '８', '９'];
+            const englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+            let convertedString = inputString;
+            for (let i = 0; i < banglaDigits.length; i++) {
+                const regex = new RegExp(banglaDigits[i], 'g');
+                convertedString = convertedString.replace(regex, englishDigits[i]);
+            }
+            return convertedString;
+        }
+
+        /**
+         * Converts English numerals in a string to Bangla numerals.
+         * @param {string} inputString - The string possibly containing English numerals.
+         * @returns {string} The string with English numerals converted to Bangla.
+         */
+        function convertEnglishToBanglaNumerals(inputString) {
+            const englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+            const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '６', '７', '８', '９'];
+
+            let convertedString = inputString.toString(); // Ensure it's a string
+            for (let i = 0; i < englishDigits.length; i++) {
+                const regex = new RegExp(englishDigits[i], 'g');
+                convertedString = convertedString.replace(regex, banglaDigits[i]);
+            }
+            return convertedString;
+        }
+
+        /**
+         * Checks if a string contains any Bangla numeral.
+         * @param {string} str - The string to check.
+         * @returns {boolean} True if the string contains any Bangla numeral, false otherwise.
+         */
+        function containsBanglaNumerals(str) {
+            const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '６', '７', '８', '９'];
+            for (let i = 0; i < banglaDigits.length; i++) {
+                if (str.includes(banglaDigits[i])) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /**
+         * Parses a comma-separated string into an array of numbers.
+         * It now handles Bangla numerals.
+         * @param {string} inputString - The input string.
+         * @returns {number[]} Array of numbers.
+         */
+        function parseNumbers(inputString) {
+            const englishNumString = convertBanglaToEnglishNumerals(inputString);
+            return englishNumString.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+        }
+
+        /**
+         * Parses a comma-separated string into an array of objects, each with a numericValue and originalString.
+         * It now handles Bangla numerals.
+         * @param {string} inputString - The input string.
+         * @returns {{numericValue: number, originalString: string}[]} Array of objects.
+         */
+        function parseNumbersWithOriginal(inputString) {
+            const rawStrings = inputString.split(',').map(s => s.trim());
+            const result = [];
+            for (const s of rawStrings) {
+                const englishNumString = convertBanglaToEnglishNumerals(s);
+                const numericValue = parseFloat(englishNumString);
+                if (!isNaN(numericValue)) {
+                    result.push({ numericValue: numericValue, originalString: s });
+                } else {
+                    result.push({ numericValue: 0, originalString: s }); // Store original string even if value is invalid
+                }
+            }
+            return result.filter(item => item.originalString.length > 0); // Filter out empty entries
+        }
+
+        /**
+         * Parses a comma-separated string into an array of strings.
+         * @param {string} inputString - The input string.
+         * @returns {string[]} Array of strings.
+         */
+        function parseStrings(inputString) {
+            return inputString.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        }
+
+        // Get references to DOM elements
+        const valuesInput = document.getElementById('valuesInput');
+        const categoriesInput = document.getElementById('categoriesInput');
+        const plotTitleInput = document.getElementById('plotTitleInput');
+        const xAxisLabelInput = document.getElementById('xAxisLabelInput');
+        const yAxisLabelInput = document.getElementById('yAxisLabelInput');
+        const colorsInput = document.getElementById('colorsInput');
+        const widthsInput = document.getElementById('widthsInput');
+        const sortAscendingBtn = document.getElementById('sortAscendingBtn');
+        const downloadPlotBtn = document.getElementById('downloadPlotBtn'); // Get download button
+        const barChartCanvas = document.getElementById('barChartCanvas');
+        const ctx = barChartCanvas.getContext('2d');
+
+        // New display elements
+        const valuesCountDisplay = document.getElementById('valuesCountDisplay');
+        const categoriesHintDisplay = document.getElementById('categoriesHintDisplay');
+        const commaSeparatedInput = document.getElementById('commaSeparatedInput');
+        const tableInput = document.getElementById('tableInput');
+        const inputMethodRadios = document.querySelectorAll('input[name="inputMethod"]');
+        const chartTypeRadios = document.querySelectorAll('input[name="chartType"]');
+        const dataTableBody = document.getElementById('dataTableBody');
+        const addRowBtn = document.getElementById('addRowBtn');
+
+        // Headers for table input
+        const tableCategoryHeaderInput = document.getElementById('tableCategoryHeader');
+        const tableValueHeaderInput = document.getElementById('tableValueHeader');
+
+
+        // Specific divs for axis labels and widths that might be hidden for pie chart
+        const xAxisLabelDiv = document.getElementById('xAxisLabelDiv');
+        const yAxisLabelDiv = document.getElementById('yAxisLabelDiv');
+        const colorsInputContainer = document.getElementById('colorsInputContainer'); // New ID for colors parent
+        const widthsInputDiv = document.getElementById('widthsInputDiv');
+        const moreOptionsBtn = document.getElementById('moreOptionsBtn');
+        const moreOptionsSection = document.getElementById('moreOptionsSection');
+        const tableColumnOptionsHeaders = document.querySelectorAll('.table-column-options');
+
+
+        // Message Box elements
+        const messageBox = document.getElementById('messageBox');
+        const messageBoxText = document.getElementById('messageBoxText');
+        const messageBoxButton = document.getElementById('messageBoxButton');
+
+        // Flag to indicate if the currently displayed chart is sorted
+        let currentChartIsSorted = false;
+        let moreOptionsVisible = false; // State for More Options section
+
+        // Function to show custom message box
+        function showMessageBox(message) {
+            messageBoxText.textContent = message;
+            messageBox.classList.remove('hidden');
+        }
+
+        // Event listener for message box button
+        messageBoxButton.addEventListener('click', () => {
+            messageBox.classList.add('hidden');
+        });
+
+        // Default colors for the bars and pie slices
+        const defaultColors = [
+            'Indigo', // Originally #6366F1
+            'Violet', // Originally #8B5CF6
+            'DeepPink', // Originally #EC4899
+            'Orange', // Originally #F59E0B
+            'SeaGreen', // Originally #10B981
+            'RoyalBlue', // Originally #3B82F6
+            'Crimson', // Originally #EF4444
+            'Turquoise', // Originally #06B6D4
+            'SlateGray'  // Originally #6B7280
+        ];
+
+        /**
+         * Draws a bar chart on the canvas.
+         * @param {HTMLCanvasElement} canvas - The canvas element to draw on.
+         * @param {CanvasRenderingContext2D} ctx - The 2D rendering context of the canvas.
+         * @param {{numericValue: number, originalString: string}[]} valuesData - Array of value objects for the bars.
+         * @param {string[]} categories - Array of category labels for the bars.
+         * @param {string} plotTitle - Title of the plot.
+         * @param {string} xAxisLabel - Label for the X-axis.
+         * @param {string} yAxisLabel - Label for the Y-axis.
+         * @param {string[]} colors - Array of colors for each bar.
+         * @param {number[]} widths - Array of widths (0-100%) for each bar relative to available space.
+         * @param {boolean} shouldUseBanglaNumeralsForDisplay - True if Bangla numerals should be used for display.
+         */
+        function drawBarChart(canvas, ctx, valuesData, categories, plotTitle, xAxisLabel, yAxisLabel, colors, widths, shouldUseBanglaNumeralsForDisplay) {
+            // Clear the canvas before drawing
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Extract numeric values for calculations
+            const numericValues = valuesData.map(d => d.numericValue);
+
+            // Get canvas dimensions
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+
+            // Define padding and margins for the chart
+            const topPadding = 50;
+            const bottomPadding = 40; // For X-axis label
+            const leftPadding = 60; // For Y-axis label
+            const rightPadding = 20;
+
+            const chartAreaWidth = canvasWidth - leftPadding - rightPadding;
+            const chartAreaHeight = canvasHeight - topPadding - bottomPadding;
+            const barSpacing = 15; // Spacing between bars
+
+            // Calculate the maximum value for scaling the bars
+            const maxValue = numericValues.length > 0 ? Math.max(...numericValues) : 0; // Handle empty values array
+            // Add a buffer to the maxValue to make the y-axis taller than the highest bar
+            const displayMaxValue = (maxValue > 0) ? maxValue * 1.1 : 100; // Default to 100 if no values
+
+            // If all values are non-positive or no values, clear canvas and return
+            if (numericValues.length === 0 || displayMaxValue <= 0) { // Check displayMaxValue
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                return;
+            }
+
+            // Calculate bar width based on number of bars and spacing
+            const numBars = numericValues.length;
+            const availableBarWidthSpace = chartAreaWidth - (numBars > 0 ? (numBars - 1) * barSpacing : 0);
+            const baseBarWidth = numBars > 0 ? availableBarWidthSpace / numBars : 0;
+
+
+            // Draw Plot Area Background (ggplot2 style) for the entire canvas area
+            ctx.fillStyle = '#e6e6e6'; // Gray background
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight); // Fill entire canvas
+
+            // Draw horizontal grid lines (ggplot2 style)
+            ctx.strokeStyle = '#ffffff'; // White for grid lines
+            ctx.lineWidth = 1;
+            const numYGridLines = 10; // Increased number of horizontal grid lines
+            for (let i = 0; i <= numYGridLines; i++) {
+                const y = topPadding + (chartAreaHeight / numYGridLines) * i;
+                ctx.beginPath();
+                ctx.moveTo(leftPadding, y);
+                ctx.lineTo(leftPadding + chartAreaWidth, y);
+                ctx.stroke();
+            }
+
+            // Draw vertical grid lines (ggplot2 style)
+            const numXGridLines = numBars > 0 ? numBars : 10; // Base on numBars, or 10 if no bars
+            for (let i = 0; i <= numXGridLines; i++) {
+                 // Ensure grid lines are within the chart area boundaries
+                const xGrid = leftPadding + (chartAreaWidth / numXGridLines) * i;
+                ctx.beginPath();
+                ctx.moveTo(xGrid, topPadding);
+                ctx.lineTo(xGrid, canvasHeight - bottomPadding);
+                ctx.stroke();
+            }
+
+
+            // Draw Plot Title
+            ctx.fillStyle = '#1F2937'; // Dark gray
+            ctx.font = 'bold 18px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(plotTitle, canvasWidth / 2, 15);
+
+            // Draw Y-axis (values)
+            ctx.beginPath();
+            ctx.moveTo(leftPadding, topPadding);
+            ctx.lineTo(leftPadding, canvasHeight - bottomPadding);
+            ctx.strokeStyle = '#374151'; // Dark gray for axis
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Draw X-axis (categories)
+            ctx.beginPath();
+            ctx.moveTo(leftPadding, canvasHeight - bottomPadding);
+            ctx.lineTo(canvasWidth - rightPadding, canvasHeight - bottomPadding);
+            ctx.strokeStyle = '#374151';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Draw Y-axis labels and tick marks
+            for (let i = 0; i <= numYGridLines; i++) { // Use numYGridLines for labels
+                const value = (displayMaxValue / numYGridLines) * i; // Use displayMaxValue for label scaling
+                const y = canvasHeight - bottomPadding - (value / displayMaxValue) * chartAreaHeight; // Use displayMaxValue for y-position
+
+                ctx.fillStyle = '#4B5563'; // Gray for text
+                ctx.font = '12px Inter';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'middle';
+                // Conditionally convert the rounded English value to Bangla for display
+                const labelText = shouldUseBanglaNumeralsForDisplay ? convertEnglishToBanglaNumerals(Math.round(value).toString()) : Math.round(value).toString();
+                ctx.fillText(labelText, leftPadding - 5, y);
+
+                // Tick mark
+                ctx.beginPath();
+                ctx.moveTo(leftPadding, y);
+                ctx.lineTo(leftPadding + 5, y);
+                ctx.strokeStyle = '#9CA3AF'; // Light gray for tick marks
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+
+            // Draw Y-axis Label
+            ctx.save(); // Save the current canvas state
+            ctx.translate(leftPadding - 40, canvasHeight / 2); // Move origin to desired text position
+            ctx.rotate(-Math.PI / 2); // Rotate 90 degrees counter-clockwise
+            ctx.fillStyle = '#1F2937'; // Dark gray
+            ctx.font = '14px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(yAxisLabel, 0, 0);
+            ctx.restore(); // Restore the canvas state
+
+            // Draw X-axis Label
+            ctx.fillStyle = '#1F2937'; // Dark gray
+            ctx.font = '14px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(xAxisLabel, leftPadding + chartAreaWidth / 2, canvasHeight - bottomPadding + 25);
+
+
+            // Draw bars
+            let currentX = leftPadding; // Starting X position for the first bar
+            for (let i = 0; i < numBars; i++) {
+                const value = valuesData[i].numericValue; // Use numeric value for height
+                const originalValueString = valuesData[i].originalString; // Use original string for label
+                const category = categories[i] || `Category ${i + 1}`;
+                const color = colors[i] || defaultColors[i % defaultColors.length]; // Use default colors if not provided
+
+                // Use the pre-processed width from the 'widths' array
+                const barPercentageWidth = widths[i] / 100;
+
+                // Calculate bar height based on value (using displayMaxValue for consistent scaling)
+                const barHeight = (value / displayMaxValue) * chartAreaHeight;
+
+                // Calculate actual bar width
+                const barActualWidth = baseBarWidth * barPercentageWidth;
+
+                // Center the bar within its allocated space
+                const x = currentX + (baseBarWidth - barActualWidth) / 2;
+                const y = canvasHeight - bottomPadding - barHeight;
+
+                // Draw the bar
+                ctx.fillStyle = color;
+                ctx.fillRect(x, y, barActualWidth, barHeight);
+                ctx.strokeStyle = color; // Border same color
+                ctx.lineWidth = 1;
+                ctx.strokeRect(x, y, barActualWidth, barHeight); // Add a subtle border
+
+                // Draw category label below the bar
+                ctx.fillStyle = '#4B5563'; // Gray for text
+                ctx.font = '12px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.fillText(category, x + barActualWidth / 2, canvasHeight - bottomPadding + 5);
+
+                // Draw value label above the bar
+                ctx.fillStyle = '#1F2937'; // Darker gray for value text
+                ctx.font = '12px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+                ctx.fillText(originalValueString, x + barActualWidth / 2, y - 5); // Use original string for bar labels
+
+                // Move to the next bar's starting position
+                currentX += baseBarWidth + barSpacing;
+            }
+        }
+
+        /**
+         * Draws a pie chart on the canvas.
+         * @param {HTMLCanvasElement} canvas - The canvas element to draw on.
+         * @param {CanvasRenderingContext2D} ctx - The 2D rendering context of the canvas.
+         * @param {{numericValue: number, originalString: string}[]} valuesData - Array of value objects for the slices.
+         * @param {string[]} categories - Array of category labels for the slices.
+         * @param {string} plotTitle - Title of the plot.
+         * @param {string[]} colors - Array of colors for each slice.
+         * @param {boolean} shouldUseBanglaNumeralsForDisplay - True if Bangla numerals should be used for display.
+         */
+        function drawPieChart(canvas, ctx, valuesData, categories, plotTitle, colors, shouldUseBanglaNumeralsForDisplay) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+
+            // Pie chart specific padding, adjusted for title and potential legends
+            const padding = 20;
+            const chartCenterX = canvasWidth / 2;
+            const chartCenterY = (canvasHeight / 2) + 20; // Slightly lower to accommodate title
+            const radius = Math.min(canvasWidth, canvasHeight) / 2 - padding - 20; // Reduced radius for labels
+
+            // Draw Plot Area Background (ggplot2 style) for the entire canvas area
+            ctx.fillStyle = '#e6e6e6'; // Gray background
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight); // Fill entire canvas
+
+            // Draw Plot Title
+            ctx.fillStyle = '#1F2937'; // Dark gray
+            ctx.font = 'bold 18px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(plotTitle, canvasWidth / 2, 15);
+
+            const total = valuesData.reduce((sum, item) => sum + item.numericValue, 0);
+
+            if (total === 0) {
+                // Display a message if no data or total is zero
+                ctx.fillStyle = '#4B5563';
+                ctx.font = '16px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('No data to display pie chart.', canvasWidth / 2, canvasHeight / 2);
+                return;
+            }
+
+            let currentAngle = 0;
+            for (let i = 0; i < valuesData.length; i++) {
+                const sliceValue = valuesData[i].numericValue;
+                const originalValueString = valuesData[i].originalString;
+                const category = categories[i] || `Slice ${i + 1}`;
+                const sliceColor = colors[i] || defaultColors[i % defaultColors.length];
+                const sliceAngle = (sliceValue / total) * Math.PI * 2;
+
+                ctx.beginPath();
+                ctx.moveTo(chartCenterX, chartCenterY);
+                ctx.arc(chartCenterX, chartCenterY, radius, currentAngle, currentAngle + sliceAngle);
+                ctx.closePath();
+                ctx.fillStyle = sliceColor;
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff'; // White border between slices
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Draw labels (category and percentage)
+                const labelAngle = currentAngle + sliceAngle / 2;
+                const labelRadius = radius * 0.7; // Position labels closer to center
+                const textX = chartCenterX + Math.cos(labelAngle) * labelRadius;
+                const textY = chartCenterY + Math.sin(labelAngle) * labelRadius;
+
+                ctx.fillStyle = '#1F2937';
+                ctx.font = '12px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                const percentage = ((sliceValue / total) * 100).toFixed(1);
+                // Conditionally display percentage in Bangla or English
+                const percentageToDisplay = shouldUseBanglaNumeralsForDisplay ? convertEnglishToBanglaNumerals(percentage) : percentage;
+
+                // Display original value string and percentage
+                const labelText = `${category} (${originalValueString} - ${percentageToDisplay}%)`;
+                ctx.fillText(labelText, textX, textY);
+
+                currentAngle += sliceAngle;
+            }
+        }
+
+        /**
+         * Draws a donut chart on the canvas.
+         * @param {HTMLCanvasElement} canvas - The canvas element to draw on.
+         * @param {CanvasRenderingContext2D} ctx - The 2D rendering context of the canvas.
+         * @param {{numericValue: number, originalString: string}[]} valuesData - Array of value objects for the slices.
+         * @param {string[]} categories - Array of category labels for the slices.
+         * @param {string} plotTitle - Title of the plot.
+         * @param {string[]} colors - Array of colors for each slice.
+         * @param {boolean} shouldUseBanglaNumeralsForDisplay - True if Bangla numerals should be used for display.
+         */
+        function drawDonutChart(canvas, ctx, valuesData, categories, plotTitle, colors, shouldUseBanglaNumeralsForDisplay) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+
+            const padding = 20;
+            const chartCenterX = canvasWidth / 2;
+            const chartCenterY = (canvasHeight / 2) + 20;
+            const outerRadius = Math.min(canvasWidth, canvasHeight) / 2 - padding - 20;
+            const innerRadius = outerRadius * 0.6; // Define the inner radius for the donut hole
+
+            ctx.fillStyle = '#e6e6e6'; // Gray background
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+            ctx.fillStyle = '#1F2937';
+            ctx.font = 'bold 18px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(plotTitle, canvasWidth / 2, 15);
+
+            const total = valuesData.reduce((sum, item) => sum + item.numericValue, 0);
+
+            if (total === 0) {
+                ctx.fillStyle = '#4B5563';
+                ctx.font = '16px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('No data to display donut chart.', canvasWidth / 2, canvasHeight / 2);
+                return;
+            }
+
+            let currentAngle = 0;
+            for (let i = 0; i < valuesData.length; i++) {
+                const sliceValue = valuesData[i].numericValue;
+                const originalValueString = valuesData[i].originalString;
+                const category = categories[i] || `Slice ${i + 1}`;
+                const sliceColor = colors[i] || defaultColors[i % defaultColors.length];
+                const sliceAngle = (sliceValue / total) * Math.PI * 2;
+
+                ctx.beginPath();
+                ctx.arc(chartCenterX, chartCenterY, outerRadius, currentAngle, currentAngle + sliceAngle);
+                ctx.arc(chartCenterX, chartCenterY, innerRadius, currentAngle + sliceAngle, currentAngle, true); // Inner arc
+                ctx.closePath();
+                ctx.fillStyle = sliceColor;
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff'; // White border between slices
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Draw labels (category and percentage)
+                const labelAngle = currentAngle + sliceAngle / 2;
+                const labelRadius = innerRadius + (outerRadius - innerRadius) / 2; // Position labels in the middle of the donut slice
+                const textX = chartCenterX + Math.cos(labelAngle) * labelRadius;
+                const textY = chartCenterY + Math.sin(labelAngle) * labelRadius;
+
+                ctx.fillStyle = '#1F2937';
+                ctx.font = '12px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                const percentage = ((sliceValue / total) * 100).toFixed(1);
+                const percentageToDisplay = shouldUseBanglaNumeralsForDisplay ? convertEnglishToBanglaNumerals(percentage) : percentage;
+
+                const labelText = `${category} (${originalValueString} - ${percentageToDisplay}%)`;
+                ctx.fillText(labelText, textX, textY);
+
+                currentAngle += sliceAngle;
+            }
+        }
+
+        /**
+         * Draws a line chart on the canvas.
+         * @param {HTMLCanvasElement} canvas - The canvas element to draw on.
+         * @param {CanvasRenderingContext2D} ctx - The 2D rendering context of the canvas.
+         * @param {{numericValue: number, originalString: string}[]} valuesData - Array of value objects for the points.
+         * @param {string[]} categories - Array of category labels for the X-axis.
+         * @param {string} plotTitle - Title of the plot.
+         * @param {string} xAxisLabel - Label for the X-axis.
+         * @param {string} yAxisLabel - Label for the Y-axis.
+         * @param {string[]} colors - Array of colors for the line and points.
+         * @param {boolean} shouldUseBanglaNumeralsForDisplay - True if Bangla numerals should be used for display.
+         */
+        function drawLineChart(canvas, ctx, valuesData, categories, plotTitle, xAxisLabel, yAxisLabel, colors, shouldUseBanglaNumeralsForDisplay) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const numericValues = valuesData.map(d => d.numericValue);
+
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+
+            const topPadding = 50;
+            const bottomPadding = 40;
+            const leftPadding = 60;
+            const rightPadding = 20;
+
+            const chartAreaWidth = canvasWidth - leftPadding - rightPadding;
+            const chartAreaHeight = canvasHeight - topPadding - bottomPadding;
+
+            const maxValue = numericValues.length > 0 ? Math.max(...numericValues) : 0;
+            const displayMaxValue = (maxValue > 0) ? maxValue * 1.1 : 100; // Add buffer
+
+            // If no values, clear canvas and return
+            if (numericValues.length === 0) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                return;
+            }
+
+            // Draw Plot Area Background (ggplot2 style)
+            ctx.fillStyle = '#e6e6e6'; // Gray background
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+            // Draw horizontal grid lines
+            ctx.strokeStyle = '#ffffff'; // White for grid lines
+            ctx.lineWidth = 1;
+            const numYGridLines = 10;
+            for (let i = 0; i <= numYGridLines; i++) {
+                const y = topPadding + (chartAreaHeight / numYGridLines) * i;
+                ctx.beginPath();
+                ctx.moveTo(leftPadding, y);
+                ctx.lineTo(leftPadding + chartAreaWidth, y);
+                ctx.stroke();
+            }
+
+            // Calculate horizontal spacing for categories
+            const categoryWidth = chartAreaWidth / categories.length;
+
+            // Draw vertical grid lines (aligned with category centers)
+            for (let i = 0; i < categories.length; i++) {
+                const xGrid = leftPadding + (i * categoryWidth) + (categoryWidth / 2); // Center of each category slot
+                ctx.beginPath();
+                ctx.moveTo(xGrid, topPadding);
+                ctx.lineTo(xGrid, canvasHeight - bottomPadding);
+                ctx.stroke();
+            }
+
+
+            // Draw Plot Title
+            ctx.fillStyle = '#1F2937';
+            ctx.font = 'bold 18px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(plotTitle, canvasWidth / 2, 15);
+
+            // Draw Y-axis (values)
+            ctx.beginPath();
+            ctx.moveTo(leftPadding, topPadding);
+            ctx.lineTo(leftPadding, canvasHeight - bottomPadding);
+            ctx.strokeStyle = '#374151';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Draw X-axis (categories)
+            ctx.beginPath();
+            ctx.moveTo(leftPadding, canvasHeight - bottomPadding);
+            ctx.lineTo(canvasWidth - rightPadding, canvasHeight - bottomPadding);
+            ctx.strokeStyle = '#374151';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Draw Y-axis labels and tick marks
+            for (let i = 0; i <= numYGridLines; i++) {
+                const value = (displayMaxValue / numYGridLines) * i;
+                const y = canvasHeight - bottomPadding - (value / displayMaxValue) * chartAreaHeight;
+
+                ctx.fillStyle = '#4B5563';
+                ctx.font = '12px Inter';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'middle';
+                const labelText = shouldUseBanglaNumeralsForDisplay ? convertEnglishToBanglaNumerals(Math.round(value).toString()) : Math.round(value).toString();
+                ctx.fillText(labelText, leftPadding - 5, y);
+
+                ctx.beginPath();
+                ctx.moveTo(leftPadding, y);
+                ctx.lineTo(leftPadding + 5, y);
+                ctx.strokeStyle = '#9CA3AF';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+
+            // Draw Y-axis Label
+            ctx.save();
+            ctx.translate(leftPadding - 40, canvasHeight / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillStyle = '#1F2937';
+            ctx.font = '14px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(yAxisLabel, 0, 0);
+            ctx.restore();
+
+            // Draw X-axis Label
+            ctx.fillStyle = '#1F2937';
+            ctx.font = '14px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(xAxisLabel, leftPadding + chartAreaWidth / 2, canvasHeight - bottomPadding + 25);
+
+            // Draw the connecting line first
+            ctx.beginPath();
+            ctx.strokeStyle = colors[0] || defaultColors[0]; // Use first color for the line
+            ctx.lineWidth = 3;
+            ctx.lineJoin = 'round'; // Smooth corners
+            ctx.lineCap = 'round'; // Rounded line ends
+
+            for (let i = 0; i < numericValues.length; i++) {
+                const value = numericValues[i];
+                // Calculate x position: center of the category slot
+                const x = leftPadding + (i * categoryWidth) + (categoryWidth / 2);
+                const y = canvasHeight - bottomPadding - (value / displayMaxValue) * chartAreaHeight;
+
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke(); // Draw the main line path here, after all points are defined
+
+            // Now draw the points on top of the line
+            for (let i = 0; i < numericValues.length; i++) {
+                const value = numericValues[i];
+                const originalValueString = valuesData[i].originalString;
+                const category = categories[i] || `Point ${i + 1}`;
+                const x = leftPadding + (i * categoryWidth) + (categoryWidth / 2);
+                const y = canvasHeight - bottomPadding - (value / displayMaxValue) * chartAreaHeight;
+
+                // Draw point
+                ctx.fillStyle = colors[i] || defaultColors[i % defaultColors.length]; // Use individual colors for points
+                ctx.beginPath(); // Start new path for the point circle
+                ctx.arc(x, y, 5, 0, Math.PI * 2); // Circle point
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff'; // White border for points
+                ctx.lineWidth = 2;
+                ctx.stroke(); // Stroke the point circle
+
+                // Draw category label below the point
+                ctx.fillStyle = '#4B5563';
+                ctx.font = '12px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.fillText(category, x, canvasHeight - bottomPadding + 5);
+
+                // Draw value label above the point
+                ctx.fillStyle = '#1F2937';
+                ctx.font = '12px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+                ctx.fillText(originalValueString, x, y - 10);
+            }
+        }
+
+
+        /**
+         * Sorts the bar data (values, categories, colors, widths) in ascending order based on values.
+         * Maintains correspondence between elements.
+         * @param {{numericValue: number, originalString: string}[]} valuesData - Original array of value objects.
+         * @param {string[]} categories - Original array of categories.
+         * @param {string[]} colors - Original array of colors.
+         * @param {number[]} widths - Original array of widths. Can be undefined for pie chart.
+         * @returns {object} An object containing the sorted arrays.
+         */
+        function sortDataAscending(valuesData, categories, colors, widths) {
+            // Create an array of objects to keep data linked during sorting
+            const data = valuesData.map((valueItem, index) => ({
+                valueNumeric: valueItem.numericValue,
+                valueOriginal: valueItem.originalString,
+                category: categories[index],
+                color: colors[index],
+                // Preserve width if it exists, for bar chart re-drawing
+                width: widths ? widths[index] : undefined
+            }));
+
+            // Sort the data array based on the 'valueNumeric' property in ascending order
+            data.sort((a, b) => a.valueNumeric - b.valueNumeric);
+
+            // Extract the sorted arrays
+            const sortedValuesData = data.map(item => ({ numericValue: item.valueNumeric, originalString: item.valueOriginal }));
+            const sortedCategories = data.map(item => item.category);
+            const sortedColors = data.map(item => item.color);
+            const sortedWidths = widths ? data.map(item => item.width) : undefined; // Re-create widths array only if it existed
+
+            return {
+                valuesData: sortedValuesData,
+                categories: sortedCategories,
+                colors: sortedColors,
+                widths: sortedWidths
+            };
+        }
+
+        /**
+         * Updates the display for value count and category hints.
+         * @param {{numericValue: number, originalString: string}[]} valuesData - The parsed array of value objects.
+         * @param {string[]} categories - The parsed array of categories.
+         */
+        function updateInputHints(valuesData, categories) {
+            valuesCountDisplay.textContent = `Values: ${valuesData.length}`;
+
+            const valuesCount = valuesData.length;
+            const categoriesCount = categories.length;
+
+            if (valuesCount === categoriesCount) {
+                if (valuesCount > 0) {
+                    categoriesHintDisplay.textContent = 'Categories match values.';
+                    categoriesHintDisplay.style.color = '#10B981'; // Green
+                } else {
+                    categoriesHintDisplay.textContent = ''; // No message if both are empty
+                }
+            } else if (categoriesCount < valuesCount) {
+                const needed = valuesCount - categoriesCount;
+                categoriesHintDisplay.textContent = `Need ${needed} more categorie(s).`;
+                categoriesHintDisplay.style.color = '#EF4444'; // Red
+            } else { // categoriesCount > valuesData.length
+                const extra = categoriesCount - valuesData.length; // Corrected to valuesData.length
+                categoriesHintDisplay.textContent = `${extra} extra categorie(s).`;
+                categoriesHintDisplay.style.color = '#F59E0B'; // Amber
+            }
+        }
+
+        /**
+         * Adds a new row to the data table.
+         * @param {number|string} category - Initial category for the new row.
+         * @param {number|string} value - Initial value for the new row.
+         * @param {string} color - Initial color for the new row.
+         * @param {number|string} width - Initial width for the new row.
+         */
+        function addTableRow(category = '', value = '', color = '', width = '') {
+            const row = dataTableBody.insertRow();
+            row.className = 'hover:bg-gray-50'; // Add hover effect
+
+            const categoryCell = row.insertCell();
+            categoryCell.innerHTML = `<input type="text" value="${category}" class="table-category" placeholder="Category">`;
+
+            const valueCell = row.insertCell();
+            valueCell.innerHTML = `<input type="text" value="${value}" class="table-value" placeholder="Value">`;
+
+            const colorCell = row.insertCell();
+            colorCell.className = 'table-column-options hidden-options'; // Apply initial hidden class
+            colorCell.innerHTML = `<input type="text" value="${color}" class="table-color" placeholder="Color (optional)">`;
+
+            const widthCell = row.insertCell();
+            widthCell.className = 'table-column-options hidden-options'; // Apply initial hidden class
+            widthCell.innerHTML = `<input type="text" value="${width}" class="table-width" placeholder="Width (optional)">`;
+
+            const deleteCell = row.insertCell();
+            deleteCell.innerHTML = `<button type="button" class="delete-row-btn"><i class="fas fa-trash-alt"></i></button>`; // Changed to Font Awesome icon
+            deleteCell.className = 'text-center'; // Center the delete button
+
+            // Add event listener for the delete button
+            deleteCell.querySelector('.delete-row-btn').addEventListener('click', (event) => {
+                event.target.closest('tr').remove();
+                generatePlot('tableInput'); // Regenerate plot after deletion
+            });
+
+            // Add input listeners for live updates
+            categoryCell.querySelector('.table-category').addEventListener('input', () => generatePlot('tableInput'));
+            valueCell.querySelector('.table-value').addEventListener('input', () => generatePlot('tableInput'));
+            colorCell.querySelector('.table-color').addEventListener('input', () => generatePlot('tableInput'));
+            widthCell.querySelector('.table-width').addEventListener('input', () => generatePlot('tableInput'));
+
+            // Ensure new row cells reflect the current moreOptionsVisible state
+            if (moreOptionsVisible) {
+                colorCell.classList.remove('hidden-options');
+                widthCell.classList.remove('hidden-options');
+            }
+        }
+
+        /**
+         * Parses data from the HTML table.
+         * @returns {object} An object containing valuesData, categories, colors, and widths arrays.
+         */
+        function parseTableData() {
+            const valuesData = [];
+            const categories = [];
+            const colors = [];
+            const widths = [];
+
+            const rows = dataTableBody.querySelectorAll('tr');
+            rows.forEach(row => {
+                const category = row.querySelector('.table-category').value.trim(); // Get category first
+                const originalValueString = row.querySelector('.table-value').value.trim(); // Then value
+                const numericValue = parseFloat(convertBanglaToEnglishNumerals(originalValueString));
+
+                const colorInput = row.querySelector('.table-color');
+                const color = colorInput ? colorInput.value.trim() : ''; // Handle if element not found
+
+                const widthInput = row.querySelector('.table-width');
+                const originalWidthString = widthInput ? widthInput.value.trim() : ''; // Handle if element not found
+                const width = parseFloat(convertBanglaToEnglishNumerals(originalWidthString));
+
+                // Only add to arrays if the row has at least a category or value
+                if (category || originalValueString) {
+                    categories.push(category);
+                    valuesData.push({
+                        numericValue: isNaN(numericValue) ? 0 : numericValue,
+                        originalString: originalValueString
+                    });
+                    colors.push(color);
+                    widths.push(isNaN(width) ? undefined : width);
+                }
+            });
+            return { valuesData, categories, colors, widths };
+        }
+
+        /**
+         * Handles pasting of data into the table.
+         * @param {ClipboardEvent} event - The paste event.
+         */
+        function handleTablePaste(event) {
+            // Prevent default paste behavior to handle it manually
+            event.preventDefault();
+
+            // Get the pasted text data
+            const pasteData = (event.clipboardData || window.clipboardData).getData('text');
+
+            // Split the data into rows by newline, and then columns by tab
+            const rows = pasteData.split('\n').map(row => row.split('\t'));
+
+            let currentRowIndex = 0;
+            // Iterate over pasted rows and populate table
+            rows.forEach(pastedRow => {
+                // Ensure we have a row to paste into
+                let targetRow = dataTableBody.children[currentRowIndex];
+                if (!targetRow) {
+                    addTableRow(); // Add a new row if we run out of existing ones
+                    targetRow = dataTableBody.children[currentRowIndex];
+                }
+
+                const inputs = targetRow.querySelectorAll('input[type="text"]');
+                // Adjust index for pasted data based on new column order (Category, Value, Color, Width)
+                if (inputs[0] && pastedRow[0] !== undefined) inputs[0].value = pastedRow[0].trim(); // Category
+                if (inputs[1] && pastedRow[1] !== undefined) inputs[1].value = pastedRow[1].trim(); // Value
+                if (inputs[2] && pastedRow[2] !== undefined) inputs[2].value = pastedRow[2].trim(); // Color
+                if (inputs[3] && pastedRow[3] !== undefined) inputs[3].value = pastedRow[3].trim(); // Width
+
+                currentRowIndex++;
+            });
+
+            // After pasting, trigger a plot update
+            generatePlot('tableInput');
+        }
+
+        /**
+         * Toggles the visibility of input sections based on radio button selection.
+         */
+        function toggleInputMethod() {
+            const selectedMethod = document.querySelector('input[name="inputMethod"]:checked').value;
+            if (selectedMethod === 'commaSeparated') {
+                commaSeparatedInput.classList.remove('hidden');
+                tableInput.classList.add('hidden');
+                // When switching back to comma separated, try to populate based on table data if available
+                const tableData = parseTableData(); // This will now filter out empty rows from table
+
+                // Filter out any empty items that might have come from empty table cells before joining
+                const filteredCategories = tableData.categories.filter(c => c.length > 0);
+                const filteredValuesData = tableData.valuesData.filter(d => d.originalString.length > 0);
+                const filteredColors = tableData.colors.filter(c => c.length > 0);
+                const filteredWidths = tableData.widths.filter(w => w !== undefined && w !== null && w !== ''); // Ensure undefined, null, empty string are filtered
+
+                if (filteredValuesData.length > 0) { // If there's *actual* data in the table after filtering
+                    categoriesInput.value = filteredCategories.join(',');
+                    valuesInput.value = filteredValuesData.map(d => d.originalString).join(',');
+                    colorsInput.value = filteredColors.join(',');
+                    widthsInput.value = filteredWidths.join(',');
+                } else {
+                    // If table was effectively empty after filtering, reset comma-separated inputs to their defaults
+                    categoriesInput.value = "A,B,C,D,E";
+                    valuesInput.value = "50,70,30,90,60";
+                    colorsInput.value = "Indigo,Violet,DeepPink,Orange,SeaGreen,RoyalBlue,Crimson,Turquoise,SlateGray";
+                    widthsInput.value = "50";
+                }
+            } else { // tableInput selected
+                commaSeparatedInput.classList.add('hidden');
+                tableInput.classList.remove('hidden');
+
+                const currentValuesData = parseNumbersWithOriginal(valuesInput.value);
+                const currentCategories = parseStrings(categoriesInput.value);
+                const currentColors = parseStrings(colorsInput.value);
+                const currentWidths = parseNumbers(widthsInput.value);
+
+                // Always clear existing table rows before populating
+                dataTableBody.innerHTML = '';
+
+                // Check if there's valid data from comma-separated fields
+                const dataAvailableFromCommaSeparated = currentValuesData.length > 0 &&
+                                                        currentCategories.length > 0 &&
+                                                        currentValuesData.length === currentCategories.length;
+
+                if (dataAvailableFromCommaSeparated) {
+                    const maxLen = Math.max(currentValuesData.length, currentCategories.length, currentColors.length, currentWidths.length);
+                    for (let i = 0; i < maxLen; i++) {
+                        addTableRow(
+                            currentCategories[i] !== undefined ? currentCategories[i] : '',
+                            currentValuesData[i] ? currentValuesData[i].originalString : '',
+                            currentColors[i] !== undefined ? currentColors[i] : '',
+                            currentWidths[i] !== undefined ? currentWidths[i] : ''
+                        );
+                    }
+                } else {
+                    // If no data from comma-separated, add the fixed default 5 rows
+                    const defaultTableData = [
+                        { category: 'A', value: '50' },
+                        { category: 'B', value: '70' },
+                        { category: 'C', value: '30' },
+                        { category: 'D', value: '90' },
+                        { category: 'E', value: '60' }
+                    ];
+                    defaultTableData.forEach(data => addTableRow(data.category, data.value));
+                }
+            }
+            generatePlot('inputMethodChange');
+            updateMoreOptionsVisibility();
+        }
+
+        /**
+         * Toggles the visibility of plot-specific input fields based on chart type.
+         * This function now only triggers an update to visibility,
+         * rather than directly manipulating 'hidden' classes, to avoid conflicts.
+         */
+        function toggleChartTypeInputs() {
+            // All visibility changes are now handled by updateMoreOptionsVisibility().
+            generatePlot('chartTypeChange'); // Trigger plot generation to reflect the change
+            updateMoreOptionsVisibility(); // This will handle all visibility based on current states
+        }
+
+        /**
+         * Toggles the visibility of the "More Options" section and table columns.
+         */
+        function toggleMoreOptions() {
+            moreOptionsVisible = !moreOptionsVisible;
+            if (moreOptionsVisible) {
+                moreOptionsSection.classList.remove('hidden-options');
+                moreOptionsBtn.textContent = 'Less Options';
+            } else {
+                moreOptionsSection.classList.add('hidden-options');
+                moreOptionsBtn.textContent = 'More Options';
+            }
+            updateMoreOptionsVisibility(); // Update visibility of dependent elements
+            generatePlot('moreOptionsToggle'); // Regenerate plot to reflect changes
+        }
+
+        /**
+         * Updates the visibility of elements that depend on `moreOptionsVisible` and `chartType`.
+         * This function now consistently uses 'hidden-options' class for all visibility control.
+         */
+        function updateMoreOptionsVisibility() {
+            const selectedChartType = document.querySelector('input[name="chartType"]:checked').value;
+            const selectedInputMethod = document.querySelector('input[name="inputMethod"]:checked').value;
+
+            // Update visibility of the option fields (axis labels, widths, colors) in the left panel
+            if (moreOptionsVisible) {
+                colorsInputContainer.classList.remove('hidden-options'); // Ensure colors are visible if More Options is open
+                if (selectedChartType === 'bar' || selectedChartType === 'line') { // Added 'line'
+                    xAxisLabelDiv.classList.remove('hidden-options');
+                    yAxisLabelDiv.classList.remove('hidden-options');
+                } else {
+                    // For pie/donut, these are always hidden even if More Options is visible
+                    xAxisLabelDiv.classList.add('hidden-options');
+                    yAxisLabelDiv.classList.add('hidden-options');
+                }
+
+                if (selectedChartType === 'bar') { // Only for bar chart
+                    widthsInputDiv.classList.remove('hidden-options');
+                } else {
+                    widthsInputDiv.classList.add('hidden-options'); // Hide for other chart types (including line)
+                }
+            } else {
+                // If more options are hidden, all these should be hidden
+                xAxisLabelDiv.classList.add('hidden-options');
+                yAxisLabelDiv.classList.add('hidden-options');
+                colorsInputContainer.classList.add('hidden-options');
+                widthsInputDiv.classList.add('hidden-options');
+            }
+
+            // Update visibility of table column headers and cells
+            if (selectedInputMethod === 'tableInput') {
+                const tableHeaders = document.querySelectorAll('#tableInput thead th');
+
+                // Update headers (index 2 for Color, 3 for Width)
+                if (tableHeaders[2]) { // Color header
+                    if (moreOptionsVisible) {
+                        tableHeaders[2].classList.remove('hidden-options');
+                    } else {
+                        tableHeaders[2].classList.add('hidden-options');
+                    }
+                }
+                if (tableHeaders[3]) { // Width header
+                    if (moreOptionsVisible && selectedChartType === 'bar') { // Only for bar chart
+                        tableHeaders[3].classList.remove('hidden-options');
+                    } else {
+                        tableHeaders[3].classList.add('hidden-options');
+                    }
+                }
+
+                // Update cells within rows
+                const rows = dataTableBody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells[2]) { // Color cell
+                        if (moreOptionsVisible) {
+                            cells[2].classList.remove('hidden-options');
+                        } else {
+                            cells[2].classList.add('hidden-options');
+                        }
+                    }
+                    if (cells[3]) { // Width cell
+                        if (moreOptionsVisible && selectedChartType === 'bar') { // Only for bar chart
+                            cells[3].classList.remove('hidden-options');
+                        } else {
+                            cells[3].classList.add('hidden-options');
+                        }
+                    }
+                });
+            }
+        }
+
+
+        /**
+         * Generates and draws the plot based on user input.
+         * @param {string} [source='input'] - Indicates what triggered the plot generation (e.g., 'input', 'sortButton', 'tableInput', 'chartTypeChange', 'inputMethodChange', 'moreOptionsToggle').
+         */
+        function generatePlot(source = 'input') {
+            let valuesData, categories, colors, widths; // valuesData now an array of objects
+            const selectedInputMethod = document.querySelector('input[name="inputMethod"]:checked').value;
+            const selectedChartType = document.querySelector('input[name="chartType"]:checked').value;
+
+            // Determine if Bangla numerals should be used for display
+            let shouldUseBanglaNumeralsForDisplay = false;
+            if (selectedInputMethod === 'commaSeparated') {
+                if (containsBanglaNumerals(valuesInput.value)) {
+                    shouldUseBanglaNumeralsForDisplay = true;
+                }
+            } else { // tableInput
+                const tableValueInputs = dataTableBody.querySelectorAll('.table-value');
+                for (const input of tableValueInputs) {
+                    if (containsBanglaNumerals(input.value)) {
+                        shouldUseBanglaNumeralsForDisplay = true;
+                        break;
+                    }
+                }
+            }
+
+            if (selectedInputMethod === 'commaSeparated') {
+                valuesData = parseNumbersWithOriginal(valuesInput.value); // Use new parse function
+                categories = parseStrings(categoriesInput.value);
+                colors = parseStrings(colorsInput.value);
+                widths = parseNumbers(widthsInput.value); // For widths, we still only need numeric
+            } else { // tableInput
+                const tableData = parseTableData(); // This now returns valuesData
+                valuesData = tableData.valuesData;
+                categories = tableData.categories;
+                colors = tableData.colors;
+                widths = tableData.widths;
+            }
+
+            const plotTitle = plotTitleInput.value;
+            // Get axis labels from More Options or use table headers if table input is selected
+            let xAxisLabel = xAxisLabelInput.value;
+            let yAxisLabel = yAxisLabelInput.value;
+
+            if (selectedInputMethod === 'tableInput') {
+                // If the user hasn't changed the default More Options fields, use the table headers
+                // Also, ensure default values are used for axis labels if the table headers are still their defaults.
+                if (xAxisLabelInput.value === "Categories" && tableCategoryHeaderInput.value !== "Category") {
+                    xAxisLabel = tableCategoryHeaderInput.value;
+                }
+                if (yAxisLabelInput.value === "Values" && tableValueHeaderInput.value !== "Value") {
+                    yAxisLabel = tableValueHeaderInput.value;
+                }
+            }
+
+
+            // Update hints only for comma-separated input, as table input provides immediate visual feedback
+            if (selectedInputMethod === 'commaSeparated') {
+                updateInputHints(valuesData, categories);
+            } else {
+                // Clear hints if table input is active
+                valuesCountDisplay.textContent = '';
+                categoriesHintDisplay.textContent = '';
+            }
+
+            // Extract numeric values for validation
+            const numericValuesForValidation = valuesData.map(d => d.numericValue);
+
+            // --- Validation ---
+            const hasEnoughData = numericValuesForValidation.length > 0 && categories.length > 0 && numericValuesForValidation.length === categories.length;
+            const hasValidWidths = !widths.some(w => w < 0 || w > 100);
+
+            // Pie/Donut chart needs at least one positive value
+            const hasPositiveValueForCircularChart = (selectedChartType === 'pie' || selectedChartType === 'donut') ? numericValuesForValidation.some(val => val > 0) : true;
+
+            if (!hasEnoughData || !hasValidWidths || !hasPositiveValueForCircularChart) {
+                // Clear plot if invalid data
+                ctx.clearRect(0, 0, barChartCanvas.width, barChartCanvas.height);
+                // Ensure sort button state is reset if data becomes invalid
+                currentChartIsSorted = false;
+                // Update sort button content
+                sortAscendingBtn.innerHTML = '<i class="fas fa-sort-amount-up-alt"></i> Sort Ascending';
+
+                if (source !== 'resize' && source !== 'inputMethodChange' && source !== 'chartTypeChange' && source !== 'moreOptionsToggle' && source !== 'tableHeaderInput') {
+                    // Only show specific messages for direct user input interactions
+                    if (!hasEnoughData) {
+                        if (numericValuesForValidation.length === 0) showMessageBox("Please enter at least one value.");
+                        else if (categories.length === 0) showMessageBox("Please enter at least one category.");
+                        else if (numericValuesForValidation.length !== categories.length) showMessageBox("Number of values must match the number of categories.");
+                    } else if (!hasValidWidths) {
+                        showMessageBox("Bar widths must be between 0 and 100.");
+                    } else if (!hasPositiveValueForCircularChart) {
+                        showMessageBox("Pie/Donut chart requires at least one positive value.");
+                    }
+                }
+                return; // Stop execution if data is invalid
+            }
+
+            // --- Sorting Logic ---
+            // If input changes or chart type changes, we reset the sorted state
+            if (source === 'input' || source === 'tableInput' || source === 'chartTypeChange' || source === 'inputMethodChange' || source === 'moreOptionsToggle' || source === 'tableHeaderInput') {
+                currentChartIsSorted = false;
+                sortAscendingBtn.innerHTML = '<i class="fas fa-sort-amount-up-alt"></i> Sort Ascending'; // Reset button text and icon
+            } else if (source === 'sortButton') {
+                // Toggle the sorted state when the sort button is pressed
+                currentChartIsSorted = !currentChartIsSorted;
+                sortAscendingBtn.innerHTML = currentChartIsSorted ? '<i class="fas fa-random"></i> Unsort' : '<i class="fas fa-sort-amount-up-alt"></i> Sort Ascending'; // Toggle icon and text
+            }
+
+            // Apply sorting if the chart should currently be sorted
+            if (currentChartIsSorted) {
+                const sortedData = sortDataAscending(valuesData, categories, colors, widths);
+                valuesData = sortedData.valuesData; // Update valuesData with sorted data
+                categories = sortedData.categories;
+                colors = sortedData.colors;
+                widths = sortedData.widths;
+            }
+
+            // Normalize widths array (only relevant for bar chart)
+            if (selectedChartType === 'bar') {
+                const numBars = categories.length; // Number of bars will be based on categories
+                let finalWidths = [];
+
+                if (widths.length === 1) {
+                    finalWidths = Array(numBars).fill(widths[0]);
+                } else if (widths.length === 0) {
+                    finalWidths = Array(numBars).fill(50); // Default width 50
+                } else {
+                    // If multiple widths are provided, use them. Fill missing ones with 50.
+                    for (let i = 0; i < numBars; i++) {
+                        finalWidths.push(widths[i] !== undefined ? widths[i] : 50);
+                    }
+                }
+                widths = finalWidths; // Update the 'widths' variable for drawBarChart
+            }
+
+
+            // Ensure canvas size is set to its CSS size
+            // Use computed style to get accurate rendered rendered dimensions
+            const computedStyle = getComputedStyle(barChartCanvas);
+            barChartCanvas.width = parseFloat(computedStyle.width);
+            barChartCanvas.height = barChartCanvas.width; // Make it square based on width
+
+            // Draw the selected chart type
+            if (selectedChartType === 'bar') {
+                drawBarChart(barChartCanvas, ctx, valuesData, categories, plotTitle, xAxisLabel, yAxisLabel, colors, widths, shouldUseBanglaNumeralsForDisplay);
+            } else if (selectedChartType === 'pie') {
+                drawPieChart(barChartCanvas, ctx, valuesData, categories, plotTitle, colors, shouldUseBanglaNumeralsForDisplay);
+            } else if (selectedChartType === 'donut') {
+                drawDonutChart(barChartCanvas, ctx, valuesData, categories, plotTitle, colors, shouldUseBanglaNumeralsForDisplay);
+            } else if (selectedChartType === 'line') { // New line chart drawing
+                drawLineChart(barChartCanvas, ctx, valuesData, categories, plotTitle, xAxisLabel, yAxisLabel, colors, shouldUseBanglaNumeralsForDisplay);
+            }
+        }
+
+        // Function to handle downloading the chart
+        function downloadPlot() {
+            // Get the data URL of the canvas content
+            const dataURL = barChartCanvas.toDataURL('image/png');
+
+            // Create a temporary link element
+            const link = document.createElement('a');
+            link.href = dataURL;
+            link.download = 'plot.png'; // Set the download filename
+
+            // Programmatically click the link to trigger the download
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Event listener for the sort ascending/unsort button
+        sortAscendingBtn.addEventListener('click', () => generatePlot('sortButton'));
+
+        // Event listener for the download button
+        downloadPlotBtn.addEventListener('click', downloadPlot);
+
+        // Event listener for the More Options button
+        moreOptionsBtn.addEventListener('click', toggleMoreOptions);
+
+        // Add input event listeners to all relevant input fields for live updates
+        valuesInput.addEventListener('input', () => generatePlot('input'));
+        categoriesInput.addEventListener('input', () => generatePlot('input'));
+        plotTitleInput.addEventListener('input', () => generatePlot('input'));
+        xAxisLabelInput.addEventListener('input', () => generatePlot('input'));
+        yAxisLabelInput.addEventListener('input', () => generatePlot('input'));
+        colorsInput.addEventListener('input', () => generatePlot('input'));
+        widthsInput.addEventListener('input', () => generatePlot('input'));
+
+        // Add event listeners for table header inputs
+        tableCategoryHeaderInput.addEventListener('input', () => generatePlot('tableHeaderInput'));
+        tableValueHeaderInput.addEventListener('input', () => generatePlot('tableHeaderInput'));
+
+        // Add event listeners for input method radio buttons
+        inputMethodRadios.forEach(radio => {
+            radio.addEventListener('change', toggleInputMethod);
+        });
+
+        // Add event listeners for chart type radio buttons
+        chartTypeRadios.forEach(radio => {
+            radio.addEventListener('change', toggleChartTypeInputs);
+        });
+
+        // Add event listener for "Add Row" button
+        addRowBtn.addEventListener('click', () => {
+            addTableRow();
+            // Automatically scroll to the new row if it's off-screen
+            dataTableBody.lastChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            generatePlot('tableInput'); // Trigger plot update after adding row
+        });
+
+        // Add paste event listener to the table body for Excel paste functionality
+        dataTableBody.addEventListener('paste', handleTablePaste);
+
+
+        // Function to resize canvas and redraw chart on window resize
+        function resizeCanvasAndRedraw() {
+            // Get the computed dimensions after layout
+            const computedStyle = getComputedStyle(barChartCanvas);
+            const displayWidth = parseFloat(computedStyle.width);
+            // Set the canvas drawing buffer resolution to be square
+            barChartCanvas.width = displayWidth;
+            barChartCanvas.height = displayWidth;
+
+            // Call generatePlot with 'resize' source to redraw, keeping current sort state
+            // This ensures the chart redraws correctly on resize while preserving the sort state
+            generatePlot('resize');
+        }
+
+        // Initial plot generation and input method setup when the page loads
+        window.onload = function() {
+            // Set initial table data and show table input by triggering the change event on the checked radio
+            document.querySelector('input[name="inputMethod"]:checked').dispatchEvent(new Event('change'));
+            toggleChartTypeInputs(); // Also initialize chart type specific inputs
+            updateMoreOptionsVisibility(); // Ensure initial visibility is correct
+            resizeCanvasAndRedraw(); // Ensure canvas is sized correctly and initial plot is drawn
+        };
+
+        // Add event listener for window resize
+        window.addEventListener('resize', resizeCanvasAndRedraw);
+
+    </script>
+</body>
+</html>

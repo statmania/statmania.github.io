@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histogram Generator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome CDN for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Custom styles for a cleaner look */
+        body {
+            font-family: 'Inter', sans-serif;
+            @apply bg-gray-50 text-gray-800;
+        }
+        canvas {
+            display: block; /* Remove extra space below canvas */
+            width: 100%;
+            /* Height will be set by JavaScript to match width for square aspect ratio */
+            max-width: 500px;
+            max-height: 500px;
+        }
+        /* Styling for the individual input cells within the table-like structure */
+        .data-table-cell {
+            width: 60px; /* Fixed cell width */
+            @apply p-2 border border-gray-900 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 h-9 text-center; /* Added text-center for better numerical display */
+        }
+        .column-header-input {
+            @apply w-full p-2 border border-gray-900 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-center font-semibold mb-2;
+        }
+        /* Style for other text inputs (plot title, labels, color) */
+        input[type="text"]:not(.data-table-cell, .column-header-input), textarea {
+            @apply w-full p-2 border border-gray-900 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500;
+        }
+        /* Style for the message box */
+        #messageBox {
+            @apply fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50 hidden;
+        }
+        #messageBoxContent {
+            @apply bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center;
+        }
+        #messageBoxButton {
+            @apply mt-4 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700;
+        }
+
+        /* Styling for action buttons */
+        .action-button {
+            @apply bg-gray-200 text-gray-800 py-2 px-4 rounded-lg shadow-md hover:bg-gray-300 transition transform duration-200 ease-in-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 flex items-center justify-center gap-2;
+        }
+        #downloadPlotBtn {
+            @apply bg-blue-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition transform duration-200 ease-in-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 border border-blue-700 flex items-center justify-center gap-2;
+        }
+        /* Style for add column/row button within the table */
+        .add-table-button {
+            @apply bg-green-500 text-white p-1 rounded-full shadow-md hover:bg-green-600 transition duration-200 ease-in-out text-sm flex-shrink-0; /* flex-shrink-0 to prevent shrinking */
+            width: 28px; /* Fixed width for a circle */
+            height: 28px; /* Fixed height for a circle */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .add-row-button {
+             @apply bg-green-500 text-white py-1 px-2 rounded-lg shadow-md hover:bg-green-600 transition transform duration-200 ease-in-out text-sm flex items-center justify-center gap-1;
+        }
+
+
+        /* Initially hidden class */
+        .hidden-options {
+            display: none;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <!-- Main Container -->
+    <div class="flex flex-col lg:flex-row gap-6 md:gap-8 max-w-full mx-auto">
+
+        <!-- Column 1: Data Input (25% width on large screens) -->
+        <div class="flex-shrink-0 w-full lg:w-1/4 bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+            <h1 class="text-3xl font-bold text-center mb-6 md:mb-8 text-indigo-700 flex items-center justify-center">
+                Data Input
+            </h1>
+            <div class="max-h-[calc(100vh-8rem-6rem)] overflow-y-auto pb-4">
+                <!-- Input Method Selection -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Input Method:</label>
+                    <div class="flex gap-4">
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="inputMethod" value="table" class="form-radio text-indigo-600" checked>
+                            <span class="ml-2 text-gray-700">Table Input</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="inputMethod" value="commaSeparated" class="form-radio text-indigo-600">
+                            <span class="ml-2 text-gray-700">Comma-separated</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Input Field for Values (Table Input) -->
+                <div id="tableInputContainer" class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Values (enter numbers in cells):</label>
+                    <div id="valuesTable" class="flex overflow-x-auto p-2 border border-gray-900 rounded-md shadow-sm bg-gray-50 min-h-[150px]">
+                        <!-- Columns will be dynamically added here by JavaScript -->
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Type in cells. Click '+' to add columns/rows.</p>
+                </div>
+
+                <!-- Input Field for Values (Comma-separated Input) -->
+                <div id="commaSeparatedInputContainer" class="mb-4 hidden">
+                    <label for="commaSeparatedValuesInput" class="block text-sm font-medium text-gray-700 mb-1">Values (comma-separated numbers):</label>
+                    <textarea id="commaSeparatedValuesInput" rows="10" placeholder="e.g., 10,20,30,40&#10;50,60,70,80"></textarea>
+                    <p class="text-xs text-gray-500 mt-1">Example: 10,20,30,40,50 (or ১০,২০,৩০,৪০,৫০) - supports multiple lines.</p>
+                </div>
+            </div>
+            <!-- Data Action Buttons -->
+            <div class="flex flex-wrap justify-center gap-4 mt-4">
+                <button id="clearDataBtn" class="action-button"><i class="fas fa-eraser"></i> Clear Data</button>
+                <button id="revertDataBtn" class="action-button"><i class="fas fa-history"></i> Revert</button>
+            </div>
+        </div>
+
+        <!-- Column 2: Options Panel (25% width on large screens) -->
+        <div class="flex-shrink-0 w-full lg:w-1/4 bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+            <h1 class="text-3xl font-bold text-center mb-6 md:mb-8 text-indigo-700 flex items-center justify-center">
+                Histogram Options
+            </h1>
+            <div class="max-h-[calc(100vh-8rem-6rem)] overflow-y-auto pb-4">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Plot Settings</h2>
+
+                <!-- Column Selection Dropdown -->
+                <div class="mb-4">
+                    <label for="columnSelect" class="block text-sm font-medium text-gray-700 mb-1">Select Column:</label>
+                    <select id="columnSelect" class="w-full p-2 border border-gray-900 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <!-- Options will be dynamically added here -->
+                    </select>
+                </div>
+
+                <!-- Input field for Plot Title -->
+                <div class="mb-4">
+                    <label for="plotTitleInput" class="block text-sm font-medium text-gray-700 mb-1">Plot Title:</label>
+                    <input type="text" id="plotTitleInput" value="Sample Histogram" placeholder="e.g., Data Distribution">
+                </div>
+
+                <!-- Slider for Number of Bins -->
+                <div class="mb-4">
+                    <label for="binSlider" class="block text-sm font-medium text-gray-700 mb-1">Number of Bins: <span id="binCountDisplay">10</span></label>
+                    <input type="range" id="binSlider" min="1" max="50" value="10" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                    <p class="text-xs text-gray-500 mt-1">Adjust the number of intervals (bins) for your data.</p>
+                </div>
+
+                <!-- More Options Section -->
+                <div class="mb-4 flex justify-center">
+                    <button id="moreOptionsBtn">More Options</button>
+                </div>
+
+                <div id="moreOptionsSection" class="hidden-options">
+                    <div class="mb-4" id="xAxisLabelDiv">
+                        <label for="xAxisLabelInput" class="block text-sm font-medium text-gray-700 mb-1">X-Axis Label:</label>
+                        <input type="text" id="xAxisLabelInput" value="" placeholder="Defaults to column name if empty">
+                    </div>
+
+                    <div class="mb-4" id="yAxisLabelDiv">
+                        <label for="yAxisLabelInput" class="block text-sm font-medium text-gray-700 mb-1">Y-Axis Label:</label>
+                        <input type="text" id="yAxisLabelInput" value="Frequency" placeholder="e.g., Count">
+                    </div>
+
+                    <div class="mb-4" id="colorsInputContainer">
+                        <label for="colorsInput" class="block text-sm font-medium text-gray-700 mb-1">Bar Color (optional, accepts hex/named color):</label>
+                        <input type="text" id="colorsInput" value="#6366F1" placeholder="e.g., blue, #FFC0CB">
+                        <p class="text-xs text-gray-500 mt-1">Example: #6366F1 or red</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 3: Chart Container (50% width on large screens) -->
+        <div class="flex-grow w-full lg:w-1/2 bg-white p-4 rounded-xl shadow-lg border border-gray-100 flex flex-col items-center justify-center min-h-[300px] md:min-h-[500px]">
+            <h1 class="text-3xl font-bold text-center mb-6 md:mb-8 text-indigo-700 flex items-center justify-center">
+                Histogram Plot
+            </h1>
+            <canvas id="histogramCanvas" class="flex-grow"></canvas>
+            <div class="mt-4 w-full flex flex-wrap justify-center gap-4 px-4">
+                <button id="downloadPlotBtn" class="action-button"><i class="fas fa-download"></i> Download</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Box for alerts -->
+    <div id="messageBox">
+        <div id="messageBoxContent">
+            <p id="messageBoxText" class="text-lg font-medium mb-4"></p>
+            <button id="messageBoxButton">OK</button>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Converts Bangla numerals in a string to English numerals.
+         * @param {string} inputString - The string possibly containing Bangla numerals.
+         * @returns {string} The string with Bangla numerals converted to English.
+         */
+        function convertBanglaToEnglishNumerals(inputString) {
+            const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+            const englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+            let convertedString = inputString;
+            for (let i = 0; i < banglaDigits.length; i++) {
+                const regex = new RegExp(banglaDigits[i], 'g');
+                convertedString = convertedString.replace(regex, englishDigits[i]);
+            }
+            return convertedString;
+        }
+
+        /**
+         * Converts English numerals in a string to Bangla numerals.
+         * @param {string} inputString - The string possibly containing English numerals.
+         * @returns {string} The string with English numerals converted to Bangla.
+         */
+        function convertEnglishToBanglaNumerals(inputString) {
+            const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+            const englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+            let convertedString = inputString;
+            for (let i = 0; i < englishDigits.length; i++) {
+                const regex = new RegExp(englishDigits[i], 'g');
+                convertedString = convertedString.replace(regex, banglaDigits[i]);
+            }
+            return convertedString;
+        }
+
+        /**
+         * Parses values from the dynamically generated input cells of the selected column.
+         * It handles Bangla numerals.
+         * @returns {{numbers: number[], containsBangla: boolean}} Array of numbers and a boolean indicating if Bangla numerals were found.
+         */
+        function parseNumbersFromTable() {
+            const selectedColumnName = columnSelect.value;
+            const selectedColumn = tableData.find(col => col.name === selectedColumnName);
+
+            if (!selectedColumn) {
+                return { numbers: [], containsBangla: false };
+            }
+
+            const numbers = [];
+            let containsBangla = false;
+            selectedColumn.values.forEach(value => {
+                const englishNum = convertBanglaToEnglishNumerals(value.toString().trim());
+                const num = parseFloat(englishNum);
+                if (!isNaN(num) && value.toString().trim() !== '') { // Only include if it's a valid number and not just an empty string
+                    numbers.push(num);
+                }
+                if (containsBanglaNumerals(value.toString())) {
+                    containsBangla = true;
+                }
+            });
+            return { numbers: numbers, containsBangla: containsBangla };
+        }
+
+        /**
+         * Parses a comma-separated string (now including newlines) into an array of numbers.
+         * It handles Bangla numerals and multi-line input.
+         * @param {string} inputString - The input string.
+         * @returns {{numbers: number[], containsBangla: boolean}} Array of numbers and a boolean indicating if Bangla numerals were found.
+         */
+        function parseNumbersFromCommaSeparated(inputString) {
+            // Replace newlines with commas to treat multi-line input as one comma-separated string
+            const flattenedString = inputString.replace(/\r?\n|\r/g, ',');
+            const englishNumString = convertBanglaToEnglishNumerals(flattenedString);
+            const numbers = englishNumString.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+            const containsBangla = containsBanglaNumerals(inputString);
+            return { numbers: numbers, containsBangla: containsBangla };
+        }
+
+
+        /**
+         * Checks if any string contains any Bangla numeral.
+         * @param {string} str - The string to check.
+         * @returns {boolean} True if the string contains any Bangla numeral, false otherwise.
+         */
+        function containsBanglaNumerals(str) {
+            const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '６', '৭', '８', '৯'];
+            for (let i = 0; i < banglaDigits.length; i++) {
+                if (str.includes(banglaDigits[i])) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Global variables for DOM elements and data (declared globally to be accessible)
+        let valuesTable;
+        let tableInputContainer;
+        let commaSeparatedInputContainer;
+        let commaSeparatedValuesInput;
+        let inputMethodRadios;
+        let clearDataBtn;
+        let revertDataBtn;
+        let binSlider;
+        let binCountDisplay;
+        let plotTitleInput;
+        let xAxisLabelInput;
+        let yAxisLabelInput;
+        let colorsInput;
+        let downloadPlotBtn;
+        let histogramCanvas;
+        let ctx;
+        let columnSelect;
+
+        let xAxisLabelDiv;
+        let yAxisLabelDiv;
+        let colorsInputContainer;
+        let moreOptionsBtn;
+        let moreOptionsSection;
+
+        let messageBox;
+        let messageBoxText;
+        let messageBoxButton;
+
+        let moreOptionsVisible = false;
+        let tableData = [];
+        const dataHistory = [];
+        const MAX_HISTORY_SIZE = 10;
+
+        // Function to show custom message box
+        function showMessageBox(message) {
+            messageBoxText.textContent = message;
+            messageBox.classList.remove('hidden');
+        }
+
+        // Default color for histogram bars
+        const defaultColor = '#6366F1'; // Indigo
+
+        /**
+         * Generates "nice" tick values for an axis.
+         * @param {number} min - The minimum value of the data range.
+         * @param {number} max - The maximum value of the data range.
+         * @param {number} numTicks - The desired number of ticks.
+         * @returns {number[]} An array of "nice" tick values.
+         */
+        function getNiceTickValues(min, max, numTicks) {
+            if (min === max) {
+                return [min]; // Handle single value case
+            }
+            const range = max - min;
+            const rawStep = range / (numTicks - 1);
+            const niceSteps = [1, 2, 5]; // Base nice steps
+            const exp = Math.floor(Math.log10(rawStep));
+            const frac = rawStep / Math.pow(10, exp);
+            let niceStep = 1;
+
+            if (frac <= niceSteps[0]) {
+                niceStep = niceSteps[0] * Math.pow(10, exp);
+            } else if (frac <= niceSteps[1]) {
+                niceStep = niceSteps[1] * Math.pow(10, exp);
+            } else if (frac <= niceSteps[2]) {
+                niceStep = niceSteps[2] * Math.pow(10, exp);
+            } else {
+                niceStep = niceSteps[0] * Math.pow(10, exp + 1);
+            }
+
+            const ticks = [];
+            let currentTick = Math.ceil(min / niceStep) * niceStep; // Start from a nice multiple
+            if (currentTick < min) currentTick += niceStep; // Ensure it's not below min
+
+            while (currentTick <= max + niceStep * 0.1) { // Add a small buffer for floating point issues
+                ticks.push(currentTick);
+                currentTick += niceStep;
+            }
+            // Ensure 0 is always included if it falls within the range or is close to min
+            if (min < 0 && max > 0 && !ticks.includes(0)) {
+                ticks.push(0);
+                ticks.sort((a,b) => a-b);
+            }
+            return ticks;
+        }
+
+        /**
+         * Draws a histogram on the canvas.
+         * @param {HTMLCanvasElement} canvas - The canvas element to draw on.
+         * @param {CanvasRenderingContext2D} ctx - The 2D rendering context of the canvas.
+         * @param {number[]} values - Array of numerical data.
+         * @param {number} numBins - Number of bins for the histogram.
+         * @param {string} plotTitle - Title of the plot.
+         * @param {string} xAxisLabel - Label for the X-axis.
+         * @param {string} yAxisLabel - Label for the Y-axis.
+         * @param {string} barColor - Color for the histogram bars.
+         * @param {boolean} shouldUseBanglaNumeralsForDisplay - True if Bangla numerals should be used for display.
+         */
+        function drawHistogram(canvas, ctx, values, numBins, plotTitle, xAxisLabel, yAxisLabel, barColor, shouldUseBanglaNumeralsForDisplay) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (values.length === 0 || numBins <= 0 || !Number.isInteger(numBins)) {
+                ctx.fillStyle = '#4B5563';
+                ctx.font = '16px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('No valid data or bin count to display histogram.', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+
+            const topPadding = 50;
+            const bottomPadding = 40;
+            const leftPadding = 60;
+            const rightPadding = 20;
+
+            const chartAreaWidth = canvasWidth - leftPadding - rightPadding;
+            const chartAreaHeight = canvasHeight - topPadding - bottomPadding;
+
+            const minValue = Math.min(...values);
+            const maxValue = Math.max(...values);
+            const range = maxValue - minValue;
+
+            // Handle case where all values are the same
+            const binWidth = (range === 0) ? 1 : range / numBins;
+
+            const bins = Array(numBins).fill(0);
+            let maxFrequency = 0;
+
+            // Populate bins
+            values.forEach(value => {
+                let binIndex = Math.floor((value - minValue) / binWidth);
+                if (binIndex >= numBins) { // Handle max value falling into the last bin
+                    binIndex = numBins - 1;
+                }
+                bins[binIndex]++;
+                if (bins[binIndex] > maxFrequency) {
+                    maxFrequency = bins[binIndex];
+                }
+            });
+
+            // Add a buffer to maxFrequency for Y-axis scaling
+            const displayMaxFrequency = (maxFrequency > 0) ? maxFrequency * 1.1 : 1;
+
+
+            // Draw Plot Area Background (ggplot2 style)
+            ctx.fillStyle = '#e6e6e6'; // Gray background
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+            // Draw horizontal grid lines (ggplot2 style)
+            ctx.strokeStyle = '#ffffff'; // White for grid lines
+            ctx.lineWidth = 1;
+            const yTickValues = getNiceTickValues(0, displayMaxFrequency, 5); // Get nice Y-axis ticks
+            yTickValues.forEach(value => {
+                const y = canvasHeight - bottomPadding - (value / displayMaxFrequency) * chartAreaHeight;
+                ctx.beginPath();
+                ctx.moveTo(leftPadding, y);
+                ctx.lineTo(leftPadding + chartAreaWidth, y);
+                ctx.stroke();
+            });
+
+
+            // Draw vertical grid lines (ggplot2 style) - one per bin
+            for (let i = 0; i <= numBins; i++) {
+                const xGrid = leftPadding + (chartAreaWidth / numBins) * i;
+                ctx.beginPath();
+                ctx.moveTo(xGrid, topPadding);
+                ctx.lineTo(xGrid, canvasHeight - bottomPadding);
+                ctx.stroke();
+            }
+
+            // Draw Plot Title
+            ctx.fillStyle = '#1F2937';
+            ctx.font = 'bold 18px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(plotTitle, canvasWidth / 2, 15);
+
+            // Draw X-axis (Value Range) - line now starts at minValue's visual position
+            ctx.beginPath();
+            const startX = leftPadding + ((minValue - minValue) / range) * chartAreaWidth; // This will be leftPadding if minValue is 0, or further right otherwise
+            const endX = leftPadding + chartAreaWidth;
+            ctx.moveTo(startX, canvasHeight - bottomPadding);
+            ctx.lineTo(endX, canvasHeight - bottomPadding);
+            ctx.strokeStyle = '#374151';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Draw Y-axis labels and tick marks (no Y-axis line)
+            yTickValues.forEach(value => {
+                const y = canvasHeight - bottomPadding - (value / displayMaxFrequency) * chartAreaHeight;
+
+                ctx.fillStyle = '#4B5563';
+                ctx.font = '12px Inter';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'middle';
+                const labelText = shouldUseBanglaNumeralsForDisplay ? convertEnglishToBanglaNumerals(value.toFixed(0).toString()) : value.toFixed(0).toString(); // Round to 0 decimal places for frequency
+                ctx.fillText(labelText, leftPadding - 5, y);
+
+                ctx.beginPath();
+                ctx.moveTo(leftPadding, y);
+                ctx.lineTo(leftPadding + 5, y);
+                ctx.strokeStyle = '#9CA3AF';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            });
+
+            // Draw Y-axis Label
+            ctx.save();
+            ctx.translate(leftPadding - 40, canvasHeight / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillStyle = '#1F2937';
+            ctx.font = '14px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(yAxisLabel, 0, 0);
+            ctx.restore();
+
+            // Draw X-axis Label (e.g., "Value Range" or "Column 1")
+            ctx.fillStyle = '#1F2937';
+            ctx.font = '14px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(xAxisLabel, leftPadding + chartAreaWidth / 2, canvasHeight - bottomPadding + 25);
+
+            // Draw histogram bars
+            const barWidth = chartAreaWidth / numBins;
+            for (let i = 0; i < numBins; i++) {
+                const barHeight = (bins[i] / displayMaxFrequency) * chartAreaHeight;
+                const x = leftPadding + i * barWidth;
+                const y = canvasHeight - bottomPadding - barHeight;
+
+                ctx.fillStyle = barColor || defaultColor; // Use provided color or default
+                ctx.fillRect(x, y, barWidth, barHeight);
+                ctx.strokeStyle = '#ffffff'; // White border between bars
+                ctx.lineWidth = 1;
+                ctx.strokeRect(x, y, barWidth, barHeight);
+            }
+
+            // Draw X-axis tick values (5-6 numbers)
+            ctx.fillStyle = '#4B5563';
+            ctx.font = '10px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top'; // Position below the axis line
+
+            const xTickValues = getNiceTickValues(minValue, maxValue, 6); // Get nice X-axis ticks (around 6)
+            const xRangeForMapping = maxValue - minValue;
+            const xCoordMap = (val) => leftPadding + ((val - minValue) / xRangeForMapping) * chartAreaWidth;
+
+
+            xTickValues.forEach(tickValue => {
+                const tickX = xCoordMap(tickValue);
+                // Draw tick mark
+                ctx.beginPath();
+                ctx.moveTo(tickX, canvasHeight - bottomPadding);
+                ctx.lineTo(tickX, canvasHeight - bottomPadding + 5); // Extend tick mark slightly below axis
+                ctx.strokeStyle = '#9CA3AF';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Draw tick label
+                const labelPrecision = (tickValue % 1 !== 0) ? 2 : 0; // Show decimals only if necessary
+                const tickLabel = shouldUseBanglaNumeralsForDisplay ? convertEnglishToBanglaNumerals(tickValue.toFixed(labelPrecision)) : tickValue.toFixed(labelPrecision);
+                ctx.fillText(tickLabel, tickX, canvasHeight - bottomPadding + 8); // Position label below tick mark
+            });
+        }
+
+        /**
+         * Function to generate normally distributed random numbers using the Box-Muller transform.
+         * @param {number} count - The number of values to generate.
+         * @param {number} mean - The mean of the distribution.
+         * @param {number} stdDev - The standard deviation of the distribution.
+         * @returns {number[]} An array of normally distributed numbers.
+         */
+        function generateNormalDistributedValues(count, mean, stdDev) {
+            const values = [];
+            for (let i = 0; i < count; i += 2) {
+                const u1 = Math.random();
+                const u2 = Math.random();
+                const z0 = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+                const z1 = Math.sqrt(-2 * Math.log(u1)) * Math.sin(2 * Math.PI * u2);
+
+                values.push(mean + stdDev * z0);
+                if (i + 1 < count) {
+                    values.push(mean + stdDev * z1);
+                }
+            }
+            return values.slice(0, count); // Ensure exact count
+        }
+
+        /**
+         * Adds a single input cell to a specific column.
+         * @param {HTMLElement} columnValuesContainer - The container for value inputs within a column.
+         * @param {string} value - The initial value for the input cell.
+         * @param {number} colIndex - The index of the column this cell belongs to.
+         * @param {number} rowIndex - The index of the row within the column.
+         */
+        function addInputCellToColumn(columnValuesContainer, value, colIndex, rowIndex) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.classList.add('data-table-cell'); // Apply the 60px width class
+            input.value = value;
+            input.dataset.colIndex = colIndex;
+            input.dataset.rowIndex = rowIndex;
+            input.addEventListener('input', (event) => {
+                const updatedColIndex = parseInt(event.target.dataset.colIndex);
+                const updatedRowIndex = parseInt(event.target.dataset.rowIndex);
+                const newValue = event.target.value.trim();
+
+                // Update the internal tableData model
+                if (tableData[updatedColIndex] && tableData[updatedColIndex].values) {
+                    tableData[updatedColIndex].values[updatedRowIndex] = newValue;
+                }
+                saveCurrentDataToHistory(); // Save state after input
+                generatePlot('input');
+            });
+            columnValuesContainer.appendChild(input);
+        }
+
+        /**
+         * Adds a new column to the table.
+         * @param {string} [name='New Column'] - The default name for the new column.
+         * @param {Array<string>} [values=[]] - Initial values for the new column (as strings).
+         */
+        function addColumn(name = `Column ${tableData.length + 1}`, values = []) {
+            const newColumn = { name: name, values: values }; // Values are already strings or empty
+            tableData.push(newColumn);
+
+            // Ensure the new column has enough cells to match the longest existing column
+            let maxRows = 0;
+            tableData.forEach(col => {
+                if (col.values.length > maxRows) {
+                    maxRows = col.values.length;
+                }
+            });
+            while (newColumn.values.length < maxRows) {
+                newColumn.values.push('');
+            }
+
+            renderTableInput(); // Re-render the entire table to show new column
+            populateColumnSelect(); // Update dropdown
+            columnSelect.value = newColumn.name; // Select the new column
+            saveCurrentDataToHistory(); // Save state after adding column
+            generatePlot('addColumn');
+        }
+
+        /**
+         * Renders the table input from the `tableData` model.
+         */
+        function renderTableInput() {
+            valuesTable.innerHTML = ''; // Clear existing table HTML
+            const maxRows = Math.max(0, ...tableData.map(col => col.values.length));
+
+            tableData.forEach((col, colIndex) => {
+                const columnDiv = document.createElement('div');
+                columnDiv.classList.add('flex', 'flex-col', 'gap-1', 'mr-4', 'items-center'); // Added items-center for horizontal alignment
+
+                // Column Header and Add Column Button
+                const headerContainer = document.createElement('div');
+                headerContainer.classList.add('flex', 'items-center', 'w-full', 'mb-2'); // Flex container for header and add button
+
+                const headerInput = document.createElement('input');
+                headerInput.type = 'text';
+                headerInput.classList.add('column-header-input', 'flex-grow'); // Allows input to grow
+                headerInput.value = col.name;
+                headerInput.addEventListener('input', (event) => {
+                    tableData[colIndex].name = event.target.value;
+                    populateColumnSelect();
+                    saveCurrentDataToHistory();
+                });
+                headerContainer.appendChild(headerInput);
+
+                const addColumnButton = document.createElement('button');
+                addColumnButton.classList.add('add-table-button', 'ml-2'); // Margin-left for spacing
+                addColumnButton.innerHTML = '<i class="fas fa-plus"></i>';
+                addColumnButton.title = 'Add new column to the right';
+                addColumnButton.addEventListener('click', () => {
+                    addColumn();
+                });
+                headerContainer.appendChild(addColumnButton);
+
+                columnDiv.appendChild(headerContainer);
+
+                // Container for values
+                const valuesContainer = document.createElement('div');
+                valuesContainer.classList.add('column-values', 'flex', 'flex-col', 'gap-1');
+
+                // Render cells up to maxRows, filling with empty strings if column is shorter
+                for (let rowIndex = 0; rowIndex < maxRows; rowIndex++) {
+                    const value = col.values[rowIndex] !== undefined ? col.values[rowIndex] : '';
+                    addInputCellToColumn(valuesContainer, value, colIndex, rowIndex);
+                }
+                columnDiv.appendChild(valuesContainer);
+
+                // Add Row Button for this column
+                const addRowButton = document.createElement('button');
+                addRowButton.classList.add('add-row-button', 'w-full', 'mt-2'); // Full width, margin-top
+                addRowButton.innerHTML = '<i class="fas fa-plus"></i> Add Row'; // Changed text
+                addRowButton.addEventListener('click', () => {
+                    // Add a new empty row to this specific column
+                    tableData[colIndex].values.push('');
+                    renderTableInput(); // Re-render the whole table to update all columns' row counts
+                    saveCurrentDataToHistory();
+                    generatePlot('addRow');
+                });
+                columnDiv.appendChild(addRowButton);
+
+                valuesTable.appendChild(columnDiv);
+            });
+
+            // If no columns exist at all initially, show a prominent "Add Column" button
+            if (tableData.length === 0) {
+                const initialAddColumnDiv = document.createElement('div');
+                initialAddColumnDiv.classList.add('flex', 'flex-col', 'items-center', 'justify-center', 'min-h-[150px]', 'w-[100px]', 'p-2', 'border', 'border-dashed', 'border-gray-400', 'rounded-lg'); // Added dashed border for visual cue
+                const addColumnButton = document.createElement('button');
+                addColumnButton.classList.add('action-button'); // Use action-button style
+                addColumnButton.innerHTML = '<i class="fas fa-plus"></i> Add Column';
+                addColumnButton.addEventListener('click', () => {
+                    addColumn();
+                });
+                initialAddColumnDiv.appendChild(addColumnButton);
+                valuesTable.appendChild(initialAddColumnDiv);
+            }
+        }
+
+
+        /**
+         * Populates the column selection dropdown with current column names.
+         */
+        function populateColumnSelect() {
+            columnSelect.innerHTML = ''; // Clear existing options
+            if (tableData.length === 0) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'No columns available';
+                columnSelect.appendChild(option);
+                columnSelect.disabled = true;
+            } else {
+                columnSelect.disabled = false;
+                tableData.forEach(col => {
+                    const option = document.createElement('option');
+                    option.value = col.name;
+                    option.textContent = col.name;
+                    columnSelect.appendChild(option);
+                });
+                // Select the first column by default if nothing is selected
+                if (!columnSelect.value && tableData.length > 0) {
+                    columnSelect.value = tableData[0].name;
+                }
+            }
+            generatePlot('columnSelectChange'); // Re-generate plot after column select update
+        }
+
+        /**
+         * Saves the current `tableData` state to history.
+         */
+        function saveCurrentDataToHistory() {
+            // Deep copy tableData to avoid mutation issues
+            const currentDataCopy = JSON.parse(JSON.stringify(tableData));
+            if (dataHistory.length > 0 && JSON.stringify(dataHistory[dataHistory.length - 1]) === JSON.stringify(currentDataCopy)) {
+                // Do not save if the data is identical to the last history entry
+                return;
+            }
+            dataHistory.push(currentDataCopy);
+            if (dataHistory.length > MAX_HISTORY_SIZE) {
+                dataHistory.shift(); // Remove the oldest entry if history limit is exceeded
+            }
+        }
+
+        /**
+         * Reverts the data to the previous state from history.
+         */
+        function revertData() {
+            if (dataHistory.length > 1) { // Need at least two states to revert (current and previous)
+                dataHistory.pop(); // Remove current state
+                tableData = JSON.parse(JSON.stringify(dataHistory[dataHistory.length - 1])); // Load previous state
+                renderTableInput(); // Re-render table with reverted data
+                populateColumnSelect(); // Update column dropdown
+                showMessageBox("Data reverted to previous state!");
+                generatePlot('revert');
+            } else {
+                showMessageBox("No previous state to revert to.");
+            }
+        }
+
+
+        /**
+         * Toggles the visibility of the "More Options" section.
+         */
+        function toggleMoreOptions() {
+            moreOptionsVisible = !moreOptionsVisible;
+            if (moreOptionsVisible) {
+                moreOptionsSection.classList.remove('hidden-options');
+                moreOptionsBtn.textContent = 'Less Options';
+            } else {
+                moreOptionsSection.classList.add('hidden-options');
+                moreOptionsBtn.textContent = 'More Options';
+            }
+            generatePlot('moreOptionsToggle'); // Regenerate plot to reflect changes
+        }
+
+        /**
+         * Handles the change of input method (radio buttons).
+         */
+        function handleInputMethodChange() {
+            if (document.querySelector('input[name="inputMethod"]:checked').value === 'table') {
+                tableInputContainer.classList.remove('hidden');
+                commaSeparatedInputContainer.classList.add('hidden');
+                // Ensure table is rendered with its current data or defaults
+                renderTableInput();
+            } else {
+                tableInputContainer.classList.add('hidden');
+                commaSeparatedInputContainer.classList.remove('hidden');
+            }
+            // Always save history after input method change as it changes the active data context
+            saveCurrentDataToHistory();
+            generatePlot('inputMethodChange'); // Regenerate plot when input method changes
+        }
+
+        /**
+         * Handles clearing the data based on the selected input method.
+         */
+        function clearData() {
+            const currentInputMethod = document.querySelector('input[name="inputMethod"]:checked').value;
+            if (currentInputMethod === 'table') {
+                tableData = [{ name: 'Column 1', values: [] }]; // Reset to one empty column
+                populateColumnSelect(); // Update column dropdown
+                renderTableInput(); // Re-render to show empty column
+            } else { // 'commaSeparated'
+                commaSeparatedValuesInput.value = ''; // Clear textarea
+            }
+            showMessageBox("Data has been cleared!");
+            saveCurrentDataToHistory(); // Save state after clear
+            generatePlot('clear'); // Regenerate plot after clear
+        }
+
+        /**
+         * Generates and draws the plot based on user input.
+         * @param {string} [source='input'] - Indicates what triggered the plot generation.
+         */
+        function generatePlot(source = 'input') {
+            let valuesData = { numbers: [], containsBangla: false };
+            const currentInputMethod = document.querySelector('input[name="inputMethod"]:checked').value;
+
+            if (currentInputMethod === 'table') {
+                valuesData = parseNumbersFromTable();
+            } else { // 'commaSeparated'
+                valuesData = parseNumbersFromCommaSeparated(commaSeparatedValuesInput.value);
+            }
+
+            const values = valuesData.numbers;
+            const shouldUseBanglaNumeralsForDisplay = valuesData.containsBangla; // Get this from the parsing functions
+            const numBins = parseInt(binSlider.value); // Read from slider
+            const plotTitle = plotTitleInput.value;
+            // Determine X-axis label: use input if provided, else use column name
+            let xAxisLabel = xAxisLabelInput.value.trim();
+            if (xAxisLabel === '') {
+                xAxisLabel = columnSelect.value;
+            }
+
+            const yAxisLabel = yAxisLabelInput.value;
+            const barColor = colorsInput.value || defaultColor; // Use specified color or default
+
+            // Update the bin count display
+            binCountDisplay.textContent = shouldUseBanglaNumeralsForDisplay ? convertEnglishToBanglaNumerals(numBins.toString()) : binSlider.value.toString();
+
+            // --- Validation ---
+            if (values.length === 0) {
+                ctx.clearRect(0, 0, histogramCanvas.width, histogramCanvas.height);
+                // Only show pop-up alert for explicit user input actions (not resize, toggle, slider, clear, or method change if no data)
+                if (source === 'input' && currentInputMethod === 'table' && valuesTable.children.length > 0 && Array.from(valuesTable.querySelectorAll('.data-table-cell')).every(input => input.value.trim() === '')) {
+                     // Do nothing if user just cleared all table cells
+                } else if (source === 'input' && currentInputMethod === 'commaSeparated' && commaSeparatedValuesInput.value.trim() === '') {
+                    // Do nothing if user just cleared textarea
+                } else if (source !== 'resize' && source !== 'moreOptionsToggle' && source !== 'slider' && source !== 'inputMethodChange' && source !== 'clear' && source !== 'revert' && source !== 'addColumn' && source !== 'columnSelectChange') {
+                    showMessageBox("Please enter numerical values for the histogram.");
+                } else if ((source === 'slider' || source === 'inputMethodChange' || source === 'clear' || source === 'revert' || source === 'addColumn' || source === 'columnSelectChange') && values.length === 0) {
+                     // If slider moves or input method changes or clear but no data, just clear the plot, don't show pop-up
+                     ctx.fillStyle = '#4B5563';
+                     ctx.font = '16px Inter';
+                     ctx.textAlign = 'center';
+                     ctx.textBaseline = 'middle';
+                     ctx.fillText('No valid data to display histogram.', histogramCanvas.width / 2, histogramCanvas.height / 2);
+                }
+                return;
+            }
+            // numBins validation is implicitly handled by the slider's min/max/step
+
+            if (Math.min(...values) === Math.max(...values) && numBins > 1) {
+                if (source !== 'resize' && source !== 'moreOptionsToggle' && source !== 'slider' && source !== 'inputMethodChange' && source !== 'clear' && source !== 'revert' && source !== 'addColumn' && source !== 'columnSelectChange') {
+                    // Only show this warning if it's not a general resize, options toggle, slider movement, clear, revert, or adding column
+                    showMessageBox("All values are identical. Consider using 1 bin for a single bar or fewer bins if you expected a range.");
+                }
+            }
+
+            // Ensure canvas size is set to its CSS size
+            const computedStyle = getComputedStyle(histogramCanvas);
+            histogramCanvas.width = parseFloat(computedStyle.width);
+            histogramCanvas.height = histogramCanvas.width; // Make it square based on width
+
+            drawHistogram(histogramCanvas, ctx, values, numBins, plotTitle, xAxisLabel, yAxisLabel, barColor, shouldUseBanglaNumeralsForDisplay);
+        }
+
+        // Function to handle downloading the chart
+        function downloadPlot() {
+            const dataURL = histogramCanvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.href = dataURL;
+            link.download = 'histogram.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Function to resize canvas and redraw chart on window resize
+        function resizeCanvasAndRedraw() {
+            if (histogramCanvas) { // Defensive check
+                const computedStyle = getComputedStyle(histogramCanvas);
+                const displayWidth = parseFloat(computedStyle.width);
+                histogramCanvas.width = displayWidth;
+                histogramCanvas.height = displayWidth;
+                generatePlot('resize');
+            }
+        }
+
+        // Initial plot generation and setup when the page loads
+        document.addEventListener('DOMContentLoaded', function() { // Changed to DOMContentLoaded
+            // Get references to DOM elements inside DOMContentLoaded
+            valuesTable = document.getElementById('valuesTable');
+            tableInputContainer = document.getElementById('tableInputContainer');
+            commaSeparatedInputContainer = document.getElementById('commaSeparatedInputContainer');
+            commaSeparatedValuesInput = document.getElementById('commaSeparatedValuesInput');
+            inputMethodRadios = document.querySelectorAll('input[name="inputMethod"]');
+            clearDataBtn = document.getElementById('clearDataBtn');
+            revertDataBtn = document.getElementById('revertDataBtn');
+            binSlider = document.getElementById('binSlider');
+            binCountDisplay = document.getElementById('binCountDisplay');
+            plotTitleInput = document.getElementById('plotTitleInput');
+            xAxisLabelInput = document.getElementById('xAxisLabelInput');
+            yAxisLabelInput = document.getElementById('yAxisLabelInput');
+            colorsInput = document.getElementById('colorsInput');
+            downloadPlotBtn = document.getElementById('downloadPlotBtn');
+            histogramCanvas = document.getElementById('histogramCanvas');
+            ctx = histogramCanvas.getContext('2d');
+            columnSelect = document.getElementById('columnSelect');
+
+            xAxisLabelDiv = document.getElementById('xAxisLabelDiv');
+            yAxisLabelDiv = document.getElementById('yAxisLabelDiv');
+            colorsInputContainer = document.getElementById('colorsInputContainer');
+            moreOptionsBtn = document.getElementById('moreOptionsBtn');
+            moreOptionsSection = document.getElementById('moreOptionsSection');
+
+            messageBox = document.getElementById('messageBox');
+            messageBoxText = document.getElementById('messageBoxText');
+            messageBoxButton = document.getElementById('messageBoxButton');
+
+            // Add event listeners (now that elements are guaranteed to be available)
+            if (messageBoxButton) { // Defensive check
+                messageBoxButton.addEventListener('click', () => {
+                    messageBox.classList.add('hidden');
+                });
+            }
+            if (moreOptionsBtn) { // Defensive check
+                moreOptionsBtn.addEventListener('click', toggleMoreOptions);
+            }
+
+            // inputMethodRadios is a NodeList, forEach is safe even if empty
+            inputMethodRadios.forEach(radio => {
+                radio.addEventListener('change', handleInputMethodChange);
+            });
+            if (clearDataBtn) { // Defensive check
+                clearDataBtn.addEventListener('click', clearData);
+            }
+            if (revertDataBtn) { // Defensive check
+                revertDataBtn.addEventListener('click', revertData);
+            }
+            if (commaSeparatedValuesInput) { // Defensive check
+                commaSeparatedValuesInput.addEventListener('input', () => {
+                    saveCurrentDataToHistory();
+                    generatePlot('input');
+                });
+            }
+            if (columnSelect) { // Defensive check
+                columnSelect.addEventListener('change', () => generatePlot('columnSelectChange'));
+            }
+            if (binSlider) { // Defensive check
+                binSlider.addEventListener('input', () => generatePlot('slider'));
+            }
+            if (plotTitleInput) { // Defensive check
+                plotTitleInput.addEventListener('input', () => generatePlot('input'));
+            }
+            if (xAxisLabelInput) { // Defensive check
+                xAxisLabelInput.addEventListener('input', () => generatePlot('input'));
+            }
+            if (yAxisLabelInput) { // Defensive check
+                yAxisLabelInput.addEventListener('input', () => generatePlot('input'));
+            }
+            if (colorsInput) { // Defensive check
+                colorsInput.addEventListener('input', () => generatePlot('input'));
+            }
+            if (downloadPlotBtn) { // Defensive check
+                downloadPlotBtn.addEventListener('click', downloadPlot);
+            }
+            window.addEventListener('resize', resizeCanvasAndRedraw); // This is safe now as resizeCanvasAndRedraw is global
+
+            // Generate 30 normally distributed values for the default column
+            const defaultNormalValues = generateNormalDistributedValues(30, 50, 10);
+            tableData = [{ name: 'Column 1', values: defaultNormalValues.map(val => val.toFixed(2)) }]; // Initialize tableData
+            renderTableInput(); // Render the table with initial data
+            populateColumnSelect(); // Populate the column selection dropdown
+            saveCurrentDataToHistory(); // Save initial state to history
+
+            // Set initial value for bin count display based on currently selected input method
+            // Ensure elements exist before trying to read their values
+            const selectedRadio = document.querySelector('input[name="inputMethod"]:checked');
+            const initialValuesCheckData = (selectedRadio && selectedRadio.value === 'table') ?
+                                         parseNumbersFromTable() :
+                                         (commaSeparatedValuesInput ? parseNumbersFromCommaSeparated(commaSeparatedValuesInput.value) : { numbers: [], containsBangla: false });
+
+            if (binCountDisplay && binSlider) { // Defensive check
+                binCountDisplay.textContent = initialValuesCheckData.containsBangla ? convertEnglishToBanglaNumerals(binSlider.value.toString()) : binSlider.value.toString();
+            }
+
+            toggleMoreOptions(); // Initialize visibility of more options
+            handleInputMethodChange(); // Set initial visibility based on default radio (table is default)
+            generatePlot(); // Initial plot generation
+            resizeCanvasAndRedraw(); // Ensure canvas is sized correctly and initial plot is drawn
+        });
+
+    </script>
+</body>
+</html>
