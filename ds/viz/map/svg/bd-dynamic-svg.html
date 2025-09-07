@@ -1,30 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bangladesh District Data Visualization</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to bottom, #f5f7fa, #c3cfe2);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 2rem 1rem;
+        }
 
-<style>
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            padding: 0;
+        }
 
-#map-container {
-  width: 100%;
-  max-width: 900px;
-  margin: auto;
-}
-#map-container svg {
-  width: 100%;
-  height: auto;
-  display: block;
-}
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 2px solid #34495e;
+        }
 
-</style>
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
 
+        .description {
+            margin-top: 0.5rem;
+            font-size: 1.125rem;
+            color: #ecf0f1;
+        }
 
-<div id="map-container"></div>
+        .content {
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-<script>
-fetch('bd-district-map.svg')
-  .then(res => res.text())
-  .then(svg => {
-    document.getElementById('map-container').innerHTML = svg;
+        .map-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 1.5rem auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
 
-    // Color all with data-division="Rajshahi"
-    document.querySelectorAll('#map-container [data-district="Dhaka"]')
-      .forEach(el => el.setAttribute('fill', 'red'));
-  });
-</script>
+        .map-container svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .district {
+            stroke: #fff;
+            stroke-width: 0.5;
+            transition: fill 0.3s ease-in-out, stroke 0.2s ease-in-out;
+            cursor: pointer;
+        }
+
+        .district:hover {
+             fill: #7f8c8d;
+        }
+
+        .district.highlight {
+             stroke: #2c3e50;
+             stroke-width: 2.5;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 0.5rem;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .legend {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .legend-color {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 0.2rem;
+        }
+
+        .data-table {
+            width: 100%;
+            max-width: 900px;
+            margin: 1.5rem 0;
+            border-collapse: collapse;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .data-table th, .data-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .data-table th {
+            background: #2c3e50;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .data-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .data-table tr:hover {
+            background: #e3f2fd;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #ccc;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            pointer-events: none;
+            font-size: 0.875rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+            z-index: 100;
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2.5rem;
+            font-size: 1.25rem;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 1.5rem;
+            }
+            header {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Bangladesh District Data Visualization</h1>
+            <p class="description">Interactive map showing numerical values for each district</p>
+        </header>
+
+        <div class="content">
+            <div class="controls">
+                <!-- Legend will be dynamically generated by D3 -->
+            </div>
+
+            <div class="map-container">
+                <div class="loading">Loading map and data...</div>
+            </div>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th data-sort="district">District</th>
+                        <th data-sort="value">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // CSV data from Google Sheets
+            const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSuSk0IxgNrmRbMmOvrJLmpTaHo5WPPTdviCv_rNQY_Jcg3dEXHykxldkU_Z_ciT3PZ6hrlThbAwJqt/pub?gid=750903262&single=true&output=csv';
+
+            let dataMap = new Map();
+            let allDistricts = [];
+            let currentSortColumn = 'district';
+            let sortDirection = 'asc';
+
+            const tooltip = d3.select("body").append("div")
+                .attr("class", "tooltip");
+
+            // Use Promises to handle asynchronous loading of both files
+            const loadCsv = d3.csv(csvUrl, d3.autoType);
+            const loadSvg = d3.xml('bd-district-map.svg');
+
+            async function init() {
+                try {
+                    const [csvData, svgDoc] = await Promise.all([loadCsv, loadSvg]);
+
+                    // Create a lookup map for faster data access
+                    csvData.forEach(d => {
+                        dataMap.set(d.district, d.value);
+                    });
+                    allDistricts = csvData;
+
+                    // Find min and max values for the color scale
+                    const minVal = d3.min(Array.from(dataMap.values()));
+                    const maxVal = d3.max(Array.from(dataMap.values()));
+
+                    // Set up the color scale
+                    const colorScale = d3.scaleQuantize()
+                        .domain([minVal, maxVal])
+                        .range(d3.schemeBlues[9]);
+
+                    // Get the map container and insert the SVG content
+                    const mapContainer = document.querySelector('.map-container');
+                    mapContainer.innerHTML = ''; // Clear the loading text
+                    mapContainer.appendChild(svgDoc.documentElement);
+                    d3.select(".loading").remove();
+
+                    // Select all paths in the SVG with the data-district attribute
+                    d3.select(mapContainer).selectAll("path")
+                        .attr("class", "district") // Add the CSS class
+                        .attr("fill", function() {
+                            const districtName = d3.select(this).attr('data-district');
+                            const value = dataMap.get(districtName);
+                            return value !== undefined ? colorScale(value) : '#d3d3d3'; // Gray for no data
+                        })
+                        .on("mouseover", function(event) {
+                            const districtName = d3.select(this).attr('data-district');
+                            const value = dataMap.get(districtName);
+                            d3.select(this).classed("highlight", true);
+                            tooltip.html(`<strong>${districtName}</strong><br>Value: ${value !== undefined ? value : 'N/A'}`)
+                                .style("display", "block")
+                                .style("left", (event.pageX + 10) + "px")
+                                .style("top", (event.pageY + 10) + "px");
+                        })
+                        .on("mouseout", function() {
+                            d3.select(this).classed("highlight", false);
+                            tooltip.style("display", "none");
+                        });
+
+                    // Add the legend
+                    const legendData = colorScale.quantiles().concat(colorScale.domain()[1]);
+                    const legend = d3.select(".controls").append("div")
+                        .attr("class", "legend");
+
+                    legend.selectAll(".legend-item")
+                        .data(legendData)
+                        .enter().append("div")
+                        .attr("class", "legend-item")
+                        .html(d => `<div class="legend-color" style="background:${colorScale(d)};"></div><span>${d3.format(".1f")(d)}</span>`);
+
+                    // Populate the data table
+                    populateDataTable();
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    d3.select(".loading").text("Failed to load map or data. Ensure you are running a local server.");
+                }
+            }
+
+            // Function to populate and sort the data table (re-used from before)
+            function populateDataTable() {
+                const tableBody = d3.select(".data-table tbody");
+                const sortedData = [...allDistricts].sort((a, b) => {
+                    const aVal = a[currentSortColumn];
+                    const bVal = b[currentSortColumn];
+                    if (currentSortColumn === 'district') {
+                        return sortDirection === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                    } else {
+                        return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+                    }
+                });
+
+                const rows = tableBody.selectAll("tr")
+                    .data(sortedData, d => d.district)
+                    .join("tr");
+
+                rows.html(d => `<td>${d.district}</td><td>${d.value}</td>`)
+                    .on("mouseover", function(event, d) {
+                        d3.select(this).classed("bg-blue-100", true);
+                        d3.select(`[data-district="${d.district}"]`).classed("highlight", true);
+                    })
+                    .on("mouseout", function(event, d) {
+                        d3.select(this).classed("bg-blue-100", false);
+                        d3.select(`[data-district="${d.district}"]`).classed("highlight", false);
+                    });
+            }
+
+            // Add sorting event listeners
+            d3.selectAll("th[data-sort]").on("click", function() {
+                const newSortColumn = d3.select(this).attr("data-sort");
+                if (newSortColumn === currentSortColumn) {
+                    sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+                } else {
+                    currentSortColumn = newSortColumn;
+                    sortDirection = 'asc';
+                }
+                populateDataTable();
+            });
+
+            init();
+        })();
+    </script>
+</body>
+</html>

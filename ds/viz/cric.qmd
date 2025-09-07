@@ -1,0 +1,37 @@
+---
+title: "Most Runs in an Innings"
+format: html
+execute:
+  echo: false
+  warning: false
+---
+
+```{r}
+#| message: false
+library(rvest)
+library(dplyr)
+library(ggplot2)
+
+# Fetch the data
+url <- "https://www.espncricinfo.com/records/most-runs-in-an-innings-284198"
+page <- read_html(url)
+
+df <- page %>%
+  html_element("table") %>%
+  html_table()
+
+# Ensure numeric Runs
+df <- df %>%
+  mutate(Runs = as.numeric(gsub("[^0-9]", "", Runs))) %>%
+  slice_max(Runs, n = 10)
+
+# Plot
+ggplot(df, aes(x = reorder(Batsman, Runs), y = Runs)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(
+    title = "Top 10 Highest Individual Scores",
+    x = "Batsman",
+    y = "Runs"
+  ) +
+  theme_minimal()
