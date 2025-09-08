@@ -1,0 +1,175 @@
+---
+title: "R Package Statistics"
+format:
+  dashboard:
+    nav-buttons: [github]
+    github: https://github.com/statmania/statmania.github.io
+logo: ../../img/statmania_logo.png
+theme: [sandstone, theme/custom.scss]
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+```
+
+
+```{r}
+# Load necessary libraries
+# install.packages(c("rvest", "dplyr", "stringr"))
+
+library(rvest)
+library(dplyr)
+library(tidyr)
+library(stringr)
+
+# 1. Get the list of packages as a data frame
+url <- "https://cran.r-project.org/web/packages/available_packages_by_date.html"
+
+# Read the HTML content from the URL
+cran_html <- read_html(url)
+
+# Extract the table from the HTML and convert it to a data frame
+packages_df <- cran_html %>%
+  html_table() %>%
+  `[[`(1)
+
+# Rename columns for clarity
+colnames(packages_df) <- c("Date", "Name", "Desc")
+
+# Separate Year, Month, Day
+packages_df <- packages_df %>%
+  tidyr::separate_wider_delim(
+    Date,
+    delim = "-",
+    names = c("Year", "Month", "Day")
+  ) %>%
+  dplyr::mutate(
+    dplyr::across(
+      c(Year, Month, Day),
+      as.numeric
+    )
+  )
+
+# Group by year, month, and day
+grouped_packages <- packages_df %>%
+  group_by(Year, Month, Day) %>%
+  summarize(
+    count = n(),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(Year), desc(Month), desc (Day))
+```
+
+#  {.sidebar}
+
+**Dashboard Info**
+
+| About          | CRAN Packages                               |
+|----------------|---------------------------------------------|
+| **Created by** | Abdullah Al Mahmud                          |
+| **Github** | [mahmudstat](https://github.com/mahmudstat)     |
+| **Updates** | Once Every Day                                 |
+| **Last Updated** | `r Sys.time()`                            |
+
+
+------------------------------------------------------------------------
+
+**No. of Packages Published in Recent Years**
+
+|                          |     |
+|--------------------------|-----|
+| **`r max(packages_df$Year)-1`** |  `r nrow(filter(packages_df, Year == max(Year)-1))` |
+| **`r max(packages_df$Year)-2`** |  `r nrow(filter(packages_df, Year == max(Year)-2))` |
+| **`r max(packages_df$Year)-3`** |  `r nrow(filter(packages_df, Year == max(Year)-3))` |
+
+------------------------------------------------------------------------
+
+::: {.callout-note collapse="true"}
+## SOURCE
+
+[CRAN](https://cran.r-project.org/web/packages/available_packages_by_date.html).
+:::
+
+# All
+
+## Row {height="20%"}
+
+```{r}
+#| content: valuebox
+#| title: "Total Packages"
+
+list(
+  icon = "box",
+  color = "primary",
+  value = nrow(packages_df)
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Total Packages in This Year"
+
+list(
+  icon = "backpack4-fill",
+  color = "primary",
+  value = nrow(filter(packages_df, Year == max(Year)))
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Total Packages in This Month"
+
+list(
+  icon = "calendar",
+  color = "primary",
+  value = packages_df %>%
+  filter(Year == max(Year)) %>%
+  filter(Month == max(Month)) %>%
+  nrow()
+)
+```
+
+## Row {height="80%"}
+
+### Column {width="50%"}
+
+```{r}
+#| title: Packages in The Last Two Years
+
+packages_df %>%
+  dplyr::group_by(Year, Month) %>%
+  dplyr::summarize(
+    count = n(),
+    .groups = "drop"
+  ) %>%
+  dplyr::arrange(dplyr::desc(Year), dplyr::desc(Month)) %>%
+  dplyr::filter(Year %in% c(max(Year), max(Year) - 1)) %>%
+  ggplot2::ggplot(ggplot2::aes(x = Month, y = count)) +
+  # Add the vertical line segments for the stems
+  ggplot2::geom_segment(ggplot2::aes(x = Month, xend = Month, y = 0, yend = count),
+                        linewidth = 1.5, color = "steelblue") +
+  # Add the points for the "lollipops"
+  ggplot2::geom_point(ggplot2::aes(color = as.factor(Year)), size = 4) +
+  # Ensure the x-axis labels are 1-12
+  ggplot2::scale_x_continuous(breaks = 1:12) +
+  # Separate plots for each year
+  ggplot2::facet_wrap(~Year, ncol=1) +
+  ggplot2::labs(
+    title = "New Packages on CRAN by Month (Last Two Years)",
+    subtitle = "Separate panels for each year",
+    x = "Month",
+    y = "Number of Packages",
+    color = "Year"
+  )
+```
+
+### Column {width="50%"}
+
+```{r}
+#| title: Package Publication by Year, Month, & Day
+library(DT)
+datatable(grouped_packages)
+```
