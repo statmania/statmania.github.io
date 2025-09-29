@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vocabulary Flashcards</title>
+    <title>Stat Mania GRE Flashcards</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -14,7 +14,8 @@
         #flashcard {
             width: 100%;
             max-width: 400px;
-            height: 250px;
+            /* New desktop height: increased from 290px to 310px (approx 5% more) */
+            height: 310px;
             perspective: 1000px;
         }
 
@@ -144,7 +145,8 @@
         /* Responsive adjustments */
         @media (max-width: 640px) {
             #flashcard {
-                height: 300px;
+                /* New mobile height: increased from 350px to 370px (approx 5% more) */
+                height: 370px;
                 max-width: 95vw;
             }
             .flashcard-front h2 {
@@ -161,9 +163,15 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col items-center p-4" style="font-family: 'Inter', sans-serif;">
 
-    <h1 class="text-3xl font-bold text-gray-800 mb-6 dark:text-gray-100">
-        Vocabulary Flashcards
-    </h1>
+    <!-- Logo and Title Group -->
+    <div class="flex flex-col items-center mb-6">
+        <!-- Logo (Make sure to use a relative path) -->
+        <img src="../../img/statmania_logo.png" alt="Stat Mania Logo" class="w-20 h-auto mb-2">
+        <!-- New Title -->
+        <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100 text-center">
+            Stat Mania GRE Flashcards
+        </h1>
+    </div>
 
     <!-- Filter Toggle and Global Controls: Now centered -->
     <div id="filterControlBar" class="w-full max-w-4xl mb-4 flex justify-center items-center px-2 sm:px-0">
@@ -176,9 +184,10 @@
                 <i class="fas fa-home mr-1"></i> Home
             </a>
 
-            <!-- 2. Shuffle Button (Icon Only) - Updated colors -->
+            <!-- 2. Shuffle Button (Icon Only) - Blue when on, Grey when off -->
             <button id="shuffleButton" onclick="shuffleCards()"
-                class="p-3 bg-blue-600 text-white font-semibold rounded-full shadow-lg transition duration-300 hover:bg-blue-700 disabled:bg-gray-500 disabled:opacity-75 text-lg flex items-center justify-center"
+                class="p-3 text-white font-semibold rounded-full shadow-lg transition duration-300 text-lg flex items-center justify-center
+                       bg-blue-600 hover:bg-blue-700 disabled:bg-gray-500 disabled:hover:bg-gray-500 disabled:opacity-70"
                 title="Shuffle Cards">
                 <i class="fas fa-random"></i>
             </button>
@@ -412,9 +421,14 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
 
         window.shuffleCards = function() {
             if (filteredWords.length > 0) {
+                // 1. Perform the shuffle
                 shuffleArray(filteredWords);
+
+                // 2. Reset the pointers and history
                 currentWordIndex = 0;
                 wordHistory = [];
+
+                // 3. Load the new current card
                 loadCard(currentWordIndex, true);
             }
         };
@@ -474,6 +488,7 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
         };
 
         const loadCard = (index, trackHistory = true) => {
+            // Ensure card is always face up when a new word is loaded
             document.getElementById('cardInner').classList.remove('flipped');
 
             const wordData = filteredWords[index];
@@ -508,7 +523,9 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
 
         window.loadPreviousCard = function() {
             if (wordHistory.length > 1) {
+                // Remove the current card index
                 wordHistory.pop();
+                // Get the index of the card before the current one
                 const previousIndex = wordHistory[wordHistory.length - 1];
 
                 currentWordIndex = previousIndex;
@@ -521,7 +538,7 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
         const updateButtonStates = () => {
             document.getElementById('previousCardButton').disabled = wordHistory.length <= 1 || filteredWords.length === 0;
             document.getElementById('nextCardButton').disabled = filteredWords.length === 0;
-            // The shuffle button is disabled if there are no filtered words.
+            // Shuffle button is only disabled when there are no words to shuffle
             document.getElementById('shuffleButton').disabled = filteredWords.length === 0;
         };
 
@@ -577,8 +594,6 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
                 loadingText.textContent = 'No valid word data found.';
                 loadingText.classList.add('hidden');
                 mainWord.classList.add('hidden');
-                document.getElementById('nextCardButton').disabled = true;
-                document.getElementById('shuffleButton').disabled = true;
             }
             updateButtonStates();
         };
