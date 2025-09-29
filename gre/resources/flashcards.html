@@ -12,7 +12,7 @@
     <style>
         /* Custom CSS for 3D Flip Effect */
         #flashcard {
-            width: 90vw;
+            width: 100%; /* Take full width of parent column */
             max-width: 400px;
             height: 250px;
             perspective: 1000px;
@@ -105,6 +105,12 @@
                 font-size: 2rem;
             }
         }
+
+        /* Styles for the side navigation buttons */
+        .side-nav-button {
+            width: 100px; /* Fixed width for better visual balance */
+            height: 50px; /* Ensures a good touch target */
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4" style="font-family: 'Inter', sans-serif;">
@@ -112,12 +118,6 @@
     <h1 class="text-3xl font-bold text-gray-800 mb-6 dark:text-gray-100">
         Vocabulary Flashcards
     </h1>
-
-    <!-- Data Source Status Message -->
-    <div id="statusMessage" class="w-full max-w-4xl text-center mb-4 p-2 rounded-lg text-sm transition duration-300">
-        <!-- Status message will be inserted here by JavaScript -->
-    </div>
-    <!-- End Data Source Status Message -->
 
     <!-- Filter Menu (Filter by Initial Letter) -->
     <div class="w-full max-w-4xl mb-6">
@@ -129,40 +129,62 @@
     </div>
     <!-- End Filter Menu -->
 
-    <div id="flashcard" class="mb-8">
-        <div id="cardInner" class="flashcard-inner" onclick="flipCard()">
-            <!-- Card Front -->
-            <div id="cardFront" class="flashcard-front">
-                <p id="loadingText" class="text-lg text-gray-500">Loading Words...</p>
-                <h2 id="mainWord" class="hidden"></h2>
-            </div>
-
-            <!-- Card Back -->
-            <div id="cardBack" class="flashcard-back">
-                <h3 class="text-sm uppercase tracking-wider text-gray-400 mb-2">Definition & Usage</h3>
-                <p id="partOfSpeech" class="font-bold text-indigo-600">Part of Speech: <span id="posContent"></span></p>
-                <p id="meaningText" class="text-gray-700">Meaning: <span id="meaningContent"></span></p>
-                <p id="exampleText" class="italic text-gray-500 border-t border-gray-200 pt-3 mt-3">
-                    <span class="font-bold not-italic text-sm text-gray-800">Example:</span> <span id="exampleContent"></span>
-                </p>
-            </div>
+    <!-- Top Control Bar (Home Link and Shuffle Button) - CENTERED ABOVE CARD -->
+    <div class="w-full max-w-4xl mb-6 flex justify-center items-center px-2 sm:px-0">
+        <div class="flex space-x-6"> <!-- Use space-x-6 for spacing between elements -->
+            <!-- Home Link -->
+            <a href="../" class="px-4 py-2 text-indigo-600 hover:text-indigo-800 font-semibold rounded-full transition duration-300 text-sm sm:text-base">
+                <i class="fas fa-home mr-1"></i> Home
+            </a>
+            <!-- Shuffle Button -->
+            <button id="shuffleButton" onclick="shuffleCards()" class="px-4 py-2 bg-yellow-500 text-white font-semibold rounded-full shadow-lg hover:bg-yellow-600 transition duration-300 disabled:opacity-50 text-sm sm:text-base">
+                <i class="fas fa-random mr-2"></i> Shuffle
+            </button>
         </div>
     </div>
+    <!-- End Top Control Bar -->
 
-    <div class="flex flex-wrap justify-center space-x-2 sm:space-x-4">
-        <!-- Shuffle Button -->
-        <button id="shuffleButton" onclick="shuffleCards()" class="px-4 py-2 sm:px-6 sm:py-3 bg-yellow-500 text-white font-semibold rounded-full shadow-lg hover:bg-yellow-600 transition duration-300 disabled:opacity-50 text-sm sm:text-base">
-            <i class="fas fa-random mr-2"></i> Shuffle
+    <!-- Main Card & Navigation Container -->
+    <div class="flex items-center justify-center w-full max-w-4xl mb-8">
+
+        <!-- Previous Word Button (Left) -->
+        <button id="previousCardButton" onclick="loadPreviousCard()"
+            class="side-nav-button mr-4 p-2 bg-gray-500 text-white font-semibold rounded-full shadow-lg hover:bg-gray-600 transition duration-300 disabled:opacity-50 text-xl flex items-center justify-center sm:text-2xl"
+            disabled title="Previous Word">
+            <i class="fas fa-arrow-left"></i>
         </button>
-        <!-- Previous Word Button -->
-        <button id="previousCardButton" onclick="loadPreviousCard()" class="px-4 py-2 sm:px-6 sm:py-3 bg-gray-500 text-white font-semibold rounded-full shadow-lg hover:bg-gray-600 transition duration-300 disabled:opacity-50 text-sm sm:text-base" disabled>
-            <i class="fas fa-arrow-left mr-2"></i> Previous
-        </button>
-        <!-- Next Word Button -->
-        <button id="nextCardButton" onclick="loadNextCard()" class="px-4 py-2 sm:px-6 sm:py-3 bg-indigo-600 text-white font-semibold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300 disabled:opacity-50 text-sm sm:text-base">
-            Next Word <i class="fas fa-arrow-right ml-2"></i>
+
+        <!-- Flashcard -->
+        <div id="flashcard" touch-action="none">
+            <div id="cardInner" class="flashcard-inner" onclick="flipCard()">
+                <!-- Card Front -->
+                <div id="cardFront" class="flashcard-front">
+                    <!-- loadingText is visible by default -->
+                    <p id="loadingText" class="text-lg text-gray-500">Loading Words...</p>
+                    <!-- mainWord is hidden by default, shown once data loads -->
+                    <h2 id="mainWord" class="hidden"></h2>
+                </div>
+
+                <!-- Card Back -->
+                <div id="cardBack" class="flashcard-back">
+                    <h3 class="text-sm uppercase tracking-wider text-gray-400 mb-2">Definition & Usage</h3>
+                    <p id="partOfSpeech" class="font-bold text-indigo-600">Part of Speech: <span id="posContent"></span></p>
+                    <p id="meaningText" class="text-gray-700">Meaning: <span id="meaningContent"></span></p>
+                    <p id="exampleText" class="italic text-gray-500 border-t border-gray-200 pt-3 mt-3">
+                        <span class="font-bold not-italic text-sm text-gray-800">Example:</span> <span id="exampleContent"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Next Word Button (Right) -->
+        <button id="nextCardButton" onclick="loadNextCard()"
+            class="side-nav-button ml-4 p-2 bg-indigo-600 text-white font-semibold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300 disabled:opacity-50 text-xl flex items-center justify-center sm:text-2xl"
+            title="Next Word">
+            <i class="fas fa-arrow-right"></i>
         </button>
     </div>
+    <!-- End Main Card & Navigation Container -->
 
     <script>
         // MOCK DATA: Used for immediate functionality since we cannot access local files.
@@ -185,16 +207,15 @@ fecund,"producing or capable of producing an abundance of offspring or new growt
 garrulous,"excessively talkative, especially on trivial matters",adjective,"The garrulous taxi driver kept recounting tales of his youth."
 `;
 
-        // CSV URL: This file path will be attempted first. If it fails, the mock data above is used.
-        // NOTE: Added './' to try and resolve file path issues in the hosting environment.
-        const CSV_URL = './magoosh_az_words.csv';
+        // CSV URL: Using the clean path now that local setup is confirmed to work.
+        const CSV_URL = 'magoosh_az_words.csv';
 
-        let allWords = []; // Stores the original, full list of words
-        let filteredWords = []; // Stores the currently filtered list
-        let currentWordIndex = -1; // Current index in filteredWords
-        let wordHistory = []; // Stores indices from filteredWords for the 'Previous' button
-        let currentFilter = 'ALL'; // Tracks the active filter
-        const ALPHABET = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i)); // A-Z array
+        let allWords = [];
+        let filteredWords = [];
+        let currentWordIndex = -1;
+        let wordHistory = [];
+        let currentFilter = 'ALL';
+        const ALPHABET = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
         // --- CSV Parsing Function (Unchanged) ---
         const parseCSV = (text) => {
@@ -242,7 +263,7 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
             }
         };
 
-        // --- Core Application Logic (Unchanged) ---
+        // --- Core Application Logic ---
 
         // Helper function for Fisher-Yates shuffle
         const shuffleArray = (array) => {
@@ -255,16 +276,15 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
         window.shuffleCards = function() {
             if (filteredWords.length > 0) {
                 shuffleArray(filteredWords);
-                currentWordIndex = -1; // Reset index to start over after shuffle
+                currentWordIndex = 0; // Start at the first word of the newly shuffled list
                 wordHistory = []; // Clear history after shuffle
-                loadNextCard();
+                loadCard(currentWordIndex, true);
             }
         };
 
         // Filters the words based on the initial letter
         window.filterWords = function(letter) {
-            if (letter === currentFilter) {
-                // If clicking the current filter, do nothing
+            if (letter === currentFilter && currentFilter !== 'ALL') {
                 return;
             }
 
@@ -293,16 +313,16 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
             currentWordIndex = -1;
             wordHistory = [];
 
-            // Reset view and load first word in the new filtered set
             const loadingText = document.getElementById('loadingText');
             const mainWord = document.getElementById('mainWord');
 
             if (filteredWords.length > 0) {
+                currentWordIndex = 0;
+                loadCard(currentWordIndex, true);
+
                 loadingText.classList.add('hidden');
                 mainWord.classList.remove('hidden');
-                loadNextCard();
             } else {
-                // Display message if no words match the filter
                 mainWord.classList.add('hidden');
                 loadingText.textContent = `No words starting with '${letter}' in the data.`;
                 loadingText.classList.remove('hidden');
@@ -318,13 +338,13 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
             const wordData = filteredWords[index];
 
             if (trackHistory) {
-                 // Push the new index to history, preventing duplicates from sequential 'next' clicks
+                 // Push the new index to history
                  if (wordHistory.length === 0 || wordHistory[wordHistory.length - 1] !== index) {
                     wordHistory.push(index);
                  }
             }
 
-            // Remove the oldest history item if it gets too long (e.g., 50 items)
+            // Remove the oldest history item if it gets too long
             if (wordHistory.length > 50) {
                 wordHistory.shift();
             }
@@ -365,16 +385,13 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
                 currentWordIndex = previousIndex;
                 loadCard(currentWordIndex, false); // Load card without pushing back to history
             } else {
-                // If only one item left in history, clear history and disable the button
-                wordHistory = [];
-                currentWordIndex = -1; // Force next to start from index 0 or first available
                 updateButtonStates();
             }
         };
 
         // Updates the disabled state of the navigation buttons
         const updateButtonStates = () => {
-            // Disable 'Previous' if history has 0 or 1 item (current card is the first viewed/loaded)
+            // Disable 'Previous' if history has 0 or 1 item
             document.getElementById('previousCardButton').disabled = wordHistory.length <= 1 || filteredWords.length === 0;
             document.getElementById('nextCardButton').disabled = filteredWords.length === 0;
             document.getElementById('shuffleButton').disabled = filteredWords.length === 0;
@@ -385,7 +402,7 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
             const filterContainer = document.getElementById('filterContainer');
             filterContainer.innerHTML = '';
 
-            // 1. Add ALL filter button (default active)
+            // 1. Add ALL filter button
             const allButton = createFilterButton('ALL', 'All');
             filterContainer.appendChild(allButton);
 
@@ -395,8 +412,12 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
                 filterContainer.appendChild(button);
             });
 
-            // 3. Initially set ALL as active
-            filterWords('ALL');
+            // Manually set 'ALL' as the active filter in the UI since the first card is pre-loaded
+            const initialAllButton = document.querySelector('.filter-letter[data-letter="ALL"]');
+            if (initialAllButton) {
+                initialAllButton.classList.add('bg-indigo-600', 'text-white', 'font-bold', 'dark:bg-indigo-600', 'dark:text-white');
+                initialAllButton.classList.remove('hover:bg-gray-200', 'dark:hover:bg-gray-600');
+            }
         };
 
         // Helper function to create filter button elements
@@ -413,62 +434,52 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
         };
 
 
-        // --- Data Loading and Initialization (UPDATED) ---
+        // --- Data Loading and Initialization ---
         const loadWords = async () => {
             const loadingText = document.getElementById('loadingText');
-            const statusMessage = document.getElementById('statusMessage'); // Get status element
+            const mainWord = document.getElementById('mainWord');
 
-            loadingText.textContent = 'Fetching word data...';
+            // Ensure loading text is visible initially
+            loadingText.classList.remove('hidden');
+            mainWord.classList.add('hidden');
+            loadingText.textContent = 'Loading Words...';
 
-            // Start with mock data as the fallback
             let csvText = MOCK_CSV_DATA;
-            let dataSource = 'Mock Data (Internal Fallback)';
-            let statusClass = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
 
             // Attempt to fetch the user-specified CSV file.
             try {
                 const response = await fetch(CSV_URL);
                 if (!response.ok) {
-                    // This error captures file not found (404) or other non-success status codes
-                    throw new Error(`Failed to fetch file at '${CSV_URL}' (Status: ${response.status} ${response.statusText}).`);
+                    throw new Error(`Status: ${response.status} ${response.statusText}`);
                 }
-                csvText = await response.text(); // OVERRIDE: External file data is loaded
-                dataSource = `File Loaded: ${CSV_URL}`;
-                statusClass = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-                console.log(`Successfully loaded data from ${CSV_URL}.`);
+                csvText = await response.text();
             } catch (error) {
-                const errorMessage = error.message || "Network error. Falling back to mock data.";
-                console.warn(errorMessage);
-                dataSource = `ERROR: ${errorMessage} Using Mock Data.`;
-                statusClass = 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+                console.warn(`Failed to fetch file at '${CSV_URL}'. Using Mock Data.`);
             }
 
-            // Update the status message visibly
-            statusMessage.textContent = `Data Source: ${dataSource}`;
-            statusMessage.className = `w-full max-w-4xl text-center mb-4 p-2 rounded-lg text-sm transition duration-300 ${statusClass}`;
-
-
-            // Populate allWords and filter out invalid entries
             allWords = parseCSV(csvText);
             allWords = allWords.filter(word => word.word && word.word.trim() !== '');
 
             if (allWords.length > 0) {
                 filteredWords = [...allWords];
 
-                generateFilterUI(); // Generate the filter buttons
+                // Set and load the very first card (index 0) immediately
+                currentWordIndex = 0;
+                loadCard(currentWordIndex, true);
 
+                // Hide loading text and show word
                 loadingText.classList.add('hidden');
-                document.getElementById('mainWord').classList.remove('hidden');
-                // loadNextCard() is called inside filterWords('ALL') which is triggered by generateFilterUI()
+                mainWord.classList.remove('hidden');
+
+                // Generate filter UI
+                generateFilterUI();
+
             } else {
-                loadingText.textContent = 'No valid word data found in the CSV.';
+                loadingText.textContent = 'No valid word data found.';
+                loadingText.classList.remove('hidden');
+                mainWord.classList.add('hidden');
                 document.getElementById('nextCardButton').disabled = true;
                 document.getElementById('shuffleButton').disabled = true;
-                // Update status if parsing failed even after loading data
-                if (statusMessage.className.includes('bg-green')) {
-                    statusMessage.textContent = `File Loaded from ${CSV_URL}, but no valid data could be parsed.`;
-                    statusMessage.className = `w-full max-w-4xl text-center mb-4 p-2 rounded-lg text-sm transition duration-300 bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300`;
-                }
             }
             updateButtonStates();
         };
@@ -477,6 +488,39 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
             const cardInner = document.getElementById('cardInner');
             cardInner.classList.toggle('flipped');
         }
+
+        // --- Swipe Navigation Logic for Mobile ---
+        let touchstartX = 0;
+        let touchendX = 0;
+        const SWIPE_THRESHOLD = 75; // Minimum horizontal movement in pixels for a valid swipe
+
+        function handleGesture() {
+            const diffX = touchendX - touchstartX;
+
+            if (Math.abs(diffX) > SWIPE_THRESHOLD) {
+                if (diffX < 0) {
+                    // Swiped Left (Next Card)
+                    window.loadNextCard();
+                } else {
+                    // Swiped Right (Previous Card)
+                    window.loadPreviousCard();
+                }
+            }
+        }
+
+        const cardElement = document.getElementById('flashcard');
+
+        // Add touch listeners to the card element
+        cardElement.addEventListener('touchstart', e => {
+            // Record the starting horizontal position of the touch
+            touchstartX = e.changedTouches[0].screenX;
+        });
+
+        cardElement.addEventListener('touchend', e => {
+            // Record the ending horizontal position of the touch
+            touchendX = e.changedTouches[0].screenX;
+            handleGesture();
+        });
 
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', loadWords);
