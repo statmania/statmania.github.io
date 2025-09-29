@@ -12,7 +12,7 @@
     <style>
         /* Custom CSS for 3D Flip Effect */
         #flashcard {
-            width: 100%; /* Take full width of parent column */
+            width: 100%;
             max-width: 400px;
             height: 250px;
             perspective: 1000px;
@@ -34,6 +34,7 @@
             transform: rotateY(180deg);
         }
 
+        /* Card Front & Back base styles: Non-white colors */
         .flashcard-front, .flashcard-back {
             position: absolute;
             width: 100%;
@@ -46,60 +47,98 @@
             align-items: center;
             padding: 1.5rem;
             border-radius: 1rem;
-            background-color: #ffffff;
-            z-index: 1; /* Default layer */
+            /* Light Indigo/Lavender tint for card front base */
+            background-color: #eef2ff;
+            z-index: 1;
+            transition: background-color 0.3s;
         }
 
+        /* Card Back Styling: Slightly different light color for back */
         .flashcard-back {
             transform: rotateY(180deg);
-            background-color: #f9fafb; /* Gray-50 */
-            text-align: left;
-            padding: 2rem;
-            z-index: 2; /* Ensure back is on top when visible */
+            /* Very Light Cyan/Mint tint for card back base */
+            background-color: #f0fdfa;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+        }
+
+        /* Scrollable Content Area: Text is centered here */
+        .card-content-scroll {
+            flex-grow: 1;
+            overflow-y: auto;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        /* --- Beautified Card Back Content Styles --- */
+
+        /* Styling for Meaning content (main definition) - Light Teal Background */
+        p#meaningContent {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+
+            background-color: #e0f2f1; /* Light Teal/Cyan for meaning block */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            line-height: 1.4;
+        }
+
+        /* Styling for Example content - Light Red Background */
+        p#exampleContent {
+            font-size: 0.95rem;
+            font-style: italic;
+            color: #4b5563;
+
+            background-color: #fee2e2; /* Light Red/Pink for example block */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+            margin-top: 0.5rem;
+            margin-bottom: 0;
+            line-height: 1.5;
         }
 
         /* Dark Mode support */
         @media (prefers-color-scheme: dark) {
             body {
-                background-color: #1f2937; /* Gray-800 */
+                background-color: #1f2937; /* Gray-800 - Page background */
             }
-            .flashcard-front, .flashcard-back {
-                background-color: #374151; /* Gray-700 */
-                color: #f3f4f6; /* Gray-100 */
+
+            /* Dark, non-gray/black card bases */
+            .flashcard-front {
+                background-color: #1e1b4b; /* Dark Indigo-950 */
+                color: #f3f4f6;
             }
-            .flashcard-back h3, .flashcard-back p {
-                color: #d1d5db; /* Gray-300 */
+            .flashcard-back {
+                background-color: #134e4a; /* Dark Teal-800 */
+                color: #f3f4f6;
             }
+
             .flashcard-front h2 {
-                color: #93c5fd; /* Blue-300 */
+                color: #a5b4fc; /* Indigo-300 on dark background */
             }
-            .flashcard-back p#meaningText {
-                color: #f3f4f6; /* Gray-100 */
+
+            p#meaningContent {
+                background-color: #115e59; /* Darker Teal/Cyan */
+                color: #e0f2f1;
             }
-            .flashcard-back p#exampleText {
-                color: #d1d5db; /* Gray-300 */
+            p#exampleContent {
+                background-color: #7f1d1d; /* Darker Red/Pink */
+                color: #fca5a5;
             }
         }
 
         .flashcard-front h2 {
             font-size: 2.5rem;
             font-weight: 700;
-            color: #1e3a8a; /* Blue-800 */
+            color: #1e3a8a; /* Blue-800 in light mode */
             text-align: center;
-        }
-
-        .flashcard-back h3 {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 0.5rem;
-        }
-
-        .flashcard-back p {
-            font-size: 0.9rem;
-            color: #4b5563;
-            margin-bottom: 0.75rem;
-            line-height: 1.4;
         }
 
         /* Responsive adjustments */
@@ -115,19 +154,48 @@
 
         /* Styles for the side navigation buttons */
         .side-nav-button {
-            width: 100px; /* Fixed width for better visual balance */
-            height: 50px; /* Ensures a good touch target */
+            width: 100px;
+            height: 50px;
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4" style="font-family: 'Inter', sans-serif;">
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-4" style="font-family: 'Inter', sans-serif;">
 
     <h1 class="text-3xl font-bold text-gray-800 mb-6 dark:text-gray-100">
         Vocabulary Flashcards
     </h1>
 
-    <!-- Filter Menu Container -->
-    <div class="w-full max-w-4xl mb-6 p-4 bg-white rounded-xl shadow-lg dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+    <!-- Filter Toggle and Global Controls: Now centered -->
+    <div id="filterControlBar" class="w-full max-w-4xl mb-4 flex justify-center items-center px-2 sm:px-0">
+
+        <!-- Group: Home, Shuffle, Filter -->
+        <div class="flex space-x-4 items-center">
+
+            <!-- 1. Home Link (Icon + Text) -->
+            <a href="../" class="flex items-center px-4 py-2 text-indigo-600 hover:text-indigo-800 font-semibold rounded-full transition duration-300 text-sm sm:text-base" title="Home">
+                <i class="fas fa-home mr-1"></i> Home
+            </a>
+
+            <!-- 2. Shuffle Button (Icon Only) - Updated colors -->
+            <button id="shuffleButton" onclick="shuffleCards()"
+                class="p-3 bg-blue-600 text-white font-semibold rounded-full shadow-lg transition duration-300 hover:bg-blue-700 disabled:bg-gray-500 disabled:opacity-75 text-lg flex items-center justify-center"
+                title="Shuffle Cards">
+                <i class="fas fa-random"></i>
+            </button>
+
+            <!-- 3. Filter Menu Icon Button (Icon Only) -->
+            <button id="filterToggleButton" onclick="toggleFilters()"
+                    class="p-3 bg-indigo-500 text-white rounded-full shadow-lg hover:bg-indigo-600 transition duration-300"
+                    title="Toggle Filters">
+                <i class="fas fa-filter text-lg"></i>
+            </button>
+        </div>
+    </div>
+    <!-- End Filter Toggle and Global Controls -->
+
+
+    <!-- Filter Menu Container (Hidden by default) -->
+    <div id="filterContainer" class="hidden w-full max-w-4xl mb-6 p-4 bg-white rounded-xl shadow-lg dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
         <h3 class="text-xl font-bold text-gray-700 mb-4 dark:text-gray-300">Filter Options</h3>
 
         <!-- Desktop Layout (sm: and up) - Centered 60% Width -->
@@ -203,21 +271,6 @@
     </div>
     <!-- End Filter Menu -->
 
-    <!-- Top Control Bar (Home Link and Shuffle Button) - CENTERED ABOVE CARD -->
-    <div class="w-full max-w-4xl mb-6 flex justify-center items-center px-2 sm:px-0">
-        <div class="flex space-x-6">
-            <!-- Home Link (Updated URL) -->
-            <a href="../" class="px-4 py-2 text-indigo-600 hover:text-indigo-800 font-semibold rounded-full transition duration-300 text-sm sm:text-base">
-                <i class="fas fa-home mr-1"></i> Home
-            </a>
-            <!-- Shuffle Button -->
-            <button id="shuffleButton" onclick="shuffleCards()" class="px-4 py-2 bg-yellow-500 text-white font-semibold rounded-full shadow-lg hover:bg-yellow-600 transition duration-300 disabled:opacity-50 text-sm sm:text-base">
-                <i class="fas fa-random mr-2"></i> Shuffle
-            </button>
-        </div>
-    </div>
-    <!-- End Top Control Bar -->
-
     <!-- Main Card & Navigation Container -->
     <div class="flex items-center justify-center w-full max-w-4xl mb-8">
 
@@ -241,12 +294,15 @@
 
                 <!-- Card Back -->
                 <div id="cardBack" class="flashcard-back">
-                    <h3 class="text-sm uppercase tracking-wider text-gray-400 mb-2">Definition & Usage</h3>
-                    <p id="partOfSpeech" class="font-bold text-indigo-600">Part of Speech: <span id="posContent"></span></p>
-                    <p id="meaningText" class="text-gray-700">Meaning: <span id="meaningContent"></span></p>
-                    <p id="exampleText" class="italic text-gray-500 border-t border-gray-200 pt-3 mt-3">
-                        <span class="font-bold not-italic text-sm text-gray-800">Example:</span> <span id="exampleContent"></span>
-                    </p>
+                    <!-- Scrollable content wrapper (Text is centered via CSS) -->
+                    <div class="card-content-scroll">
+
+                        <!-- Meaning Content Only -->
+                        <p id="meaningContent" class="text-gray-700 font-medium text-lg mb-4"></p>
+
+                        <!-- Example Content Only, Separated Visually -->
+                        <p id="exampleContent" class="italic text-gray-500 border-t border-gray-200 pt-3 mt-3"></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -289,7 +345,8 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
         let wordHistory = [];
         const ALPHABET = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
-        // --- CSV Parsing Function (unchanged) ---
+        // --- Utility Functions ---
+
         const parseCSV = (text) => {
             try {
                 const lines = text.trim().split('\n').filter(line => line.length > 0);
@@ -335,15 +392,23 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
             }
         };
 
-        // --- Core Application Logic ---
-
-        // Helper function for Fisher-Yates shuffle
         const shuffleArray = (array) => {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+
+                const temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
             }
         };
+
+        // --- Toggle Function ---
+        window.toggleFilters = function() {
+            const container = document.getElementById('filterContainer');
+            container.classList.toggle('hidden');
+        }
+
+        // --- Core Application Logic ---
 
         window.shuffleCards = function() {
             if (filteredWords.length > 0) {
@@ -354,54 +419,40 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
             }
         };
 
-        // Function to reset all filters to default settings
         window.resetFilters = function() {
-            // 1. Reset Letter Filter to 'ALL'
             document.getElementById('letterFilterSelect').value = 'ALL';
-
-            // 2. Reset serial inputs to the full range
             document.getElementById('startSerial').value = 1;
             document.getElementById('endSerial').value = allWords.length;
-
-            // 3. Re-apply filters
             applyFilters();
         };
 
-        // Combines both letter and serial range filters
         window.applyFilters = function() {
             const letter = document.getElementById('letterFilterSelect').value;
             const totalWords = allWords.length;
 
-            // 1. DETERMINE SERIAL RANGE (1-based, inclusive)
             let start = parseInt(document.getElementById('startSerial').value);
             let end = parseInt(document.getElementById('endSerial').value);
 
-            // Set defaults and clamp values
             start = (isNaN(start) || start < 1) ? 1 : start;
             end = (isNaN(end) || end > totalWords) ? totalWords : end;
 
             if (end < start) end = start;
 
-            // Convert 1-based inclusive range to 0-based slice indices
             const startIndex = start - 1;
             const endIndex = end;
 
-            // 2. APPLY SERIAL RANGE FILTER
             let rangeWords = allWords.slice(startIndex, endIndex);
 
-            // 3. APPLY LETTER FILTER to the range-limited words
             if (letter !== 'ALL') {
                  filteredWords = rangeWords.filter(word => word.word && word.word.toUpperCase().startsWith(letter));
             } else {
                 filteredWords = rangeWords;
             }
 
-            // 4. Update UI Messages and State
             const wordCountMessage = document.getElementById('wordCountMessage');
             wordCountMessage.textContent = `Total words: ${totalWords}. Showing: ${filteredWords.length} (Serial ${start} to ${end}).`;
 
 
-            // --- 5. Reset Card View ---
             currentWordIndex = -1;
             wordHistory = [];
 
@@ -422,9 +473,7 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
             updateButtonStates();
         };
 
-        // Loads the details of the word at the given index
         const loadCard = (index, trackHistory = true) => {
-            // 1. Ensure card is facing front
             document.getElementById('cardInner').classList.remove('flipped');
 
             const wordData = filteredWords[index];
@@ -439,18 +488,13 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
                 wordHistory.shift();
             }
 
-            // 2. Update the Card Front (Word)
             document.getElementById('mainWord').textContent = wordData.word || 'Word Missing';
-
-            // 3. Update the Card Back (Details)
-            document.getElementById('posContent').textContent = wordData.part_of_speech || 'Unknown';
             document.getElementById('meaningContent').textContent = wordData.meaning || 'No meaning provided.';
             document.getElementById('exampleContent').textContent = wordData.example || 'No example provided.';
 
             updateButtonStates();
         }
 
-        // Handles loading the next card, wrapping around the list
         window.loadNextCard = function() {
             if (filteredWords.length === 0) {
                 updateButtonStates();
@@ -462,7 +506,6 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
             loadCard(currentWordIndex, true);
         };
 
-        // Loads the previous card using the history array
         window.loadPreviousCard = function() {
             if (wordHistory.length > 1) {
                 wordHistory.pop();
@@ -475,14 +518,13 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
             }
         };
 
-        // Updates the disabled state of the navigation buttons
         const updateButtonStates = () => {
             document.getElementById('previousCardButton').disabled = wordHistory.length <= 1 || filteredWords.length === 0;
             document.getElementById('nextCardButton').disabled = filteredWords.length === 0;
+            // The shuffle button is disabled if there are no filtered words.
             document.getElementById('shuffleButton').disabled = filteredWords.length === 0;
         };
 
-        // Generates the filter UI (Dropdown Options)
         const generateFilterUI = () => {
             const selectElement = document.getElementById('letterFilterSelect');
 
@@ -526,7 +568,6 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
             generateFilterUI();
 
             if (allWords.length > 0) {
-                // Initialize to the full range on load
                 document.getElementById('startSerial').value = 1;
                 document.getElementById('endSerial').value = allWords.length;
 
@@ -534,7 +575,7 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
 
             } else {
                 loadingText.textContent = 'No valid word data found.';
-                loadingText.classList.remove('hidden');
+                loadingText.classList.add('hidden');
                 mainWord.classList.add('hidden');
                 document.getElementById('nextCardButton').disabled = true;
                 document.getElementById('shuffleButton').disabled = true;
@@ -549,7 +590,7 @@ garrulous,"excessively talkative, especially on trivial matters",adjective,"The 
             }
         }
 
-        // --- Swipe Navigation Logic for Mobile (unchanged) ---
+        // --- Swipe Navigation Logic for Mobile (unchanged logic) ---
         let touchstartX = 0;
         let touchendX = 0;
         const SWIPE_THRESHOLD = 75;
