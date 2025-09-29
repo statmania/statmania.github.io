@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulary Flashcards</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Custom CSS for 3D Flip Effect */
+        #flashcard {
+            width: 90vw;
+            max-width: 400px;
+            height: 250px;
+            perspective: 1000px;
+        }
+
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            border-radius: 1rem;
+        }
+
+        .flashcard-inner.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            background-color: #ffffff;
+        }
+
+        /* Dark Mode support */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1f2937; /* Gray-800 */
+            }
+            .flashcard-front, .flashcard-back {
+                background-color: #374151; /* Gray-700 */
+                color: #f3f4f6; /* Gray-100 */
+            }
+            .flashcard-back h3, .flashcard-back p {
+                color: #d1d5db; /* Gray-300 */
+            }
+        }
+
+        .flashcard-front {
+            background-color: #eff6ff; /* Blue-50 */
+        }
+
+        .flashcard-front h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e3a8a; /* Blue-800 */
+            text-align: center;
+        }
+
+        .flashcard-back {
+            transform: rotateY(180deg);
+            background-color: #f9fafb; /* Gray-50 */
+            text-align: left;
+            padding: 2rem;
+        }
+
+        .flashcard-back h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .flashcard-back p {
+            font-size: 0.9rem;
+            color: #4b5563;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            #flashcard {
+                height: 300px;
+                max-width: 95vw;
+            }
+            .flashcard-front h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4" style="font-family: 'Inter', sans-serif;">
+
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 dark:text-gray-100">
+        Vocabulary Flashcards
+    </h1>
+
+    <!-- Data Source Status Message -->
+    <div id="statusMessage" class="w-full max-w-4xl text-center mb-4 p-2 rounded-lg text-sm transition duration-300">
+        <!-- Status message will be inserted here by JavaScript -->
+    </div>
+    <!-- End Data Source Status Message -->
+
+    <!-- Filter Menu (Filter by Initial Letter) -->
+    <div class="w-full max-w-4xl mb-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-2 dark:text-gray-300">Filter by Initial Letter:</h3>
+        <!-- Filter container to hold all 26 letters + ALL -->
+        <div id="filterContainer" class="flex flex-wrap gap-1 sm:gap-2 p-3 bg-white rounded-lg shadow-md dark:bg-gray-800 border border-gray-200 dark:border-gray-700 justify-center">
+            <p class="text-gray-500 text-sm">Loading filters...</p>
+        </div>
+    </div>
+    <!-- End Filter Menu -->
+
+    <div id="flashcard" class="mb-8">
+        <div id="cardInner" class="flashcard-inner" onclick="flipCard()">
+            <!-- Card Front -->
+            <div id="cardFront" class="flashcard-front">
+                <p id="loadingText" class="text-lg text-gray-500">Loading Words...</p>
+                <h2 id="mainWord" class="hidden"></h2>
+            </div>
+
+            <!-- Card Back -->
+            <div id="cardBack" class="flashcard-back">
+                <h3 class="text-sm uppercase tracking-wider text-gray-400 mb-2">Definition & Usage</h3>
+                <p id="partOfSpeech" class="font-bold text-indigo-600">Part of Speech: <span id="posContent"></span></p>
+                <p id="meaningText" class="text-gray-700">Meaning: <span id="meaningContent"></span></p>
+                <p id="exampleText" class="italic text-gray-500 border-t border-gray-200 pt-3 mt-3">
+                    <span class="font-bold not-italic text-sm text-gray-800">Example:</span> <span id="exampleContent"></span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-wrap justify-center space-x-2 sm:space-x-4">
+        <!-- Shuffle Button -->
+        <button id="shuffleButton" onclick="shuffleCards()" class="px-4 py-2 sm:px-6 sm:py-3 bg-yellow-500 text-white font-semibold rounded-full shadow-lg hover:bg-yellow-600 transition duration-300 disabled:opacity-50 text-sm sm:text-base">
+            <i class="fas fa-random mr-2"></i> Shuffle
+        </button>
+        <!-- Previous Word Button -->
+        <button id="previousCardButton" onclick="loadPreviousCard()" class="px-4 py-2 sm:px-6 sm:py-3 bg-gray-500 text-white font-semibold rounded-full shadow-lg hover:bg-gray-600 transition duration-300 disabled:opacity-50 text-sm sm:text-base" disabled>
+            <i class="fas fa-arrow-left mr-2"></i> Previous
+        </button>
+        <!-- Next Word Button -->
+        <button id="nextCardButton" onclick="loadNextCard()" class="px-4 py-2 sm:px-6 sm:py-3 bg-indigo-600 text-white font-semibold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300 disabled:opacity-50 text-sm sm:text-base">
+            Next Word <i class="fas fa-arrow-right ml-2"></i>
+        </button>
+    </div>
+
+    <script>
+        // MOCK DATA: Used for immediate functionality since we cannot access local files.
+        const MOCK_CSV_DATA = `
+word,meaning,part_of_speech,example
+ephemeral,"lasting for a very short time",adjective,"The beauty of the cherry blossoms is ephemeral, lasting only a few weeks."
+insipid,"lacking flavor or zest; dull",adjective,"The film was insipid, with a predictable plot and uninspired acting."
+obfuscate,"to make obscure, unclear, or unintelligible",verb,"The politician attempted to obfuscate the issue with vague responses."
+capricious,"given to sudden and unaccountable changes of mood or behavior",adjective,"The investors were wary of the CEO's capricious decision-making."
+serendipity,"the occurrence and development of events by chance in a happy or beneficial way",noun,"Finding the lost ring was a moment of pure serendipity."
+alacrity,"brisk and cheerful readiness",noun,"She accepted the new assignment with alacrity."
+tenuous,"very weak or slight",adjective,"The tenuous link between the evidence and the suspect quickly broke down."
+paradox,"a seemingly absurd or self-contradictory statement or proposition that when investigated or explained may prove to be well founded or true",noun,"The paradox is that the more you give, the more you have."
+ubiquitous,"present, appearing, or found everywhere",adjective,"Smartphones are ubiquitous in modern society."
+zeitgeist,"the defining spirit or mood of a particular period of history as shown by the ideas and beliefs of the time",noun,"The film perfectly captured the liberal zeitgeist of the 1960s."
+juxtaposition,"the fact of two things being seen or placed close together with contrasting effect",noun,"The juxtaposition of the old church and the new skyscraper was striking."
+bifurcate,"divide into two branches or forks",verb,"The road bifurcates near the river."
+deleterious,"causing harm or damage",adjective,"The lack of sleep had a deleterious effect on his focus."
+fecund,"producing or capable of producing an abundance of offspring or new growth; fertile",adjective,"The artist's fecund imagination produced masterpiece after masterpiece."
+garrulous,"excessively talkative, especially on trivial matters",adjective,"The garrulous taxi driver kept recounting tales of his youth."
+`;
+
+        // CSV URL: This file path will be attempted first. If it fails, the mock data above is used.
+        // NOTE: Added './' to try and resolve file path issues in the hosting environment.
+        const CSV_URL = './magoosh_az_words.csv';
+
+        let allWords = []; // Stores the original, full list of words
+        let filteredWords = []; // Stores the currently filtered list
+        let currentWordIndex = -1; // Current index in filteredWords
+        let wordHistory = []; // Stores indices from filteredWords for the 'Previous' button
+        let currentFilter = 'ALL'; // Tracks the active filter
+        const ALPHABET = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i)); // A-Z array
+
+        // --- CSV Parsing Function (Unchanged) ---
+        const parseCSV = (text) => {
+            try {
+                const lines = text.trim().split('\n').filter(line => line.length > 0);
+                if (lines.length <= 1) return [];
+
+                const headers = lines[0].split(',').map(h => h.trim());
+                const dataLines = lines.slice(1);
+                const results = [];
+
+                dataLines.forEach(line => {
+                    const values = [];
+                    let value = '';
+                    let inQuotes = false;
+                    for (let i = 0; i < line.length; i++) {
+                        const char = line[i];
+
+                        if (char === '"') {
+                            inQuotes = !inQuotes;
+                        } else if (char === ',' && !inQuotes) {
+                            values.push(value.trim().replace(/^"|"$/g, ''));
+                            value = '';
+                        } else {
+                            value += char;
+                        }
+                    }
+                    values.push(value.trim().replace(/^"|"$/g, ''));
+
+                    if (values.length === headers.length) {
+                        const row = {};
+                        headers.forEach((header, index) => {
+                            row[header] = values[index];
+                        });
+                        results.push(row);
+                    } else {
+                        console.warn('Skipping malformed row:', line);
+                    }
+                });
+                return results;
+
+            } catch (error) {
+                console.error("Error parsing CSV data:", error);
+                return [];
+            }
+        };
+
+        // --- Core Application Logic (Unchanged) ---
+
+        // Helper function for Fisher-Yates shuffle
+        const shuffleArray = (array) => {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        };
+
+        window.shuffleCards = function() {
+            if (filteredWords.length > 0) {
+                shuffleArray(filteredWords);
+                currentWordIndex = -1; // Reset index to start over after shuffle
+                wordHistory = []; // Clear history after shuffle
+                loadNextCard();
+            }
+        };
+
+        // Filters the words based on the initial letter
+        window.filterWords = function(letter) {
+            if (letter === currentFilter) {
+                // If clicking the current filter, do nothing
+                return;
+            }
+
+            currentFilter = letter;
+
+            // Update filter buttons appearance (Highlight the chosen letter)
+            document.querySelectorAll('.filter-letter').forEach(btn => {
+                // Remove active classes from all buttons
+                btn.classList.remove('bg-indigo-600', 'text-white', 'font-bold', 'dark:bg-indigo-600', 'dark:text-white');
+                btn.classList.add('hover:bg-gray-200', 'dark:hover:bg-gray-600');
+
+                // Add active classes to the chosen button
+                if (btn.dataset.letter === letter) {
+                    btn.classList.add('bg-indigo-600', 'text-white', 'font-bold', 'dark:bg-indigo-600', 'dark:text-white');
+                    btn.classList.remove('hover:bg-gray-200', 'dark:hover:bg-gray-600');
+                }
+            });
+
+            if (letter === 'ALL') {
+                filteredWords = [...allWords];
+            } else {
+                // Filter words that start with the selected letter (case-insensitive)
+                filteredWords = allWords.filter(word => word.word && word.word.toUpperCase().startsWith(letter));
+            }
+
+            currentWordIndex = -1;
+            wordHistory = [];
+
+            // Reset view and load first word in the new filtered set
+            const loadingText = document.getElementById('loadingText');
+            const mainWord = document.getElementById('mainWord');
+
+            if (filteredWords.length > 0) {
+                loadingText.classList.add('hidden');
+                mainWord.classList.remove('hidden');
+                loadNextCard();
+            } else {
+                // Display message if no words match the filter
+                mainWord.classList.add('hidden');
+                loadingText.textContent = `No words starting with '${letter}' in the data.`;
+                loadingText.classList.remove('hidden');
+                updateButtonStates();
+            }
+        };
+
+        // Loads the details of the word at the given index
+        const loadCard = (index, trackHistory = true) => {
+            // 1. Ensure card is facing front
+            document.getElementById('cardInner').classList.remove('flipped');
+
+            const wordData = filteredWords[index];
+
+            if (trackHistory) {
+                 // Push the new index to history, preventing duplicates from sequential 'next' clicks
+                 if (wordHistory.length === 0 || wordHistory[wordHistory.length - 1] !== index) {
+                    wordHistory.push(index);
+                 }
+            }
+
+            // Remove the oldest history item if it gets too long (e.g., 50 items)
+            if (wordHistory.length > 50) {
+                wordHistory.shift();
+            }
+
+            // 2. Update the Card Front (Word)
+            document.getElementById('mainWord').textContent = wordData.word || 'N/A';
+
+            // 3. Update the Card Back (Details)
+            document.getElementById('posContent').textContent = wordData.part_of_speech || 'N/A';
+            document.getElementById('meaningContent').textContent = wordData.meaning || 'N/A';
+            document.getElementById('exampleContent').textContent = wordData.example || 'N/A';
+
+            updateButtonStates();
+        }
+
+        // Handles loading the next card, wrapping around the list
+        window.loadNextCard = function() {
+            if (filteredWords.length === 0) {
+                updateButtonStates();
+                return;
+            }
+
+            // Determine the next index (circular wrap-around to start from 0 if at the end)
+            currentWordIndex = (currentWordIndex + 1) % filteredWords.length;
+
+            loadCard(currentWordIndex, true);
+        };
+
+        // Loads the previous card using the history array
+        window.loadPreviousCard = function() {
+            if (wordHistory.length > 1) {
+                // Pop the current index (the last one pushed)
+                wordHistory.pop();
+
+                // Get the actual previous index (which is now the last element in history)
+                const previousIndex = wordHistory[wordHistory.length - 1];
+
+                currentWordIndex = previousIndex;
+                loadCard(currentWordIndex, false); // Load card without pushing back to history
+            } else {
+                // If only one item left in history, clear history and disable the button
+                wordHistory = [];
+                currentWordIndex = -1; // Force next to start from index 0 or first available
+                updateButtonStates();
+            }
+        };
+
+        // Updates the disabled state of the navigation buttons
+        const updateButtonStates = () => {
+            // Disable 'Previous' if history has 0 or 1 item (current card is the first viewed/loaded)
+            document.getElementById('previousCardButton').disabled = wordHistory.length <= 1 || filteredWords.length === 0;
+            document.getElementById('nextCardButton').disabled = filteredWords.length === 0;
+            document.getElementById('shuffleButton').disabled = filteredWords.length === 0;
+        };
+
+        // Generates the filter UI buttons dynamically (now showing A-Z)
+        const generateFilterUI = () => {
+            const filterContainer = document.getElementById('filterContainer');
+            filterContainer.innerHTML = '';
+
+            // 1. Add ALL filter button (default active)
+            const allButton = createFilterButton('ALL', 'All');
+            filterContainer.appendChild(allButton);
+
+            // 2. Add A-Z alphabet buttons
+            ALPHABET.forEach(letter => {
+                const button = createFilterButton(letter, letter);
+                filterContainer.appendChild(button);
+            });
+
+            // 3. Initially set ALL as active
+            filterWords('ALL');
+        };
+
+        // Helper function to create filter button elements
+        const createFilterButton = (letter, label) => {
+            const button = document.createElement('button');
+            button.textContent = label;
+            button.dataset.letter = letter;
+
+            // Base classes (not active)
+            button.className = 'filter-letter px-2 py-1 sm:px-3 sm:py-1 text-xs sm:text-sm rounded-md transition duration-150 ease-in-out bg-white text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 font-medium';
+
+            button.onclick = () => filterWords(letter);
+            return button;
+        };
+
+
+        // --- Data Loading and Initialization (UPDATED) ---
+        const loadWords = async () => {
+            const loadingText = document.getElementById('loadingText');
+            const statusMessage = document.getElementById('statusMessage'); // Get status element
+
+            loadingText.textContent = 'Fetching word data...';
+
+            // Start with mock data as the fallback
+            let csvText = MOCK_CSV_DATA;
+            let dataSource = 'Mock Data (Internal Fallback)';
+            let statusClass = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+
+            // Attempt to fetch the user-specified CSV file.
+            try {
+                const response = await fetch(CSV_URL);
+                if (!response.ok) {
+                    // This error captures file not found (404) or other non-success status codes
+                    throw new Error(`Failed to fetch file at '${CSV_URL}' (Status: ${response.status} ${response.statusText}).`);
+                }
+                csvText = await response.text(); // OVERRIDE: External file data is loaded
+                dataSource = `File Loaded: ${CSV_URL}`;
+                statusClass = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+                console.log(`Successfully loaded data from ${CSV_URL}.`);
+            } catch (error) {
+                const errorMessage = error.message || "Network error. Falling back to mock data.";
+                console.warn(errorMessage);
+                dataSource = `ERROR: ${errorMessage} Using Mock Data.`;
+                statusClass = 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+            }
+
+            // Update the status message visibly
+            statusMessage.textContent = `Data Source: ${dataSource}`;
+            statusMessage.className = `w-full max-w-4xl text-center mb-4 p-2 rounded-lg text-sm transition duration-300 ${statusClass}`;
+
+
+            // Populate allWords and filter out invalid entries
+            allWords = parseCSV(csvText);
+            allWords = allWords.filter(word => word.word && word.word.trim() !== '');
+
+            if (allWords.length > 0) {
+                filteredWords = [...allWords];
+
+                generateFilterUI(); // Generate the filter buttons
+
+                loadingText.classList.add('hidden');
+                document.getElementById('mainWord').classList.remove('hidden');
+                // loadNextCard() is called inside filterWords('ALL') which is triggered by generateFilterUI()
+            } else {
+                loadingText.textContent = 'No valid word data found in the CSV.';
+                document.getElementById('nextCardButton').disabled = true;
+                document.getElementById('shuffleButton').disabled = true;
+                // Update status if parsing failed even after loading data
+                if (statusMessage.className.includes('bg-green')) {
+                    statusMessage.textContent = `File Loaded from ${CSV_URL}, but no valid data could be parsed.`;
+                    statusMessage.className = `w-full max-w-4xl text-center mb-4 p-2 rounded-lg text-sm transition duration-300 bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300`;
+                }
+            }
+            updateButtonStates();
+        };
+
+        window.flipCard = function() {
+            const cardInner = document.getElementById('cardInner');
+            cardInner.classList.toggle('flipped');
+        }
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', loadWords);
+
+    </script>
+</body>
+</html>
