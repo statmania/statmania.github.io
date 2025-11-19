@@ -1,0 +1,164 @@
+---
+title: "ARIMA and SARIMA Time Series Models"
+author: "Abdullah Al Mahmud"
+date: "2025-10-06"
+categories: [statistics, time-series]
+tags: [ARIMA, SARIMA]
+description: A **clear, concise explanation** of **ARIMA**, **SARIMA**, and related models — followed by **minimal R examples**..
+---
+
+Here’s a **clear, concise explanation** of **ARIMA**, **SARIMA**, and related models — followed by **minimal R examples**.
+
+---
+
+# **1. ARIMA (AutoRegressive Integrated Moving Average)**
+
+ARIMA is a time-series forecasting model used for **non-seasonal**, **univariate** data.
+It is written as:
+
+$\text{ARIMA}(p,d,q)$
+
+### **Meaning of the parameters**
+
+* **p** = number of autoregressive (AR) terms
+* **d** = degree of differencing (to remove trend)
+* **q** = number of moving average (MA) terms
+
+### **When to use ARIMA**
+
+Use ARIMA when your data:
+
+* has **trend**, but
+* **no seasonality**.
+
+---
+
+## Minimal ARIMA Example in R
+
+```r
+library(forecast)
+
+# Use an example built-in dataset
+ts_data <- AirPassengers[1:60]   # Monthly passengers (first 5 years)
+
+# Fit a simple ARIMA model
+fit <- auto.arima(ts_data)
+
+# Print model
+fit
+
+# Forecast next 12 periods
+forecast(fit, h = 12)
+```
+
+`auto.arima()` automatically selects (p, d, q).
+
+---
+
+# **2. SARIMA (Seasonal ARIMA)**
+
+SARIMA extends ARIMA by adding **seasonal components**.
+
+$\text{SARIMA}(p,d,q)(P,D,Q)_m$
+
+Where:
+
+* **P** = seasonal autoregressive order
+* **D** = seasonal differencing
+* **Q** = seasonal moving average
+* **m** = seasonal period
+
+  * Example: monthly data → m = 12
+  * Quarterly data → m = 4
+
+### **When to use SARIMA**
+
+Use SARIMA when your time series has:
+
+* **trend**,
+* **and clear seasonality** (repeating yearly, quarterly, weekly pattern).
+
+---
+
+## Minimal SARIMA Example in R
+
+```r
+library(forecast)
+
+ts_data <- AirPassengers  # strong yearly seasonality
+
+# Fit SARIMA
+fit <- auto.arima(ts_data, seasonal = TRUE)
+
+fit
+forecast(fit, h = 12)
+```
+
+---
+
+# **3. ARIMAX / SARIMAX** (ARIMA with regressors)
+
+These models include **external variables** (e.g., temperature, ads, price).
+Useful when other predictors help forecast the main series.
+
+```r
+x <- rnorm(length(ts_data))   # Example external regressor
+fit <- auto.arima(ts_data, xreg = x)
+```
+
+---
+
+# **4. Seasonal decomposition (not a model)**
+
+Often used to inspect data before ARIMA.
+
+```r
+plot(stl(AirPassengers, s.window = "periodic"))
+```
+
+Shows:
+
+* trend,
+* seasonal,
+* remainder components.
+
+---
+
+# ⭐ Summary Table
+
+| Model   | Handles Trend | Handles Seasonality | Includes External Variables |
+| ------- | ------------- | ------------------- | --------------------------- |
+| ARIMA   | ✔️            | ❌                   | ✔️ (ARIMAX)                 |
+| SARIMA  | ✔️            | ✔️                  | ✔️ (SARIMAX)                |
+| ETS     | ✔️            | ✔️                  | ❌                           |
+| Prophet | ✔️            | ✔️                  | ✔️                          |
+
+---
+
+# **Very Small Example for Conceptual Understanding**
+
+Suppose monthly sales:
+
+| Month | Sales |
+| ----- | ----- |
+| Jan   | 100   |
+| Feb   | 110   |
+| Mar   | 120   |
+| Apr   | 130   |
+| May   | 140   |
+| Jun   | 150   |
+
+This has **trend but no seasonality** → ARIMA.
+
+If you have:
+
+| Month           | Sales |
+| --------------- | ----- |
+| Jan             | 100   |
+| Feb             | 120   |
+| Mar             | 150   |
+| …               | …     |
+| Jan (next year) | 110   |
+| Feb (next year) | 130   |
+
+This has **trend + yearly cycle** → SARIMA.
