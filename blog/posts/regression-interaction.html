@@ -8,9 +8,9 @@
 
 <meta name="author" content="Abdullah Al Mahmud">
 <meta name="dcterms.date" content="2025-11-19">
-<meta name="description" content="A z-score (also known as a standard score or z-value) measures how many standard deviations a data point is from the mean of a distribution. It’s a way of standardizing individual data points so they can be compared, regardless of the scale of the data.">
+<meta name="description" content="An interaction effect means the effect of one variable on the outcome depends on the level of another variable.">
 
-<title>Z-score: What it is and what it does – Stat Mania</title>
+<title>Interaction Effect in Regression Analysis – Stat Mania</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -167,16 +167,16 @@ window.Quarto = {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Z-score: What it is and what it does</h1>
+      <h1 class="title">Interaction Effect in Regression Analysis</h1>
                   <div>
         <div class="description">
-          A <strong>z-score</strong> (also known as a <strong>standard score</strong> or <strong>z-value</strong>) measures how many standard deviations a data point is from the mean of a distribution. It’s a way of standardizing individual data points so they can be compared, regardless of the scale of the data.
+          An <strong>interaction effect</strong> means the effect of one variable on the outcome depends on the level of another variable.
         </div>
       </div>
                           <div class="quarto-categories">
                 <div class="quarto-category">statistics</div>
                 <div class="quarto-category">theory</div>
-                <div class="quarto-category">probability</div>
+                <div class="quarto-category">regression</div>
               </div>
                   </div>
   </div>
@@ -213,49 +213,98 @@ window.Quarto = {
 
 
 
-<p>A <strong>z-score</strong> (also known as a <strong>standard score</strong> or <strong>z-value</strong>) measures how many standard deviations a data point is from the mean of a distribution. It’s a way of standardizing individual data points so they can be compared, regardless of the scale of the data.</p>
-<section id="how-to-calculate-the-z-score" class="level3">
-<h3 class="anchored" data-anchor-id="how-to-calculate-the-z-score">How to calculate the z-score:</h3>
-<p>The formula for the <strong>z-score</strong> of a data point is:</p>
-<p><span class="math inline">\(z = \frac{X - \mu}{\sigma}\)</span></p>
-<p>Where:</p>
-<ul>
-<li><span class="math inline">\(X\)</span> = the value of the data point.</li>
-<li><span class="math inline">\(\mu\)</span> = the mean (average) of the dataset.</li>
-<li><span class="math inline">\(\sigma\)</span> = the standard deviation of the dataset.</li>
-</ul>
+<section id="what-an-interaction-means-intuitive-view" class="level2">
+<h2 class="anchored" data-anchor-id="what-an-interaction-means-intuitive-view">1. What an interaction means (intuitive view)</h2>
+<p>An <strong>interaction effect</strong> means:</p>
+<blockquote class="blockquote">
+<p>The effect of one variable on the outcome depends on the level of another variable.</p>
+</blockquote>
+<p>So, the relationship between <span class="math inline">\(X_1\)</span> and <span class="math inline">\(Y\)</span> <strong>changes</strong> depending on the value of <span class="math inline">\(X_2\)</span>.</p>
+<hr>
 </section>
-<section id="steps-to-calculate-the-z-score" class="level3">
-<h3 class="anchored" data-anchor-id="steps-to-calculate-the-z-score">Steps to calculate the z-score:</h3>
-<ol type="1">
-<li><strong>Find the mean</strong> of the dataset.</li>
-<li><strong>Find the standard deviation</strong> of the dataset.</li>
-<li><strong>Subtract the mean</strong> from the data point you’re interested in.</li>
-<li><strong>Divide the result</strong> by the standard deviation.</li>
-</ol>
-</section>
-<section id="example" class="level3">
-<h3 class="anchored" data-anchor-id="example">Example:</h3>
-<p>Imagine you have the following dataset of test scores: [80, 85, 90, 95, 100]</p>
+<section id="a-simple-regression-without-interaction" class="level2">
+<h2 class="anchored" data-anchor-id="a-simple-regression-without-interaction">2. A simple regression without interaction</h2>
+<p>Say we model income as a function of gender and education:</p>
+<p><span class="math inline">\(\text{Income} = \beta_0 + \beta_1(\text{Gender}) + \beta_2(\text{Education}) + \epsilon\)</span></p>
+<p>Here:</p>
 <ul>
-<li><p><strong>Mean (μ)</strong>: ((80 + 85 + 90 + 95 + 100) / 5 = 90)</p></li>
-<li><p><strong>Standard Deviation (σ)</strong>: Calculate the standard deviation of the dataset (you could use a standard formula or a calculator for this). Let’s say it’s <strong>7.91</strong>.</p></li>
-<li><p>To find the <strong>z-score</strong> for a score of <strong>85</strong>:</p>
-<p><span class="math inline">\(z = \frac{85 - 90}{7.91} \approx -0.63\)</span></p>
-<p>This means the score of 85 is <strong>0.63 standard deviations below the mean</strong>.</p></li>
+<li><span class="math inline">\(\beta_1\)</span>: average difference between males and females (assuming Gender is dummy coded, say Male=1, Female=0)</li>
+<li><span class="math inline">\(\beta_2\)</span>: effect of moving from one education level to another</li>
+<li>The two effects are <strong>independent</strong> — the gender gap is the same across all education levels.</li>
 </ul>
 <hr>
 </section>
-<section id="common-uses-of-the-z-score" class="level3">
-<h3 class="anchored" data-anchor-id="common-uses-of-the-z-score">Common uses of the z-score:</h3>
-<ol type="1">
-<li><p><strong>Standardizing data</strong>: Z-scores are used to standardize data, especially when you want to compare values from different datasets with different units or scales.</p></li>
-<li><p><strong>Identifying outliers</strong>: A data point with a z-score greater than +3 or less than -3 is often considered an <strong>outlier</strong> because it lies more than 3 standard deviations away from the mean.</p></li>
-<li><p><strong>Probability and normal distribution</strong>: In statistics, z-scores are crucial when working with the <strong>normal distribution</strong>. They can be used to find the <strong>probability</strong> of a value occurring within a normal distribution by looking up the z-score in a standard normal distribution table (or using statistical software).</p></li>
-<li><p><strong>Comparing scores across different distributions</strong>: For example, in education, z-scores allow you to compare scores from different tests, even if those tests have different scales (e.g., SAT vs.&nbsp;ACT scores). You can convert raw scores into z-scores to compare relative performance.</p></li>
-<li><p><strong>Risk assessment and finance</strong>: In finance, z-scores can be used to assess the risk or financial stability of a company. The <strong>Altman Z-score</strong>, for instance, is used to predict the likelihood of bankruptcy.</p></li>
-<li><p><strong>Quality control and manufacturing</strong>: In quality control, z-scores help assess whether a product meets specifications, identifying whether the production process is consistent or if corrective action is needed.</p></li>
-</ol>
+<section id="add-an-interaction-term" class="level2">
+<h2 class="anchored" data-anchor-id="add-an-interaction-term">3. Add an interaction term</h2>
+<p>Now we include a product term:</p>
+<p><span class="math inline">\(\text{Income} = \beta_0 + \beta_1(\text{Gender}) + \beta_2(\text{Education}) + \beta_3(\text{Gender} \times \text{Education}) + \epsilon\)</span></p>
+<p>That last term — <span class="math inline">\(\beta_3(\text{Gender} \times \text{Education})\)</span> — is the <strong>interaction</strong>.</p>
+<section id="meaning" class="level3">
+<h3 class="anchored" data-anchor-id="meaning">Meaning:</h3>
+<p>It tells us whether the effect of education <strong>differs by gender</strong>.</p>
+<ul>
+<li>If <span class="math inline">\(\beta_3 = 0\)</span>: no interaction — both genders gain equally from higher education.</li>
+<li>If <span class="math inline">\(\beta_3 &gt; 0\)</span>: the return to education (effect on income) is <strong>greater for males</strong> than females.</li>
+<li>If <span class="math inline">\(\beta_3 &lt; 0\)</span>: the return to education is <strong>greater for females</strong> than males.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="example-with-numbers" class="level2">
+<h2 class="anchored" data-anchor-id="example-with-numbers">4. Example with numbers</h2>
+<p>Suppose you fit this model (Gender=1 for Male, 0 for Female; Education=years of schooling):</p>
+<p><span class="math inline">\(\text{Income} = 20{,}000 + 5{,}000(\text{Education}) + 3{,}000(\text{Gender}) + 1{,}000(\text{Gender} \times \text{Education})\)</span></p>
+<p>Interpretation:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 92%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>20,000</td>
+<td>Average income for a female with 0 years of education (baseline).</td>
+</tr>
+<tr class="even">
+<td>5,000</td>
+<td>Each year of education increases income by $5,000 for <strong>females</strong>.</td>
+</tr>
+<tr class="odd">
+<td>3,000</td>
+<td>Males earn $3,000 more than females at 0 years of education.</td>
+</tr>
+<tr class="even">
+<td>1,000</td>
+<td>For males, the effect of each additional year of education is $1,000 higher.</td>
+</tr>
+</tbody>
+</table>
+<p>So:</p>
+<ul>
+<li>For females: effect of education = 5,000 per year</li>
+<li>For males: effect of education = 5,000 + 1,000 = <strong>6,000 per year</strong></li>
+</ul>
+<p>That difference (1,000) is the <strong>interaction effect</strong>.</p>
+<hr>
+</section>
+<section id="in-general" class="level2">
+<h2 class="anchored" data-anchor-id="in-general">5. In general</h2>
+<p>Interactions can occur between:</p>
+<ul>
+<li><strong>Two categorical variables</strong> (e.g., gender × marital status)</li>
+<li><strong>Categorical × continuous</strong> (e.g., gender × education years)</li>
+<li><strong>Two continuous</strong> (e.g., age × income in predicting health)</li>
+</ul>
+<p>Each type changes the interpretation slightly — but the core idea is always:</p>
+<blockquote class="blockquote">
+<p>the slope (or effect) of one predictor depends on the value of another.</p>
+</blockquote>
 
 
 </section>

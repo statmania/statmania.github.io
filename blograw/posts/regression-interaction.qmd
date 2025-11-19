@@ -1,0 +1,87 @@
+---
+title: "Interaction Effect in Regression Analysis"
+author: "Abdullah Al Mahmud"
+date: "2025-11-19"
+categories: [statistics, theory, regression]
+tags: [theory]
+description: An **interaction effect** means the effect of one variable on the outcome depends on the level of another variable.
+---
+
+## 1. What an interaction means (intuitive view)
+
+An **interaction effect** means:
+
+> The effect of one variable on the outcome depends on the level of another variable.
+
+So, the relationship between $X_1$ and $Y$ **changes** depending on the value of $X_2$.
+
+---
+
+## 2. A simple regression without interaction
+
+Say we model income as a function of gender and education:
+
+
+$\text{Income} = \beta_0 + \beta_1(\text{Gender}) + \beta_2(\text{Education}) + \epsilon$
+
+Here:
+
+* $\beta_1$: average difference between males and females (assuming Gender is dummy coded, say Male=1, Female=0)
+* $\beta_2$: effect of moving from one education level to another
+* The two effects are **independent** — the gender gap is the same across all education levels.
+
+---
+
+## 3. Add an interaction term
+
+Now we include a product term:
+
+$\text{Income} = \beta_0 + \beta_1(\text{Gender}) + \beta_2(\text{Education}) + \beta_3(\text{Gender} \times \text{Education}) + \epsilon$
+
+That last term — $\beta_3(\text{Gender} \times \text{Education})$ — is the **interaction**.
+
+### Meaning:
+
+It tells us whether the effect of education **differs by gender**.
+
+* If $\beta_3 = 0$: no interaction — both genders gain equally from higher education.
+* If $\beta_3 > 0$: the return to education (effect on income) is **greater for males** than females.
+* If $\beta_3 < 0$: the return to education is **greater for females** than males.
+
+---
+
+## 4. Example with numbers
+
+Suppose you fit this model (Gender=1 for Male, 0 for Female; Education=years of schooling):
+
+$\text{Income} = 20{,}000 + 5{,}000(\text{Education}) + 3{,}000(\text{Gender}) + 1{,}000(\text{Gender} \times \text{Education})$
+
+Interpretation:
+
+| Term   | Meaning                                                                      |
+| ------ | ---------------------------------------------------------------------------- |
+| 20,000 | Average income for a female with 0 years of education (baseline).            |
+| 5,000  | Each year of education increases income by $5,000 for **females**.           |
+| 3,000  | Males earn $3,000 more than females at 0 years of education.                 |
+| 1,000  | For males, the effect of each additional year of education is $1,000 higher. |
+
+So:
+
+* For females: effect of education = 5,000 per year
+* For males: effect of education = 5,000 + 1,000 = **6,000 per year**
+
+That difference (1,000) is the **interaction effect**.
+
+---
+
+## 5. In general
+
+Interactions can occur between:
+
+* **Two categorical variables** (e.g., gender × marital status)
+* **Categorical × continuous** (e.g., gender × education years)
+* **Two continuous** (e.g., age × income in predicting health)
+
+Each type changes the interpretation slightly — but the core idea is always:
+
+> the slope (or effect) of one predictor depends on the value of another.
