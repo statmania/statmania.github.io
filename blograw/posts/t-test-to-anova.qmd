@@ -1,0 +1,205 @@
+---
+title: "From t-test to Anova"
+author: "Abdullah Al Mahmud"
+date: "2025-10-10"
+categories: [statistics, theory, anova]
+tags: [test]
+description: Let’s build this step by step, starting from a **t-test** and then showing how it generalizes naturally into **ANOVA** (Analysis of Variance).
+---
+
+Let’s build a **t-test** and then showing how it generalizes naturally into **ANOVA** (Analysis of Variance).
+
+## Step 1. The t-test — comparing **two means**
+
+Let’s imagine two groups of students and their test scores:
+
+| Group   | Scores     |
+| ------- | ---------- |
+| Group A | 70, 75, 80 |
+| Group B | 85, 90, 95 |
+
+We want to know:
+
+> Are the mean scores of Group A and Group B **significantly different**?
+
+### Hypotheses
+
+$H_0: \mu_A = \mu_B \quad \text{(means are equal)}$
+
+$H_1: \mu_A \ne \mu_B$
+
+### Logic of the t-test
+
+We calculate:
+
+1. The difference between sample means
+   $\bar X_A - \bar X_B$
+2. The standard error of that difference
+   (based on the variances and sample sizes)
+3. The **t-statistic**
+
+   $t = \frac{(\bar X_A - \bar X_B)}{SE}$
+
+If the difference is large relative to its expected variation, we reject $H_0$.
+
+---
+
+### Intuition
+
+* The **numerator** measures how far apart the groups are.
+* The **denominator** measures how noisy the data are.
+* A large t-value ⇒ groups differ more than we’d expect by chance.
+
+So the **two-sample t-test** compares *between-group difference* to *within-group variability*.
+
+---
+
+## Step 2. Extending to more than two groups
+
+Now add a third group:
+
+| Group   | Scores     |
+| ------- | ---------- |
+| Group A | 70, 75, 80 |
+| Group B | 85, 90, 95 |
+| Group C | 60, 65, 70 |
+
+Now what if we ask:
+
+> Are all group means equal?
+
+You could do multiple t-tests (A vs B, A vs C, B vs C), but that inflates the chance of false positives.
+Instead, **ANOVA** does it all at once.
+
+---
+
+## Step 3. ANOVA conceptually
+
+### Hypotheses
+
+$H_0: \mu_A = \mu_B = \mu_C \quad \text{(all equal)}$
+
+$H_1: \text{At least one mean differs}$
+
+### How ANOVA works
+
+ANOVA decomposes total variability into two parts:
+
+$\text{Total Variation} = \text{Between-group Variation} + \text{Within-group Variation}$
+
+It then forms a ratio:
+
+$F = \frac{\text{Between-group Mean Square}}{\text{Within-group Mean Square}}$
+
+* If $H_0$ is true, both parts estimate the same thing → $F \approx 1$.
+* If group means differ more than expected, $F > 1$ → reject $H_0$.
+
+---
+
+## Step 4. Conceptual link between t and F
+
+For **two groups**, ANOVA and t-test give the same result:
+
+$F = t^2$
+
+So ANOVA is just a **generalization of the t-test** from 2 groups to many groups.
+
+| Test   | Groups | Statistic                                    | Distribution   |
+| ------ | ------ | -------------------------------------------- | -------------- |
+| t-test | 2      | $t$                                        | t-distribution |
+| ANOVA  | ≥ 2    | $F = \frac{\text{Between}}{\text{Within}}$ | F-distribution |
+
+---
+
+## Step 5. Interpretation
+
+* If $F$ (or $|t|$) is large and the p-value < 0.05, we reject $H_0$.
+  → The means are not all equal.
+* If not, we conclude that differences among sample means could just be random noise.
+
+---
+
+## Summary Table
+
+| Aspect     | t-test                      | ANOVA                                          |
+| ---------- | --------------------------- | ---------------------------------------------- |
+| Purpose    | Compare **two** means       | Compare **two or more** means                  |
+| Hypothesis | $H_0: \mu_1 = \mu_2$      | $H_0: \mu_1 = \mu_2 = \mu_3 = \dots$         |
+| Statistic  | t                           | F                                              |
+| Logic      | Difference of means / error | Ratio of between-group / within-group variance |
+| Link       | $F = t^2$ for 2 groups    | —                                              |
+
+---
+
+## Why not many t-tests?
+
+Doing multiple *t*-tests increases the **Type I error rate (false positive probability)**.
+
+Let us see how.
+
+---
+
+Suppose you have $k = 3$ groups:
+
+* $G_1, G_2, G_3$
+
+To compare them, you could do **pairwise *t*-tests**:
+
+$G_1 \text{ vs } G_2,\quad G_1 \text{ vs } G_3,\quad G_2 \text{ vs } G_3$
+
+That’s $C(k,2) = 3$ tests.
+
+Each test has **significance level** $\alpha = 0.05$.
+So the chance of *no false positive* across all tests = $(1-\alpha)^m$, where $m$ = number of tests.
+
+Hence, the **overall false positive rate** (familywise error rate) is:
+
+$\text{FWER} = 1 - (1 - \alpha)^m$
+
+For $k=3$ groups, $m=3$:
+
+$\text{FWER} = 1 - (1 - 0.05)^3 = 1 - 0.95^3 = 0.1426$
+
+So even if all population means are **equal**, there’s **≈14% chance** you’ll (wrongly) find at least one “significant difference”.
+
+This is why ANOVA tests **all means simultaneously** with a **single α = 0.05** — controlling the false positive rate.
+
+---
+
+## Minimal empirical example
+
+Let’s make up a small dataset:
+
+| Group | Values  |
+| ----- | ------- |
+| A     | 5, 6, 7 |
+| B     | 6, 7, 8 |
+| C     | 5, 7, 9 |
+
+All groups have similar means (~6.5–7).
+True means are equal (in population), but random variation exists.
+
+Now:
+
+### Step 1. Pairwise t-tests
+
+We do:
+
+1. A vs B → p = 0.08
+2. A vs C → p = 0.04
+3. B vs C → p = 0.06
+
+One of them (A vs C) is <0.05 → you’d claim a “significant” difference.
+But that’s **a false positive**, since groups were drawn from the same population.
+
+If you repeated this experiment 1000 times, around **14%** of runs would falsely detect *something* significant — matching our theoretical 0.1426.
+
+---
+
+## Key takeaway
+
+| Method        | Number of tests | Nominal α per test | Familywise α (true false positive rate) |
+| ------------- | --------------- | ------------------ | --------------------------------------- |
+| One-way ANOVA | 1               | 0.05               | 0.05                                    |
+| Three t-tests | 3               | 0.05               | 0.14                                    |
+| Ten t-tests   | 10              | 0.05               | 0.40                                    |
