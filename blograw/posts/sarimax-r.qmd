@@ -1,0 +1,189 @@
+---
+title: "SARIMAX Time Series Models with R Code"
+author: "Abdullah Al Mahmud"
+date: "2024-01-20"
+categories: [statistics, time-series, R]
+tags: [ARIMA, SARIMA]
+description: A **clear, concise explanation** of **ARIMA**, **SARIMA**, and related models — followed by **minimal R examples**..
+---
+
+Here's a comprehensive guide to **SARIMAX in R** with examples and interpretation:
+
+---
+
+## **1. What is SARIMAX?**
+SARIMAX = **S**easonal **A**uto**R**egressive **I**ntegrated **M**oving **A**verage with e**X**ogenous variables
+
+- **SARIMA**: Handles seasonality and trends
+- **X**: Includes external predictors (covariates)
+
+---
+
+## **2. Basic Syntax in R**
+
+```r
+library(forecast)
+
+# Fit SARIMAX model
+model <- Arima(y,
+               order = c(p, d, q),           # non-seasonal ARIMA order
+               seasonal = c(P, D, Q, S),     # seasonal order (S = period)
+               xreg = xreg_data)             # exogenous variables
+```
+
+---
+
+## **3. Example 1: Simple SARIMAX with One External Variable**
+
+```r
+library(forecast)
+library(ggplot2)
+
+# Create sample data
+set.seed(123)
+n <- 120
+time <- 1:n
+
+# Main time series with trend + seasonality
+y <- 50 + 0.3*time + 10*sin(2*pi*time/12) + rnorm(n, 0, 5)
+
+# External variable (e.g., marketing spend)
+x1 <- 20 + 0.1*time + rnorm(n, 0, 3)
+
+# Convert to time series object
+y_ts <- ts(y, frequency = 12)
+x1_ts <- ts(x1, frequency = 12)
+
+# Fit SARIMAX model
+sarimax_model <- Arima(y_ts,
+                      order = c(1, 1, 1),
+                      seasonal = c(1, 1, 1),
+                      xreg = x1_ts)
+
+summary(sarimax_model)
+```
+
+---
+
+## **4. Example 2: Multiple External Variables**
+
+```r
+# Add second external variable
+x2 <- 15 + 0.05*time + rnorm(n, 0, 2)
+xreg_matrix <- cbind(x1_ts, x2_ts)
+
+# Fit model with multiple external variables
+sarimax_model2 <- Arima(y_ts,
+                       order = c(1, 1, 1),
+                       seasonal = c(1, 1, 1),
+                       xreg = xreg_matrix)
+
+summary(sarimax_model2)
+```
+
+---
+
+## **5. Model Diagnostics**
+
+```r
+# Residual diagnostics
+checkresiduals(sarimax_model)
+
+# Coefficients and significance
+coef(sarimax_model)
+sqrt(diag(sarimax_model$var.coef))  # standard errors
+
+# Confidence intervals
+confint(sarimax_model)
+```
+
+---
+
+## **6. Forecasting with External Variables**
+
+```r
+# Create future values of external variables
+future_periods <- 12
+x1_future <- ts(30 + 0.1*(121:132), frequency = 12)
+x2_future <- ts(20 + 0.05*(121:132), frequency = 12)
+xreg_future <- cbind(x1_future, x2_future)
+
+# Generate forecasts
+forecast_result <- forecast(sarimax_model2,
+                           h = future_periods,
+                           xreg = xreg_future)
+
+# Plot results
+autoplot(forecast_result) +
+  ggtitle("SARIMAX Forecast with External Variables")
+```
+
+---
+
+## **7. Automated Model Selection**
+
+```r
+# Let auto.arima select best SARIMAX model
+auto_model <- auto.arima(y_ts,
+                        seasonal = TRUE,
+                        stepwise = TRUE,
+                        approximation = FALSE,
+                        xreg = xreg_matrix)
+
+summary(auto_model)
+```
+
+---
+
+## **8. Real Dataset Example (AirPassengers with exogenous var)**
+
+```r
+# Using AirPassengers dataset
+data("AirPassengers")
+
+# Create dummy external variable (e.g., economic index)
+set.seed(123)
+economic_index <- 100 + 0.5*time(AirPassengers) + rnorm(length(AirPassengers), 0, 10)
+
+# Fit SARIMAX
+air_model <- Arima(AirPassengers,
+                  order = c(0, 1, 1),
+                  seasonal = c(0, 1, 1),
+                  xreg = economic_index)
+
+# Forecast with assumed future economic index
+future_econ <- 150 + 0.5*(1961 + (0:11)/12)  # 1961 values
+air_forecast <- forecast(air_model,
+                        h = 12,
+                        xreg = future_econ)
+
+autoplot(air_forecast)
+```
+
+---
+
+## **9. Interpretation of Coefficients**
+
+For the model:
+```r
+# If output shows:
+# ar1 = 0.85, ma1 = -0.32, sar1 = 0.72, sma1 = -0.45, xreg1 = 0.65
+```
+
+**Interpretation:**
+- `ar1 = 0.85`: Strong positive autocorrelation (persistence)
+- `ma1 = -0.32`: Negative momentum effects
+- `sar1 = 0.72`: Strong seasonal autocorrelation
+- `sma1 = -0.45`: Negative seasonal momentum
+- `xreg1 = 0.65`: 1-unit increase in external variable increases y by 0.65 units
+
+---
+
+## **10. Important Notes**
+
+- **Stationarity**: Ensure both y and xreg variables are stationary (use differencing if needed)
+- **Correlation ≠ Causation**: External variables should theoretically make sense
+- **Model Validation**: Always check residuals for autocorrelation
+- **Overfitting**: Avoid too many external variables relative to data length
+
+This gives you a solid foundation for implementing SARIMAX models in R!

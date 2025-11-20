@@ -1,0 +1,174 @@
+---
+title: "AutoRegressive and Moving Average Time Series Models with R Code"
+author: "Abdullah Al Mahmud"
+date: "2024-02-23"
+categories: [statistics, time-series, R]
+tags: [MA, AR]
+description: A comprehensive explanation of AR (AutoRegressive) and MA (Moving Average) models and their parameters.
+---
+
+Here's a comprehensive explanation of **AR (AutoRegressive)** and **MA (Moving Average)** models and their parameters:
+
+---
+
+## **1. AR Model (AutoRegressive)**
+
+### **Concept:**
+An AR model predicts future values based on **past values of the same variable**.
+
+### **AR(p) Model Formula:**
+
+$Y_t = c + \phi_1 Y_{t-1} + \phi_2 Y_{t-2} + \cdots + \phi_p Y_{t-p} + \epsilon_t$
+Where:
+
+- $Y_t$ = value at time \(t\)
+- $c$ = constant (mean term)
+- $\phi_1, \phi_2, \dots, \phi_p$ = **AR parameters** (autoregressive coefficients)
+- $p$ = **order** of the model (number of lagged terms)
+- $\epsilon_t$ = white noise error term
+
+---
+
+### **AR Parameters Interpretation:**
+
+- **$\phi_1$**: Effect of the **most recent observation** $(Y_{t-1})$ on current value
+- **$\phi_2$**: Effect of **two periods back** $(Y_{t-2})$
+- **$\phi_p$**: Effect of **p periods back** $(Y_{t-p})$
+
+### **Example: AR(2) Model**
+
+$Y_t = 0.5 + 0.7Y_{t-1} + 0.2Y_{t-2} + \epsilon_t$
+
+**Interpretation:**
+- Current value depends 70% on last period's value
+- Plus 20% on the value from two periods ago
+- Plus a constant 0.5 and random noise
+
+---
+
+### **Stationarity Condition for AR:**
+
+For AR(1): $|\phi_1| < 1$
+
+For AR(p): All roots of characteristic equation must lie outside unit circle
+
+---
+
+## **2. MA Model (Moving Average)**
+
+### **Concept:**
+An MA model predicts future values based on **past forecast errors**.
+
+### **MA(q) Model Formula:**
+
+$Y_t = \mu + \epsilon_t + \theta_1 \epsilon_{t-1} + \theta_2 \epsilon_{t-2} + \cdots + \theta_q \epsilon_{t-q}$
+
+Where:
+
+- $\mu$ = mean of the series
+- $\theta_1, \theta_2, \dots, \theta_q$ = **MA parameters**
+- $q$ = **order** of the model
+- $\epsilon_t, \epsilon_{t-1}, \dots$ = error terms (white noise)
+
+---
+
+### **MA Parameters Interpretation:**
+
+- **$\theta_1$**: Effect of **last period's shock** on current value
+- **$\theta_2$**: Effect of **two periods ago shock**
+- **$\theta_q$**: Effect of **q periods ago shock**
+
+### **Example: MA(2) Model**
+
+$Y_t = 10 + \epsilon_t - 0.4\epsilon_{t-1} + 0.3\epsilon_{t-2}$
+
+**Interpretation:**
+- Series has mean 10
+- Current value affected by:
+  - Current random shock $(\epsilon_t)$)
+  - -40% of last period's shock
+  - +30% of shock from two periods ago
+
+---
+
+### **Invertibility Condition for MA:**
+
+For MA(1): $|\theta_1| < 1$
+For MA(q): All roots of characteristic equation must lie outside unit circle
+
+---
+
+## **3. Key Differences**
+
+| Feature | AR Model | MA Model |
+|---------|----------|----------|
+| **Depends on** | Past values of series | Past forecast errors |
+| **Memory** | Infinite (theoretically) | Finite (q periods) |
+| **ACF** | Decays gradually | Cuts off after lag q |
+| **PACF** | Cuts off after lag p | Decays gradually |
+| **Use Case** | Persistent trends | Shock-driven series |
+
+---
+
+## **4. Parameter Estimation in Practice**
+
+### **In R:**
+
+```r
+library(forecast)
+
+# Fit AR model
+ar_model <- Arima(ts_data, order = c(2, 0, 0))  # AR(2)
+
+# Fit MA model
+ma_model <- Arima(ts_data, order = c(0, 0, 2))  # MA(2)
+
+# View parameters
+summary(ar_model)
+summary(ma_model)
+```
+
+### **Typical Parameter Ranges:**
+- **AR parameters**: Usually between -1 and 1
+- **MA parameters**: Usually between -1 and 1
+- Significant parameters indicate important lags
+
+---
+
+## **5. Real-World Examples**
+
+### **AR Example - Stock Prices:**
+```r
+# Stock prices often show AR behavior
+# AR(1): Today's price = 0.95 × Yesterday's price + noise
+```
+
+### **MA Example - Inventory Systems:**
+```r
+# Inventory shocks affect future periods
+# MA(1): Today's demand = mean - 0.6 × Yesterday's forecast error + noise
+```
+
+---
+
+## **6. Model Identification**
+
+### **Using ACF/PACF plots:**
+- **AR signature**: PACF cuts off at lag p, ACF decays
+- **MA signature**: ACF cuts off at lag q, PACF decays
+
+### **Information Criteria:**
+- Use AIC/BIC to choose optimal p and q
+- Lower values indicate better model fit
+
+---
+
+## **7. Combined Model - ARMA(p,q)**
+
+$Y_t = c + \phi_1 Y_{t-1} + \cdots + \phi_p Y_{t-p} + \epsilon_t + \theta_1 \epsilon_{t-1} + \cdots + \theta_q \epsilon_{t-q}$
+
+Combines both past values AND past errors for forecasting.
+
+---
+
+**Key Takeaway**: AR models capture **inertia/persistence**, while MA models capture **shock effects**. The parameters $(\phi$) and $\theta$) quantify these relationships and are estimated from data to best fit the time series pattern.
