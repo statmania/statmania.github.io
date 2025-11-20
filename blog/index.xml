@@ -1,0 +1,2391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss  xmlns:atom="http://www.w3.org/2005/Atom" 
+      xmlns:media="http://search.yahoo.com/mrss/" 
+      xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+      xmlns:dc="http://purl.org/dc/elements/1.1/" 
+      version="2.0">
+<channel>
+<title>Stat Mania</title>
+<link>https://portal.statmania.info/</link>
+<atom:link href="https://portal.statmania.info/index.xml" rel="self" type="application/rss+xml"/>
+<description></description>
+<generator>quarto-1.5.53</generator>
+<lastBuildDate>Tue, 18 Nov 2025 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>Interaction Effect in Regression Analysis</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://portal.statmania.info/posts/regression-interaction.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="what-an-interaction-means-intuitive-view" class="level2">
+<h2 class="anchored" data-anchor-id="what-an-interaction-means-intuitive-view">1. What an interaction means (intuitive view)</h2>
+<p>An <strong>interaction effect</strong> means:</p>
+<blockquote class="blockquote">
+<p>The effect of one variable on the outcome depends on the level of another variable.</p>
+</blockquote>
+<p>So, the relationship between <img src="https://latex.codecogs.com/png.latex?X_1"> and <img src="https://latex.codecogs.com/png.latex?Y"> <strong>changes</strong> depending on the value of <img src="https://latex.codecogs.com/png.latex?X_2">.</p>
+<hr>
+</section>
+<section id="a-simple-regression-without-interaction" class="level2">
+<h2 class="anchored" data-anchor-id="a-simple-regression-without-interaction">2. A simple regression without interaction</h2>
+<p>Say we model income as a function of gender and education:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Ctext%7BIncome%7D%20=%20%5Cbeta_0%20+%20%5Cbeta_1(%5Ctext%7BGender%7D)%20+%20%5Cbeta_2(%5Ctext%7BEducation%7D)%20+%20%5Cepsilon"></p>
+<p>Here:</p>
+<ul>
+<li><img src="https://latex.codecogs.com/png.latex?%5Cbeta_1">: average difference between males and females (assuming Gender is dummy coded, say Male=1, Female=0)</li>
+<li><img src="https://latex.codecogs.com/png.latex?%5Cbeta_2">: effect of moving from one education level to another</li>
+<li>The two effects are <strong>independent</strong> — the gender gap is the same across all education levels.</li>
+</ul>
+<hr>
+</section>
+<section id="add-an-interaction-term" class="level2">
+<h2 class="anchored" data-anchor-id="add-an-interaction-term">3. Add an interaction term</h2>
+<p>Now we include a product term:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Ctext%7BIncome%7D%20=%20%5Cbeta_0%20+%20%5Cbeta_1(%5Ctext%7BGender%7D)%20+%20%5Cbeta_2(%5Ctext%7BEducation%7D)%20+%20%5Cbeta_3(%5Ctext%7BGender%7D%20%5Ctimes%20%5Ctext%7BEducation%7D)%20+%20%5Cepsilon"></p>
+<p>That last term — <img src="https://latex.codecogs.com/png.latex?%5Cbeta_3(%5Ctext%7BGender%7D%20%5Ctimes%20%5Ctext%7BEducation%7D)"> — is the <strong>interaction</strong>.</p>
+<section id="meaning" class="level3">
+<h3 class="anchored" data-anchor-id="meaning">Meaning:</h3>
+<p>It tells us whether the effect of education <strong>differs by gender</strong>.</p>
+<ul>
+<li>If <img src="https://latex.codecogs.com/png.latex?%5Cbeta_3%20=%200">: no interaction — both genders gain equally from higher education.</li>
+<li>If <img src="https://latex.codecogs.com/png.latex?%5Cbeta_3%20%3E%200">: the return to education (effect on income) is <strong>greater for males</strong> than females.</li>
+<li>If <img src="https://latex.codecogs.com/png.latex?%5Cbeta_3%20%3C%200">: the return to education is <strong>greater for females</strong> than males.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="example-with-numbers" class="level2">
+<h2 class="anchored" data-anchor-id="example-with-numbers">4. Example with numbers</h2>
+<p>Suppose you fit this model (Gender=1 for Male, 0 for Female; Education=years of schooling):</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Ctext%7BIncome%7D%20=%2020%7B,%7D000%20+%205%7B,%7D000(%5Ctext%7BEducation%7D)%20+%203%7B,%7D000(%5Ctext%7BGender%7D)%20+%201%7B,%7D000(%5Ctext%7BGender%7D%20%5Ctimes%20%5Ctext%7BEducation%7D)"></p>
+<p>Interpretation:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 92%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>20,000</td>
+<td>Average income for a female with 0 years of education (baseline).</td>
+</tr>
+<tr class="even">
+<td>5,000</td>
+<td>Each year of education increases income by $5,000 for <strong>females</strong>.</td>
+</tr>
+<tr class="odd">
+<td>3,000</td>
+<td>Males earn $3,000 more than females at 0 years of education.</td>
+</tr>
+<tr class="even">
+<td>1,000</td>
+<td>For males, the effect of each additional year of education is $1,000 higher.</td>
+</tr>
+</tbody>
+</table>
+<p>So:</p>
+<ul>
+<li>For females: effect of education = 5,000 per year</li>
+<li>For males: effect of education = 5,000 + 1,000 = <strong>6,000 per year</strong></li>
+</ul>
+<p>That difference (1,000) is the <strong>interaction effect</strong>.</p>
+<hr>
+</section>
+<section id="in-general" class="level2">
+<h2 class="anchored" data-anchor-id="in-general">5. In general</h2>
+<p>Interactions can occur between:</p>
+<ul>
+<li><strong>Two categorical variables</strong> (e.g., gender × marital status)</li>
+<li><strong>Categorical × continuous</strong> (e.g., gender × education years)</li>
+<li><strong>Two continuous</strong> (e.g., age × income in predicting health)</li>
+</ul>
+<p>Each type changes the interpretation slightly — but the core idea is always:</p>
+<blockquote class="blockquote">
+<p>the slope (or effect) of one predictor depends on the value of another.</p>
+</blockquote>
+
+
+</section>
+
+ ]]></description>
+  <category>statistics</category>
+  <category>theory</category>
+  <category>regression</category>
+  <guid>https://portal.statmania.info/posts/regression-interaction.html</guid>
+  <pubDate>Tue, 18 Nov 2025 18:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Z-score: What it is and what it does</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://portal.statmania.info/posts/z-score.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>A <strong>z-score</strong> (also known as a <strong>standard score</strong> or <strong>z-value</strong>) measures how many standard deviations a data point is from the mean of a distribution. It’s a way of standardizing individual data points so they can be compared, regardless of the scale of the data.</p>
+<section id="how-to-calculate-the-z-score" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-calculate-the-z-score">How to calculate the z-score:</h3>
+<p>The formula for the <strong>z-score</strong> of a data point is:</p>
+<p><img src="https://latex.codecogs.com/png.latex?z%20=%20%5Cfrac%7BX%20-%20%5Cmu%7D%7B%5Csigma%7D"></p>
+<p>Where:</p>
+<ul>
+<li><img src="https://latex.codecogs.com/png.latex?X"> = the value of the data point.</li>
+<li><img src="https://latex.codecogs.com/png.latex?%5Cmu"> = the mean (average) of the dataset.</li>
+<li><img src="https://latex.codecogs.com/png.latex?%5Csigma"> = the standard deviation of the dataset.</li>
+</ul>
+</section>
+<section id="steps-to-calculate-the-z-score" class="level3">
+<h3 class="anchored" data-anchor-id="steps-to-calculate-the-z-score">Steps to calculate the z-score:</h3>
+<ol type="1">
+<li><strong>Find the mean</strong> of the dataset.</li>
+<li><strong>Find the standard deviation</strong> of the dataset.</li>
+<li><strong>Subtract the mean</strong> from the data point you’re interested in.</li>
+<li><strong>Divide the result</strong> by the standard deviation.</li>
+</ol>
+</section>
+<section id="example" class="level3">
+<h3 class="anchored" data-anchor-id="example">Example:</h3>
+<p>Imagine you have the following dataset of test scores: [80, 85, 90, 95, 100]</p>
+<ul>
+<li><p><strong>Mean (μ)</strong>: ((80 + 85 + 90 + 95 + 100) / 5 = 90)</p></li>
+<li><p><strong>Standard Deviation (σ)</strong>: Calculate the standard deviation of the dataset (you could use a standard formula or a calculator for this). Let’s say it’s <strong>7.91</strong>.</p></li>
+<li><p>To find the <strong>z-score</strong> for a score of <strong>85</strong>:</p>
+<p><img src="https://latex.codecogs.com/png.latex?z%20=%20%5Cfrac%7B85%20-%2090%7D%7B7.91%7D%20%5Capprox%20-0.63"></p>
+<p>This means the score of 85 is <strong>0.63 standard deviations below the mean</strong>.</p></li>
+</ul>
+<hr>
+</section>
+<section id="common-uses-of-the-z-score" class="level3">
+<h3 class="anchored" data-anchor-id="common-uses-of-the-z-score">Common uses of the z-score:</h3>
+<ol type="1">
+<li><p><strong>Standardizing data</strong>: Z-scores are used to standardize data, especially when you want to compare values from different datasets with different units or scales.</p></li>
+<li><p><strong>Identifying outliers</strong>: A data point with a z-score greater than +3 or less than -3 is often considered an <strong>outlier</strong> because it lies more than 3 standard deviations away from the mean.</p></li>
+<li><p><strong>Probability and normal distribution</strong>: In statistics, z-scores are crucial when working with the <strong>normal distribution</strong>. They can be used to find the <strong>probability</strong> of a value occurring within a normal distribution by looking up the z-score in a standard normal distribution table (or using statistical software).</p></li>
+<li><p><strong>Comparing scores across different distributions</strong>: For example, in education, z-scores allow you to compare scores from different tests, even if those tests have different scales (e.g., SAT vs.&nbsp;ACT scores). You can convert raw scores into z-scores to compare relative performance.</p></li>
+<li><p><strong>Risk assessment and finance</strong>: In finance, z-scores can be used to assess the risk or financial stability of a company. The <strong>Altman Z-score</strong>, for instance, is used to predict the likelihood of bankruptcy.</p></li>
+<li><p><strong>Quality control and manufacturing</strong>: In quality control, z-scores help assess whether a product meets specifications, identifying whether the production process is consistent or if corrective action is needed.</p></li>
+</ol>
+
+
+</section>
+
+ ]]></description>
+  <category>statistics</category>
+  <category>theory</category>
+  <category>probability</category>
+  <guid>https://portal.statmania.info/posts/z-score.html</guid>
+  <pubDate>Tue, 18 Nov 2025 18:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>A/B Testing: A Sample Analysis</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://portal.statmania.info/posts/a-b-testing.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="scenario-testing-a-new-button-color" class="level2">
+<h2 class="anchored" data-anchor-id="scenario-testing-a-new-button-color">Scenario: Testing a new button color</h2>
+<p>A website wants to compare:</p>
+<ul>
+<li><strong>Version A:</strong> Blue button</li>
+<li><strong>Version B:</strong> Red button</li>
+</ul>
+<p>The outcome is <strong>conversion</strong> (1 = user clicked, 0 = did not click).</p>
+<hr>
+</section>
+<section id="sample-data" class="level2">
+<h2 class="anchored" data-anchor-id="sample-data">Sample data</h2>
+<section id="group-a-blue-button" class="level3">
+<h3 class="anchored" data-anchor-id="group-a-blue-button"><strong>Group A (blue button)</strong></h3>
+<p>Users: 10 Clicks: <strong>3</strong></p>
+<p>So conversion rate:</p>
+<p><img src="https://latex.codecogs.com/png.latex?p_A%20=%20%5Cfrac%7B3%7D%7B10%7D%20=%200.30"></p>
+<hr>
+</section>
+<section id="group-b-red-button" class="level3">
+<h3 class="anchored" data-anchor-id="group-b-red-button"><strong>Group B (red button)</strong></h3>
+<p>Users: 10 Clicks: <strong>6</strong></p>
+<p>So conversion rate:</p>
+<p><img src="https://latex.codecogs.com/png.latex?p_B%20=%20%5Cfrac%7B6%7D%7B10%7D%20=%200.60"></p>
+<hr>
+</section>
+</section>
+<section id="step-1-state-hypotheses" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-state-hypotheses">Step 1: State hypotheses</h2>
+<p>We want to know if B performs <strong>better</strong> than A.</p>
+<p><img src="https://latex.codecogs.com/png.latex?H_0:%20p_A%20=%20p_B"> (null hypothesis, which we don’t expect/want to disprove)</p>
+<p><img src="https://latex.codecogs.com/png.latex?H_1:%20p_B%20%3E%20p_A"> (alternative hypothesis)</p>
+<hr>
+</section>
+<section id="step-2-pooled-proportion" class="level2">
+<h2 class="anchored" data-anchor-id="step-2-pooled-proportion">Step 2: Pooled proportion</h2>
+<p>Because under <img src="https://latex.codecogs.com/png.latex?H_0">, both groups have the same conversion rate.</p>
+<p>Total clicks = 3 + 6 = 9 Total users = 20</p>
+<p><img src="https://latex.codecogs.com/png.latex?p_%7B%5Ctext%7Bpooled%7D%7D%20=%20%5Cfrac%7B9%7D%7B20%7D=0.45"></p>
+<hr>
+</section>
+<section id="step-3-standard-error" class="level2">
+<h2 class="anchored" data-anchor-id="step-3-standard-error">Step 3: Standard error</h2>
+<p><img src="https://latex.codecogs.com/png.latex?SE%20=%20%5Csqrt%7Bp(1-p)%5Cleft(%5Cfrac%7B1%7D%7Bn_A%7D+%5Cfrac%7B1%7D%7Bn_B%7D%5Cright)%7D"></p>
+<p><img src="https://latex.codecogs.com/png.latex?SE%20=%20%5Csqrt%7B0.45%20%5Ctimes%200.55%20%5Ctimes%20%5Cleft(%5Cfrac%7B1%7D%7B10%7D+%5Cfrac%7B1%7D%7B10%7D%5Cright)%7D"></p>
+<p><img src="https://latex.codecogs.com/png.latex?=%20%5Csqrt%7B0.2475%20%5Ctimes%200.2%7D%20=%20%5Csqrt%7B0.0495%7D%20%5Capprox%200.2225"></p>
+<hr>
+</section>
+<section id="step-4-z-statistic" class="level2">
+<h2 class="anchored" data-anchor-id="step-4-z-statistic">Step 4: z-statistic</h2>
+<p><img src="https://latex.codecogs.com/png.latex?z%20=%20%5Cfrac%7Bp_B%20-%20p_A%7D%7BSE%7D%20=%20%5Cfrac%7B0.60%20-%200.30%7D%7B0.2225%7D%20=%20%5Cfrac%7B0.30%7D%7B0.2225%7D%20%5Capprox%201.35"></p>
+<hr>
+</section>
+<section id="step-5-p-value" class="level2">
+<h2 class="anchored" data-anchor-id="step-5-p-value">Step 5: p-value</h2>
+<p>For a <strong>one-sided test</strong>, z = 1.35 → p ≈ <strong>0.088</strong>.</p>
+<hr>
+</section>
+<section id="interpretation" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation">Interpretation</h2>
+<ul>
+<li>p-value = 0.088 &gt; 0.05</li>
+<li>We <strong>fail to reject</strong> (H_0).</li>
+<li><strong>Evidence is suggestive but not strong enough</strong> to conclude that the red button performs better.</li>
+</ul>
+<section id="business-interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="business-interpretation">Business interpretation:</h3>
+<p>Even though conversion increased from <strong>30% → 60%</strong>, the sample is very small (only 10 per group), so the difference is not statistically significant at α = 0.05.</p>
+<hr>
+</section>
+</section>
+<section id="what-we-can-say" class="level2">
+<h2 class="anchored" data-anchor-id="what-we-can-say">What we <em>can</em> say</h2>
+<ul>
+<li>B looks <strong>promising</strong>: a <strong>+100% relative lift</strong> in conversions.</li>
+<li>But the <strong>sample size is too small</strong> to be confident.</li>
+<li>A larger A/B test should be run.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>statistics</category>
+  <category>theory</category>
+  <category>business</category>
+  <guid>https://portal.statmania.info/posts/a-b-testing.html</guid>
+  <pubDate>Mon, 17 Nov 2025 18:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>IQR in Statistics</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://portal.statmania.info/posts/iqr.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>The <strong>Interquartile Range (IQR)</strong> is a measure of statistical dispersion that describes the spread of the middle 50% of data. It is calculated as:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Ctext%7BIQR%7D%20=%20Q_3%20-%20Q_1"></p>
+<p>where <img src="https://latex.codecogs.com/png.latex?Q_1"> is the 25th percentile and <img src="https://latex.codecogs.com/png.latex?Q_3"> is the 75th percentile.</p>
+<hr>
+<section id="usefulness-of-iqr" class="level3">
+<h3 class="anchored" data-anchor-id="usefulness-of-iqr"><strong>Usefulness of IQR</strong></h3>
+<ol type="1">
+<li><strong>Robust to outliers</strong> – Unlike the range or standard deviation, the IQR is not influenced by extreme values.</li>
+<li><strong>Identifies variability</strong> of the central portion of the data.</li>
+<li><strong>Used to detect outliers</strong> – Often, values below <img src="https://latex.codecogs.com/png.latex?Q_1%20-%201.5%20%5Ctimes%20%5Ctext%7BIQR%7D"> or above <img src="https://latex.codecogs.com/png.latex?Q_3%20+%201.5%20%5Ctimes%20%5Ctext%7BIQR%7D"> are considered outliers.</li>
+<li><strong>Helps in comparing distributions</strong> – Especially when using box plots.</li>
+</ol>
+<hr>
+</section>
+<section id="example-exam-scores" class="level3">
+<h3 class="anchored" data-anchor-id="example-exam-scores"><strong>Example: Exam Scores</strong></h3>
+<p>Suppose the exam scores (out of 100) of 15 students are:</p>
+<p><img src="https://latex.codecogs.com/png.latex?55,%2060,%2065,%2070,%2072,%2075,%2078,%2080,%2082,%2085,%2088,%2090,%2095,%2098,%2099"></p>
+<p><strong>Step 1: Find <img src="https://latex.codecogs.com/png.latex?Q_1"> and <img src="https://latex.codecogs.com/png.latex?Q_3"></strong> - <img src="https://latex.codecogs.com/png.latex?Q_1"> = median of the first half (excluding overall median if odd) = 70 - <img src="https://latex.codecogs.com/png.latex?Q_3"> = median of the second half = 90</p>
+<p><strong>Step 2: Calculate IQR</strong></p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Ctext%7BIQR%7D%20=%2090%20-%2070%20=%2020"></p>
+<p><strong>Step 3: Interpret</strong> - The middle 50% of students scored between 70 and 90. - The spread of these central scores is 20 points.</p>
+<p><strong>Step 4: Detect outliers</strong> Lower fence: <img src="https://latex.codecogs.com/png.latex?70%20-%201.5%20%5Ctimes%2020%20=%2040"> Upper fence: <img src="https://latex.codecogs.com/png.latex?90%20+%201.5%20%5Ctimes%2020%20=%20120"> No scores below 40 or above 120 → <strong>No outliers</strong>.</p>
+<hr>
+</section>
+<section id="why-iqr-is-useful-here" class="level3">
+<h3 class="anchored" data-anchor-id="why-iqr-is-useful-here"><strong>Why IQR is useful here</strong></h3>
+<ul>
+<li>If one student scored 20 instead of 55, the <strong>range</strong> would change drastically, but the <strong>IQR</strong> would remain the same.</li>
+<li>IQR gives a clearer picture of the typical spread unaffected by extremes.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>statistics</category>
+  <category>theory</category>
+  <category>dispersion</category>
+  <guid>https://portal.statmania.info/posts/iqr.html</guid>
+  <pubDate>Tue, 04 Nov 2025 18:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>From t-test to Anova</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://portal.statmania.info/posts/t-test-to-anova.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>Let’s build a <strong>t-test</strong> and then showing how it generalizes naturally into <strong>ANOVA</strong> (Analysis of Variance).</p>
+<section id="step-1.-the-t-test-comparing-two-means" class="level2">
+<h2 class="anchored" data-anchor-id="step-1.-the-t-test-comparing-two-means">Step 1. The t-test — comparing <strong>two means</strong></h2>
+<p>Let’s imagine two groups of students and their test scores:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Group</th>
+<th>Scores</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Group A</td>
+<td>70, 75, 80</td>
+</tr>
+<tr class="even">
+<td>Group B</td>
+<td>85, 90, 95</td>
+</tr>
+</tbody>
+</table>
+<p>We want to know:</p>
+<blockquote class="blockquote">
+<p>Are the mean scores of Group A and Group B <strong>significantly different</strong>?</p>
+</blockquote>
+<section id="hypotheses" class="level3">
+<h3 class="anchored" data-anchor-id="hypotheses">Hypotheses</h3>
+<p><img src="https://latex.codecogs.com/png.latex?H_0:%20%5Cmu_A%20=%20%5Cmu_B%20%5Cquad%20%5Ctext%7B(means%20are%20equal)%7D"></p>
+<p><img src="https://latex.codecogs.com/png.latex?H_1:%20%5Cmu_A%20%5Cne%20%5Cmu_B"></p>
+</section>
+<section id="logic-of-the-t-test" class="level3">
+<h3 class="anchored" data-anchor-id="logic-of-the-t-test">Logic of the t-test</h3>
+<p>We calculate:</p>
+<ol type="1">
+<li><p>The difference between sample means <img src="https://latex.codecogs.com/png.latex?%5Cbar%20X_A%20-%20%5Cbar%20X_B"></p></li>
+<li><p>The standard error of that difference (based on the variances and sample sizes)</p></li>
+<li><p>The <strong>t-statistic</strong></p>
+<p><img src="https://latex.codecogs.com/png.latex?t%20=%20%5Cfrac%7B(%5Cbar%20X_A%20-%20%5Cbar%20X_B)%7D%7BSE%7D"></p></li>
+</ol>
+<p>If the difference is large relative to its expected variation, we reject <img src="https://latex.codecogs.com/png.latex?H_0">.</p>
+<hr>
+</section>
+<section id="intuition" class="level3">
+<h3 class="anchored" data-anchor-id="intuition">Intuition</h3>
+<ul>
+<li>The <strong>numerator</strong> measures how far apart the groups are.</li>
+<li>The <strong>denominator</strong> measures how noisy the data are.</li>
+<li>A large t-value ⇒ groups differ more than we’d expect by chance.</li>
+</ul>
+<p>So the <strong>two-sample t-test</strong> compares <em>between-group difference</em> to <em>within-group variability</em>.</p>
+<hr>
+</section>
+</section>
+<section id="step-2.-extending-to-more-than-two-groups" class="level2">
+<h2 class="anchored" data-anchor-id="step-2.-extending-to-more-than-two-groups">Step 2. Extending to more than two groups</h2>
+<p>Now add a third group:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Group</th>
+<th>Scores</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Group A</td>
+<td>70, 75, 80</td>
+</tr>
+<tr class="even">
+<td>Group B</td>
+<td>85, 90, 95</td>
+</tr>
+<tr class="odd">
+<td>Group C</td>
+<td>60, 65, 70</td>
+</tr>
+</tbody>
+</table>
+<p>Now what if we ask:</p>
+<blockquote class="blockquote">
+<p>Are all group means equal?</p>
+</blockquote>
+<p>You could do multiple t-tests (A vs B, A vs C, B vs C), but that inflates the chance of false positives. Instead, <strong>ANOVA</strong> does it all at once.</p>
+<hr>
+</section>
+<section id="step-3.-anova-conceptually" class="level2">
+<h2 class="anchored" data-anchor-id="step-3.-anova-conceptually">Step 3. ANOVA conceptually</h2>
+<section id="hypotheses-1" class="level3">
+<h3 class="anchored" data-anchor-id="hypotheses-1">Hypotheses</h3>
+<p><img src="https://latex.codecogs.com/png.latex?H_0:%20%5Cmu_A%20=%20%5Cmu_B%20=%20%5Cmu_C%20%5Cquad%20%5Ctext%7B(all%20equal)%7D"></p>
+<p><img src="https://latex.codecogs.com/png.latex?H_1:%20%5Ctext%7BAt%20least%20one%20mean%20differs%7D"></p>
+</section>
+<section id="how-anova-works" class="level3">
+<h3 class="anchored" data-anchor-id="how-anova-works">How ANOVA works</h3>
+<p>ANOVA decomposes total variability into two parts:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Ctext%7BTotal%20Variation%7D%20=%20%5Ctext%7BBetween-group%20Variation%7D%20+%20%5Ctext%7BWithin-group%20Variation%7D"></p>
+<p>It then forms a ratio:</p>
+<p><img src="https://latex.codecogs.com/png.latex?F%20=%20%5Cfrac%7B%5Ctext%7BBetween-group%20Mean%20Square%7D%7D%7B%5Ctext%7BWithin-group%20Mean%20Square%7D%7D"></p>
+<ul>
+<li>If <img src="https://latex.codecogs.com/png.latex?H_0"> is true, both parts estimate the same thing → <img src="https://latex.codecogs.com/png.latex?F%20%5Capprox%201">.</li>
+<li>If group means differ more than expected, <img src="https://latex.codecogs.com/png.latex?F%20%3E%201"> → reject <img src="https://latex.codecogs.com/png.latex?H_0">.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="step-4.-conceptual-link-between-t-and-f" class="level2">
+<h2 class="anchored" data-anchor-id="step-4.-conceptual-link-between-t-and-f">Step 4. Conceptual link between t and F</h2>
+<p>For <strong>two groups</strong>, ANOVA and t-test give the same result:</p>
+<p><img src="https://latex.codecogs.com/png.latex?F%20=%20t%5E2"></p>
+<p>So ANOVA is just a <strong>generalization of the t-test</strong> from 2 groups to many groups.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 62%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Test</th>
+<th>Groups</th>
+<th>Statistic</th>
+<th>Distribution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>t-test</td>
+<td>2</td>
+<td><img src="https://latex.codecogs.com/png.latex?t"></td>
+<td>t-distribution</td>
+</tr>
+<tr class="even">
+<td>ANOVA</td>
+<td>≥ 2</td>
+<td><img src="https://latex.codecogs.com/png.latex?F%20=%20%5Cfrac%7B%5Ctext%7BBetween%7D%7D%7B%5Ctext%7BWithin%7D%7D"></td>
+<td>F-distribution</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="step-5.-interpretation" class="level2">
+<h2 class="anchored" data-anchor-id="step-5.-interpretation">Step 5. Interpretation</h2>
+<ul>
+<li>If <img src="https://latex.codecogs.com/png.latex?F"> (or <img src="https://latex.codecogs.com/png.latex?%7Ct%7C">) is large and the p-value &lt; 0.05, we reject <img src="https://latex.codecogs.com/png.latex?H_0">. → The means are not all equal.</li>
+<li>If not, we conclude that differences among sample means could just be random noise.</li>
+</ul>
+<hr>
+</section>
+<section id="summary-table" class="level2">
+<h2 class="anchored" data-anchor-id="summary-table">Summary Table</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 32%">
+<col style="width: 55%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Aspect</th>
+<th>t-test</th>
+<th>ANOVA</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Purpose</td>
+<td>Compare <strong>two</strong> means</td>
+<td>Compare <strong>two or more</strong> means</td>
+</tr>
+<tr class="even">
+<td>Hypothesis</td>
+<td><img src="https://latex.codecogs.com/png.latex?H_0:%20%5Cmu_1%20=%20%5Cmu_2"></td>
+<td><img src="https://latex.codecogs.com/png.latex?H_0:%20%5Cmu_1%20=%20%5Cmu_2%20=%20%5Cmu_3%20=%20%5Cdots"></td>
+</tr>
+<tr class="odd">
+<td>Statistic</td>
+<td>t</td>
+<td>F</td>
+</tr>
+<tr class="even">
+<td>Logic</td>
+<td>Difference of means / error</td>
+<td>Ratio of between-group / within-group variance</td>
+</tr>
+<tr class="odd">
+<td>Link</td>
+<td><img src="https://latex.codecogs.com/png.latex?F%20=%20t%5E2"> for 2 groups</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="why-not-many-t-tests" class="level2">
+<h2 class="anchored" data-anchor-id="why-not-many-t-tests">Why not many t-tests?</h2>
+<p>Doing multiple <em>t</em>-tests increases the <strong>Type I error rate (false positive probability)</strong>.</p>
+<p>Let us see how.</p>
+<hr>
+<p>Suppose you have <img src="https://latex.codecogs.com/png.latex?k%20=%203"> groups:</p>
+<ul>
+<li><img src="https://latex.codecogs.com/png.latex?G_1,%20G_2,%20G_3"></li>
+</ul>
+<p>To compare them, you could do <strong>pairwise <em>t</em>-tests</strong>:</p>
+<p><img src="https://latex.codecogs.com/png.latex?G_1%20%5Ctext%7B%20vs%20%7D%20G_2,%5Cquad%20G_1%20%5Ctext%7B%20vs%20%7D%20G_3,%5Cquad%20G_2%20%5Ctext%7B%20vs%20%7D%20G_3"></p>
+<p>That’s <img src="https://latex.codecogs.com/png.latex?C(k,2)%20=%203"> tests.</p>
+<p>Each test has <strong>significance level</strong> <img src="https://latex.codecogs.com/png.latex?%5Calpha%20=%200.05">. So the chance of <em>no false positive</em> across all tests = <img src="https://latex.codecogs.com/png.latex?(1-%5Calpha)%5Em">, where <img src="https://latex.codecogs.com/png.latex?m"> = number of tests.</p>
+<p>Hence, the <strong>overall false positive rate</strong> (familywise error rate) is:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Ctext%7BFWER%7D%20=%201%20-%20(1%20-%20%5Calpha)%5Em"></p>
+<p>For <img src="https://latex.codecogs.com/png.latex?k=3"> groups, <img src="https://latex.codecogs.com/png.latex?m=3">:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Ctext%7BFWER%7D%20=%201%20-%20(1%20-%200.05)%5E3%20=%201%20-%200.95%5E3%20=%200.1426"></p>
+<p>So even if all population means are <strong>equal</strong>, there’s <strong>≈14% chance</strong> you’ll (wrongly) find at least one “significant difference”.</p>
+<p>This is why ANOVA tests <strong>all means simultaneously</strong> with a <strong>single α = 0.05</strong> — controlling the false positive rate.</p>
+<hr>
+</section>
+<section id="minimal-empirical-example" class="level2">
+<h2 class="anchored" data-anchor-id="minimal-empirical-example">Minimal empirical example</h2>
+<p>Let’s make up a small dataset:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Group</th>
+<th>Values</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>5, 6, 7</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>6, 7, 8</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td>5, 7, 9</td>
+</tr>
+</tbody>
+</table>
+<p>All groups have similar means (~6.5–7). True means are equal (in population), but random variation exists.</p>
+<p>Now:</p>
+<section id="step-1.-pairwise-t-tests" class="level3">
+<h3 class="anchored" data-anchor-id="step-1.-pairwise-t-tests">Step 1. Pairwise t-tests</h3>
+<p>We do:</p>
+<ol type="1">
+<li>A vs B → p = 0.08</li>
+<li>A vs C → p = 0.04</li>
+<li>B vs C → p = 0.06</li>
+</ol>
+<p>One of them (A vs C) is &lt;0.05 → you’d claim a “significant” difference. But that’s <strong>a false positive</strong>, since groups were drawn from the same population.</p>
+<p>If you repeated this experiment 1000 times, around <strong>14%</strong> of runs would falsely detect <em>something</em> significant — matching our theoretical 0.1426.</p>
+<hr>
+</section>
+</section>
+<section id="key-takeaway" class="level2">
+<h2 class="anchored" data-anchor-id="key-takeaway">Key takeaway</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 17%">
+<col style="width: 21%">
+<col style="width: 45%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Number of tests</th>
+<th>Nominal α per test</th>
+<th>Familywise α (true false positive rate)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>One-way ANOVA</td>
+<td>1</td>
+<td>0.05</td>
+<td>0.05</td>
+</tr>
+<tr class="even">
+<td>Three t-tests</td>
+<td>3</td>
+<td>0.05</td>
+<td>0.14</td>
+</tr>
+<tr class="odd">
+<td>Ten t-tests</td>
+<td>10</td>
+<td>0.05</td>
+<td>0.40</td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+
+ ]]></description>
+  <category>statistics</category>
+  <category>theory</category>
+  <category>anova</category>
+  <guid>https://portal.statmania.info/posts/t-test-to-anova.html</guid>
+  <pubDate>Thu, 09 Oct 2025 18:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>ARIMA and SARIMA Time Series Models</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://portal.statmania.info/posts/arima-sarima-r.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>Here’s a <strong>clear, concise explanation</strong> of <strong>ARIMA</strong>, <strong>SARIMA</strong>, and related models — followed by <strong>minimal R examples</strong>.</p>
+<hr>
+<section id="arima-autoregressive-integrated-moving-average" class="level1">
+<h1><strong>1. ARIMA (AutoRegressive Integrated Moving Average)</strong></h1>
+<p>ARIMA is a time-series forecasting model used for <strong>non-seasonal</strong>, <strong>univariate</strong> data. It is written as:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Ctext%7BARIMA%7D(p,d,q)"></p>
+<section id="meaning-of-the-parameters" class="level3">
+<h3 class="anchored" data-anchor-id="meaning-of-the-parameters"><strong>Meaning of the parameters</strong></h3>
+<ul>
+<li><strong>p</strong> = number of autoregressive (AR) terms</li>
+<li><strong>d</strong> = degree of differencing (to remove trend)</li>
+<li><strong>q</strong> = number of moving average (MA) terms</li>
+</ul>
+</section>
+<section id="when-to-use-arima" class="level3">
+<h3 class="anchored" data-anchor-id="when-to-use-arima"><strong>When to use ARIMA</strong></h3>
+<p>Use ARIMA when your data:</p>
+<ul>
+<li>has <strong>trend</strong>, but</li>
+<li><strong>no seasonality</strong>.</li>
+</ul>
+<hr>
+</section>
+<section id="minimal-arima-example-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="minimal-arima-example-in-r">Minimal ARIMA Example in R</h2>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(forecast)</span>
+<span id="cb1-2"></span>
+<span id="cb1-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Use an example built-in dataset</span></span>
+<span id="cb1-4">ts_data <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> AirPassengers[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">60</span>]   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Monthly passengers (first 5 years)</span></span>
+<span id="cb1-5"></span>
+<span id="cb1-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Fit a simple ARIMA model</span></span>
+<span id="cb1-7">fit <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">auto.arima</span>(ts_data)</span>
+<span id="cb1-8"></span>
+<span id="cb1-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Print model</span></span>
+<span id="cb1-10">fit</span>
+<span id="cb1-11"></span>
+<span id="cb1-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Forecast next 12 periods</span></span>
+<span id="cb1-13"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">forecast</span>(fit, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">h =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>)</span></code></pre></div>
+<p><code>auto.arima()</code> automatically selects (p, d, q).</p>
+<hr>
+</section>
+</section>
+<section id="sarima-seasonal-arima" class="level1">
+<h1><strong>2. SARIMA (Seasonal ARIMA)</strong></h1>
+<p>SARIMA extends ARIMA by adding <strong>seasonal components</strong>.</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Ctext%7BSARIMA%7D(p,d,q)(P,D,Q)_m"></p>
+<p>Where:</p>
+<ul>
+<li><p><strong>P</strong> = seasonal autoregressive order</p></li>
+<li><p><strong>D</strong> = seasonal differencing</p></li>
+<li><p><strong>Q</strong> = seasonal moving average</p></li>
+<li><p><strong>m</strong> = seasonal period</p>
+<ul>
+<li>Example: monthly data → m = 12</li>
+<li>Quarterly data → m = 4</li>
+</ul></li>
+</ul>
+<section id="when-to-use-sarima" class="level3">
+<h3 class="anchored" data-anchor-id="when-to-use-sarima"><strong>When to use SARIMA</strong></h3>
+<p>Use SARIMA when your time series has:</p>
+<ul>
+<li><strong>trend</strong>,</li>
+<li><strong>and clear seasonality</strong> (repeating yearly, quarterly, weekly pattern).</li>
+</ul>
+<hr>
+</section>
+<section id="minimal-sarima-example-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="minimal-sarima-example-in-r">Minimal SARIMA Example in R</h2>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(forecast)</span>
+<span id="cb2-2"></span>
+<span id="cb2-3">ts_data <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> AirPassengers  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># strong yearly seasonality</span></span>
+<span id="cb2-4"></span>
+<span id="cb2-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Fit SARIMA</span></span>
+<span id="cb2-6">fit <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">auto.arima</span>(ts_data, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">seasonal =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span>
+<span id="cb2-7"></span>
+<span id="cb2-8">fit</span>
+<span id="cb2-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">forecast</span>(fit, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">h =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>)</span></code></pre></div>
+<hr>
+</section>
+</section>
+<section id="arimax-sarimax-arima-with-regressors" class="level1">
+<h1><strong>3. ARIMAX / SARIMAX</strong> (ARIMA with regressors)</h1>
+<p>These models include <strong>external variables</strong> (e.g., temperature, ads, price). Useful when other predictors help forecast the main series.</p>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">x <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(ts_data))   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Example external regressor</span></span>
+<span id="cb3-2">fit <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">auto.arima</span>(ts_data, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xreg =</span> x)</span></code></pre></div>
+<hr>
+</section>
+<section id="seasonal-decomposition-not-a-model" class="level1">
+<h1><strong>4. Seasonal decomposition (not a model)</strong></h1>
+<p>Often used to inspect data before ARIMA.</p>
+<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">stl</span>(AirPassengers, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">s.window =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"periodic"</span>))</span></code></pre></div>
+<p>Shows:</p>
+<ul>
+<li>trend,</li>
+<li>seasonal,</li>
+<li>remainder components.</li>
+</ul>
+<hr>
+</section>
+<section id="summary-table" class="level1">
+<h1>⭐ Summary Table</h1>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 19%">
+<col style="width: 28%">
+<col style="width: 40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Handles Trend</th>
+<th>Handles Seasonality</th>
+<th>Includes External Variables</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ARIMA</td>
+<td>✔️</td>
+<td>❌</td>
+<td>✔️ (ARIMAX)</td>
+</tr>
+<tr class="even">
+<td>SARIMA</td>
+<td>✔️</td>
+<td>✔️</td>
+<td>✔️ (SARIMAX)</td>
+</tr>
+<tr class="odd">
+<td>ETS</td>
+<td>✔️</td>
+<td>✔️</td>
+<td>❌</td>
+</tr>
+<tr class="even">
+<td>Prophet</td>
+<td>✔️</td>
+<td>✔️</td>
+<td>✔️</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="very-small-example-for-conceptual-understanding" class="level1">
+<h1><strong>Very Small Example for Conceptual Understanding</strong></h1>
+<p>Suppose monthly sales:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Month</th>
+<th>Sales</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Jan</td>
+<td>100</td>
+</tr>
+<tr class="even">
+<td>Feb</td>
+<td>110</td>
+</tr>
+<tr class="odd">
+<td>Mar</td>
+<td>120</td>
+</tr>
+<tr class="even">
+<td>Apr</td>
+<td>130</td>
+</tr>
+<tr class="odd">
+<td>May</td>
+<td>140</td>
+</tr>
+<tr class="even">
+<td>Jun</td>
+<td>150</td>
+</tr>
+</tbody>
+</table>
+<p>This has <strong>trend but no seasonality</strong> → ARIMA.</p>
+<p>If you have:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Month</th>
+<th>Sales</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Jan</td>
+<td>100</td>
+</tr>
+<tr class="even">
+<td>Feb</td>
+<td>120</td>
+</tr>
+<tr class="odd">
+<td>Mar</td>
+<td>150</td>
+</tr>
+<tr class="even">
+<td>…</td>
+<td>…</td>
+</tr>
+<tr class="odd">
+<td>Jan (next year)</td>
+<td>110</td>
+</tr>
+<tr class="even">
+<td>Feb (next year)</td>
+<td>130</td>
+</tr>
+</tbody>
+</table>
+<p>This has <strong>trend + yearly cycle</strong> → SARIMA.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>statistics</category>
+  <category>time-series</category>
+  <category>R</category>
+  <guid>https://portal.statmania.info/posts/arima-sarima-r.html</guid>
+  <pubDate>Sun, 05 Oct 2025 18:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Spatio-temporal Analysis Workflow</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://portal.statmania.info/posts/spatio-temporal.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>Spatio-temporal analysis sits right at the intersection of statistics, data science, GIS, and environmental applications.</p>
+<p>📚 Step 1: Build Foundations</p>
+<p>Spatial Statistics</p>
+<ul>
+<li>Learn point pattern analysis, spatial autocorrelation (Moran’s I, Geary’s C), variograms, and kriging.</li>
+<li>Core book: Applied Spatial Data Analysis with R (Bivand, Pebesma, Gómez-Rubio).</li>
+</ul>
+<section id="time-series-temporal-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="time-series-temporal-analysis">Time Series / Temporal Analysis</h2>
+<ul>
+<li>Refresh time series models (ARIMA, state-space, spectral methods).</li>
+<li>Add temporal clustering and forecasting methods.</li>
+</ul>
+</section>
+<section id="spatio-temporal-models" class="level2">
+<h2 class="anchored" data-anchor-id="spatio-temporal-models">Spatio-Temporal Models</h2>
+<ul>
+<li>Combine both: spatio-temporal kriging, Gaussian random fields, Bayesian hierarchical models.</li>
+<li>Book: Hierarchical Modelling of Spatial Data Using R-INLA (Blangiardo &amp; Cameletti).</li>
+</ul>
+<p>🛠 Step 2: Learn the Tools</p>
+</section>
+<section id="r-packages" class="level2">
+<h2 class="anchored" data-anchor-id="r-packages">R packages</h2>
+<ul>
+<li>sf (modern spatial objects)</li>
+<li>stars (spatio-temporal arrays)</li>
+<li>terra (raster/vector operations)</li>
+<li>spacetime (older but still used)</li>
+<li>gstat (variograms, kriging)</li>
+<li>spdep (spatial dependence)</li>
+<li>INLA (Bayesian spatio-temporal modeling)</li>
+<li>Python equivalents (optional, if you want dual skillset): geopandas, xarray, rasterio, pySTL, pysal, scikit-mobility</li>
+</ul>
+<p>🔬 Step 3: Practice with Data</p>
+</section>
+<section id="sources-of-free-spatio-temporal-datasets" class="level2">
+<h2 class="anchored" data-anchor-id="sources-of-free-spatio-temporal-datasets">Sources of free spatio-temporal datasets:</h2>
+<ul>
+<li>Earth observation: NASA EarthData, Copernicus (Sentinel satellites)</li>
+<li>Climate: ERA5 reanalysis (ECMWF)</li>
+<li>Health: COVID-19 spatio-temporal data (Johns Hopkins)</li>
+<li>Urban/mobility: OpenStreetMap, Google Mobility Reports</li>
+<li>You could start with simple projects:</li>
+<li>Mapping air quality trends across time.</li>
+<li>Spatio-temporal spread of disease (e.g., dengue in Bangladesh).</li>
+<li>Detecting land cover change from satellite images.</li>
+</ul>
+<p>🤝 Step 4: Contribute</p>
+</section>
+<section id="open-source-contributions" class="level2">
+<h2 class="anchored" data-anchor-id="open-source-contributions">Open-Source Contributions</h2>
+<ul>
+<li>Help improve documentation or examples in sf, stars, or spacetime.</li>
+<li>Build teaching vignettes for gstat or spdep.</li>
+</ul>
+</section>
+<section id="research-contributions" class="level2">
+<h2 class="anchored" data-anchor-id="research-contributions">Research Contributions</h2>
+<ul>
+<li>Apply spatio-temporal models to a new real-world problem (climate, urban growth, seismicity).</li>
+<li>Publish datasets + reproducible code (on GitHub + Zenodo).</li>
+</ul>
+</section>
+<section id="community-involvement" class="level2">
+<h2 class="anchored" data-anchor-id="community-involvement">Community Involvement</h2>
+<ul>
+<li>Join R-Spatial community (https://r-spatial.org).</li>
+<li>Follow Edzer Pebesma, Roger Bivand, and Virgilio Gómez-Rubio.</li>
+<li>Present small case studies in workshops/webinars.</li>
+</ul>
+<p>⚡ A good starting project for you could be:</p>
+<p>“Spatio-temporal visualization of earthquake aftershocks in Bangladesh/Asia using USGS data”</p>
+
+
+</section>
+
+ ]]></description>
+  <category>R</category>
+  <category>GIS</category>
+  <guid>https://portal.statmania.info/posts/spatio-temporal.html</guid>
+  <pubDate>Tue, 09 Sep 2025 18:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>clockplot: Plot Event Times on a 24-Hour Clock</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://portal.statmania.info/posts/clockplot.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>My R package <code>clockplot</code> is now available on <a href="https://cran.r-project.org/web/packages/clockplot/index.html">CRAN</a>!</p>
+<p>The primary goal of the clockplot is to plot event time on a clock chart. The length and color of the clock hands can be modified by certain qualitative and quantitative variables.</p>
+<p>Additionally, the package can make a day chart, a week chart, or a month chart, or plan events in those periods.</p>
+<p>I would like everyone to visit the package website (generated automatically by pkgdown), <a href="https://www.thinkermahmud.com/clockplot">explore the examples, and give wise advice</a></p>
+<p>To see a quick example, see the attached plot. The plot shows times of earthquakes. Points are magnified as per magnitude. Length and color denote the depth of the epicenter. This allows us to find patterns in the event times as well as compare differences in time more easily and usefully than with other charts, such as a bar chart.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://portal.statmania.info/img/cp.png" class="img-fluid figure-img"></p>
+<figcaption>clockplot</figcaption>
+</figure>
+</div>
+<p>Those having a github account, please <a href="https://github.com/mahmudstat/clockplot">visit the repo</a> and please give a star :)</p>
+
+
+
+ ]]></description>
+  <category>R</category>
+  <category>clockplot</category>
+  <guid>https://portal.statmania.info/posts/clockplot.html</guid>
+  <pubDate>Fri, 29 Aug 2025 18:00:00 GMT</pubDate>
+  <media:content url="https://portal.statmania.info/img/cp.png" medium="image" type="image/png" height="144" width="144"/>
+</item>
+<item>
+  <title>R Package Development Workflow</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://portal.statmania.info/posts/r-package-workflow.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>Here are the key <code>devtools</code> functions important in the R package development cycle.</p>
+<section id="project-setup" class="level3">
+<h3 class="anchored" data-anchor-id="project-setup">Project Setup</h3>
+<ul>
+<li><code>usethis::create_package()</code>: Creates a new package with the correct directory structure.</li>
+<li><code>usethis::use_git()</code>: Initializes a Git repository for version control.</li>
+<li><code>usethis::use_r()</code>: Creates a new <code>.R</code> file in the <code>R/</code> directory.</li>
+</ul>
+<hr>
+</section>
+<section id="development-and-documentation" class="level3">
+<h3 class="anchored" data-anchor-id="development-and-documentation">Development and Documentation</h3>
+<ul>
+<li><code>devtools::load_all()</code>: Loads all functions in the <code>R/</code> directory, allowing you to quickly test them without installing the package.</li>
+<li><code>devtools::document()</code>: Generates documentation (<code>.Rd</code> files in the <code>man/</code> directory) and the <code>NAMESPACE</code> file from roxygen2 comments.</li>
+<li><code>devtools::install()</code>: Installs the package from the source directory, making it available for use on your system.</li>
+</ul>
+<hr>
+</section>
+<section id="testing-and-checking" class="level3">
+<h3 class="anchored" data-anchor-id="testing-and-checking">Testing and Checking</h3>
+<ul>
+<li><code>usethis::use_testthat()</code>: Sets up the <code>testthat</code> framework for unit testing.</li>
+<li><code>usethis::use_test()</code>: Creates a new test file in <code>tests/testthat/</code>.</li>
+<li><code>devtools::test()</code>: Runs all the tests in the <code>tests/testthat/</code> directory.</li>
+<li><code>devtools::check()</code>: Runs the comprehensive suite of <code>R CMD check</code> tests to identify errors, warnings, and notes.</li>
+<li><code>devtools::check_win_devel()</code>: Submits the package to the win-builder service to check for platform-specific issues on Windows.</li>
+</ul>
+<hr>
+</section>
+<section id="publishing" class="level3">
+<h3 class="anchored" data-anchor-id="publishing">Publishing</h3>
+<ul>
+<li><code>usethis::use_vignette()</code>: Creates a new vignette (<code>.Rmd</code> file) for package tutorials.</li>
+<li><code>pkgdown::build_site()</code>: Builds a complete website for your package.</li>
+<li><code>devtools::submit_cran()</code>: Helps with the final steps of submitting your package to CRAN.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>R</category>
+  <category>package</category>
+  <category>programming</category>
+  <guid>https://portal.statmania.info/posts/r-package-workflow.html</guid>
+  <pubDate>Thu, 28 Aug 2025 18:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>CRAN Package Submission Checklist</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://portal.statmania.info/posts/r-package-submission.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>Before submitting your R package to CRAN, you should go through a thorough checklist to ensure it meets all the requirements. Failure to meet these standards will result in rejection. The submission process is a manual review, and reviewers are strict about the rules.</p>
+<hr>
+<section id="code-quality-and-checks" class="level3">
+<h3 class="anchored" data-anchor-id="code-quality-and-checks">1. Code Quality and Checks</h3>
+<ul>
+<li><strong>Pass <code>R CMD check --as-cran</code> without any errors, warnings, or notes.</strong> This is the most critical step. Run this command from your package’s root directory. Address every single issue.</li>
+<li><strong>No Hardcoded Paths:</strong> Don’t use absolute paths like <code>C:/Users/User/my_file.csv</code>. Use <code>system.file()</code> to locate files within your package.</li>
+<li><strong>No Non-Standard Library Dependencies:</strong> Ensure you are not using libraries that are not on CRAN or Bioconductor.</li>
+<li><strong>Package Size:</strong> CRAN has a size limit, which is typically around 5 MB, though larger packages are sometimes accepted if they are well-justified. Use <code>devtools::check_for_size()</code></li>
+</ul>
+<hr>
+</section>
+<section id="documentation-and-metadata" class="level3">
+<h3 class="anchored" data-anchor-id="documentation-and-metadata">2. Documentation and Metadata</h3>
+<ul>
+<li><strong><code>DESCRIPTION</code> File:</strong> Ensure this file is complete and accurate.
+<ul>
+<li><code>Version</code>: The version number should be in the format <code>A.B.C</code> (e.g., <code>1.0.0</code>).</li>
+<li><code>Title</code>: This should be concise and capitalized.</li>
+<li><code>Description</code>: A detailed, multi-sentence description of what your package does.</li>
+<li><code>License</code>: Specify a valid open-source license, such as MIT or GPL-3.</li>
+<li><code>URL</code> and <code>BugReports</code>: Include links to your GitHub repository or website.</li>
+<li><code>Imports</code>: List all packages your code uses.</li>
+<li><code>Suggests</code>: List packages used in examples or vignettes but not essential for core functionality.</li>
+</ul></li>
+<li><strong><code>man/</code> Directory:</strong> All functions must have a <code>.Rd</code> help file, and all function arguments should be documented. The examples in the help files should be runnable.</li>
+<li><strong>Vignettes:</strong> Include at least one vignette (<code>.Rmd</code> file in the <code>vignettes/</code> directory) that provides a user-friendly introduction to your package’s main features.</li>
+<li><strong><code>NEWS.md</code>:</strong> A file documenting changes between versions is highly recommended.</li>
+<li><strong>README File:</strong> A comprehensive <code>README.md</code> file in the package’s root directory is standard practice.</li>
+</ul>
+<hr>
+</section>
+<section id="user-experience-and-best-practices" class="level3">
+<h3 class="anchored" data-anchor-id="user-experience-and-best-practices">3. User Experience and Best Practices</h3>
+<ul>
+<li><strong>Informative Error Messages:</strong> Your functions should provide clear, user-friendly error messages with <code>stop()</code> and <code>warning()</code> when things go wrong.</li>
+<li><strong>Avoid Namespace Pollution:</strong> Use <code>::</code> to call functions from other packages (e.g., <code>ggplot2::ggplot()</code>) unless a package is attached with <code>library()</code>. This prevents conflicts between functions with the same name.</li>
+<li><strong>Minimal Dependencies:</strong> Only import packages you absolutely need to.</li>
+<li><strong>Unit Tests:</strong> While not strictly required for a first submission, having a comprehensive suite of unit tests using <code>testthat</code> is highly recommended. They protect against regressions in future versions.</li>
+<li><strong>Data:</strong> If your package includes data, it should be placed in the <code>data/</code> directory and documented with a <code>.Rd</code> file.</li>
+</ul>
+<hr>
+</section>
+<section id="submission" class="level3">
+<h3 class="anchored" data-anchor-id="submission">4. Submission</h3>
+<ul>
+<li><strong><code>cran-checks</code>:</strong> Check your package against the <code>cran-checks</code> GitHub action if you’ve set it up.</li>
+<li><strong><code>devtools::submit_cran()</code>:</strong> This function from the <code>devtools</code> package automates much of the submission process, including creating the submission email.</li>
+<li><strong>Maintain Patience:</strong> The review process can take anywhere from a few days to several weeks. Be ready to respond to reviewer feedback and make necessary changes.</li>
+</ul>
+</section>
+<section id="hadley-recommendation" class="level3">
+<h3 class="anchored" data-anchor-id="hadley-recommendation">Hadley Recommendation</h3>
+<p><a href="https://r-pkgs.org/release.html">These are the major steps in the release process:</a></p>
+<ol type="1">
+<li>Determine the release type, which dictates the version number.</li>
+<li>If the package is already on CRAN: Do due diligence on existing CRAN results. If this is a first release: confirm you are in compliance with CRAN policies.</li>
+<li>Freshen up documentation files, such as README.md and NEWS.md.</li>
+<li>Double check() that your package is passing cleanly on multiple operating systems and on the released and development version of R.</li>
+<li>Perform reverse dependency checks, if other packages depend on yours.</li>
+<li>Submit the package to CRAN and wait for acceptance.</li>
+<li>Create a GitHub release and prepare for the next version by incrementing the version number.</li>
+<li>Publicize the new version.</li>
+</ol>
+
+
+</section>
+
+ ]]></description>
+  <category>R</category>
+  <category>package</category>
+  <category>CRAN</category>
+  <category>submission</category>
+  <guid>https://portal.statmania.info/posts/r-package-submission.html</guid>
+  <pubDate>Thu, 28 Aug 2025 18:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Interpretation of an Auto SARIMAX model output in R</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://portal.statmania.info/posts/auto-arima-explanation.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>The model we run is this</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(forecast)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(ggplot2)</span>
+<span id="cb1-3"></span>
+<span id="cb1-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create sample data</span></span>
+<span id="cb1-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">123</span>)</span>
+<span id="cb1-6">n <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">120</span></span>
+<span id="cb1-7">time <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>n</span>
+<span id="cb1-8"></span>
+<span id="cb1-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Main time series with trend + seasonality</span></span>
+<span id="cb1-10">y <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">50</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.3</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>time <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sin</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>pi<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>time<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(n, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>)</span>
+<span id="cb1-11"></span>
+<span id="cb1-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># External variable (e.g., marketing spend)</span></span>
+<span id="cb1-13">x1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>time <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(n, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>)</span>
+<span id="cb1-14"></span>
+<span id="cb1-15"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Convert to time series object</span></span>
+<span id="cb1-16">y_ts <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ts</span>(y, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">frequency =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>)</span>
+<span id="cb1-17">x1_ts <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ts</span>(x1, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">frequency =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>)</span>
+<span id="cb1-18"></span>
+<span id="cb1-19"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Let R find optimal parameters</span></span>
+<span id="cb1-20">sarimax_model <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">auto.arima</span>(y_ts,</span>
+<span id="cb1-21">                            <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">seasonal =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>,</span>
+<span id="cb1-22">                            <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">stepwise =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>,</span>
+<span id="cb1-23">                            <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">approximation =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>,</span>
+<span id="cb1-24">                            <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xreg =</span> x1_ts)</span>
+<span id="cb1-25"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(sarimax_model)</span></code></pre></div>
+<p>Now the output we get is</p>
+<p><img src="https://portal.statmania.info/img/sarimax-r.png" class="img-fluid"></p>
+<section id="interpretation" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation">Interpretation</h2>
+<p>Here’s a comprehensive interpretation of our SARIMAX model output:</p>
+</section>
+<section id="model-structure" class="level2">
+<h2 class="anchored" data-anchor-id="model-structure">Model Structure</h2>
+<p><strong>SARIMAX(2,0,1)(2,1,1)[12] with external regressor</strong></p>
+<ul>
+<li><strong>Non-seasonal part</strong>: AR(2) + MA(1)</li>
+<li><strong>Seasonal part</strong>: Seasonal AR(2) + Seasonal MA(1) with seasonal differencing (D=1)</li>
+<li><strong>Seasonality</strong>: 12 months (monthly data)</li>
+<li><strong>External regressor</strong>: One predictor variable (<code>xreg</code>)</li>
+</ul>
+</section>
+<section id="coefficients-interpretation" class="level2">
+<h2 class="anchored" data-anchor-id="coefficients-interpretation">Coefficients Interpretation</h2>
+<section id="non-seasonal-components" class="level3">
+<h3 class="anchored" data-anchor-id="non-seasonal-components">Non-seasonal Components:</h3>
+<ul>
+<li><strong>AR(1) = -0.75</strong>: Strong negative autoregressive effect - high values tend to be followed by low values</li>
+<li><strong>AR(2) = -0.09</strong>: Weak negative second-order autoregressive effect</li>
+<li><strong>MA(1) = 0.79</strong>: Strong moving average effect - shocks persist for one period</li>
+</ul>
+</section>
+<section id="seasonal-components-12-month-cycle" class="level3">
+<h3 class="anchored" data-anchor-id="seasonal-components-12-month-cycle">Seasonal Components (12-month cycle):</h3>
+<ul>
+<li><strong>SAR(1) = -0.19</strong>: Moderate negative seasonal autoregressive effect</li>
+<li><strong>SAR(2) = 0.04</strong>: Very weak positive seasonal effect</li>
+<li><strong>SMA(1) = -0.85</strong>: Strong negative seasonal moving average - seasonal shocks reverse quickly</li>
+</ul>
+</section>
+<section id="external-effects" class="level3">
+<h3 class="anchored" data-anchor-id="external-effects">External Effects:</h3>
+<ul>
+<li><strong>Drift = 0.26</strong>: Positive trend component (0.26 units increase per period)</li>
+<li><strong>xreg = 0.30</strong>: External variable has positive effect - 1 unit increase in xreg predicts 0.30 unit increase in y</li>
+</ul>
+</section>
+</section>
+<section id="model-quality-assessment" class="level2">
+<h2 class="anchored" data-anchor-id="model-quality-assessment">Model Quality Assessment</h2>
+<section id="statistical-significance" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-significance">Statistical Significance:</h3>
+<ul>
+<li><strong>Significant coefficients</strong>: AR(1), MA(1), SMA(1), Drift (coefficient &gt; 2× standard error)</li>
+<li><strong>Borderline</strong>: xreg (2.07× SE), SAR(1) (1.08× SE)</li>
+<li><strong>Insignificant</strong>: AR(2), SAR(2) (coefficient &lt; SE)</li>
+</ul>
+</section>
+<section id="model-fit-statistics" class="level3">
+<h3 class="anchored" data-anchor-id="model-fit-statistics">Model Fit Statistics:</h3>
+<ul>
+<li><strong>AIC = 666.56, BIC = 690.7</strong>: Good for model comparison (lower is better)</li>
+<li><strong>Log-likelihood = -324.28</strong>: Baseline for model comparison</li>
+<li><strong>σ² = 21.51</strong>: Error variance</li>
+</ul>
+</section>
+<section id="forecast-accuracy" class="level3">
+<h3 class="anchored" data-anchor-id="forecast-accuracy">Forecast Accuracy:</h3>
+<ul>
+<li><strong>RMSE = 4.23</strong>: Average forecast error magnitude</li>
+<li><strong>MAE = 3.17</strong>: Average absolute error</li>
+<li><strong>MAPE = 4.72%</strong>: Excellent accuracy (error &lt;5% of actual values)</li>
+<li><strong>MASE = 0.52</strong>: Model performs 48% better than naive forecast</li>
+</ul>
+</section>
+</section>
+<section id="key-insights-recommendations" class="level2">
+<h2 class="anchored" data-anchor-id="key-insights-recommendations">Key Insights &amp; Recommendations</h2>
+<section id="strengths" class="level3">
+<h3 class="anchored" data-anchor-id="strengths">Strengths:</h3>
+<ol type="1">
+<li><strong>Excellent predictive accuracy</strong> (MAPE &lt;5%)</li>
+<li><strong>Strong seasonal patterns</strong> captured effectively</li>
+<li><strong>Good model fit</strong> with reasonable complexity</li>
+<li><strong>External variable adds value</strong> to predictions</li>
+</ol>
+</section>
+<section id="concerns" class="level3">
+<h3 class="anchored" data-anchor-id="concerns">Concerns:</h3>
+<ol type="1">
+<li><strong>Over-parameterization</strong>: AR(2) and SAR(2) appear unnecessary</li>
+<li><strong>Some coefficients borderline significant</strong></li>
+</ol>
+</section>
+<section id="suggested-improvement" class="level3">
+<h3 class="anchored" data-anchor-id="suggested-improvement">Suggested Improvement:</h3>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Try simplified model</span></span>
+<span id="cb2-2">better_model <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Arima</span>(y_ts, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">seasonal =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xreg =</span> xreg)</span></code></pre></div>
+</section>
+<section id="business-interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="business-interpretation">Business Interpretation:</h3>
+<ul>
+<li>The time series shows <strong>strong seasonal patterns</strong> with 12-month cycles</li>
+<li>There’s a <strong>positive underlying trend</strong> (0.26 units/period)</li>
+<li>The external variable has <strong>moderate predictive power</strong></li>
+<li>Model provides <strong>highly accurate forecasts</strong> with ~4.7% average error</li>
+</ul>
+<p>This is generally a <strong>good quality model</strong> that should provide reliable forecasts for business planning.</p>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <category>statistics</category>
+  <category>time-series</category>
+  <category>R</category>
+  <guid>https://portal.statmania.info/posts/auto-arima-explanation.html</guid>
+  <pubDate>Fri, 15 Mar 2024 18:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>AutoRegressive and Moving Average Time Series Models with R Code</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://portal.statmania.info/posts/ar-ma-time-series.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>Here’s a comprehensive explanation of <strong>AR (AutoRegressive)</strong> and <strong>MA (Moving Average)</strong> models and their parameters:</p>
+<hr>
+<section id="ar-model-autoregressive" class="level2">
+<h2 class="anchored" data-anchor-id="ar-model-autoregressive"><strong>1. AR Model (AutoRegressive)</strong></h2>
+<section id="concept" class="level3">
+<h3 class="anchored" data-anchor-id="concept"><strong>Concept:</strong></h3>
+<p>An AR model predicts future values based on <strong>past values of the same variable</strong>.</p>
+</section>
+<section id="arp-model-formula" class="level3">
+<h3 class="anchored" data-anchor-id="arp-model-formula"><strong>AR(p) Model Formula:</strong></h3>
+<p><img src="https://latex.codecogs.com/png.latex?Y_t%20=%20c%20+%20%5Cphi_1%20Y_%7Bt-1%7D%20+%20%5Cphi_2%20Y_%7Bt-2%7D%20+%20%5Ccdots%20+%20%5Cphi_p%20Y_%7Bt-p%7D%20+%20%5Cepsilon_t"> Where:</p>
+<ul>
+<li><img src="https://latex.codecogs.com/png.latex?Y_t"> = value at time (t)</li>
+<li><img src="https://latex.codecogs.com/png.latex?c"> = constant (mean term)</li>
+<li><img src="https://latex.codecogs.com/png.latex?%5Cphi_1,%20%5Cphi_2,%20%5Cdots,%20%5Cphi_p"> = <strong>AR parameters</strong> (autoregressive coefficients)</li>
+<li><img src="https://latex.codecogs.com/png.latex?p"> = <strong>order</strong> of the model (number of lagged terms)</li>
+<li><img src="https://latex.codecogs.com/png.latex?%5Cepsilon_t"> = white noise error term</li>
+</ul>
+<hr>
+</section>
+<section id="ar-parameters-interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="ar-parameters-interpretation"><strong>AR Parameters Interpretation:</strong></h3>
+<ul>
+<li><strong><img src="https://latex.codecogs.com/png.latex?%5Cphi_1"></strong>: Effect of the <strong>most recent observation</strong> <img src="https://latex.codecogs.com/png.latex?(Y_%7Bt-1%7D)"> on current value</li>
+<li><strong><img src="https://latex.codecogs.com/png.latex?%5Cphi_2"></strong>: Effect of <strong>two periods back</strong> <img src="https://latex.codecogs.com/png.latex?(Y_%7Bt-2%7D)"></li>
+<li><strong><img src="https://latex.codecogs.com/png.latex?%5Cphi_p"></strong>: Effect of <strong>p periods back</strong> <img src="https://latex.codecogs.com/png.latex?(Y_%7Bt-p%7D)"></li>
+</ul>
+</section>
+<section id="example-ar2-model" class="level3">
+<h3 class="anchored" data-anchor-id="example-ar2-model"><strong>Example: AR(2) Model</strong></h3>
+<p><img src="https://latex.codecogs.com/png.latex?Y_t%20=%200.5%20+%200.7Y_%7Bt-1%7D%20+%200.2Y_%7Bt-2%7D%20+%20%5Cepsilon_t"></p>
+<p><strong>Interpretation:</strong> - Current value depends 70% on last period’s value - Plus 20% on the value from two periods ago - Plus a constant 0.5 and random noise</p>
+<hr>
+</section>
+<section id="stationarity-condition-for-ar" class="level3">
+<h3 class="anchored" data-anchor-id="stationarity-condition-for-ar"><strong>Stationarity Condition for AR:</strong></h3>
+<p>For AR(1): <img src="https://latex.codecogs.com/png.latex?%7C%5Cphi_1%7C%20%3C%201"></p>
+<p>For AR(p): All roots of characteristic equation must lie outside unit circle</p>
+<hr>
+</section>
+</section>
+<section id="ma-model-moving-average" class="level2">
+<h2 class="anchored" data-anchor-id="ma-model-moving-average"><strong>2. MA Model (Moving Average)</strong></h2>
+<section id="concept-1" class="level3">
+<h3 class="anchored" data-anchor-id="concept-1"><strong>Concept:</strong></h3>
+<p>An MA model predicts future values based on <strong>past forecast errors</strong>.</p>
+</section>
+<section id="maq-model-formula" class="level3">
+<h3 class="anchored" data-anchor-id="maq-model-formula"><strong>MA(q) Model Formula:</strong></h3>
+<p><img src="https://latex.codecogs.com/png.latex?Y_t%20=%20%5Cmu%20+%20%5Cepsilon_t%20+%20%5Ctheta_1%20%5Cepsilon_%7Bt-1%7D%20+%20%5Ctheta_2%20%5Cepsilon_%7Bt-2%7D%20+%20%5Ccdots%20+%20%5Ctheta_q%20%5Cepsilon_%7Bt-q%7D"></p>
+<p>Where:</p>
+<ul>
+<li><img src="https://latex.codecogs.com/png.latex?%5Cmu"> = mean of the series</li>
+<li><img src="https://latex.codecogs.com/png.latex?%5Ctheta_1,%20%5Ctheta_2,%20%5Cdots,%20%5Ctheta_q"> = <strong>MA parameters</strong></li>
+<li><img src="https://latex.codecogs.com/png.latex?q"> = <strong>order</strong> of the model</li>
+<li><img src="https://latex.codecogs.com/png.latex?%5Cepsilon_t,%20%5Cepsilon_%7Bt-1%7D,%20%5Cdots"> = error terms (white noise)</li>
+</ul>
+<hr>
+</section>
+<section id="ma-parameters-interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="ma-parameters-interpretation"><strong>MA Parameters Interpretation:</strong></h3>
+<ul>
+<li><strong><img src="https://latex.codecogs.com/png.latex?%5Ctheta_1"></strong>: Effect of <strong>last period’s shock</strong> on current value</li>
+<li><strong><img src="https://latex.codecogs.com/png.latex?%5Ctheta_2"></strong>: Effect of <strong>two periods ago shock</strong></li>
+<li><strong><img src="https://latex.codecogs.com/png.latex?%5Ctheta_q"></strong>: Effect of <strong>q periods ago shock</strong></li>
+</ul>
+</section>
+<section id="example-ma2-model" class="level3">
+<h3 class="anchored" data-anchor-id="example-ma2-model"><strong>Example: MA(2) Model</strong></h3>
+<p><img src="https://latex.codecogs.com/png.latex?Y_t%20=%2010%20+%20%5Cepsilon_t%20-%200.4%5Cepsilon_%7Bt-1%7D%20+%200.3%5Cepsilon_%7Bt-2%7D"></p>
+<p><strong>Interpretation:</strong> - Series has mean 10 - Current value affected by: - Current random shock <img src="https://latex.codecogs.com/png.latex?(%5Cepsilon_t)">) - -40% of last period’s shock - +30% of shock from two periods ago</p>
+<hr>
+</section>
+<section id="invertibility-condition-for-ma" class="level3">
+<h3 class="anchored" data-anchor-id="invertibility-condition-for-ma"><strong>Invertibility Condition for MA:</strong></h3>
+<p>For MA(1): <img src="https://latex.codecogs.com/png.latex?%7C%5Ctheta_1%7C%20%3C%201"> For MA(q): All roots of characteristic equation must lie outside unit circle</p>
+<hr>
+</section>
+</section>
+<section id="key-differences" class="level2">
+<h2 class="anchored" data-anchor-id="key-differences"><strong>3. Key Differences</strong></h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>AR Model</th>
+<th>MA Model</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Depends on</strong></td>
+<td>Past values of series</td>
+<td>Past forecast errors</td>
+</tr>
+<tr class="even">
+<td><strong>Memory</strong></td>
+<td>Infinite (theoretically)</td>
+<td>Finite (q periods)</td>
+</tr>
+<tr class="odd">
+<td><strong>ACF</strong></td>
+<td>Decays gradually</td>
+<td>Cuts off after lag q</td>
+</tr>
+<tr class="even">
+<td><strong>PACF</strong></td>
+<td>Cuts off after lag p</td>
+<td>Decays gradually</td>
+</tr>
+<tr class="odd">
+<td><strong>Use Case</strong></td>
+<td>Persistent trends</td>
+<td>Shock-driven series</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="parameter-estimation-in-practice" class="level2">
+<h2 class="anchored" data-anchor-id="parameter-estimation-in-practice"><strong>4. Parameter Estimation in Practice</strong></h2>
+<section id="in-r" class="level3">
+<h3 class="anchored" data-anchor-id="in-r"><strong>In R:</strong></h3>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(forecast)</span>
+<span id="cb1-2"></span>
+<span id="cb1-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Fit AR model</span></span>
+<span id="cb1-4">ar_model <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Arima</span>(ts_data, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>))  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># AR(2)</span></span>
+<span id="cb1-5"></span>
+<span id="cb1-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Fit MA model</span></span>
+<span id="cb1-7">ma_model <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Arima</span>(ts_data, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>))  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># MA(2)</span></span>
+<span id="cb1-8"></span>
+<span id="cb1-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># View parameters</span></span>
+<span id="cb1-10"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(ar_model)</span>
+<span id="cb1-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(ma_model)</span></code></pre></div>
+</section>
+<section id="typical-parameter-ranges" class="level3">
+<h3 class="anchored" data-anchor-id="typical-parameter-ranges"><strong>Typical Parameter Ranges:</strong></h3>
+<ul>
+<li><strong>AR parameters</strong>: Usually between -1 and 1</li>
+<li><strong>MA parameters</strong>: Usually between -1 and 1</li>
+<li>Significant parameters indicate important lags</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="real-world-examples" class="level2">
+<h2 class="anchored" data-anchor-id="real-world-examples"><strong>5. Real-World Examples</strong></h2>
+<section id="ar-example---stock-prices" class="level3">
+<h3 class="anchored" data-anchor-id="ar-example---stock-prices"><strong>AR Example - Stock Prices:</strong></h3>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Stock prices often show AR behavior</span></span>
+<span id="cb2-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># AR(1): Today's price = 0.95 × Yesterday's price + noise</span></span></code></pre></div>
+</section>
+<section id="ma-example---inventory-systems" class="level3">
+<h3 class="anchored" data-anchor-id="ma-example---inventory-systems"><strong>MA Example - Inventory Systems:</strong></h3>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Inventory shocks affect future periods</span></span>
+<span id="cb3-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># MA(1): Today's demand = mean - 0.6 × Yesterday's forecast error + noise</span></span></code></pre></div>
+<hr>
+</section>
+</section>
+<section id="model-identification" class="level2">
+<h2 class="anchored" data-anchor-id="model-identification"><strong>6. Model Identification</strong></h2>
+<section id="using-acfpacf-plots" class="level3">
+<h3 class="anchored" data-anchor-id="using-acfpacf-plots"><strong>Using ACF/PACF plots:</strong></h3>
+<ul>
+<li><strong>AR signature</strong>: PACF cuts off at lag p, ACF decays</li>
+<li><strong>MA signature</strong>: ACF cuts off at lag q, PACF decays</li>
+</ul>
+</section>
+<section id="information-criteria" class="level3">
+<h3 class="anchored" data-anchor-id="information-criteria"><strong>Information Criteria:</strong></h3>
+<ul>
+<li>Use AIC/BIC to choose optimal p and q</li>
+<li>Lower values indicate better model fit</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="combined-model---armapq" class="level2">
+<h2 class="anchored" data-anchor-id="combined-model---armapq"><strong>7. Combined Model - ARMA(p,q)</strong></h2>
+<p><img src="https://latex.codecogs.com/png.latex?Y_t%20=%20c%20+%20%5Cphi_1%20Y_%7Bt-1%7D%20+%20%5Ccdots%20+%20%5Cphi_p%20Y_%7Bt-p%7D%20+%20%5Cepsilon_t%20+%20%5Ctheta_1%20%5Cepsilon_%7Bt-1%7D%20+%20%5Ccdots%20+%20%5Ctheta_q%20%5Cepsilon_%7Bt-q%7D"></p>
+<p>Combines both past values AND past errors for forecasting.</p>
+<hr>
+<p><strong>Key Takeaway</strong>: AR models capture <strong>inertia/persistence</strong>, while MA models capture <strong>shock effects</strong>. The parameters <img src="https://latex.codecogs.com/png.latex?(%5Cphi">) and <img src="https://latex.codecogs.com/png.latex?%5Ctheta">) quantify these relationships and are estimated from data to best fit the time series pattern.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>statistics</category>
+  <category>time-series</category>
+  <category>R</category>
+  <guid>https://portal.statmania.info/posts/ar-ma-time-series.html</guid>
+  <pubDate>Thu, 22 Feb 2024 18:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>SARIMAX Time Series Models with R Code</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://portal.statmania.info/posts/sarimax-r.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>Here’s a comprehensive guide to <strong>SARIMAX in R</strong> with examples and interpretation:</p>
+<hr>
+<section id="what-is-sarimax" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-sarimax"><strong>1. What is SARIMAX?</strong></h2>
+<p>SARIMAX = <strong>S</strong>easonal <strong>A</strong>uto<strong>R</strong>egressive <strong>I</strong>ntegrated <strong>M</strong>oving <strong>A</strong>verage with e<strong>X</strong>ogenous variables</p>
+<ul>
+<li><strong>SARIMA</strong>: Handles seasonality and trends</li>
+<li><strong>X</strong>: Includes external predictors (covariates)</li>
+</ul>
+<hr>
+</section>
+<section id="basic-syntax-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="basic-syntax-in-r"><strong>2. Basic Syntax in R</strong></h2>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(forecast)</span>
+<span id="cb1-2"></span>
+<span id="cb1-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Fit SARIMAX model</span></span>
+<span id="cb1-4">model <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Arima</span>(y,</span>
+<span id="cb1-5">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(p, d, q),           <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># non-seasonal ARIMA order</span></span>
+<span id="cb1-6">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">seasonal =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(P, D, Q, S),     <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># seasonal order (S = period)</span></span>
+<span id="cb1-7">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xreg =</span> xreg_data)             <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># exogenous variables</span></span></code></pre></div>
+<hr>
+</section>
+<section id="example-1-simple-sarimax-with-one-external-variable" class="level2">
+<h2 class="anchored" data-anchor-id="example-1-simple-sarimax-with-one-external-variable"><strong>3. Example 1: Simple SARIMAX with One External Variable</strong></h2>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(forecast)</span>
+<span id="cb2-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(ggplot2)</span>
+<span id="cb2-3"></span>
+<span id="cb2-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create sample data</span></span>
+<span id="cb2-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">123</span>)</span>
+<span id="cb2-6">n <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">120</span></span>
+<span id="cb2-7">time <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>n</span>
+<span id="cb2-8"></span>
+<span id="cb2-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Main time series with trend + seasonality</span></span>
+<span id="cb2-10">y <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">50</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.3</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>time <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sin</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>pi<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>time<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(n, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>)</span>
+<span id="cb2-11"></span>
+<span id="cb2-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># External variable (e.g., marketing spend)</span></span>
+<span id="cb2-13">x1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>time <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(n, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>)</span>
+<span id="cb2-14"></span>
+<span id="cb2-15"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Convert to time series object</span></span>
+<span id="cb2-16">y_ts <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ts</span>(y, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">frequency =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>)</span>
+<span id="cb2-17">x1_ts <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ts</span>(x1, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">frequency =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>)</span>
+<span id="cb2-18"></span>
+<span id="cb2-19"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Fit SARIMAX model</span></span>
+<span id="cb2-20">sarimax_model <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Arima</span>(y_ts,</span>
+<span id="cb2-21">                      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>),</span>
+<span id="cb2-22">                      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">seasonal =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>),</span>
+<span id="cb2-23">                      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xreg =</span> x1_ts)</span>
+<span id="cb2-24"></span>
+<span id="cb2-25"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(sarimax_model)</span></code></pre></div>
+<hr>
+</section>
+<section id="example-2-multiple-external-variables" class="level2">
+<h2 class="anchored" data-anchor-id="example-2-multiple-external-variables"><strong>4. Example 2: Multiple External Variables</strong></h2>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Add second external variable</span></span>
+<span id="cb3-2">x2 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>time <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(n, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)</span>
+<span id="cb3-3">xreg_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cbind</span>(x1_ts, x2_ts)</span>
+<span id="cb3-4"></span>
+<span id="cb3-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Fit model with multiple external variables</span></span>
+<span id="cb3-6">sarimax_model2 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Arima</span>(y_ts,</span>
+<span id="cb3-7">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>),</span>
+<span id="cb3-8">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">seasonal =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>),</span>
+<span id="cb3-9">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xreg =</span> xreg_matrix)</span>
+<span id="cb3-10"></span>
+<span id="cb3-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(sarimax_model2)</span></code></pre></div>
+<hr>
+</section>
+<section id="model-diagnostics" class="level2">
+<h2 class="anchored" data-anchor-id="model-diagnostics"><strong>5. Model Diagnostics</strong></h2>
+<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Residual diagnostics</span></span>
+<span id="cb4-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">checkresiduals</span>(sarimax_model)</span>
+<span id="cb4-3"></span>
+<span id="cb4-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Coefficients and significance</span></span>
+<span id="cb4-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">coef</span>(sarimax_model)</span>
+<span id="cb4-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sqrt</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">diag</span>(sarimax_model<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>var.coef))  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># standard errors</span></span>
+<span id="cb4-7"></span>
+<span id="cb4-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Confidence intervals</span></span>
+<span id="cb4-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">confint</span>(sarimax_model)</span></code></pre></div>
+<hr>
+</section>
+<section id="forecasting-with-external-variables" class="level2">
+<h2 class="anchored" data-anchor-id="forecasting-with-external-variables"><strong>6. Forecasting with External Variables</strong></h2>
+<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create future values of external variables</span></span>
+<span id="cb5-2">future_periods <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span></span>
+<span id="cb5-3">x1_future <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ts</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">121</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">132</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">frequency =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>)</span>
+<span id="cb5-4">x2_future <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ts</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">121</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">132</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">frequency =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>)</span>
+<span id="cb5-5">xreg_future <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cbind</span>(x1_future, x2_future)</span>
+<span id="cb5-6"></span>
+<span id="cb5-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Generate forecasts</span></span>
+<span id="cb5-8">forecast_result <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">forecast</span>(sarimax_model2,</span>
+<span id="cb5-9">                           <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">h =</span> future_periods,</span>
+<span id="cb5-10">                           <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xreg =</span> xreg_future)</span>
+<span id="cb5-11"></span>
+<span id="cb5-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Plot results</span></span>
+<span id="cb5-13"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">autoplot</span>(forecast_result) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-14">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggtitle</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"SARIMAX Forecast with External Variables"</span>)</span></code></pre></div>
+<hr>
+</section>
+<section id="automated-model-selection" class="level2">
+<h2 class="anchored" data-anchor-id="automated-model-selection"><strong>7. Automated Model Selection</strong></h2>
+<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Let auto.arima select best SARIMAX model</span></span>
+<span id="cb6-2">auto_model <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">auto.arima</span>(y_ts,</span>
+<span id="cb6-3">                        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">seasonal =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>,</span>
+<span id="cb6-4">                        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">stepwise =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>,</span>
+<span id="cb6-5">                        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">approximation =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>,</span>
+<span id="cb6-6">                        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xreg =</span> xreg_matrix)</span>
+<span id="cb6-7"></span>
+<span id="cb6-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(auto_model)</span></code></pre></div>
+<hr>
+</section>
+<section id="real-dataset-example-airpassengers-with-exogenous-var" class="level2">
+<h2 class="anchored" data-anchor-id="real-dataset-example-airpassengers-with-exogenous-var"><strong>8. Real Dataset Example (AirPassengers with exogenous var)</strong></h2>
+<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Using AirPassengers dataset</span></span>
+<span id="cb7-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"AirPassengers"</span>)</span>
+<span id="cb7-3"></span>
+<span id="cb7-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create dummy external variable (e.g., economic index)</span></span>
+<span id="cb7-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">123</span>)</span>
+<span id="cb7-6">economic_index <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">time</span>(AirPassengers) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(AirPassengers), <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>)</span>
+<span id="cb7-7"></span>
+<span id="cb7-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Fit SARIMAX</span></span>
+<span id="cb7-9">air_model <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Arima</span>(AirPassengers,</span>
+<span id="cb7-10">                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>),</span>
+<span id="cb7-11">                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">seasonal =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>),</span>
+<span id="cb7-12">                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xreg =</span> economic_index)</span>
+<span id="cb7-13"></span>
+<span id="cb7-14"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Forecast with assumed future economic index</span></span>
+<span id="cb7-15">future_econ <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">150</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1961</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">11</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>)  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 1961 values</span></span>
+<span id="cb7-16">air_forecast <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">forecast</span>(air_model,</span>
+<span id="cb7-17">                        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">h =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>,</span>
+<span id="cb7-18">                        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xreg =</span> future_econ)</span>
+<span id="cb7-19"></span>
+<span id="cb7-20"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">autoplot</span>(air_forecast)</span></code></pre></div>
+<hr>
+</section>
+<section id="interpretation-of-coefficients" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation-of-coefficients"><strong>9. Interpretation of Coefficients</strong></h2>
+<p>For the model:</p>
+<div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># If output shows:</span></span>
+<span id="cb8-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ar1 = 0.85, ma1 = -0.32, sar1 = 0.72, sma1 = -0.45, xreg1 = 0.65</span></span></code></pre></div>
+<p><strong>Interpretation:</strong> - <code>ar1 = 0.85</code>: Strong positive autocorrelation (persistence) - <code>ma1 = -0.32</code>: Negative momentum effects - <code>sar1 = 0.72</code>: Strong seasonal autocorrelation - <code>sma1 = -0.45</code>: Negative seasonal momentum - <code>xreg1 = 0.65</code>: 1-unit increase in external variable increases y by 0.65 units</p>
+<hr>
+</section>
+<section id="important-notes" class="level2">
+<h2 class="anchored" data-anchor-id="important-notes"><strong>10. Important Notes</strong></h2>
+<ul>
+<li><strong>Stationarity</strong>: Ensure both y and xreg variables are stationary (use differencing if needed)</li>
+<li><strong>Correlation ≠ Causation</strong>: External variables should theoretically make sense</li>
+<li><strong>Model Validation</strong>: Always check residuals for autocorrelation</li>
+<li><strong>Overfitting</strong>: Avoid too many external variables relative to data length</li>
+</ul>
+<p>This gives you a solid foundation for implementing SARIMAX models in R!</p>
+
+
+</section>
+
+ ]]></description>
+  <category>statistics</category>
+  <category>time-series</category>
+  <category>R</category>
+  <guid>https://portal.statmania.info/posts/sarimax-r.html</guid>
+  <pubDate>Fri, 19 Jan 2024 18:00:00 GMT</pubDate>
+</item>
+</channel>
+</rss>
