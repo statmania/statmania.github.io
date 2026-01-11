@@ -1,7 +1,7 @@
 ---
 title: "Understanding Mass Spectrometry Imaging"
 author: "Abdullah Al Mahmud"
-date: "2024-31-22"
+date: "2025-12-22"
 categories: [research, technology, imaging]
 tags: [MSI]
 description: Imagine you could take a photograph of a slice of tissue, a leaf, or a painting, but instead of seeing colors, you see a **map of hundreds of different molecules**—fats, sugars, drugs, proteins—exactly where they are located.

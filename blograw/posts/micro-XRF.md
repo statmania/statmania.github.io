@@ -1,7 +1,7 @@
 ---
 title: "Micro-XRF: super-powered, non-destructive chemical camera"
 author: "Abdullah Al Mahmud"
-date: "2024-31-20"
+date: "2025-12-20"
 categories: [research, technology, imaging]
 tags: [MA, AR]
 description: Micro-XRF is the super-powered, non-destructive chemical and super-sleuth chemical Camera.

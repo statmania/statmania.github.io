@@ -10,7 +10,251 @@
 <atom:link href="https://portal.statmania.info/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.5.53</generator>
-<lastBuildDate>Thu, 23 Jul 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sun, 04 Jan 2026 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>SVM vs ANN: relative power, and usage guidelines</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://portal.statmania.info/posts/ANN-vs-SVM.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="svm-support-vector-machine" class="level2">
+<h2 class="anchored" data-anchor-id="svm-support-vector-machine"><strong>1. SVM (Support Vector Machine)</strong></h2>
+<section id="strengths" class="level3">
+<h3 class="anchored" data-anchor-id="strengths"><strong>Strengths</strong></h3>
+<ul>
+<li><strong>Effective in high dimensions</strong> with clear margin separation</li>
+<li><strong>Memory efficient</strong> (uses only support vectors for prediction)</li>
+<li><strong>Robust to overfitting</strong> in high-dimensional spaces</li>
+<li><strong>Global optimum guaranteed</strong> (convex optimization)</li>
+<li><strong>Works well with small-to-medium datasets</strong></li>
+<li><strong>Excellent with clear margin separation</strong></li>
+</ul>
+</section>
+<section id="weaknesses" class="level3">
+<h3 class="anchored" data-anchor-id="weaknesses"><strong>Weaknesses</strong></h3>
+<ul>
+<li><strong>Poor with very large datasets</strong> (training is O(n³))</li>
+<li><strong>Struggles with noisy/overlapping data</strong></li>
+<li><strong>Kernel choice is critical and heuristic</strong></li>
+<li><strong>Doesn’t directly provide probability estimates</strong></li>
+<li><strong>Binary by nature</strong> (needs extensions for multi-class)</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="ann-artificial-neural-networks" class="level2">
+<h2 class="anchored" data-anchor-id="ann-artificial-neural-networks"><strong>2. ANN (Artificial Neural Networks)</strong></h2>
+<section id="strengths-1" class="level3">
+<h3 class="anchored" data-anchor-id="strengths-1"><strong>Strengths</strong></h3>
+<ul>
+<li><strong>Universal approximators</strong> can model any complex function</li>
+<li><strong>Excellent with huge datasets</strong> (scales well)</li>
+<li><strong>Automatic feature learning</strong> (deep networks)</li>
+<li><strong>State-of-the-art</strong> for vision, NLP, audio</li>
+<li><strong>Handles noisy data well</strong></li>
+<li><strong>Natively supports multi-class problems</strong></li>
+</ul>
+</section>
+<section id="weaknesses-1" class="level3">
+<h3 class="anchored" data-anchor-id="weaknesses-1"><strong>Weaknesses</strong></h3>
+<ul>
+<li><strong>Requires lots of data</strong> (overfits easily on small data)</li>
+<li><strong>Computationally expensive</strong> to train</li>
+<li><strong>Black box</strong> (hard to interpret)</li>
+<li><strong>Many hyperparameters</strong> to tune</li>
+<li><strong>Local minima</strong> (non-convex optimization)</li>
+<li><strong>Sensitive to initialization</strong></li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="which-is-more-powerful" class="level2">
+<h2 class="anchored" data-anchor-id="which-is-more-powerful"><strong>3. Which is More “Powerful”?</strong></h2>
+<section id="theoretical-power" class="level3">
+<h3 class="anchored" data-anchor-id="theoretical-power"><strong>Theoretical Power</strong>:</h3>
+<ul>
+<li><strong>ANN wins</strong> in representational capacity</li>
+<li>Universal approximation theorem: ANN with 1+ hidden layers can approximate any continuous function</li>
+<li>SVM with RBF kernel also universal, but less flexible in practice</li>
+</ul>
+</section>
+<section id="practical-power" class="level3">
+<h3 class="anchored" data-anchor-id="practical-power"><strong>Practical Power</strong>:</h3>
+<ul>
+<li><strong>Large data, complex patterns</strong>: ANN/DL</li>
+<li><strong>Small/medium data, clear margins</strong>: SVM</li>
+<li><strong>Tabular data</strong>: Often SVM or gradient boosting</li>
+<li><strong>Image/text/sequence data</strong>: ANN dominates</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="decision-guide-when-to-use-which" class="level2">
+<h2 class="anchored" data-anchor-id="decision-guide-when-to-use-which"><strong>4. Decision Guide: When to Use Which</strong></h2>
+<section id="use-svm-when" class="level3">
+<h3 class="anchored" data-anchor-id="use-svm-when"><strong>Use SVM when</strong>:</h3>
+<ol type="1">
+<li><strong>Dataset is small-to-medium</strong> (n &lt; 10K-50K samples)</li>
+<li><strong>Features &gt; samples</strong> (genomics, text mining)</li>
+<li><strong>Clear margin of separation</strong> exists</li>
+<li><strong>Limited computational resources</strong></li>
+<li><strong>Need interpretable model</strong> (linear SVM)</li>
+<li><strong>Working with structured tabular data</strong></li>
+</ol>
+</section>
+<section id="use-ann-when" class="level3">
+<h3 class="anchored" data-anchor-id="use-ann-when"><strong>Use ANN when</strong>:</h3>
+<ol type="1">
+<li><strong>Massive datasets</strong> (millions of samples)</li>
+<li><strong>Raw/unstructured data</strong> (images, text, audio)</li>
+<li><strong>Need automatic feature extraction</strong></li>
+<li><strong>Complex non-linear patterns</strong></li>
+<li><strong>State-of-the-art performance</strong> is critical</li>
+<li><strong>Sequential/temporal data</strong> (RNNs/LSTMs)</li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="performance-comparison-by-domain" class="level2">
+<h2 class="anchored" data-anchor-id="performance-comparison-by-domain"><strong>5. Performance Comparison by Domain</strong></h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 44%">
+<col style="width: 27%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Domain</strong></th>
+<th><strong>Typical Winner</strong></th>
+<th><strong>Reason</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Image Classification</td>
+<td>ANN (CNN)</td>
+<td>Automatic feature learning from pixels</td>
+</tr>
+<tr class="even">
+<td>Text Classification</td>
+<td>ANN (BERT, Transformers)</td>
+<td>Context understanding</td>
+</tr>
+<tr class="odd">
+<td>Tabular Data &lt; 10K samples</td>
+<td>SVM/Gradient Boosting</td>
+<td>Clear margins, efficient</td>
+</tr>
+<tr class="even">
+<td>Genomics/Microarrays</td>
+<td>SVM</td>
+<td>High dimensions, small n</td>
+</tr>
+<tr class="odd">
+<td>Time Series Forecasting</td>
+<td>ANN (LSTM)</td>
+<td>Sequential dependency</td>
+</tr>
+<tr class="even">
+<td>Anomaly Detection (small n)</td>
+<td>One-Class SVM</td>
+<td>Novelty detection efficiency</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="example-scenarios" class="level2">
+<h2 class="anchored" data-anchor-id="example-scenarios"><strong>6. Example Scenarios</strong></h2>
+<section id="scenario-1-medical-diagnosis-1000-patient-records-200-features" class="level3">
+<h3 class="anchored" data-anchor-id="scenario-1-medical-diagnosis-1000-patient-records-200-features"><strong>Scenario 1: Medical Diagnosis (1,000 patient records, 200 features)</strong></h3>
+<ul>
+<li><strong>Choose</strong>: SVM or Random Forest</li>
+<li><strong>Why</strong>: Moderate dataset, interpretability important, clear risk factors</li>
+</ul>
+</section>
+<section id="scenario-2-image-recognition-1m-images" class="level3">
+<h3 class="anchored" data-anchor-id="scenario-2-image-recognition-1m-images"><strong>Scenario 2: Image Recognition (1M images)</strong></h3>
+<ul>
+<li><strong>Choose</strong>: ANN (Convolutional Neural Network)</li>
+<li><strong>Why</strong>: Raw pixel data, needs feature learning, massive dataset</li>
+</ul>
+</section>
+<section id="scenario-3-sentiment-analysis-50k-reviews" class="level3">
+<h3 class="anchored" data-anchor-id="scenario-3-sentiment-analysis-50k-reviews"><strong>Scenario 3: Sentiment Analysis (50K reviews)</strong></h3>
+<ul>
+<li><strong>Traditional</strong>: SVM with TF-IDF</li>
+<li><strong>Modern</strong>: ANN (BERT fine-tuning) for better accuracy</li>
+</ul>
+</section>
+<section id="scenario-4-stock-price-prediction-20-years-daily-data" class="level3">
+<h3 class="anchored" data-anchor-id="scenario-4-stock-price-prediction-20-years-daily-data"><strong>Scenario 4: Stock Price Prediction (20 years daily data)</strong></h3>
+<ul>
+<li><strong>Choose</strong>: ANN (LSTM/Transformers)</li>
+<li><strong>Why</strong>: Sequential patterns, complex dependencies</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="hybrid-approaches" class="level2">
+<h2 class="anchored" data-anchor-id="hybrid-approaches"><strong>7. Hybrid Approaches</strong></h2>
+<p>Sometimes best results come from combining: - <strong>SVM as final layer</strong> of neural network - <strong>ANN features + SVM classifier</strong> - <strong>Ensemble</strong> of both</p>
+<hr>
+</section>
+<section id="practical-recommendations" class="level2">
+<h2 class="anchored" data-anchor-id="practical-recommendations"><strong>8. Practical Recommendations</strong></h2>
+<ol type="1">
+<li><strong>Start with SVM/Gradient Boosting</strong> for tabular data unless:
+<ul>
+<li>You have &gt; 50K samples</li>
+<li>Data is unstructured</li>
+<li>You need SOTA performance</li>
+</ul></li>
+<li><strong>Default to ANN</strong> for:
+<ul>
+<li>Computer vision</li>
+<li>Natural language processing</li>
+<li>Speech/audio processing</li>
+<li>Recommender systems with implicit feedback</li>
+</ul></li>
+<li><strong>Consider computational constraints</strong>:
+<ul>
+<li>SVM: Faster training on small data</li>
+<li>ANN: Faster inference after training</li>
+</ul></li>
+<li><strong>Skill availability</strong>:
+<ul>
+<li>SVM: Easier to implement and tune</li>
+<li>ANN: Requires more expertise</li>
+</ul></li>
+</ol>
+<hr>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion"><strong>Conclusion</strong></h2>
+<p><strong>Neither is universally “more powerful”</strong> — it depends on context:</p>
+<ul>
+<li><strong>SVM</strong>: “Smart, efficient scalpel” for well-defined problems with limited data</li>
+<li><strong>ANN</strong>: “Powerful, data-hungry excavator” for complex patterns with abundant data</li>
+</ul>
+<p><strong>Rule of thumb</strong>: Try SVM/Random Forest/XGBoost first on tabular data. Use ANN when (1) data is unstructured, or (2) you need the absolute best performance and have the data/compute to support it.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>statistics</category>
+  <category>theory</category>
+  <category>ML</category>
+  <category>algorithm</category>
+  <guid>https://portal.statmania.info/posts/ANN-vs-SVM.html</guid>
+  <pubDate>Sun, 04 Jan 2026 18:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Hyperspectral Imaging Explained</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
@@ -120,7 +364,7 @@
   <category>technology</category>
   <category>imaging</category>
   <guid>https://portal.statmania.info/posts/hyperspectral-imaging.html</guid>
-  <pubDate>Thu, 23 Jul 2026 18:00:00 GMT</pubDate>
+  <pubDate>Tue, 23 Dec 2025 18:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Understanding Mass Spectrometry Imaging</title>
@@ -234,7 +478,7 @@
   <category>technology</category>
   <category>imaging</category>
   <guid>https://portal.statmania.info/posts/mass-spectrometry-imaging.html</guid>
-  <pubDate>Tue, 21 Jul 2026 18:00:00 GMT</pubDate>
+  <pubDate>Sun, 21 Dec 2025 18:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Micro-XRF: super-powered, non-destructive chemical camera</title>
@@ -311,7 +555,7 @@
   <category>technology</category>
   <category>imaging</category>
   <guid>https://portal.statmania.info/posts/micro-XRF.html</guid>
-  <pubDate>Sun, 19 Jul 2026 18:00:00 GMT</pubDate>
+  <pubDate>Fri, 19 Dec 2025 18:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Interaction Effect in Regression Analysis</title>

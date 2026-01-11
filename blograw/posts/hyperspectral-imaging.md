@@ -1,7 +1,7 @@
 ---
 title: "Hyperspectral Imaging Explained"
 author: "Abdullah Al Mahmud"
-date: "2024-31-24"
+date: "2025-12-24"
 categories: [research, technology, imaging]
 tags: [HSI]
 description: Imagine your eyes (or a regular camera) see the world in only **3 colors:** Red, Green, and Blue (RGB). By mixing these, you can create millions of perceived colors, but you can't see the specific "fingerprint" of light that makes a leaf, a mineral, or a painted pigment unique.
