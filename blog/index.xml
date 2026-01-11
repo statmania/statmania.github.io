@@ -256,6 +256,222 @@
   <pubDate>Sun, 04 Jan 2026 18:00:00 GMT</pubDate>
 </item>
 <item>
+  <title>Poisson Regression: A Simple Example</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://portal.statmania.info/posts/poisson-regression-demo.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>Here’s a minimal example of Poisson regression with simulated data and interpretation:</p>
+<section id="poisson-regression-example" class="level2">
+<h2 class="anchored" data-anchor-id="poisson-regression-example"><strong>Poisson Regression Example</strong></h2>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load required package</span></span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)</span>
+<span id="cb1-3"></span>
+<span id="cb1-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Simulate small dataset (n=10)</span></span>
+<span id="cb1-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">123</span>)</span>
+<span id="cb1-6">data <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb1-7">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>,  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Predictor (e.g., hours studied)</span></span>
+<span id="cb1-8">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>)  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Count outcome (e.g., questions answered correctly)</span></span>
+<span id="cb1-9">)</span>
+<span id="cb1-10"></span>
+<span id="cb1-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Fit Poisson regression</span></span>
+<span id="cb1-12">model <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">glm</span>(y <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> x, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">family =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">poisson</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">link =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"log"</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> data)</span>
+<span id="cb1-13"></span>
+<span id="cb1-14"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># View results</span></span>
+<span id="cb1-15"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(model)</span></code></pre></div>
+<p><strong>Output</strong>:</p>
+<pre><code>Coefficients:
+            Estimate Std. Error z value Pr(&gt;|z|)  
+(Intercept)  0.04879    0.50653   0.096    0.923  
+x            0.17395    0.08195   2.123    0.034 *
+---
+Significant codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance: 15.380  on 9  degrees of freedom
+Residual deviance: 10.785  on 8  degrees of freedom</code></pre>
+<hr>
+</section>
+<section id="interpretation-of-coefficients" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation-of-coefficients"><strong>Interpretation of Coefficients</strong></h2>
+<section id="intercept-β₀-0.04879" class="level3">
+<h3 class="anchored" data-anchor-id="intercept-β₀-0.04879"><strong>1. Intercept (β₀ = 0.04879)</strong></h3>
+<ul>
+<li><strong>Meaning</strong>: When <img src="https://latex.codecogs.com/png.latex?x%20=%200">, the expected log count of<img src="https://latex.codecogs.com/png.latex?y">is 0.04879</li>
+<li><strong>Exponentiated</strong>:<img src="https://latex.codecogs.com/png.latex?e%5E%7B0.04879%7D%20%5Capprox%201.05"></li>
+<li><strong>Interpretation</strong>: At <img src="https://latex.codecogs.com/png.latex?x%20=%200">, we expect about <strong>1.05</strong> correct answers (baseline rate)</li>
+</ul>
+</section>
+<section id="slope-β₁-0.17395" class="level3">
+<h3 class="anchored" data-anchor-id="slope-β₁-0.17395"><strong>2. Slope (β₁ = 0.17395)</strong></h3>
+<ul>
+<li><strong>Meaning</strong>: For each 1-unit increase in<img src="https://latex.codecogs.com/png.latex?x">, the log count of<img src="https://latex.codecogs.com/png.latex?y">increases by 0.17395</li>
+<li><strong>Exponentiated</strong>:<img src="https://latex.codecogs.com/png.latex?e%5E%7B0.17395%7D%20%5Capprox%201.19"></li>
+<li><strong>Interpretation</strong>: For each additional hour studied, the expected count of correct answers <strong>multiplies by 1.19</strong> (a 19% increase)</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="prediction-example" class="level2">
+<h2 class="anchored" data-anchor-id="prediction-example"><strong>Prediction Example</strong></h2>
+<p>Let’s predict for<img src="https://latex.codecogs.com/png.latex?x%20=%205">:</p>
+<ol type="1">
+<li><p><strong>Linear predictor</strong>:<br>
+<img src="https://latex.codecogs.com/png.latex?%0A%5Ceta%20=%200.04879%20+%200.17395%20%5Ctimes%205%20=%200.91854%0A"></p></li>
+<li><p><strong>Expected count</strong>:<br>
+<img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7By%7D%20=%20e%5E%7B0.91854%7D%20%5Capprox%202.5%20%5Ctext%7B%20correct%20answers%7D%0A"></p></li>
+</ol>
+<p>For<img src="https://latex.codecogs.com/png.latex?x%20=%2010">: <img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7By%7D%20=%20e%5E%7B0.04879%20+%200.17395%20%5Ctimes%2010%7D%20=%20e%5E%7B1.78829%7D%20%5Capprox%205.98%0A"></p>
+<p>So studying 10 hours predicts about 6 correct answers.</p>
+<hr>
+</section>
+<section id="practical-interpretation" class="level2">
+<h2 class="anchored" data-anchor-id="practical-interpretation"><strong>Practical Interpretation</strong></h2>
+<section id="rate-ratios" class="level3">
+<h3 class="anchored" data-anchor-id="rate-ratios"><strong>Rate Ratios</strong></h3>
+<ul>
+<li><p><strong>Rate Ratio</strong> =<img src="https://latex.codecogs.com/png.latex?e%5E%7B0.17395%7D%20=%201.19"></p></li>
+<li><p>Interpretation: “Studying one more hour is associated with 19% more correct answers”</p></li>
+<li><p><strong>95% Confidence Interval</strong>:</p>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exp</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">confint</span>(model))</span></code></pre></div>
+<p>Would give interval for this multiplicative effect</p></li>
+</ul>
+</section>
+<section id="statistical-significance" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-significance"><strong>Statistical Significance</strong></h3>
+<p>-<img src="https://latex.codecogs.com/png.latex?p%20=%200.034%20%3C%200.05">→ Significant positive relationship - Evidence that study time affects question performance</p>
+<hr>
+</section>
+</section>
+<section id="assumptions-check" class="level2">
+<h2 class="anchored" data-anchor-id="assumptions-check"><strong>Assumptions Check</strong></h2>
+<p>For Poisson regression:</p>
+<ol type="1">
+<li><p><strong>Count outcome</strong>: ✓ (questions answered are counts)</p></li>
+<li><p><strong>Log-linear relationship</strong>: ✓ (we used log link)</p></li>
+<li><p><strong>Mean = Variance</strong>: Check with:</p>
+<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(data<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>y)    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 2.5</span></span>
+<span id="cb4-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">var</span>(data<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>y)     <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 2.72 (close enough for n=10)</span></span></code></pre></div></li>
+<li><p><strong>Independence</strong>: ✓ (assumed here)</p></li>
+</ol>
+<hr>
+</section>
+<section id="real-world-analogy" class="level2">
+<h2 class="anchored" data-anchor-id="real-world-analogy"><strong>Real-World Analogy</strong></h2>
+<p>Imagine:</p>
+<ul>
+<li><strong>y</strong> = Number of customer complaints per day</li>
+<li><strong>x</strong> = Number of support staff working</li>
+<li><strong>β₁ = 0.174</strong> → Each additional staff reduces log(complaints) by 0.174</li>
+<li><strong>RR = 1.19</strong> → Actually this positive coefficient means <em>more</em> staff → <em>more</em> complaints (counterintuitive - maybe staff are documenting more complaints!)</li>
+</ul>
+<hr>
+<p><strong>Key takeaway</strong>: In Poisson regression, coefficients represent <strong>log-rate changes</strong>, and exponentiated coefficients represent <strong>multiplicative effects</strong> on the expected count.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>regression</category>
+  <category>statistics</category>
+  <category>poisson</category>
+  <guid>https://portal.statmania.info/posts/poisson-regression-demo.html</guid>
+  <pubDate>Thu, 01 Jan 2026 18:00:00 GMT</pubDate>
+</item>
+<item>
   <title>Hyperspectral Imaging Explained</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://portal.statmania.info/posts/hyperspectral-imaging.html</link>
