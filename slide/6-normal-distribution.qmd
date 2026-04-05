@@ -1,0 +1,401 @@
+---
+title: "Normal Distribution"
+author: Abdullah Al Mahmud
+date: \today
+output: 
+  revealjs::revealjs_presentation:
+    theme: sky
+    reveal_plugins: ["chalkboard", "zoom", "menu"]
+    self_contained: false
+    lib_dir: libs
+    css: css/styles.css
+    includes:
+      in_header: css/header.html
+---
+
+# Most Important
+
+It's the 
+
+- most important distribution
+- most common distribution
+- most widely-used distribution
+
+## Shape
+
+```{r normal-density, echo=FALSE, fig.width=7, fig.height=5, fig.cap=""}
+set.seed(123)         # for reproducibility
+n <- 1000             # number of samples
+mu <- 75               # mean
+sigma <- 10            # standard deviation
+
+# simulate data
+x <- rnorm(n, mean = mu, sd = sigma)
+
+# plot histogram scaled to density
+hist(x,
+     breaks = 30,
+     probability = TRUE,
+     col = "lightblue",
+     border = "white",
+     main = "Histogram with Normal Density Curve",
+     xlab = "Value",
+     ylim = c(0, max(density(x)$y, dnorm(mu, mu, sigma)) * 1.1))
+
+# add theoretical normal density
+curve(dnorm(x, mean = mu, sd = sigma),
+      from = min(x) - 1,
+      to = max(x) + 1,
+      col = "red",
+      lwd = 2,
+      add = TRUE)
+
+# add kernel density of the sample
+lines(density(x), col = "darkgreen", lwd = 2, lty = 2)
+
+# legend
+legend("topright",
+       legend = c("Theoretical normal", "Sample density"),
+       col = c("red", "darkgreen"),
+       lwd = 2, lty = c(1, 2))
+``` 
+
+## PDF
+
+The normal PDF is given by
+
+$$
+f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2}; -\infty <x<\infty
+$$
+
+> - First discovered by Abraham De Moivre
+
+## Binomial to Normal
+
+> - Number of trial (n) is large ($n \rightarrow \infty$)
+> - $P(S) \approx P(\bar S$), where $S =$ Success
+
+[Check out here](https://portal.statmania.info/ds/analysis/viz-dist.html)
+
+## Poisson to Normal
+
+$m \rightarrow \infty$
+
+$$
+\lim_{m \to \infty} \text{Pois}(m) \approx \mathcal{N}(m, m)
+$$
+[Check out here](https://portal.statmania.info/ds/analysis/viz-dist.html)
+
+## Empirical Rule
+
+68‑95‑99.7 Rule
+
+```{r empirical-rule-base, echo=FALSE, fig.width=6, fig.height=5, fig.cap=""}
+# 1. Numeric verification
+p1 <- pnorm(1) - pnorm(-1)
+p2 <- pnorm(2) - pnorm(-2)
+p3 <- pnorm(3) - pnorm(-3)
+
+
+# 2. Visual plot
+x <- seq(-4, 4, length = 400)
+y <- dnorm(x)
+plot(x, y, type="l", lwd=2, col="blue",
+     ylab="Density", xlab="Z",
+     main="Standard Normal with ±1,2,3σ Shading")
+
+# Function to shade region between -n and +n
+shade_region <- function(n, col) {
+  ix <- x >= -n & x <= n
+  polygon(c(-n, x[ix], n), c(0, y[ix], 0),
+          col = col, border = NA)
+}
+
+# Shade ±1, ±2, ±3
+shade_region(3, rgb(0,0,1,0.1))
+shade_region(2, rgb(0,0,1,0.2))
+shade_region(1, rgb(0,0,1,0.3))
+
+# Add legend
+legend("topright",
+       legend = c("±1σ ~68%", "±2σ ~95%", "±3σ ~99.7%"),
+       fill = c(rgb(0,0,1,0.3), rgb(0,0,1,0.2), rgb(0,0,1,0.1)),
+       border = NA)
+```
+
+## Empirical Rule Area
+
+> - $P(\mu - \sigma \le \mu + \sigma) = 0.6826$
+> - $P(\mu - 2 \sigma \le \mu + 2 \sigma) = 0.9544$
+> - $P(\mu - 3 \sigma \le \mu + 3 \sigma) = 0.9973$
+
+## Properties
+
+> - Bell-shaped 
+> - Symmetrical about mean
+> - $\beta_1 = 0, \beta_2 = 3$
+> - $\mu = Me = Mo$
+> - Area under whole curve is 1
+> - The curve on either side of mean extends up to infinity.
+> -  All odd central moments are zero
+
+## More Properties
+
+> - Empirical rule
+> - Linear combination of Normal $\rightarrow$ normal
+> -  $MD(\bar X) \frac 45\sigma$
+> - $QD = \frac 23\sigma$
+> - $M_X(t) = \mathbb{E}[e^{tX}] = \exp\left(\mu t + \frac{1}{2} \sigma^2 t^2\right) -\infty \le t \le \infty$
+
+## Odd Central Moments
+
+$\mu_1 = \mu_3 = \cdots = \mu_{2n+1} = 0$
+
+Mathematically Why?
+> - 
+
+## Application or Normal Distribution
+
+> - Quality Control in industry
+> - Most distributions tend to be normal under some assumptions
+> - Sometimes transformation makes normal
+> - Used in hypothesis testing (many samples are normally distributed)
+
+## Standard Normal
+
+If $X \sim N(\mu, \sigma ^2), z = \frac{x-\mu}{\sigma} \sim N(0,1)$
+
+> - $\displaystyle f(z) = \frac{1}{\sqrt{2 \pi}}e^{\frac{-z^2}{2}}$ 
+> - $E(Z) = 0$
+> - $V(Z) = SD(Z) = 1$
+
+## Standard Normal Mean
+
+Let $X \sim N(\mu, \sigma ^2)$
+
+> - Now let $\displaystyle Z = \frac{X-\mu}{\sigma}$
+> - $E(Z) = E(\frac{X-Z}{\mu})$
+> - = $\frac{1}{\sigma} E(X-\mu)$
+> - = $\frac{1}{\sigma} [E(X) - E(\mu)]$
+> - = $\frac{1}{\sigma} (\mu - \mu)$
+> - 0
+
+## Standard Normal Variance
+
+$V(Z) = V(\frac{X-Z}{\mu})$
+
+> - = $\frac{}{}$ 
+
+# Normal Problems
+
+## Find Skewness
+
+Find the coefficient of skewness of normal distribution with variance 4.
+
+<div class="container">
+<div class="col">
+> - $\mu_3 = 0$
+> - $\sigma^2 =\mu_2 = 4$
+</div>
+<div class="col">
+> - $\gamma_1 = \sqrt{\beta_1} = \frac{\mu_3}{\sqrt{\mu_2^3}}$
+> - $\gamma_1 = \frac{0}{\sqrt{4^3}} = 0$
+> -  So no skew (symmetric)
+</div>
+</div>
+
+## Probablity of Z [-1, 1]
+
+
+Find $P(-1 \le z \le 1)$
+
+<div class="container">
+<div class="col">
+<small>
+
+> - $P(-1 \le z \le 1)$
+> - $P(-1 \le z \le 0) + P(0 \le z \le 1)$
+> - $0.3413 + 0.3413$ 
+> - 0.6826
+
+</small>
+</div>
+<div class="col">
+
+```{r normal_plot_base_R, echo=FALSE, fig.width=7, fig.height=5}
+# Define the range of Z-values
+z <- seq(-4, 4, length.out = 500)
+
+# Calculate the probability density for each Z-value
+density_values <- dnorm(z, mean = 0, sd = 1)
+
+# Plot the standard normal curve
+plot(z, density_values, type = "l",
+     main = "Standard Normal Distribution: P(-1 <= Z <= 1)",
+     xlab = "Z-score",
+     ylab = "Probability Density",
+     col = "steelblue",
+     lwd = 2,
+     ylim = c(0, max(density_values) * 1.1), # Extend y-axis slightly for labels
+     axes = FALSE) # Suppress default axes to draw custom ones
+
+# Add custom x-axis
+axis(side = 1, at = c(-3, -2, -1, 0, 1, 2, 3), labels = c("-3", "-2", "-1", "0", "1", "2", "3"))
+# Add custom y-axis (optional, often hidden for density plots)
+# axis(side = 2)
+
+# Shade the area between -1 and 1
+# Find the indices corresponding to z = -1 and z = 1
+idx <- which(z >= -1 & z <= 1)
+# Create polygon coordinates
+polygon(x = c(z[idx[1]], z[idx], z[idx[length(idx)]]),
+        y = c(0, density_values[idx], 0),
+        col = "lightblue",
+        border = NA) # No border for the shaded area
+
+# Add vertical lines at -1, 0, and 1
+abline(v = 0, lty = 2, col = "gray50") # Mean (0)
+abline(v = -1, lty = 1, col = "red", lwd = 1.5) # -1 standard deviation
+abline(v = 1, lty = 1, col = "red", lwd = 1.5) # 1 standard deviation
+
+# Add text labels for -1, 0, and 1
+text(x = 0, y = -0.02, labels = "0", col = "black", pos = 1, cex = 1.2)
+text(x = -1, y = -0.02, labels = expression(bold("-1")), col = "red", pos = 1, cex = 1.2)
+text(x = 1, y = -0.02, labels = expression(bold("1")), col = "red", pos = 1, cex = 1.2)
+
+# Indicate -infinity and +infinity conceptually
+# This is typically implied by the curve extending to the edges of the plot
+# You could add arrows, but it often clutters the plot more than it helps for this specific question.
+# For example:
+# arrows(x0 = -3.5, y0 = 0.01, x1 = -Inf, y1 = 0.01, length = 0.1, col = "darkgreen")
+# arrows(x0 = 3.5, y0 = 0.01, x1 = Inf, y1 = 0.01, length = 0.1, col = "darkgreen")
+# text(x = -3.5, y = 0.02, labels = expression(-infinity), pos = 4, col = "darkgreen")
+# text(x = 3.5, y = 0.02, labels = expression(+infinity), pos = 2, col = "darkgreen")
+```
+</div>
+</div>
+
+
+## Method 2 
+
+> - $P(-1 \le z \le 1) = P(z\le1) - P(z \le -1)$
+> - $P(z \le -1) = 1- P(z \le 1)$ (since symmetric)
+> - $P(-1 \le z \le 1) =  P(z\le1) - [1- P(z \le 1)]$
+> - $2 P(z \le 1) - 1$
+> - $2 \times 8413-1 = 0.6826$
+
+## Find MD of N(20, 25)
+
+<div class="container">
+<div class="col">
+> - $\mu = 20 , \sigma^2 = 25$
+> - $\sigma = 5$
+</div>
+<div class="col">
+Mean Deviation about Mean
+
+> - $MD(\bar X) = \frac45 \sigma$
+</div>
+</div>
+
+## Find Varinace 
+
+Find the variance of normal distribution when $\mu_4 = 2$
+
+> - Kurtosis, $\beta_2 = \frac{\mu_4}{\mu_2}$
+> - Mesokortic $\rightarrow \beta_2 = 3$
+> - $3 = \frac{2}{\mu_2^2}$
+> - $\mu_2^2 = 0.67$
+> - $\sigma^2 = ?$
+> - $\sqrt{0.67}$
+
+## P(X > 20)
+
+$\mu = 15, \sigma = 4, P(X > 20)= ?$
+
+<div class="container">
+<div class="col">
+> - $P(X > 20)$
+> - $P(\frac{x-\mu}{\sigma} > \frac{20-15}{4})$
+> - $P(z>1.25)$
+> - $P(0\le z \le \infty) - P(0\le z \le 1.25)$
+> - $0.5 - 0.3944 = 0.1056$
+</div>
+<div class="col">
+
+```{r normal_plot_base_R_right_tail_1.25, echo=FALSE, fig.width=7, fig.height=5}
+# Define the range of Z-values
+z <- seq(-4, 4, length.out = 500)
+
+# Calculate the probability density for each Z-value
+density_values <- dnorm(z, mean = 0, sd = 1)
+
+# Define the specific Z-score for the boundary
+boundary_z <- 1.25
+
+# Plot the standard normal curve
+plot(z, density_values, type = "l",
+     main = expression(bold(paste("Standard Normal Distribution: P(Z > 1.25)"))),
+     xlab = "Z-score",
+     ylab = "Probability Density",
+     col = "steelblue",
+     lwd = 2,
+     ylim = c(0, max(density_values) * 1.1), # Extend y-axis slightly for labels
+     axes = FALSE) # Suppress default axes to draw custom ones
+
+# Add custom x-axis
+axis(side = 1, at = c(-3, -2, -1, 0, 1, boundary_z, 2, 3),
+     labels = c("-3", "-2", "-1", "0", "1", expression(bold("1.25")), "2", "3"))
+# Add custom y-axis (optional, often hidden for density plots)
+# axis(side = 2)
+
+# Shade the area to the right of boundary_z
+# Find the indices corresponding to z >= boundary_z
+idx <- which(z >= boundary_z)
+# Create polygon coordinates: start at boundary_z (z[idx[1]]), go along curve (z[idx], density_values[idx]), then down to 0 at the last point
+polygon(x = c(z[idx[1]], z[idx], tail(z, 1)),
+        y = c(0, density_values[idx], 0),
+        col = "lightcoral",
+        border = NA) # No border for the shaded area
+
+# Add vertical lines at 0 and boundary_z
+abline(v = 0, lty = 2, col = "gray50") # Mean (0)
+abline(v = boundary_z, lty = 1, col = "red", lwd = 1.5) # Z = 1.25
+
+# Add text labels for 0 and boundary_z
+text(x = 0, y = -0.02, labels = "0", col = "black", pos = 1, cex = 1.2)
+# The label for boundary_z is already included in the axis labels for bolding
+
+# Indicate +infinity conceptually with an arrow and text
+arrows(x0 = 3.2, y0 = dnorm(3.2), x1 = 3.8, y1 = dnorm(3.8), length = 0.1, col = "darkgreen", lwd = 1)
+text(x = 3.8, y = dnorm(3.8) + 0.02, labels = expression(+infinity), pos = 2, col = "darkgreen", cex = 1)
+```
+
+</div>
+</div>
+
+## Exam Score
+
+Scores on the GMAT are roughly normally distributed with a mean of 527 and a standard deviation of 112. What is the probability of an individual scoring above 500 on the GMAT?[[source](https://www.stat.colostate.edu/inmem/gumina/st201/recitation8/downloads/Normal%20Probabilites%20Practice.pdf?ref=docs.statmania.info)]
+
+> - $\mu = 527, \sigma = 112$ 
+> - $P(X > 500)$
+
+## Gestation
+
+<div style="font-size:30px;">
+The length of human pregnancies from conception to birth approximates a normal distribution with a mean of 266 days and a standard deviation of 16 days. 
+
+> - What proportion of all pregnancies will last between 240 and 270 days (roughly between 8 and 9 months)?
+> - What length of time marks the shortest 70% of all pregnancies? 
+</div>
+
+## Forest burn
+
+<div style="font-size:30px;">
+
+The average number of acres burned by forest and range fires in a large New Mexico county is 4,300 acres per year, with a standard deviation of 750 acres. The distribution of the number of acres burned is normal. 
+
+> - What is the probability that between 2,500 and 4,200 acres will be burned in any given year?
+
+</div>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Additon - Subtraction Game</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/main.js" defer></script>
+</head>
+<body>
+    <header></header>
+     <div class="main-content">
+
+  <h1>Math Quiz Game</h1>
+  <button id="startButton">Start Game</button>
+
+  <div id="game">
+    <p id="question"></p>
+    <p id="serial"></p>
+    <p id="timer">Time left: <span id="timeLeft">10</span> seconds</p>
+    <input type="number" id="answerInput" placeholder="Your answer">
+    <br><br>
+    <button id="submitAnswer">Submit Answer</button>
+    <p id="result"></p>
+  </div>
+
+  <div id="summary" style="display: none;">
+    <h2>Game Summary</h2>
+    <ul id="summaryList"></ul>
+    <p id="finalScore"></p>
+    <button id="playAgainButton">Play Again</button>
+  </div>
+
+  <script>
+    let questions = [];
+    let userAnswers = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    let timeLeft = 10;
+
+    // Function to generate a random addition or subtraction question
+    function generateQuestion() {
+      const num1 = Math.floor(Math.random() * 90) + 10;  // Random 2-digit number (10 to 99)
+      const num2 = Math.floor(Math.random() * 90) + 10;  // Random 2-digit number (10 to 99)
+      const operation = Math.random() > 0.5 ? '+' : '-';   // Randomly choose + or -
+      const question = `${num1} ${operation} ${num2}`;
+      const answer = eval(question);  // Calculate the correct answer using eval (for simplicity)
+      return { question, answer };
+    }
+
+    // Function to start the timer
+    function startTimer() {
+      timeLeft = 10;  // Set timer to 10 seconds
+      document.getElementById("timeLeft").textContent = timeLeft;
+      timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timeLeft").textContent = timeLeft;
+        if (timeLeft === 0) {
+          clearInterval(timer);
+          document.getElementById("submitAnswer").disabled = true;
+          document.getElementById("result").textContent = "Time's up!";
+          moveToNextOrEnd();
+        }
+      }, 1000);
+    }
+
+    // Function to start the game
+    function startGame() {
+      questions = [];
+      userAnswers = [];
+      score = 0;
+      currentQuestionIndex = 0;
+      for (let i = 0; i < 5; i++) {
+        questions.push(generateQuestion());
+      }
+      document.getElementById("startButton").style.display = "none";
+      document.getElementById("game").style.display = "block";
+      document.getElementById("summary").style.display = "none";
+      showQuestion();
+    }
+
+    // Function to show the current question
+    function showQuestion() {
+      document.getElementById("answerInput").value = '';
+      document.getElementById("submitAnswer").disabled = false;
+      document.getElementById("result").textContent = '';
+      document.getElementById("question").textContent = `Q${currentQuestionIndex + 1}: ${questions[currentQuestionIndex].question}`;
+      document.getElementById("serial").textContent = `${currentQuestionIndex + 1} of ${questions.length}`;  // Show "1 of 5" format
+      startTimer();
+    }
+
+    // Event listener for submitting the answer
+    document.getElementById("submitAnswer").addEventListener("click", function() {
+      clearInterval(timer);
+      let userAnswer = document.getElementById("answerInput").value;
+
+      // If no answer is provided, save "Not answered"
+      if (userAnswer === '') {
+        userAnswer = 'Not answered';
+      } else {
+        userAnswer = Number(userAnswer);
+      }
+
+      userAnswers.push(userAnswer);  // Save the user answer (or "Not answered")
+      document.getElementById("submitAnswer").disabled = true;
+      moveToNextOrEnd();
+    });
+
+    // Function to move to the next question or end the game
+    function moveToNextOrEnd() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questions.length) {
+        showQuestion();
+      } else {
+        endGame();
+      }
+    }
+
+    // Function to end the game and show the summary
+    function endGame() {
+      document.getElementById("game").style.display = "none";
+      document.getElementById("summary").style.display = "block";
+      const summaryList = document.getElementById("summaryList");
+      summaryList.innerHTML = '';  // Clear previous results
+
+      // Generate the summary for each question
+      questions.forEach((question, index) => {
+        const li = document.createElement("li");
+        const userAnswer = userAnswers[index];
+        const correctAnswer = question.answer;
+        let resultText = `Q${index + 1}: ${question.question}, Your Answer: ${userAnswer}, Correct Answer: ${correctAnswer}`;
+
+        // Check if the user answer is correct, except for "Not answered"
+        if (userAnswer === correctAnswer) {
+          resultText += " (Correct)";
+          score++;
+        } else if (userAnswer === "Not answered") {
+          resultText += " (Not answered)";
+        } else {
+          resultText += " (Wrong)";
+        }
+        li.textContent = resultText;
+        summaryList.appendChild(li);
+      });
+
+      // Display the final score
+      document.getElementById("finalScore").textContent = `Your final score is: ${score}/5`;
+    }
+
+    // Event listener for the "Play Again" button
+    document.getElementById("playAgainButton").addEventListener("click", function() {
+      startGame();
+    });
+
+    // Start game when the start button is clicked
+    document.getElementById("startButton").addEventListener("click", startGame);
+  </script>
+
+  </div>
+    <footer></footer>
+</body>
+</html>

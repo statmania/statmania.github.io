@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Highlighter</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Apply the Inter font and basic body styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4ff; /* Light blue background */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to the top */
+            min-height: 100vh;
+            padding: 1rem; /* Padding for mobile view */
+        }
+        /* Ensure the main container grows as needed */
+        .main-container {
+            width: 100%;
+            max-width: 900px; /* Max width for desktop */
+        }
+        /* Custom styling for the range input (slider) thumb */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #2563eb; /* Blue color */
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 2px rgba(0,0,0,0.3);
+            margin-top: -6px; /* Adjust to center vertically */
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #2563eb; /* Blue color */
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 2px rgba(0,0,0,0.3);
+        }
+        /* Cursor style when highlighter mode is active */
+        .highlight-cursor-active {
+            cursor: crosshair !important; /* Force crosshair cursor */
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+    <div class="main-container bg-white p-6 sm:p-8 rounded-xl shadow-lg flex flex-col items-center">
+
+        <!-- Highlighter Mode Toggle Button -->
+        <button id="highlighterModeToggleBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 mb-4 flex items-center justify-center">
+            <i class="fas fa-highlighter mr-2"></i>
+        </button>
+
+        <!-- Highlight Controls Container (initially hidden) -->
+        <div id="highlightControls" class="hidden flex flex-col sm:flex-row items-center justify-center gap-4 mb-6 transition-all duration-300 ease-in-out">
+            <!-- Color picker with icon -->
+            <div class="flex items-center gap-2 p-2 rounded-md bg-gray-100 border border-gray-200">
+                <i class="fas fa-palette text-gray-700 text-xl"></i>
+                <input type="color" id="colorPicker" value="#ffeb3b" class="p-1 rounded-md border border-gray-300 cursor-pointer w-16 h-10">
+            </div>
+            <!-- Font size slider with icon -->
+            <div class="flex items-center gap-2 p-2 rounded-md bg-gray-100 border border-gray-200">
+                <i class="fas fa-text-height text-gray-700 text-xl"></i>
+                <input type="range" id="fontSizeSlider" value="16" min="10" max="48" class="w-32 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                <span id="fontSizeValue" class="text-gray-700 font-medium w-10 text-center">16px</span>
+            </div>
+            <!-- Reset button with icon -->
+            <button id="resetBtn" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center">
+                <i class="fas fa-undo mr-2"></i>
+            </button>
+        </div>
+
+        <!-- Editable text area -->
+        <div id="editableText" contenteditable="true" class="bg-gray-50 p-6 rounded-lg border border-gray-200 min-h-[250px] w-full text-lg leading-relaxed focus:outline-none focus:ring-2 focus:ring-blue-500 overflow-auto">
+            <p>Welcome to your interactive text highlighter! 🎉</p>
+            <p class="mt-4">
+                Click the "Activate Highlighter" button above. Once activated, your cursor will change to a crosshair.
+                Now, simply **click and drag your mouse** over any text you wish to highlight. It's that easy!
+            </p>
+            <p class="mt-4">
+                You can adjust the highlight <span style="background-color:#ffeb3b; padding:0 0.2rem; border-radius:0.25rem;">color</span> and
+                <span style="font-size:18px; padding:0 0.2rem; border-radius:0.25rem;">font size</span> using the icon controls.
+                Feel free to **edit this example text**, delete it, or paste your own content into this box.
+            </p>
+            <p class="mt-4">
+                To remove all highlights and start fresh, simply click the "Reset" button.
+                We hope this makes highlighting much more intuitive for you! Happy highlighting! 🎨
+            </p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const editableText = document.getElementById('editableText');
+            const colorPicker = document.getElementById('colorPicker');
+            const fontSizeSlider = document.getElementById('fontSizeSlider');
+            const fontSizeValue = document.getElementById('fontSizeValue');
+            const resetBtn = document.getElementById('resetBtn');
+            const highlighterModeToggleBtn = document.getElementById('highlighterModeToggleBtn');
+            const highlightControls = document.getElementById('highlightControls');
+
+            let isHighlightModeActive = false; // New state variable for highlighter mode
+
+            // Store the initial HTML content to allow for a full reset
+            const initialTextContent = editableText.innerHTML;
+
+            /**
+             * Displays a custom message box instead of using alert().
+             * @param {string} message - The message to display.
+             */
+            function showMessageBox(message) {
+                // Check if a message box already exists to avoid duplicates
+                if (document.getElementById('customMessageBox')) {
+                    return;
+                }
+
+                const messageBox = document.createElement('div');
+                messageBox.id = 'customMessageBox'; // Assign an ID for easy lookup
+                messageBox.className = 'fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 transition-opacity duration-300 opacity-0';
+                messageBox.innerHTML = `
+                    <div class="bg-white p-6 rounded-lg shadow-xl text-center max-w-sm w-full transform scale-95 transition-transform duration-300">
+                        <p class="text-lg font-semibold mb-4 text-gray-800">${message}</p>
+                        <button id="closeMessageBox" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-sm transition duration-200">OK</button>
+                    </div>
+                `;
+                document.body.appendChild(messageBox);
+
+                // Animate fade-in and scale-in
+                setTimeout(() => {
+                    messageBox.style.opacity = '1';
+                    messageBox.querySelector('.transform').style.transform = 'scale(1)';
+                }, 10); // Small delay to allow CSS to apply
+
+                // Add event listener to close button
+                document.getElementById('closeMessageBox').addEventListener('click', () => {
+                    // Animate fade-out and scale-out
+                    messageBox.style.opacity = '0';
+                    messageBox.querySelector('.transform').style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        document.body.removeChild(messageBox);
+                    }, 300); // Wait for transition to complete before removing
+                });
+            }
+
+            // Update font size display dynamically as slider moves
+            fontSizeSlider.addEventListener('input', () => {
+                fontSizeValue.textContent = `${fontSizeSlider.value}px`;
+            });
+
+            // Toggle Highlighter Mode and Controls visibility
+            highlighterModeToggleBtn.addEventListener('click', () => {
+                isHighlightModeActive = !isHighlightModeActive; // Toggle the mode
+                highlightControls.classList.toggle('hidden'); // Show/hide controls panel
+
+                // Update button text and style
+                if (isHighlightModeActive) {
+                    highlighterModeToggleBtn.innerHTML = '<i class="fas fa-pencil-ruler mr-2"></i>';
+                    highlighterModeToggleBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                    highlighterModeToggleBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+                    editableText.classList.add('highlight-cursor-active'); // Add cursor style
+                } else {
+                    highlighterModeToggleBtn.innerHTML = '<i class="fas fa-highlighter mr-2"></i>';
+                    highlighterModeToggleBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                    highlighterModeToggleBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+                    editableText.classList.remove('highlight-cursor-active'); // Remove cursor style
+                }
+            });
+
+            // Event listener for mouseup on the editable text area
+            editableText.addEventListener('mouseup', () => {
+                // Only highlight if highlighter mode is active
+                if (!isHighlightModeActive) {
+                    return;
+                }
+
+                const selection = window.getSelection();
+                // If no text is selected or the selection is just a cursor
+                if (!selection.rangeCount || selection.isCollapsed) {
+                    // No message needed here, as user might just click without dragging
+                    return;
+                }
+
+                const range = selection.getRangeAt(0);
+
+                // Ensure the selected text is within our editable area
+                // Check if the common ancestor is within editableText to prevent external highlighting
+                if (!editableText.contains(range.commonAncestorContainer)) {
+                    // If selection spans outside, clear it and return
+                    selection.removeAllRanges();
+                    showMessageBox("Please select text within the designated editable area.");
+                    return;
+                }
+
+                // Get current highlight settings
+                const highlightColor = colorPicker.value;
+                const highlightFontSize = fontSizeSlider.value + 'px';
+
+                // Create a new span element to wrap the selected text
+                const span = document.createElement('span');
+                span.style.backgroundColor = highlightColor;
+                span.style.fontSize = highlightFontSize;
+                span.style.borderRadius = '0.25rem'; /* Small rounded corners for the highlight effect */
+                span.style.padding = '0 0.2rem';     /* Little padding for better visual separation */
+                span.style.lineHeight = 'inherit';   /* Ensure line height doesn't break */
+
+                try {
+                    // surroundContents wraps the entire content of the range with the span.
+                    // This method might fail if the selection is complex (e.g., spans across different parent elements)
+                    range.surroundContents(span);
+                } catch (e) {
+                    console.warn("Could not surround contents directly for selection:", e);
+                    // Provide a more user-friendly message for complex selections
+                    showMessageBox("Highlighting complex selections (e.g., spanning multiple paragraphs or mixed content) may not work perfectly. Please try selecting text within a single continuous block.");
+                }
+
+                // Clear the selection after applying the highlight
+                selection.removeAllRanges();
+            });
+
+            // Event listener for the Reset button
+            resetBtn.addEventListener('click', () => {
+                // Restoring the initial innerHTML effectively removes all dynamically added spans
+                editableText.innerHTML = initialTextContent;
+                // Deactivate highlight mode if active and hide controls
+                if (isHighlightModeActive) {
+                    highlighterModeToggleBtn.click(); // Simulate click to deactivate
+                }
+            });
+        });
+    </script>
+</body>
+</html>

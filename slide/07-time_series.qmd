@@ -1,0 +1,148 @@
+---
+title: "Time Series"
+author: Abdullah Al Mahmud
+date: \today
+output: 
+  revealjs::revealjs_presentation:
+    theme: sky
+    reveal_plugins: ["chalkboard", "zoom", "menu"]
+    self_contained: false
+    lib_dir: libs
+    css: css/styles.css
+    includes:
+      in_header: css/header.html
+---
+
+# Time Series
+
+## What is Time Series Data?
+
+<div class="container">
+<div class="col">
+Data arranged chronologically
+
+$Y_t = f(t); t = t_1, t_2, t_3, \cdots, t_n$
+</div>
+<div class="col">
+Example
+
+```{r, echo=FALSE}
+set.seed(10)
+ts <- data.frame(Year = 2001:2005,
+                 Production = sample(20,10))
+knitr::kable(head(ts, 5, booktabs = TRUE)
+             )
+``` 
+</div>
+</div>
+
+## Components of Time Series
+
+Four Components
+
+> -  Trend (increase/decrease)
+> - Seasonal variation
+> - Cyclic variation
+> - Irregular/Random variation
+
+## Uses
+
+> - Analyze past behavior
+> - Forecasting
+> - Comparison by time/place
+> - Segregation of components
+> - Performance measure
+
+## Symbols
+
+$Y_t =$ Values of series at time t
+
+$T_t =$ Trend
+
+$S_t =$ Seasonal 
+
+$C_t =$ Cyclic
+
+$R_t =$ Random/irregular
+
+## Models
+
+<div class="container">
+<div class="col">
+**Additive Model**
+
+$Y_t = T_t + S_t + C_t + R_t$
+
+- $C_t$ and $S_t$ can be $\pm$ve
+- $R_t$ can also be $\pm$ve, but in the long run, $\sum R_t = 0$
+</div>
+<div class="col">
+**Multiplicative Model**
+
+> - $Y_t = T_t \times S_t \times C_t \times R_t$
+> - $S_t, C_t, R_t$ refer to deviation from unit
+> - $S_t$ equals unity in 1 year, $C_t$ in a cycle, and GM of $R_t$ is unity (1). 
+</div>
+</div>
+
+## Comparison of Models
+
+- Components in additive models are independent. 
+- In multiplicative models, components are interwined.
+
+# Measuring Trend
+
+## Graphical/Free-hand Method
+
+<div class="container">
+<div class="col">
+
+```{r, echo=FALSE}
+knitr::kable(ts)
+```
+
+</div>
+<div class="col">
+```{r, echo=FALSE}
+plot(ts, pch=19)
+```
+</div>
+</div>
+
+## Sem-average
+
+<div class="container">
+<div class="col">
+```{r, echo=FALSE}
+knitr::kable(ts)
+```
+</div>
+<div class="col">
+**Steps**
+
+1. Separate the data into two equal parts (if odd-numbered, omit middle-most)
+2. Estimate averages of each group
+3. Put these two values on the scatter plot and extend
+</div>
+</div>
+
+## Moving Average
+
+| Year | Production |   3-Yearly Moving  Average  |
+|:----:|:----------:|:---------------------------:|
+| 2001 |     412    |              NA             |
+| 2002 |     438    | ${412+438+446}\over{3}=432$ |
+| 2003 |     446    |  $\frac{438+446+454}3=446$  |
+| 2004 |     454    |             457             |
+| 2005 |     470    |             469             |
+| 2006 |     483    |  $\frac{470+483+490}3=481$  |
+| 2007 |     490    |              NA             |
+
+<div class="container">
+<div class="col">
+
+</div>
+<div class="col">
+
+</div>
+</div>

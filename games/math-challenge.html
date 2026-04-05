@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+
+        .score-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .problem {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .input-container {
+            margin-bottom: 30px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.5rem;
+            text-align: center;
+            border: 3px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: #667eea;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+            color: white;
+        }
+
+        .skip-btn {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: white;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        .result {
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .correct {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .timer-container {
+            margin-top: 20px;
+        }
+
+        .timer {
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .timer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00b09b 0%, #96c93d 100%);
+            width: 100%;
+            transition: width 1s linear;
+        }
+
+        .time-left {
+            margin-top: 5px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .game-over {
+            display: none;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .game-over h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .problem {
+                font-size: 2rem;
+                padding: 20px;
+            }
+
+            .button-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Math Challenge</h1>
+        <p class="subtitle">Solve as many problems as you can in 60 seconds!</p>
+
+        <div class="score-board">
+            <div class="score-item">
+                <div class="score-label">SCORE</div>
+                <div class="score-value" id="score">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">TIME</div>
+                <div class="score-value" id="time">60</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">LEVEL</div>
+                <div class="score-value" id="level">1</div>
+            </div>
+        </div>
+
+        <div id="game-area">
+            <div class="problem" id="problem">5 + 3 = ?</div>
+
+            <div class="input-container">
+                <input type="number" id="answer-input" placeholder="Enter your answer" autofocus>
+            </div>
+
+            <div class="button-container">
+                <button class="submit-btn" id="submit-btn">Submit ✓</button>
+                <button class="skip-btn" id="skip-btn">Skip →</button>
+            </div>
+
+            <div class="result" id="result"></div>
+
+            <div class="timer-container">
+                <div class="timer">
+                    <div class="timer-fill" id="timer-fill"></div>
+                </div>
+                <div class="time-left" id="time-left">Time left: 60s</div>
+            </div>
+        </div>
+
+        <div class="game-over" id="game-over">
+            <h2>Game Over!</h2>
+            <div class="score-item">
+                <div class="score-label">FINAL SCORE</div>
+                <div class="score-value" id="final-score">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">CORRECT ANSWERS</div>
+                <div class="score-value" id="correct-answers">0</div>
+            </div>
+            <button class="restart-btn" id="restart-btn">Play Again ↻</button>
+        </div>
+    </div>
+
+    <script>
+        class MathGame {
+            constructor() {
+                this.score = 0;
+                this.timeLeft = 60;
+                this.level = 1;
+                this.correctAnswers = 0;
+                this.totalProblems = 0;
+                this.currentProblem = null;
+                this.timer = null;
+                this.isGameActive = true;
+
+                // DOM Elements
+                this.scoreEl = document.getElementById('score');
+                this.timeEl = document.getElementById('time');
+                this.levelEl = document.getElementById('level');
+                this.problemEl = document.getElementById('problem');
+                this.inputEl = document.getElementById('answer-input');
+                this.submitBtn = document.getElementById('submit-btn');
+                this.skipBtn = document.getElementById('skip-btn');
+                this.resultEl = document.getElementById('result');
+                this.timerFill = document.getElementById('timer-fill');
+                this.timeLeftEl = document.getElementById('time-left');
+                this.gameArea = document.getElementById('game-area');
+                this.gameOverEl = document.getElementById('game-over');
+                this.finalScoreEl = document.getElementById('final-score');
+                this.correctAnswersEl = document.getElementById('correct-answers');
+                this.restartBtn = document.getElementById('restart-btn');
+
+                this.init();
+            }
+
+            init() {
+                this.generateProblem();
+                this.startTimer();
+                this.setupEventListeners();
+                this.updateDisplay();
+            }
+
+            generateProblem() {
+                let num1, num2, operator, answer;
+
+                // Adjust difficulty based on level
+                const maxNumber = 10 + (this.level * 5);
+
+                // Randomly choose operation type
+                const operation = Math.floor(Math.random() * 4); // 0-3
+
+                switch(operation) {
+                    case 0: // Addition
+                        num1 = Math.floor(Math.random() * maxNumber) + 1;
+                        num2 = Math.floor(Math.random() * maxNumber) + 1;
+                        answer = num1 + num2;
+                        operator = '+';
+                        break;
+                    case 1: // Subtraction
+                        num1 = Math.floor(Math.random() * maxNumber) + 1;
+                        num2 = Math.floor(Math.random() * num1) + 1;
+                        answer = num1 - num2;
+                        operator = '-';
+                        break;
+                    case 2: // Multiplication
+                        num1 = Math.floor(Math.random() * Math.min(maxNumber, 12)) + 1;
+                        num2 = Math.floor(Math.random() * Math.min(maxNumber, 12)) + 1;
+                        answer = num1 * num2;
+                        operator = '×';
+                        break;
+                    case 3: // Division
+                        num2 = Math.floor(Math.random() * 10) + 1;
+                        answer = Math.floor(Math.random() * 10) + 1;
+                        num1 = num2 * answer;
+                        operator = '÷';
+                        break;
+                }
+
+                this.currentProblem = {
+                    num1,
+                    num2,
+                    operator,
+                    answer,
+                    text: `${num1} ${operator} ${num2} = ?`
+                };
+
+                this.problemEl.textContent = this.currentProblem.text;
+                this.inputEl.value = '';
+                this.inputEl.focus();
+                this.hideResult();
+            }
+
+            checkAnswer() {
+                if (!this.isGameActive) return;
+
+                const userAnswer = parseInt(this.inputEl.value);
+                if (isNaN(userAnswer)) {
+                    this.showResult("Please enter a number!", false);
+                    return;
+                }
+
+                const isCorrect = userAnswer === this.currentProblem.answer;
+
+                if (isCorrect) {
+                    this.score += 10 * this.level;
+                    this.correctAnswers++;
+                    this.showResult("Correct! +" + (10 * this.level) + " points", true);
+
+                    // Level up every 5 correct answers
+                    if (this.correctAnswers % 5 === 0) {
+                        this.level++;
+                    }
+                } else {
+                    this.showResult(`Wrong! The answer was ${this.currentProblem.answer}`, false);
+                }
+
+                this.totalProblems++;
+                this.updateDisplay();
+                this.generateProblem();
+            }
+
+            skipProblem() {
+                if (!this.isGameActive) return;
+
+                this.showResult(`Skipped! Answer was ${this.currentProblem.answer}`, false);
+                this.totalProblems++;
+                this.generateProblem();
+            }
+
+            showResult(message, isCorrect) {
+                this.resultEl.textContent = message;
+                this.resultEl.className = `result ${isCorrect ? 'correct' : 'incorrect'}`;
+                this.resultEl.style.display = 'block';
+            }
+
+            hideResult() {
+                this.resultEl.style.display = 'none';
+            }
+
+            startTimer() {
+                this.timer = setInterval(() => {
+                    this.timeLeft--;
+                    this.updateTimer();
+
+                    if (this.timeLeft <= 0) {
+                        this.endGame();
+                    }
+                }, 1000);
+            }
+
+            updateTimer() {
+                this.timeEl.textContent = this.timeLeft;
+                this.timeLeftEl.textContent = `Time left: ${this.timeLeft}s`;
+                const percentage = (this.timeLeft / 60) * 100;
+                this.timerFill.style.width = `${percentage}%`;
+
+                // Change color when time is running low
+                if (this.timeLeft <= 10) {
+                    this.timerFill.style.background = 'linear-gradient(90deg, #ff416c 0%, #ff4b2b 100%)';
+                }
+            }
+
+            updateDisplay() {
+                this.scoreEl.textContent = this.score;
+                this.levelEl.textContent = this.level;
+            }
+
+            endGame() {
+                this.isGameActive = false;
+                clearInterval(this.timer);
+
+                this.finalScoreEl.textContent = this.score;
+                this.correctAnswersEl.textContent = `${this.correctAnswers}/${this.totalProblems}`;
+
+                this.gameArea.style.display = 'none';
+                this.gameOverEl.style.display = 'block';
+            }
+
+            restartGame() {
+                this.score = 0;
+                this.timeLeft = 60;
+                this.level = 1;
+                this.correctAnswers = 0;
+                this.totalProblems = 0;
+                this.isGameActive = true;
+
+                this.gameArea.style.display = 'block';
+                this.gameOverEl.style.display = 'none';
+                this.timerFill.style.background = 'linear-gradient(90deg, #00b09b 0%, #96c93d 100%)';
+
+                this.generateProblem();
+                this.startTimer();
+                this.updateDisplay();
+                this.hideResult();
+            }
+
+            setupEventListeners() {
+                this.submitBtn.addEventListener('click', () => this.checkAnswer());
+                this.skipBtn.addEventListener('click', () => this.skipProblem());
+                this.restartBtn.addEventListener('click', () => this.restartGame());
+
+                this.inputEl.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.checkAnswer();
+                    }
+                });
+            }
+        }
+
+        // Start the game when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            new MathGame();
+        });
+    </script>
+</body>
+</html>
