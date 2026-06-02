@@ -224,7 +224,288 @@ font-style: inherit;">"Probability"</span>)</span></code></pre></div></div>
   <category>geometric distribution</category>
   <guid>https://portal.statmania.info/posts/geometric-distribution.html</guid>
   <pubDate>Tue, 02 Jun 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://portal.statmania.info/posts/geometric-distribution_files/figure-html/unnamed-chunk-1-1.png" medium="image" type="image/png" height="103" width="144"/>
+  <media:content url="https://portal.statmania.info/posts/geometric-distribution_files/figure-html/unnamed-chunk-1-1.png" medium="image" type="image/png"/>
+</item>
+<item>
+  <title>Understanding the Negative Binomial Distribution</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://portal.statmania.info/posts/negative-binomial.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="description" class="level2">
+<h2 class="anchored" data-anchor-id="description">Description</h2>
+<p>The <strong>negative binomial distribution</strong> is a discrete probability distribution that models the number of trials required to obtain a <strong>fixed number of successes</strong> (<img src="https://latex.codecogs.com/png.latex?r">) in a sequence of independent Bernoulli trials, each with success probability <img src="https://latex.codecogs.com/png.latex?p">.</p>
+<p>It generalizes the geometric distribution (which is the special case where <img src="https://latex.codecogs.com/png.latex?r%20=%201">, i.e., waiting for the first success).</p>
+<hr>
+</section>
+<section id="probability-mass-function-pmf" class="level2">
+<h2 class="anchored" data-anchor-id="probability-mass-function-pmf">Probability Mass Function (PMF)</h2>
+<p>Two common formulations:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 44%">
+<col style="width: 13%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>What it models</th>
+<th>PMF</th>
+<th>Support</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Trials until <img src="https://latex.codecogs.com/png.latex?r">-th success</strong></td>
+<td>Number of trials needed to get <img src="https://latex.codecogs.com/png.latex?r"> successes</td>
+<td><img src="https://latex.codecogs.com/png.latex?P(X%20=%20k)%20=%20%5Cbinom%7Bk-1%7D%7Br-1%7D%20p%5Er%20(1-p)%5E%7Bk-r%7D"></td>
+<td><img src="https://latex.codecogs.com/png.latex?k%20=%20r,%20r+1,%20r+2,%20%5Cdots"></td>
+</tr>
+<tr class="even">
+<td><strong>Number of failures before <img src="https://latex.codecogs.com/png.latex?r">-th success</strong></td>
+<td>Number of failures before the <img src="https://latex.codecogs.com/png.latex?r">-th success</td>
+<td><img src="https://latex.codecogs.com/png.latex?P(Y%20=%20y)%20=%20%5Cbinom%7By+r-1%7D%7Br-1%7D%20p%5Er%20(1-p)%5Ey"></td>
+<td><img src="https://latex.codecogs.com/png.latex?y%20=%200,%201,%202,%20%5Cdots"></td>
+</tr>
+</tbody>
+</table>
+<p>Here, the negative binomial can be seen as a <strong>sum of <img src="https://latex.codecogs.com/png.latex?r"> independent geometric random variables</strong>.</p>
+<hr>
+</section>
+<section id="key-properties" class="level2">
+<h2 class="anchored" data-anchor-id="key-properties">Key Properties</h2>
+<ul>
+<li><strong>Mean</strong> (trials formulation): <img src="https://latex.codecogs.com/png.latex?E%5BX%5D%20=%20%5Cfrac%7Br%7D%7Bp%7D"></li>
+<li><strong>Variance</strong> (trials formulation): <img src="https://latex.codecogs.com/png.latex?Var(X)%20=%20%5Cfrac%7Br(1-p)%7D%7Bp%5E2%7D"></li>
+<li><strong>Overdispersion</strong>: The variance is greater than the mean, making it suitable for count data with extra variability (unlike the Poisson distribution).</li>
+</ul>
+<hr>
+</section>
+<section id="categories-of-use-cases" class="level2">
+<h2 class="anchored" data-anchor-id="categories-of-use-cases">Categories of Use Cases</h2>
+<p>The negative binomial distribution is widely used in:</p>
+<ol type="1">
+<li><strong>Epidemiology</strong> – number of contacts until a certain number of disease transmissions occur</li>
+<li><strong>Insurance / Actuarial Science</strong> – number of claims until a fixed number of payouts</li>
+<li><strong>Sports Analytics</strong> – number of at‑bats until a player gets a certain number of hits</li>
+<li><strong>Manufacturing</strong> – number of items produced until a fixed number of defects are found</li>
+<li><strong>Machine Learning</strong> – modeling overdispersed count data (e.g., number of website visits per user)</li>
+</ol>
+<hr>
+</section>
+<section id="real-world-example" class="level2">
+<h2 class="anchored" data-anchor-id="real-world-example">Real-World Example</h2>
+<blockquote class="blockquote">
+<p>A basketball player has a free‑throw success probability of <img src="https://latex.codecogs.com/png.latex?p%20=%200.70">. What is the probability that she makes her <strong>3rd successful free throw</strong> on her <strong>6th attempt</strong>?</p>
+</blockquote>
+<p>Here: - <img src="https://latex.codecogs.com/png.latex?r%20=%203"> successes - <img src="https://latex.codecogs.com/png.latex?k%20=%206"> trials (includes the 3 successes) - <img src="https://latex.codecogs.com/png.latex?p%20=%200.70"></p>
+<p><img src="https://latex.codecogs.com/png.latex?P(X%20=%206)%20=%20%5Cbinom%7B6-1%7D%7B3-1%7D%20(0.70)%5E3%20(0.30)%5E%7B6-3%7D"></p>
+<p><img src="https://latex.codecogs.com/png.latex?=%20%5Cbinom%7B5%7D%7B2%7D%20(0.343)%20(0.027)"></p>
+<p><img src="https://latex.codecogs.com/png.latex?=%2010%20%5Ctimes%200.343%20%5Ctimes%200.027%20=%2010%20%5Ctimes%200.009261%20=%200.09261"></p>
+<p>So about <strong>9.26%</strong>.</p>
+<hr>
+</section>
+<section id="density-curve-pmf-visualization-with-r" class="level2">
+<h2 class="anchored" data-anchor-id="density-curve-pmf-visualization-with-r">Density Curve (PMF) Visualization with R</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(ggplot2)</span>
+<span id="cb1-2"></span>
+<span id="cb1-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Parameters</span></span>
+<span id="cb1-4">r <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># number of successes</span></span>
+<span id="cb1-5">p <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.7</span>    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># success probability</span></span>
+<span id="cb1-6">k <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># possible number of trials</span></span>
+<span id="cb1-7"></span>
+<span id="cb1-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Probability mass function using dnbinom (failures formulation)</span></span>
+<span id="cb1-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Convert to trials: number of failures = k - r</span></span>
+<span id="cb1-10">prob <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dnbinom</span>(k <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> r, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> r, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">prob =</span> p)</span>
+<span id="cb1-11"></span>
+<span id="cb1-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create data frame</span></span>
+<span id="cb1-13">df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Trials =</span> k, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Probability =</span> prob)</span>
+<span id="cb1-14"></span>
+<span id="cb1-15"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Plot</span></span>
+<span id="cb1-16"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(df, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> Trials, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> Probability)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-17">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_col</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"darkgreen"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alpha =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.7</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-18">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Negative Binomial Distribution (r ="</span>, r, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">", p ="</span>, p, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">")"</span>),</span>
+<span id="cb1-19">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">subtitle =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Number of trials to achieve 3 successes"</span>,</span>
+<span id="cb1-20">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Number of trials"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Probability"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-21">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_minimal</span>()</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://portal.statmania.info/posts/negative-binomial_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="comparison-with-poisson-distribution" class="level2">
+<h2 class="anchored" data-anchor-id="comparison-with-poisson-distribution">Comparison with Poisson Distribution</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Negative Binomial</th>
+<th>Poisson</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Mean</td>
+<td><img src="https://latex.codecogs.com/png.latex?%5Cfrac%7Br(1-p)%7D%7Bp%7D"> (failures form)</td>
+<td><img src="https://latex.codecogs.com/png.latex?%5Clambda"></td>
+</tr>
+<tr class="even">
+<td>Variance</td>
+<td><img src="https://latex.codecogs.com/png.latex?%5Cfrac%7Br(1-p)%7D%7Bp%5E2%7D"></td>
+<td><img src="https://latex.codecogs.com/png.latex?%5Clambda"></td>
+</tr>
+<tr class="odd">
+<td>Variance / Mean</td>
+<td><img src="https://latex.codecogs.com/png.latex?%5Cfrac%7B1%7D%7Bp%7D%20%3E%201"></td>
+<td><img src="https://latex.codecogs.com/png.latex?1"></td>
+</tr>
+<tr class="even">
+<td>Overdispersion</td>
+<td>✅ Handles</td>
+<td>❌ Assumes variance = mean</td>
+</tr>
+</tbody>
+</table>
+<p>Thus, the negative binomial is often used as a <strong>robust alternative to the Poisson</strong> when count data exhibit <strong>overdispersion</strong>.</p>
+<hr>
+</section>
+<section id="key-takeaway" class="level2">
+<h2 class="anchored" data-anchor-id="key-takeaway">Key Takeaway</h2>
+<blockquote class="blockquote">
+<p><strong>Use the negative binomial distribution when you want to model the number of trials needed to achieve a fixed number of successes, or when count data show more variability than a Poisson would allow.</strong> It is a flexible tool for overdispersed counts in real-world applications.</p>
+</blockquote>
+<hr>
+</section>
+<section id="further-reading" class="level2">
+<h2 class="anchored" data-anchor-id="further-reading">Further Reading</h2>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Negative_binomial_distribution">Negative binomial distribution on Wikipedia</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Overdispersion">Overdispersion in count data</a></li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>probability</category>
+  <category>discrete distributions</category>
+  <category>negative binomial</category>
+  <guid>https://portal.statmania.info/posts/negative-binomial.html</guid>
+  <pubDate>Tue, 02 Jun 2026 18:00:00 GMT</pubDate>
 </item>
 <item>
   <title>How to Reset a Bootable USB Drive Using the Linux Command Line</title>
