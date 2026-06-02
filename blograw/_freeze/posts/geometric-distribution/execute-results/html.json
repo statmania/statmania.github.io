@@ -1,0 +1,17 @@
+{
+  "hash": "3d09794d9eccf6567ace3374061873f0",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Why Use the Geometric Distribution?\"\ndescription: \"The geometric distribution models the number of trials until the first success in independent Bernoulli trials. This post explains when and why to use it, with a real-world example and R visualization.\"\ndate: today\ncategories: [probability, discrete distributions, geometric distribution]\nauthor: \"Abdullah Al Mahmud\"\nimage: \"geometric-distribution_files/figure-html/unnamed-chunk-1-1.png\"\n---\n\n\n## What is the Geometric Distribution?\n\nThe **geometric distribution** models the number of trials needed to get the **first success** in a sequence of independent Bernoulli trials (each with success probability $p$).\n\nIt answers questions like:\n*\"How many times must we try before we succeed for the first time?\"*\n\n---\n\n## Key Characteristics\n\n- **Memoryless property**: The probability of success in the next trial does not depend on how many failures have already occurred.\n\n- **Two common formulations**:\n\n| Version | What it models | PMF | Support |\n|---------|----------------|-----|---------|\n| Type 1 | Number of trials until first success (including the success) | $P(X = k) = (1-p)^{k-1}p$ | $k = 1, 2, 3, \\dots$ |\n| Type 2 | Number of failures before first success | $P(Y = y) = (1-p)^y p$ | $y = 0, 1, 2, \\dots$ |\n\n---\n\n## Real-World Example\n\n> A quality control inspector tests items coming off an assembly line.\n> Each item has a 5% chance of being defective.\n> What is the probability that the **first defect** is found on the **5th item** tested?\n\nHere:\n\n- $p = 0.05$\n- We want $P(X = 5)$ with Type 1 formulation.\n\n$P(X = 5) = (1 - 0.05)^{5-1} \\times 0.05$\n\n$= (0.95)^4 \\times 0.05 \\approx 0.8145 \\times 0.05 \\approx 0.0407$\n\nSo about **4.07%**.\n\n---\n\n## When Is the Geometric Distribution Used?\n\n| Situation | Example |\n|-----------|---------|\n| Quality control | Number of items tested until first defect |\n| Sports | Number of shots until first goal |\n| Customer behavior | Number of calls until first sale |\n| Medicine | Number of patients until first responder |\n| Engineering | Number of components until first failure |\n\n---\n\n## Visualizing the Geometric Distribution\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(ggplot2)\n\np <- 0.05\nx <- 1:20\nprob <- dgeom(x - 1, p)  # Type 1: P(X = k) = (1-p)^(k-1) p\n\ndf <- data.frame(Trials = x, Probability = prob)\n\nggplot(df, aes(x = Trials, y = Probability)) +\n  geom_col(fill = \"steelblue\", alpha = 0.7) +\n  labs(title = paste(\"Geometric Distribution (p =\", p, \")\"),\n       subtitle = \"Number of trials until first success\",\n       x = \"Number of trials\", y = \"Probability\")\n```\n\n::: {.cell-output-display}\n![](geometric-distribution_files/figure-html/unnamed-chunk-1-1.png){width=672}\n:::\n:::\n\n",
+    "supporting": [
+      "geometric-distribution_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

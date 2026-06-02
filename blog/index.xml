@@ -10,7 +10,222 @@
 <atom:link href="https://portal.statmania.info/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.9.37</generator>
-<lastBuildDate>Mon, 01 Jun 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 02 Jun 2026 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>Why Use the Geometric Distribution?</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://portal.statmania.info/posts/geometric-distribution.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="what-is-the-geometric-distribution" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-the-geometric-distribution">What is the Geometric Distribution?</h2>
+<p>The <strong>geometric distribution</strong> models the number of trials needed to get the <strong>first success</strong> in a sequence of independent Bernoulli trials (each with success probability <img src="https://latex.codecogs.com/png.latex?p">).</p>
+<p>It answers questions like: <em>“How many times must we try before we succeed for the first time?”</em></p>
+<hr>
+</section>
+<section id="key-characteristics" class="level2">
+<h2 class="anchored" data-anchor-id="key-characteristics">Key Characteristics</h2>
+<ul>
+<li><p><strong>Memoryless property</strong>: The probability of success in the next trial does not depend on how many failures have already occurred.</p></li>
+<li><p><strong>Two common formulations</strong>:</p></li>
+</ul>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 41%">
+<col style="width: 12%">
+<col style="width: 23%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Version</th>
+<th>What it models</th>
+<th>PMF</th>
+<th>Support</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Type 1</td>
+<td>Number of trials until first success (including the success)</td>
+<td><img src="https://latex.codecogs.com/png.latex?P(X%20=%20k)%20=%20(1-p)%5E%7Bk-1%7Dp"></td>
+<td><img src="https://latex.codecogs.com/png.latex?k%20=%201,%202,%203,%20%5Cdots"></td>
+</tr>
+<tr class="even">
+<td>Type 2</td>
+<td>Number of failures before first success</td>
+<td><img src="https://latex.codecogs.com/png.latex?P(Y%20=%20y)%20=%20(1-p)%5Ey%20p"></td>
+<td><img src="https://latex.codecogs.com/png.latex?y%20=%200,%201,%202,%20%5Cdots"></td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="real-world-example" class="level2">
+<h2 class="anchored" data-anchor-id="real-world-example">Real-World Example</h2>
+<blockquote class="blockquote">
+<p>A quality control inspector tests items coming off an assembly line. Each item has a 5% chance of being defective. What is the probability that the <strong>first defect</strong> is found on the <strong>5th item</strong> tested?</p>
+</blockquote>
+<p>Here:</p>
+<ul>
+<li><img src="https://latex.codecogs.com/png.latex?p%20=%200.05"></li>
+<li>We want <img src="https://latex.codecogs.com/png.latex?P(X%20=%205)"> with Type 1 formulation.</li>
+</ul>
+<p><img src="https://latex.codecogs.com/png.latex?P(X%20=%205)%20=%20(1%20-%200.05)%5E%7B5-1%7D%20%5Ctimes%200.05"></p>
+<p><img src="https://latex.codecogs.com/png.latex?=%20(0.95)%5E4%20%5Ctimes%200.05%20%5Capprox%200.8145%20%5Ctimes%200.05%20%5Capprox%200.0407"></p>
+<p>So about <strong>4.07%</strong>.</p>
+<hr>
+</section>
+<section id="when-is-the-geometric-distribution-used" class="level2">
+<h2 class="anchored" data-anchor-id="when-is-the-geometric-distribution-used">When Is the Geometric Distribution Used?</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Situation</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Quality control</td>
+<td>Number of items tested until first defect</td>
+</tr>
+<tr class="even">
+<td>Sports</td>
+<td>Number of shots until first goal</td>
+</tr>
+<tr class="odd">
+<td>Customer behavior</td>
+<td>Number of calls until first sale</td>
+</tr>
+<tr class="even">
+<td>Medicine</td>
+<td>Number of patients until first responder</td>
+</tr>
+<tr class="odd">
+<td>Engineering</td>
+<td>Number of components until first failure</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="visualizing-the-geometric-distribution" class="level2">
+<h2 class="anchored" data-anchor-id="visualizing-the-geometric-distribution">Visualizing the Geometric Distribution</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(ggplot2)</span>
+<span id="cb1-2"></span>
+<span id="cb1-3">p <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span></span>
+<span id="cb1-4">x <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span></span>
+<span id="cb1-5">prob <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dgeom</span>(x <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, p)  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Type 1: P(X = k) = (1-p)^(k-1) p</span></span>
+<span id="cb1-6"></span>
+<span id="cb1-7">df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Trials =</span> x, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Probability =</span> prob)</span>
+<span id="cb1-8"></span>
+<span id="cb1-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(df, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> Trials, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> Probability)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_col</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alpha =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.7</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-11">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Geometric Distribution (p ="</span>, p, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">")"</span>),</span>
+<span id="cb1-12">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">subtitle =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Number of trials until first success"</span>,</span>
+<span id="cb1-13">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Number of trials"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Probability"</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://portal.statmania.info/posts/geometric-distribution_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>probability</category>
+  <category>discrete distributions</category>
+  <category>geometric distribution</category>
+  <guid>https://portal.statmania.info/posts/geometric-distribution.html</guid>
+  <pubDate>Tue, 02 Jun 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://portal.statmania.info/posts/geometric-distribution_files/figure-html/unnamed-chunk-1-1.png" medium="image" type="image/png" height="103" width="144"/>
+</item>
 <item>
   <title>How to Reset a Bootable USB Drive Using the Linux Command Line</title>
   <dc:creator>Dev Author</dc:creator>
