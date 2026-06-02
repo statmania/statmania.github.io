@@ -10,7 +10,106 @@
 <atom:link href="https://portal.statmania.info/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.9.37</generator>
-<lastBuildDate>Wed, 22 Apr 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Mon, 01 Jun 2026 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>How to Reset a Bootable USB Drive Using the Linux Command Line</title>
+  <dc:creator>Dev Author</dc:creator>
+  <link>https://portal.statmania.info/posts/reset-usb.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>When you create a bootable Linux live USB, it alters the drive’s partition table and filesystem structure. This often makes the drive read-only or unrecognizable when plugged into standard file managers.</p>
+<p>To restore your USB drive back to a normal storage device, you must wipe its hidden boot signatures and create a fresh filesystem using the terminal.</p>
+<section id="critical-warning" class="level2 callout-danger">
+<h2 class="anchored" data-anchor-id="critical-warning">Critical Warning</h2>
+<p>Ensure you select the correct drive identifier (e.g., <code>/dev/sdb</code>). Specifying the wrong drive path will <strong>permanently destroy</strong> your computer’s main operating system or data.</p>
+</section>
+<section id="step-by-step-reset-procedure" class="level2">
+<h2 class="anchored" data-anchor-id="step-by-step-reset-procedure">Step-by-Step Reset Procedure</h2>
+<section id="step-1-identify-your-usb-drive" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-identify-your-usb-drive">Step 1: Identify your USB drive</h3>
+<p>Plug in your USB drive and list all connected storage disks to find its system path:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sudo</span> fdisk <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-l</span></span></code></pre></div></div>
+<ul>
+<li>Look through the output to match your USB drive’s capacity (e.g., a 16GB drive might show up as <code>14.9 GiB</code>).</li>
+<li>Note its device path, which usually looks like <code>/dev/sdb</code> or <code>/dev/sdc</code>.</li>
+</ul>
+</section>
+<section id="step-2-unmount-the-drive" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-unmount-the-drive">Step 2: Unmount the drive</h3>
+<p>You cannot modify a drive while the system actively mounts it. Unmount all partitions on the device (replace <code>sdb</code> with your actual drive letter):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sudo</span> umount /dev/sdb<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span></span></code></pre></div></div>
+</section>
+<section id="step-3-wipe-the-bootable-partition-table" class="level3">
+<h3 class="anchored" data-anchor-id="step-3-wipe-the-bootable-partition-table">Step 3: Wipe the bootable partition table</h3>
+<p>Overwriting the first few megabytes deletes the hidden boot sector signatures and ISO filesystems:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sudo</span> dd if=/dev/zero of=/dev/sdb bs=1M count=10 status=progress</span></code></pre></div></div>
+<ul>
+<li><code>if=/dev/zero</code>: Sends a stream of zeros to overwrite data.</li>
+<li><code>of=/dev/sdb</code>: The target drive path (do <strong>not</strong> include partition numbers like <code>sdb1</code>).</li>
+</ul>
+</section>
+<section id="step-4-create-a-fresh-partition-table" class="level3">
+<h3 class="anchored" data-anchor-id="step-4-create-a-fresh-partition-table">Step 4: Create a fresh partition table</h3>
+<p>Create a standard Master Boot Record (<code>msdos</code>) partition layout so the drive works on all devices:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sudo</span> parted /dev/sdb mklabel msdos</span></code></pre></div></div>
+</section>
+<section id="step-5-allocate-a-new-primary-partition" class="level3">
+<h3 class="anchored" data-anchor-id="step-5-allocate-a-new-primary-partition">Step 5: Allocate a new primary partition</h3>
+<p>Instruct the partition manager to allocate 100% of the available space to a single new partition:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sudo</span> parted <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-a</span> optimal /dev/sdb mkpart primary fat32 0% 100%</span></code></pre></div></div>
+</section>
+<section id="step-6-format-the-filesystem" class="level3">
+<h3 class="anchored" data-anchor-id="step-6-format-the-filesystem">Step 6: Format the filesystem</h3>
+<p>Format the newly created partition to <strong>FAT32</strong> for universal compatibility across Windows, macOS, and Linux:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sudo</span> mkfs.vfat <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-F</span> 32 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-n</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"MY_USB"</span> /dev/sdb1</span></code></pre></div></div>
+<ul>
+<li><code>-n "MY_USB"</code>: Sets the name/label for your drive.</li>
+<li>Note that you are formatting the partition (<code>/dev/sdb1</code>), not the raw disk (<code>/dev/sdb</code>).</li>
+</ul>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>Your USB drive is now completely wiped, restored to its full capacity, and ready for everyday file storage.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>Linux</category>
+  <category>Tutorial</category>
+  <category>CLI</category>
+  <guid>https://portal.statmania.info/posts/reset-usb.html</guid>
+  <pubDate>Mon, 01 Jun 2026 18:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Be Impressive with Mathematics</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
@@ -302,7 +401,7 @@
 <p>Here’s a minimal example of Poisson regression with simulated data and interpretation:</p>
 <section id="poisson-regression-example" class="level2">
 <h2 class="anchored" data-anchor-id="poisson-regression-example"><strong>Poisson Regression Example</strong></h2>
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Load required package</span></span>
 <span id="cb1-2"><span class="fu" style="color: #4758AB;
@@ -388,7 +487,7 @@ background-color: null;
 font-style: inherit;"># View results</span></span>
 <span id="cb1-15"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">summary</span>(model)</span></code></pre></div>
+font-style: inherit;">summary</span>(model)</span></code></pre></div></div>
 <p><strong>Output</strong>:</p>
 <pre><code>Coefficients:
             Estimate Std. Error z value Pr(&gt;|z|)  
@@ -444,11 +543,11 @@ Residual deviance: 10.785  on 8  degrees of freedom</code></pre>
 <li><p><strong>Rate Ratio</strong> =<img src="https://latex.codecogs.com/png.latex?e%5E%7B0.17395%7D%20=%201.19"></p></li>
 <li><p>Interpretation: “Studying one more hour is associated with 19% more correct answers”</p></li>
 <li><p><strong>95% Confidence Interval</strong>:</p>
-<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">exp</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">confint</span>(model))</span></code></pre></div>
+font-style: inherit;">confint</span>(model))</span></code></pre></div></div>
 <p>Would give interval for this multiplicative effect</p></li>
 </ul>
 </section>
@@ -465,7 +564,7 @@ font-style: inherit;">confint</span>(model))</span></code></pre></div>
 <li><p><strong>Count outcome</strong>: ✓ (questions answered are counts)</p></li>
 <li><p><strong>Log-linear relationship</strong>: ✓ (we used log link)</p></li>
 <li><p><strong>Mean = Variance</strong>: Check with:</p>
-<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">mean</span>(data<span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -478,7 +577,7 @@ font-style: inherit;">var</span>(data<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">$</span>y)     <span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;"># 2.72 (close enough for n=10)</span></span></code></pre></div></li>
+font-style: inherit;"># 2.72 (close enough for n=10)</span></span></code></pre></div></div></li>
 <li><p><strong>Independence</strong>: ✓ (assumed here)</p></li>
 </ol>
 <hr>
@@ -808,6 +907,70 @@ font-style: inherit;"># 2.72 (close enough for n=10)</span></span></code></pre><
   <pubDate>Fri, 19 Dec 2025 18:00:00 GMT</pubDate>
 </item>
 <item>
+  <title>Z-score: What it is and what it does</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://portal.statmania.info/posts/z-score.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>A <strong>z-score</strong> (also known as a <strong>standard score</strong> or <strong>z-value</strong>) measures how many standard deviations a data point is from the mean of a distribution. It’s a way of standardizing individual data points so they can be compared, regardless of the scale of the data.</p>
+<section id="how-to-calculate-the-z-score" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-calculate-the-z-score">How to calculate the z-score:</h3>
+<p>The formula for the <strong>z-score</strong> of a data point is:</p>
+<p><img src="https://latex.codecogs.com/png.latex?z%20=%20%5Cfrac%7BX%20-%20%5Cmu%7D%7B%5Csigma%7D"></p>
+<p>Where:</p>
+<ul>
+<li><img src="https://latex.codecogs.com/png.latex?X"> = the value of the data point.</li>
+<li><img src="https://latex.codecogs.com/png.latex?%5Cmu"> = the mean (average) of the dataset.</li>
+<li><img src="https://latex.codecogs.com/png.latex?%5Csigma"> = the standard deviation of the dataset.</li>
+</ul>
+</section>
+<section id="steps-to-calculate-the-z-score" class="level3">
+<h3 class="anchored" data-anchor-id="steps-to-calculate-the-z-score">Steps to calculate the z-score:</h3>
+<ol type="1">
+<li><strong>Find the mean</strong> of the dataset.</li>
+<li><strong>Find the standard deviation</strong> of the dataset.</li>
+<li><strong>Subtract the mean</strong> from the data point you’re interested in.</li>
+<li><strong>Divide the result</strong> by the standard deviation.</li>
+</ol>
+</section>
+<section id="example" class="level3">
+<h3 class="anchored" data-anchor-id="example">Example:</h3>
+<p>Imagine you have the following dataset of test scores: [80, 85, 90, 95, 100]</p>
+<ul>
+<li><p><strong>Mean (μ)</strong>: ((80 + 85 + 90 + 95 + 100) / 5 = 90)</p></li>
+<li><p><strong>Standard Deviation (σ)</strong>: Calculate the standard deviation of the dataset (you could use a standard formula or a calculator for this). Let’s say it’s <strong>7.91</strong>.</p></li>
+<li><p>To find the <strong>z-score</strong> for a score of <strong>85</strong>:</p>
+<p><img src="https://latex.codecogs.com/png.latex?z%20=%20%5Cfrac%7B85%20-%2090%7D%7B7.91%7D%20%5Capprox%20-0.63"></p>
+<p>This means the score of 85 is <strong>0.63 standard deviations below the mean</strong>.</p></li>
+</ul>
+<hr>
+</section>
+<section id="common-uses-of-the-z-score" class="level3">
+<h3 class="anchored" data-anchor-id="common-uses-of-the-z-score">Common uses of the z-score:</h3>
+<ol type="1">
+<li><p><strong>Standardizing data</strong>: Z-scores are used to standardize data, especially when you want to compare values from different datasets with different units or scales.</p></li>
+<li><p><strong>Identifying outliers</strong>: A data point with a z-score greater than +3 or less than -3 is often considered an <strong>outlier</strong> because it lies more than 3 standard deviations away from the mean.</p></li>
+<li><p><strong>Probability and normal distribution</strong>: In statistics, z-scores are crucial when working with the <strong>normal distribution</strong>. They can be used to find the <strong>probability</strong> of a value occurring within a normal distribution by looking up the z-score in a standard normal distribution table (or using statistical software).</p></li>
+<li><p><strong>Comparing scores across different distributions</strong>: For example, in education, z-scores allow you to compare scores from different tests, even if those tests have different scales (e.g., SAT vs.&nbsp;ACT scores). You can convert raw scores into z-scores to compare relative performance.</p></li>
+<li><p><strong>Risk assessment and finance</strong>: In finance, z-scores can be used to assess the risk or financial stability of a company. The <strong>Altman Z-score</strong>, for instance, is used to predict the likelihood of bankruptcy.</p></li>
+<li><p><strong>Quality control and manufacturing</strong>: In quality control, z-scores help assess whether a product meets specifications, identifying whether the production process is consistent or if corrective action is needed.</p></li>
+</ol>
+
+
+</section>
+
+ ]]></description>
+  <category>statistics</category>
+  <category>theory</category>
+  <category>probability</category>
+  <guid>https://portal.statmania.info/posts/z-score.html</guid>
+  <pubDate>Tue, 18 Nov 2025 18:00:00 GMT</pubDate>
+</item>
+<item>
   <title>Interaction Effect in Regression Analysis</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://portal.statmania.info/posts/regression-interaction.html</link>
@@ -918,70 +1081,6 @@ font-style: inherit;"># 2.72 (close enough for n=10)</span></span></code></pre><
   <category>theory</category>
   <category>regression</category>
   <guid>https://portal.statmania.info/posts/regression-interaction.html</guid>
-  <pubDate>Tue, 18 Nov 2025 18:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Z-score: What it is and what it does</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://portal.statmania.info/posts/z-score.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>A <strong>z-score</strong> (also known as a <strong>standard score</strong> or <strong>z-value</strong>) measures how many standard deviations a data point is from the mean of a distribution. It’s a way of standardizing individual data points so they can be compared, regardless of the scale of the data.</p>
-<section id="how-to-calculate-the-z-score" class="level3">
-<h3 class="anchored" data-anchor-id="how-to-calculate-the-z-score">How to calculate the z-score:</h3>
-<p>The formula for the <strong>z-score</strong> of a data point is:</p>
-<p><img src="https://latex.codecogs.com/png.latex?z%20=%20%5Cfrac%7BX%20-%20%5Cmu%7D%7B%5Csigma%7D"></p>
-<p>Where:</p>
-<ul>
-<li><img src="https://latex.codecogs.com/png.latex?X"> = the value of the data point.</li>
-<li><img src="https://latex.codecogs.com/png.latex?%5Cmu"> = the mean (average) of the dataset.</li>
-<li><img src="https://latex.codecogs.com/png.latex?%5Csigma"> = the standard deviation of the dataset.</li>
-</ul>
-</section>
-<section id="steps-to-calculate-the-z-score" class="level3">
-<h3 class="anchored" data-anchor-id="steps-to-calculate-the-z-score">Steps to calculate the z-score:</h3>
-<ol type="1">
-<li><strong>Find the mean</strong> of the dataset.</li>
-<li><strong>Find the standard deviation</strong> of the dataset.</li>
-<li><strong>Subtract the mean</strong> from the data point you’re interested in.</li>
-<li><strong>Divide the result</strong> by the standard deviation.</li>
-</ol>
-</section>
-<section id="example" class="level3">
-<h3 class="anchored" data-anchor-id="example">Example:</h3>
-<p>Imagine you have the following dataset of test scores: [80, 85, 90, 95, 100]</p>
-<ul>
-<li><p><strong>Mean (μ)</strong>: ((80 + 85 + 90 + 95 + 100) / 5 = 90)</p></li>
-<li><p><strong>Standard Deviation (σ)</strong>: Calculate the standard deviation of the dataset (you could use a standard formula or a calculator for this). Let’s say it’s <strong>7.91</strong>.</p></li>
-<li><p>To find the <strong>z-score</strong> for a score of <strong>85</strong>:</p>
-<p><img src="https://latex.codecogs.com/png.latex?z%20=%20%5Cfrac%7B85%20-%2090%7D%7B7.91%7D%20%5Capprox%20-0.63"></p>
-<p>This means the score of 85 is <strong>0.63 standard deviations below the mean</strong>.</p></li>
-</ul>
-<hr>
-</section>
-<section id="common-uses-of-the-z-score" class="level3">
-<h3 class="anchored" data-anchor-id="common-uses-of-the-z-score">Common uses of the z-score:</h3>
-<ol type="1">
-<li><p><strong>Standardizing data</strong>: Z-scores are used to standardize data, especially when you want to compare values from different datasets with different units or scales.</p></li>
-<li><p><strong>Identifying outliers</strong>: A data point with a z-score greater than +3 or less than -3 is often considered an <strong>outlier</strong> because it lies more than 3 standard deviations away from the mean.</p></li>
-<li><p><strong>Probability and normal distribution</strong>: In statistics, z-scores are crucial when working with the <strong>normal distribution</strong>. They can be used to find the <strong>probability</strong> of a value occurring within a normal distribution by looking up the z-score in a standard normal distribution table (or using statistical software).</p></li>
-<li><p><strong>Comparing scores across different distributions</strong>: For example, in education, z-scores allow you to compare scores from different tests, even if those tests have different scales (e.g., SAT vs.&nbsp;ACT scores). You can convert raw scores into z-scores to compare relative performance.</p></li>
-<li><p><strong>Risk assessment and finance</strong>: In finance, z-scores can be used to assess the risk or financial stability of a company. The <strong>Altman Z-score</strong>, for instance, is used to predict the likelihood of bankruptcy.</p></li>
-<li><p><strong>Quality control and manufacturing</strong>: In quality control, z-scores help assess whether a product meets specifications, identifying whether the production process is consistent or if corrective action is needed.</p></li>
-</ol>
-
-
-</section>
-
- ]]></description>
-  <category>statistics</category>
-  <category>theory</category>
-  <category>probability</category>
-  <guid>https://portal.statmania.info/posts/z-score.html</guid>
   <pubDate>Tue, 18 Nov 2025 18:00:00 GMT</pubDate>
 </item>
 <item>
@@ -1486,7 +1585,7 @@ font-style: inherit;"># 2.72 (close enough for n=10)</span></span></code></pre><
 </section>
 <section id="minimal-arima-example-in-r" class="level2">
 <h2 class="anchored" data-anchor-id="minimal-arima-example-in-r">Minimal ARIMA Example in R</h2>
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">library</span>(forecast)</span>
 <span id="cb1-2"></span>
@@ -1528,7 +1627,7 @@ font-style: inherit;">forecast</span>(fit, <span class="at" style="color: #65742
 background-color: null;
 font-style: inherit;">h =</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">12</span>)</span></code></pre></div>
+font-style: inherit;">12</span>)</span></code></pre></div></div>
 <p><code>auto.arima()</code> automatically selects (p, d, q).</p>
 <hr>
 </section>
@@ -1559,7 +1658,7 @@ font-style: inherit;">12</span>)</span></code></pre></div>
 </section>
 <section id="minimal-sarima-example-in-r" class="level2">
 <h2 class="anchored" data-anchor-id="minimal-sarima-example-in-r">Minimal SARIMA Example in R</h2>
-<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">library</span>(forecast)</span>
 <span id="cb2-2"></span>
@@ -1589,14 +1688,14 @@ font-style: inherit;">forecast</span>(fit, <span class="at" style="color: #65742
 background-color: null;
 font-style: inherit;">h =</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">12</span>)</span></code></pre></div>
+font-style: inherit;">12</span>)</span></code></pre></div></div>
 <hr>
 </section>
 </section>
 <section id="arimax-sarimax-arima-with-regressors" class="level1">
 <h1><strong>3. ARIMAX / SARIMAX</strong> (ARIMA with regressors)</h1>
 <p>These models include <strong>external variables</strong> (e.g., temperature, ads, price). Useful when other predictors help forecast the main series.</p>
-<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">x <span class="ot" style="color: #003B4F;
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">x <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -1611,13 +1710,13 @@ font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">auto.arima</span>(ts_data, <span class="at" style="color: #657422;
 background-color: null;
-font-style: inherit;">xreg =</span> x)</span></code></pre></div>
+font-style: inherit;">xreg =</span> x)</span></code></pre></div></div>
 <hr>
 </section>
 <section id="seasonal-decomposition-not-a-model" class="level1">
 <h1><strong>4. Seasonal decomposition (not a model)</strong></h1>
 <p>Often used to inspect data before ARIMA.</p>
-<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">plot</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
@@ -1625,7 +1724,7 @@ font-style: inherit;">stl</span>(AirPassengers, <span class="at" style="color: #
 background-color: null;
 font-style: inherit;">s.window =</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"periodic"</span>))</span></code></pre></div>
+font-style: inherit;">"periodic"</span>))</span></code></pre></div></div>
 <p>Shows:</p>
 <ul>
 <li>trend,</li>
@@ -1891,64 +1990,6 @@ font-style: inherit;">"periodic"</span>))</span></code></pre></div>
   <media:content url="https://portal.statmania.info/img/cp.png" medium="image" type="image/png" height="144" width="144"/>
 </item>
 <item>
-  <title>R Package Development Workflow</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://portal.statmania.info/posts/r-package-workflow.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>Here are the key <code>devtools</code> functions important in the R package development cycle.</p>
-<section id="project-setup" class="level3">
-<h3 class="anchored" data-anchor-id="project-setup">Project Setup</h3>
-<ul>
-<li><code>usethis::create_package()</code>: Creates a new package with the correct directory structure.</li>
-<li><code>usethis::use_git()</code>: Initializes a Git repository for version control.</li>
-<li><code>usethis::use_r()</code>: Creates a new <code>.R</code> file in the <code>R/</code> directory.</li>
-</ul>
-<hr>
-</section>
-<section id="development-and-documentation" class="level3">
-<h3 class="anchored" data-anchor-id="development-and-documentation">Development and Documentation</h3>
-<ul>
-<li><code>devtools::load_all()</code>: Loads all functions in the <code>R/</code> directory, allowing you to quickly test them without installing the package.</li>
-<li><code>devtools::document()</code>: Generates documentation (<code>.Rd</code> files in the <code>man/</code> directory) and the <code>NAMESPACE</code> file from roxygen2 comments.</li>
-<li><code>devtools::install()</code>: Installs the package from the source directory, making it available for use on your system.</li>
-</ul>
-<hr>
-</section>
-<section id="testing-and-checking" class="level3">
-<h3 class="anchored" data-anchor-id="testing-and-checking">Testing and Checking</h3>
-<ul>
-<li><code>usethis::use_testthat()</code>: Sets up the <code>testthat</code> framework for unit testing.</li>
-<li><code>usethis::use_test()</code>: Creates a new test file in <code>tests/testthat/</code>.</li>
-<li><code>devtools::test()</code>: Runs all the tests in the <code>tests/testthat/</code> directory.</li>
-<li><code>devtools::check()</code>: Runs the comprehensive suite of <code>R CMD check</code> tests to identify errors, warnings, and notes.</li>
-<li><code>devtools::check_win_devel()</code>: Submits the package to the win-builder service to check for platform-specific issues on Windows.</li>
-</ul>
-<hr>
-</section>
-<section id="publishing" class="level3">
-<h3 class="anchored" data-anchor-id="publishing">Publishing</h3>
-<ul>
-<li><code>usethis::use_vignette()</code>: Creates a new vignette (<code>.Rmd</code> file) for package tutorials.</li>
-<li><code>pkgdown::build_site()</code>: Builds a complete website for your package.</li>
-<li><code>devtools::submit_cran()</code>: Helps with the final steps of submitting your package to CRAN.</li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>R</category>
-  <category>package</category>
-  <category>programming</category>
-  <guid>https://portal.statmania.info/posts/r-package-workflow.html</guid>
-  <pubDate>Thu, 28 Aug 2025 18:00:00 GMT</pubDate>
-</item>
-<item>
   <title>CRAN Package Submission Checklist</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://portal.statmania.info/posts/r-package-submission.html</link>
@@ -2035,6 +2076,64 @@ font-style: inherit;">"periodic"</span>))</span></code></pre></div>
   <pubDate>Thu, 28 Aug 2025 18:00:00 GMT</pubDate>
 </item>
 <item>
+  <title>R Package Development Workflow</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://portal.statmania.info/posts/r-package-workflow.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>Here are the key <code>devtools</code> functions important in the R package development cycle.</p>
+<section id="project-setup" class="level3">
+<h3 class="anchored" data-anchor-id="project-setup">Project Setup</h3>
+<ul>
+<li><code>usethis::create_package()</code>: Creates a new package with the correct directory structure.</li>
+<li><code>usethis::use_git()</code>: Initializes a Git repository for version control.</li>
+<li><code>usethis::use_r()</code>: Creates a new <code>.R</code> file in the <code>R/</code> directory.</li>
+</ul>
+<hr>
+</section>
+<section id="development-and-documentation" class="level3">
+<h3 class="anchored" data-anchor-id="development-and-documentation">Development and Documentation</h3>
+<ul>
+<li><code>devtools::load_all()</code>: Loads all functions in the <code>R/</code> directory, allowing you to quickly test them without installing the package.</li>
+<li><code>devtools::document()</code>: Generates documentation (<code>.Rd</code> files in the <code>man/</code> directory) and the <code>NAMESPACE</code> file from roxygen2 comments.</li>
+<li><code>devtools::install()</code>: Installs the package from the source directory, making it available for use on your system.</li>
+</ul>
+<hr>
+</section>
+<section id="testing-and-checking" class="level3">
+<h3 class="anchored" data-anchor-id="testing-and-checking">Testing and Checking</h3>
+<ul>
+<li><code>usethis::use_testthat()</code>: Sets up the <code>testthat</code> framework for unit testing.</li>
+<li><code>usethis::use_test()</code>: Creates a new test file in <code>tests/testthat/</code>.</li>
+<li><code>devtools::test()</code>: Runs all the tests in the <code>tests/testthat/</code> directory.</li>
+<li><code>devtools::check()</code>: Runs the comprehensive suite of <code>R CMD check</code> tests to identify errors, warnings, and notes.</li>
+<li><code>devtools::check_win_devel()</code>: Submits the package to the win-builder service to check for platform-specific issues on Windows.</li>
+</ul>
+<hr>
+</section>
+<section id="publishing" class="level3">
+<h3 class="anchored" data-anchor-id="publishing">Publishing</h3>
+<ul>
+<li><code>usethis::use_vignette()</code>: Creates a new vignette (<code>.Rmd</code> file) for package tutorials.</li>
+<li><code>pkgdown::build_site()</code>: Builds a complete website for your package.</li>
+<li><code>devtools::submit_cran()</code>: Helps with the final steps of submitting your package to CRAN.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>R</category>
+  <category>package</category>
+  <category>programming</category>
+  <guid>https://portal.statmania.info/posts/r-package-workflow.html</guid>
+  <pubDate>Thu, 28 Aug 2025 18:00:00 GMT</pubDate>
+</item>
+<item>
   <title>Interpretation of an Auto SARIMAX model output in R</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://portal.statmania.info/posts/auto-arima-explanation.html</link>
@@ -2045,7 +2144,7 @@ font-style: inherit;">"periodic"</span>))</span></code></pre></div>
 
 
 <p>The model we run is this</p>
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">library</span>(forecast)</span>
 <span id="cb1-2"><span class="fu" style="color: #4758AB;
@@ -2187,7 +2286,7 @@ background-color: null;
 font-style: inherit;">xreg =</span> x1_ts)</span>
 <span id="cb1-25"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">summary</span>(sarimax_model)</span></code></pre></div>
+font-style: inherit;">summary</span>(sarimax_model)</span></code></pre></div></div>
 <p>Now the output we get is</p>
 <p><img src="https://portal.statmania.info/img/sarimax-r.png" class="img-fluid"></p>
 <section id="interpretation" class="level2">
@@ -2278,7 +2377,7 @@ font-style: inherit;">summary</span>(sarimax_model)</span></code></pre></div>
 </section>
 <section id="suggested-improvement" class="level3">
 <h3 class="anchored" data-anchor-id="suggested-improvement">Suggested Improvement:</h3>
-<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Try simplified model</span></span>
 <span id="cb2-2">better_model <span class="ot" style="color: #003B4F;
@@ -2307,7 +2406,7 @@ font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>), <span class="at" style="color: #657422;
 background-color: null;
-font-style: inherit;">xreg =</span> xreg)</span></code></pre></div>
+font-style: inherit;">xreg =</span> xreg)</span></code></pre></div></div>
 </section>
 <section id="business-interpretation" class="level3">
 <h3 class="anchored" data-anchor-id="business-interpretation">Business Interpretation:</h3>
@@ -2463,7 +2562,7 @@ font-style: inherit;">xreg =</span> xreg)</span></code></pre></div>
 <h2 class="anchored" data-anchor-id="parameter-estimation-in-practice"><strong>4. Parameter Estimation in Practice</strong></h2>
 <section id="in-r" class="level3">
 <h3 class="anchored" data-anchor-id="in-r"><strong>In R:</strong></h3>
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">library</span>(forecast)</span>
 <span id="cb1-2"></span>
@@ -2517,7 +2616,7 @@ background-color: null;
 font-style: inherit;">summary</span>(ar_model)</span>
 <span id="cb1-11"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">summary</span>(ma_model)</span></code></pre></div>
+font-style: inherit;">summary</span>(ma_model)</span></code></pre></div></div>
 </section>
 <section id="typical-parameter-ranges" class="level3">
 <h3 class="anchored" data-anchor-id="typical-parameter-ranges"><strong>Typical Parameter Ranges:</strong></h3>
@@ -2533,21 +2632,21 @@ font-style: inherit;">summary</span>(ma_model)</span></code></pre></div>
 <h2 class="anchored" data-anchor-id="real-world-examples"><strong>5. Real-World Examples</strong></h2>
 <section id="ar-example---stock-prices" class="level3">
 <h3 class="anchored" data-anchor-id="ar-example---stock-prices"><strong>AR Example - Stock Prices:</strong></h3>
-<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Stock prices often show AR behavior</span></span>
 <span id="cb2-2"><span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;"># AR(1): Today's price = 0.95 × Yesterday's price + noise</span></span></code></pre></div>
+font-style: inherit;"># AR(1): Today's price = 0.95 × Yesterday's price + noise</span></span></code></pre></div></div>
 </section>
 <section id="ma-example---inventory-systems" class="level3">
 <h3 class="anchored" data-anchor-id="ma-example---inventory-systems"><strong>MA Example - Inventory Systems:</strong></h3>
-<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Inventory shocks affect future periods</span></span>
 <span id="cb3-2"><span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;"># MA(1): Today's demand = mean - 0.6 × Yesterday's forecast error + noise</span></span></code></pre></div>
+font-style: inherit;"># MA(1): Today's demand = mean - 0.6 × Yesterday's forecast error + noise</span></span></code></pre></div></div>
 <hr>
 </section>
 </section>
@@ -2609,7 +2708,7 @@ font-style: inherit;"># MA(1): Today's demand = mean - 0.6 × Yesterday's foreca
 </section>
 <section id="basic-syntax-in-r" class="level2">
 <h2 class="anchored" data-anchor-id="basic-syntax-in-r"><strong>2. Basic Syntax in R</strong></h2>
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">library</span>(forecast)</span>
 <span id="cb1-2"></span>
@@ -2639,12 +2738,12 @@ font-style: inherit;"># seasonal order (S = period)</span></span>
 background-color: null;
 font-style: inherit;">xreg =</span> xreg_data)             <span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;"># exogenous variables</span></span></code></pre></div>
+font-style: inherit;"># exogenous variables</span></span></code></pre></div></div>
 <hr>
 </section>
 <section id="example-1-simple-sarimax-with-one-external-variable" class="level2">
 <h2 class="anchored" data-anchor-id="example-1-simple-sarimax-with-one-external-variable"><strong>3. Example 1: Simple SARIMAX with One External Variable</strong></h2>
-<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">library</span>(forecast)</span>
 <span id="cb2-2"><span class="fu" style="color: #4758AB;
@@ -2798,12 +2897,12 @@ font-style: inherit;">xreg =</span> x1_ts)</span>
 <span id="cb2-24"></span>
 <span id="cb2-25"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">summary</span>(sarimax_model)</span></code></pre></div>
+font-style: inherit;">summary</span>(sarimax_model)</span></code></pre></div></div>
 <hr>
 </section>
 <section id="example-2-multiple-external-variables" class="level2">
 <h2 class="anchored" data-anchor-id="example-2-multiple-external-variables"><strong>4. Example 2: Multiple External Variables</strong></h2>
-<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Add second external variable</span></span>
 <span id="cb3-2">x2 <span class="ot" style="color: #003B4F;
@@ -2867,12 +2966,12 @@ font-style: inherit;">xreg =</span> xreg_matrix)</span>
 <span id="cb3-10"></span>
 <span id="cb3-11"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">summary</span>(sarimax_model2)</span></code></pre></div>
+font-style: inherit;">summary</span>(sarimax_model2)</span></code></pre></div></div>
 <hr>
 </section>
 <section id="model-diagnostics" class="level2">
 <h2 class="anchored" data-anchor-id="model-diagnostics"><strong>5. Model Diagnostics</strong></h2>
-<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Residual diagnostics</span></span>
 <span id="cb4-2"><span class="fu" style="color: #4758AB;
@@ -2900,12 +2999,12 @@ background-color: null;
 font-style: inherit;"># Confidence intervals</span></span>
 <span id="cb4-9"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">confint</span>(sarimax_model)</span></code></pre></div>
+font-style: inherit;">confint</span>(sarimax_model)</span></code></pre></div></div>
 <hr>
 </section>
 <section id="forecasting-with-external-variables" class="level2">
 <h2 class="anchored" data-anchor-id="forecasting-with-external-variables"><strong>6. Forecasting with External Variables</strong></h2>
-<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Create future values of external variables</span></span>
 <span id="cb5-2">future_periods <span class="ot" style="color: #003B4F;
@@ -2992,12 +3091,12 @@ font-style: inherit;">+</span></span>
 background-color: null;
 font-style: inherit;">ggtitle</span>(<span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"SARIMAX Forecast with External Variables"</span>)</span></code></pre></div>
+font-style: inherit;">"SARIMAX Forecast with External Variables"</span>)</span></code></pre></div></div>
 <hr>
 </section>
 <section id="automated-model-selection" class="level2">
 <h2 class="anchored" data-anchor-id="automated-model-selection"><strong>7. Automated Model Selection</strong></h2>
-<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="co" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Let auto.arima select best SARIMAX model</span></span>
 <span id="cb6-2">auto_model <span class="ot" style="color: #003B4F;
@@ -3026,12 +3125,12 @@ font-style: inherit;">xreg =</span> xreg_matrix)</span>
 <span id="cb6-7"></span>
 <span id="cb6-8"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">summary</span>(auto_model)</span></code></pre></div>
+font-style: inherit;">summary</span>(auto_model)</span></code></pre></div></div>
 <hr>
 </section>
 <section id="real-dataset-example-airpassengers-with-exogenous-var" class="level2">
 <h2 class="anchored" data-anchor-id="real-dataset-example-airpassengers-with-exogenous-var"><strong>8. Real Dataset Example (AirPassengers with exogenous var)</strong></h2>
-<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="co" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Using AirPassengers dataset</span></span>
 <span id="cb7-2"><span class="fu" style="color: #4758AB;
@@ -3152,18 +3251,18 @@ font-style: inherit;">xreg =</span> future_econ)</span>
 <span id="cb7-19"></span>
 <span id="cb7-20"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">autoplot</span>(air_forecast)</span></code></pre></div>
+font-style: inherit;">autoplot</span>(air_forecast)</span></code></pre></div></div>
 <hr>
 </section>
 <section id="interpretation-of-coefficients" class="level2">
 <h2 class="anchored" data-anchor-id="interpretation-of-coefficients"><strong>9. Interpretation of Coefficients</strong></h2>
 <p>For the model:</p>
-<div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><span class="co" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># If output shows:</span></span>
 <span id="cb8-2"><span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;"># ar1 = 0.85, ma1 = -0.32, sar1 = 0.72, sma1 = -0.45, xreg1 = 0.65</span></span></code></pre></div>
+font-style: inherit;"># ar1 = 0.85, ma1 = -0.32, sar1 = 0.72, sma1 = -0.45, xreg1 = 0.65</span></span></code></pre></div></div>
 <p><strong>Interpretation:</strong> - <code>ar1 = 0.85</code>: Strong positive autocorrelation (persistence) - <code>ma1 = -0.32</code>: Negative momentum effects - <code>sar1 = 0.72</code>: Strong seasonal autocorrelation - <code>sma1 = -0.45</code>: Negative seasonal momentum - <code>xreg1 = 0.65</code>: 1-unit increase in external variable increases y by 0.65 units</p>
 <hr>
 </section>
