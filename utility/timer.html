@@ -213,6 +213,10 @@
             </div>
         </section>
 
+        <!-- Audio elements for timer sounds -->
+        <audio id="beepSound" src="../assets/audio/beep.mp3" preload="auto"></audio>
+        <audio id="bellSound" src="../assets/audio/bell.mp3" preload="auto"></audio>
+
         <!-- Call to Action Section -->
         <section id="cta" class="bg-indigo-700 py-16 px-4 sm:px-6 lg:px-8 text-white text-center rounded-t-2xl shadow-lg">
             <div class="container mx-auto max-w-3xl">
@@ -273,6 +277,10 @@
         const exitFullscreenBtn = document.getElementById('exitFullscreenBtn');
         const controlButtons = document.getElementById('controlButtons');
 
+        // Audio elements
+        const beepSound = document.getElementById('beepSound');
+        const bellSound = document.getElementById('bellSound');
+
         const CIRCUMFERENCE = 2 * Math.PI * 90; // 565.48
 
         function setProgress(percent) {
@@ -306,12 +314,21 @@
                 timerLabel.classList.remove('hidden');
             }
 
+            // Play beep sound on each second tick (when timer is running)
+            if (targetTime && !paused && intervalId) {
+                beepSound.currentTime = 0;
+                beepSound.play().catch(() => {}); // Ignore autoplay policy errors
+            }
+
             if (remaining <= 0) {
                 clearInterval(intervalId);
                 display.textContent = '00:00:00';
                 setProgress(0);
                 timerEnded.classList.remove('hidden');
                 setButtonStates('ended');
+                // Play bell sound when timer ends
+                bellSound.currentTime = 0;
+                bellSound.play().catch(() => {});
             }
         }
 
