@@ -1,152 +1,377 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Stylish Timer</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    body {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      height: 100vh; margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #141e30, #243b55); color: #f5f5f5;
-    }
-    h2 { margin-bottom: 10px; font-weight: 400; }
-    #timerDisplay {
-      font-size: 5em; margin: 20px; font-family: monospace;
-      color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3);
-    }
-    .inputs {
-      display: flex; gap: 20px; margin: 15px; flex-wrap: wrap; justify-content: center;
-    }
-    select, input[type=datetime-local] {
-      padding: 8px; border: none; border-radius: 4px;
-      font-size: 1em;
-    }
-    .controls {
-      display: flex; gap: 12px; justify-content: center; margin-top: 15px;
-    }
-    button {
-      background: rgba(255,255,255,0.1);
-      border: none; border-radius: 8px; padding: 12px; cursor: pointer;
-      color: white; font-size: 1.2em;
-      transition: background 0.3s;
-    }
-    button:hover { background: rgba(255,255,255,0.3); }
-    #exitFullscreenBtn { display: none; margin-top: 20px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stat Mania - Making sense of statistics</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Tailwind: bg-slate-50 */
+            color: #334155; /* Tailwind: text-slate-700 */
+        }
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0; /* Tailwind: bg-slate-200 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8; /* Tailwind: bg-slate-400 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b; /* Tailwind: bg-slate-500 */
+        }
+    </style>
 </head>
-<body>
-  <h2>Stylish Timer</h2>
+<body class="antialiased flex flex-col min-h-screen">
 
-  <div class="inputs">
-    <div>
-      <label>Duration</label><br>
-      <select id="hours"></select> :
-      <select id="minutes"></select> :
-      <select id="seconds"></select>
-    </div>
-    <div>
-      <label>Target Date-Time</label><br>
-      <input type="datetime-local" id="dateTimeInput">
-    </div>
-  </div>
+    <!-- Header/Navbar -->
+    <header class="bg-white shadow-sm py-4">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <!-- Logo, Title, and Motto -->
+            <div class="flex items-center space-x-3">
+                <img src="../img/statmania_logo.png" alt="Stat Mania Logo" class="w-10 h-10 rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/40x40/4f46e5/ffffff?text=Logo';">
+                <div>
+                    <div class="text-2xl font-bold text-indigo-600">Stat Mania</div>
+                    <p class="text-sm text-slate-500">Making sense of statistics</p>
+                </div>
+            </div>
 
-  <div id="timerDisplay">00:00:00</div>
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="#features" class="text-slate-600 hover:text-indigo-600 transition duration-300">Features</a></li>
+                    <li><a href="#cta" class="text-slate-600 hover:text-indigo-600 transition duration-300">Contact</a></li>
+                </ul>
+            </nav>
 
-  <div class="controls" id="controlButtons">
-    <button id="startBtn" title="Start"><i class="fas fa-play"></i></button>
-    <button id="pauseBtn" title="Pause"><i class="fas fa-pause"></i></button>
-    <button id="resumeBtn" title="Resume"><i class="fas fa-play-circle"></i></button>
-    <button id="resetBtn" title="Reset"><i class="fas fa-rotate-left"></i></button>
-    <button id="fullscreenBtn" title="Fullscreen"><i class="fas fa-expand"></i></button>
-  </div>
+            <!-- Mobile Menu Button (Hamburger Icon) -->
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
 
-  <button id="exitFullscreenBtn" title="Exit Fullscreen"><i class="fas fa-compress"></i></button>
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="#features" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Features</a>
+            <a href="#cta" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Contact</a>
+        </div>
+    </header>
 
-  <script>
-    let intervalId, remaining = 0, targetTime = null, paused = false;
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-8 px-4 sm:px-6 lg:px-8 rounded-b-2xl shadow-lg">
+            <div class="container mx-auto text-center max-w-4xl">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-4 flex items-center justify-center gap-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-12 h-12 text-white">
+                        <path fill-rule="evenodd" d="M12 3v2.25m0 0l-3.975 3.975a.75.75 0 0 1-1.06 0A.75.75 0 0 1 6 8.25V6.75m0 0l4.5-4.5M12 3h.008v2.25M12 3l3.975 3.975a.75.75 0 0 0 1.06 0 .75.75 0 0 0 0-1.06L12.75 3M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12V15.75Z" clip-rule="evenodd" />
+                    </svg>
+                    Timer / Countdown
+                </h1>
+                <p class="text-lg sm:text-xl opacity-90">
+                    Set countdown timers or target date-time with fullscreen support
+                </p>
+            </div>
+        </section>
 
-    const display = document.getElementById("timerDisplay");
-    const hoursSel = document.getElementById("hours");
-    const minutesSel = document.getElementById("minutes");
-    const secondsSel = document.getElementById("seconds");
-    const dateTimeInput = document.getElementById("dateTimeInput");
+        <!-- Timer Section -->
+        <section class="py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
+            <div class="container mx-auto max-w-3xl">
+                <div class="bg-white p-8 rounded-xl shadow-xl text-slate-700">
+                    <h2 class="text-3xl font-bold text-indigo-600 mb-6 text-center">Timer</h2>
 
-    // Populate dropdowns
-    for (let i=0;i<24;i++) hoursSel.add(new Option(i.toString().padStart(2,"0"), i));
-    for (let i=0;i<60;i++) {
-      minutesSel.add(new Option(i.toString().padStart(2,"0"), i));
-      secondsSel.add(new Option(i.toString().padStart(2,"0"), i));
-    }
+                    <!-- Input Method Tabs -->
+                    <div class="flex justify-center mb-8 bg-white rounded-lg shadow-md">
+                        <button class="tablinks flex-1 text-center rounded-l-lg active" onclick="openTab(event, 'duration-tab')">Duration</button>
+                        <button class="tablinks flex-1 text-center rounded-r-lg" onclick="openTab(event, 'datetime-tab')">Target Date-Time</button>
+                    </div>
 
-    function format(sec) {
-      if (sec < 0) return "00:00:00";
-      const h = Math.floor(sec / 3600).toString().padStart(2,"0");
-      const m = Math.floor((sec % 3600) / 60).toString().padStart(2,"0");
-      const s = (sec % 60).toString().padStart(2,"0");
-      return `${h}:${m}:${s}`;
-    }
+                    <!-- Duration Tab -->
+                    <div id="duration-tab" class="tabcontent bg-white p-0 rounded-lg shadow-xl text-slate-700 block">
+                        <div class="grid grid-cols-3 gap-4 mb-6">
+                            <div>
+                                <label for="hours" class="block text-slate-700 text-sm font-bold mb-2 text-center">Hours</label>
+                                <select id="hours" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline focus:border-indigo-500 text-center"></select>
+                            </div>
+                            <div>
+                                <label for="minutes" class="block text-slate-700 text-sm font-bold mb-2 text-center">Minutes</label>
+                                <select id="minutes" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline focus:border-indigo-500 text-center"></select>
+                            </div>
+                            <div>
+                                <label for="seconds" class="block text-slate-700 text-sm font-bold mb-2 text-center">Seconds</label>
+                                <select id="seconds" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline focus:border-indigo-500 text-center"></select>
+                            </div>
+                        </div>
+                    </div>
 
-    function updateDisplay() {
-      if (targetTime) remaining = Math.floor((targetTime - Date.now()) / 1000);
-      display.textContent = format(remaining);
-      if (remaining <= 0) {
-        clearInterval(intervalId);
-        display.textContent = "⏰ Time up!";
-      }
-    }
+                    <!-- Target Date-Time Tab -->
+                    <div id="datetime-tab" class="tabcontent bg-white p-0 rounded-lg shadow-xl text-slate-700 hidden">
+                        <div class="mb-6">
+                            <label for="dateTimeInput" class="block text-slate-700 text-sm font-bold mb-2">Target Date & Time</label>
+                            <input type="datetime-local" id="dateTimeInput" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline focus:border-indigo-500">
+                        </div>
+                    </div>
 
-    document.getElementById("startBtn").onclick = () => {
-      clearInterval(intervalId); paused = false;
-      if (dateTimeInput.value) {
-        targetTime = new Date(dateTimeInput.value).getTime();
-      } else {
-        const h = +hoursSel.value, m = +minutesSel.value, s = +secondsSel.value;
-        remaining = h*3600 + m*60 + s;
-        targetTime = Date.now() + remaining*1000;
-      }
-      updateDisplay();
-      intervalId = setInterval(updateDisplay, 1000);
-    };
+                    <!-- Timer Display -->
+                    <div id="timerDisplay" class="font-mono text-5xl sm:text-6xl lg:text-7xl font-bold text-center text-indigo-600 my-8 select-none" aria-live="polite">
+                        00:00:00
+                    </div>
 
-    document.getElementById("pauseBtn").onclick = () => {
-      if (!paused) { clearInterval(intervalId); paused = true; }
-    };
+                    <!-- Controls -->
+                    <div class="controls flex flex-wrap justify-center gap-4 mb-6">
+                        <button id="startBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105" title="Start">
+                            <svg class="w-6 h-6 inline-block" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            <span class="ml-2">Start</span>
+                        </button>
+                        <button id="pauseBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105 hidden" title="Pause">
+                            <svg class="w-6 h-6 inline-block" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
+                            <span class="ml-2">Pause</span>
+                        </button>
+                        <button id="resumeBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105 hidden" title="Resume">
+                            <svg class="w-6 h-6 inline-block" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            <span class="ml-2">Resume</span>
+                        </button>
+                        <button id="resetBtn" class="bg-slate-500 hover:bg-slate-600 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105" title="Reset">
+                            <svg class="w-6 h-6 inline-block" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c6 0 11 5 11 11 0 4.97-3.1 9.24-7.44 10.71L18 21l-4-4-4 4V15c0-5.5-4.5-10-10-10S2 9.5 2 15s4.5 10 10 10c3.68 0 6.93-2.05 8.6-5L14 17v4h4V4H12z"/></svg>
+                            <span class="ml-2">Reset</span>
+                        </button>
+                        <button id="fullscreenBtn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105" title="Fullscreen">
+                            <svg class="w-6 h-6 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                            <span class="ml-2">Fullscreen</span>
+                        </button>
+                    </div>
 
-    document.getElementById("resumeBtn").onclick = () => {
-      if (paused) {
-        targetTime = Date.now() + remaining*1000;
-        intervalId = setInterval(updateDisplay, 1000);
-        paused = false;
-      }
-    };
+                    <button id="exitFullscreenBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105 w-full hidden" title="Exit Fullscreen">
+                        <svg class="w-6 h-6 inline-block mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                        <span class="ml-2">Exit Fullscreen</span>
+                    </button>
 
-    document.getElementById("resetBtn").onclick = () => {
-      clearInterval(intervalId); display.textContent="00:00:00";
-      remaining=0; targetTime=null; paused=false;
-      dateTimeInput.value=""; hoursSel.value="0"; minutesSel.value="0"; secondsSel.value="0";
-    };
+                    <!-- Timer Ended Message -->
+                    <div id="timerEnded" class="mt-6 p-4 bg-green-100 rounded-md border border-green-200 hidden text-center">
+                        <p class="text-lg font-semibold text-green-700">⏰ Time up!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    document.getElementById("fullscreenBtn").onclick = () => {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-      }
-    };
+        <!-- Call to Action Section -->
+        <section id="cta" class="bg-indigo-700 py-16 px-4 sm:px-6 lg:px-8 text-white text-center rounded-t-2xl shadow-lg">
+            <div class="container mx-auto max-w-3xl">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-6">Explore Other Services</h2>
+                <p class="text-lg sm:text-xl mb-8 opacity-90">
+                    Learn, Grow, and Implement
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="www.statmania.info" class="inline-block bg-white text-indigo-700 hover:bg-indigo-100 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
+                        Learn
+                    </a>
+                    <a href="#" class="inline-block bg-transparent border-2 border-white text-white hover:bg-white hover:text-indigo-700 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
+                        Start Data Science
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
 
-    document.getElementById("exitFullscreenBtn").onclick = () => {
-      if (document.fullscreenElement) document.exitFullscreen();
-    };
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-white py-8 px-4 sm:px-6 lg:px-8 text-center rounded-t-lg shadow-inner mt-auto">
+        <div class="container mx-auto">
+            <p class="mb-4">&copy; 2024 Stat Mania. All rights reserved.</p>
+            <div class="flex justify-center space-x-6">
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Privacy Policy</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Terms of Service</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Sitemap</a>
+            </div>
+        </div>
+    </footer>
 
-    document.addEventListener("fullscreenchange", () => {
-      if (document.fullscreenElement) {
-        document.getElementById("controlButtons").style.display="none";
-        document.getElementById("exitFullscreenBtn").style.display="block";
-      } else {
-        document.getElementById("controlButtons").style.display="flex";
-        document.getElementById("exitFullscreenBtn").style.display="none";
-      }
-    });
-  </script>
+    <script>
+        // JavaScript for mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Hide mobile menu when a link is clicked
+        const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // --- Tab Functionality ---
+        function openTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.classList.add("active");
+        }
+
+        // --- Timer Logic ---
+        let intervalId, remaining = 0, targetTime = null, paused = false;
+
+        const display = document.getElementById("timerDisplay");
+        const hoursSel = document.getElementById("hours");
+        const minutesSel = document.getElementById("minutes");
+        const secondsSel = document.getElementById("seconds");
+        const dateTimeInput = document.getElementById("dateTimeInput");
+        const timerEnded = document.getElementById("timerEnded");
+
+        // Buttons
+        const startBtn = document.getElementById("startBtn");
+        const pauseBtn = document.getElementById("pauseBtn");
+        const resumeBtn = document.getElementById("resumeBtn");
+        const resetBtn = document.getElementById("resetBtn");
+        const fullscreenBtn = document.getElementById("fullscreenBtn");
+        const exitFullscreenBtn = document.getElementById("exitFullscreenBtn");
+
+        // Populate dropdowns
+        for (let i = 0; i < 24; i++) hoursSel.add(new Option(i.toString().padStart(2, "0"), i));
+        for (let i = 0; i < 60; i++) {
+            minutesSel.add(new Option(i.toString().padStart(2, "0"), i));
+            secondsSel.add(new Option(i.toString().padStart(2, "0"), i));
+        }
+
+        function format(sec) {
+            if (sec < 0) return "00:00:00";
+            const h = Math.floor(sec / 3600).toString().padStart(2, "0");
+            const m = Math.floor((sec % 3600) / 60).toString().padStart(2, "0");
+            const s = (sec % 60).toString().padStart(2, "0");
+            return `${h}:${m}:${s}`;
+        }
+
+        function updateDisplay() {
+            if (targetTime) remaining = Math.floor((targetTime - Date.now()) / 1000);
+            display.textContent = format(remaining);
+            if (remaining <= 0) {
+                clearInterval(intervalId);
+                display.textContent = "00:00:00";
+                timerEnded.classList.remove('hidden');
+                setButtonStates('ended');
+            }
+        }
+
+        function setButtonStates(state) {
+            // state: 'idle', 'running', 'paused', 'ended'
+            startBtn.classList.add('hidden');
+            pauseBtn.classList.add('hidden');
+            resumeBtn.classList.add('hidden');
+            resetBtn.classList.remove('hidden');
+            fullscreenBtn.classList.remove('hidden');
+
+            if (state === 'running') {
+                pauseBtn.classList.remove('hidden');
+            } else if (state === 'paused') {
+                resumeBtn.classList.remove('hidden');
+                startBtn.classList.remove('hidden');
+            } else if (state === 'idle') {
+                startBtn.classList.remove('hidden');
+            } else if (state === 'ended') {
+                startBtn.classList.remove('hidden');
+            }
+        }
+
+        function startTimer() {
+            clearInterval(intervalId);
+            paused = false;
+            timerEnded.classList.add('hidden');
+
+            if (dateTimeInput.value) {
+                targetTime = new Date(dateTimeInput.value).getTime();
+            } else {
+                const h = +hoursSel.value, m = +minutesSel.value, s = +secondsSel.value;
+                remaining = h * 3600 + m * 60 + s;
+                if (remaining === 0) return;
+                targetTime = Date.now() + remaining * 1000;
+            }
+            updateDisplay();
+            intervalId = setInterval(updateDisplay, 1000);
+            setButtonStates('running');
+        }
+
+        startBtn.onclick = startTimer;
+
+        pauseBtn.onclick = () => {
+            if (!paused) {
+                clearInterval(intervalId);
+                paused = true;
+                setButtonStates('paused');
+            }
+        };
+
+        resumeBtn.onclick = () => {
+            if (paused) {
+                targetTime = Date.now() + remaining * 1000;
+                intervalId = setInterval(updateDisplay, 1000);
+                paused = false;
+                setButtonStates('running');
+            }
+        };
+
+        resetBtn.onclick = () => {
+            clearInterval(intervalId);
+            display.textContent = "00:00:00";
+            remaining = 0;
+            targetTime = null;
+            paused = false;
+            timerEnded.classList.add('hidden');
+            dateTimeInput.value = "";
+            hoursSel.value = "0";
+            minutesSel.value = "0";
+            secondsSel.value = "0";
+            setButtonStates('idle');
+        };
+
+        fullscreenBtn.onclick = async () => {
+            if (!document.fullscreenElement) {
+                try {
+                    await document.documentElement.requestFullscreen();
+                } catch (err) {
+                    console.log("Fullscreen request failed:", err);
+                }
+            }
+        };
+
+        exitFullscreenBtn.onclick = () => {
+            if (document.fullscreenElement) document.exitFullscreen();
+        };
+
+        document.addEventListener("fullscreenchange", () => {
+            if (document.fullscreenElement) {
+                document.getElementById("controlButtons").style.display = "none";
+                exitFullscreenBtn.classList.remove('hidden');
+            } else {
+                document.getElementById("controlButtons").style.display = "flex";
+                exitFullscreenBtn.classList.add('hidden');
+            }
+        });
+
+        // Initialize button states
+        setButtonStates('idle');
+    </script>
 </body>
 </html>
