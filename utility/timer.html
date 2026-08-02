@@ -11,24 +11,64 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc; /* Tailwind: bg-slate-50 */
-            color: #334155; /* Tailwind: text-slate-700 */
+            background-color: #f8fafc;
+            color: #334155;
         }
-        /* Custom scrollbar for a cleaner look */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #e2e8f0; /* Tailwind: bg-slate-200 */
+            background: #e2e8f0;
             border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb {
-            background: #94a3b8; /* Tailwind: bg-slate-400 */
+            background: #94a3b8;
             border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #64748b; /* Tailwind: bg-slate-500 */
+            background: #64748b;
+        }
+
+        /* Circle progress animation */
+        .circle-progress {
+            transform: rotate(-90deg);
+        }
+        .circle-progress-bg {
+            opacity: 0.2;
+        }
+        .circle-progress-fg {
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        /* Fullscreen mode - only show timer and circle */
+        :fullscreen .timer-fullscreen-only {
+            display: flex !important;
+        }
+        :fullscreen .timer-normal-view {
+            display: none !important;
+        }
+        :fullscreen .timer-container {
+            max-width: none !important;
+            padding: 0 !important;
+        }
+        :fullscreen main {
+            padding: 0 !important;
+        }
+        :fullscreen section.py-12 {
+            padding: 0 !important;
+            min-height: 100vh;
+        }
+        :fullscreen .bg-white.rounded-xl.shadow-xl {
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            padding: 0 !important;
+        }
+        :fullscreen header,
+        :fullscreen footer,
+        :fullscreen #cta {
+            display: none !important;
         }
     </style>
 </head>
@@ -37,7 +77,6 @@
     <!-- Header/Navbar -->
     <header class="bg-white shadow-sm py-4">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-            <!-- Logo, Title, and Motto -->
             <div class="flex items-center space-x-3">
                 <img src="../img/statmania_logo.png" alt="Stat Mania Logo" class="w-10 h-10 rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/40x40/4f46e5/ffffff?text=Logo';">
                 <div>
@@ -45,24 +84,18 @@
                     <p class="text-sm text-slate-500">Making sense of statistics</p>
                 </div>
             </div>
-
-            <!-- Desktop Navigation -->
             <nav class="hidden md:block">
                 <ul class="flex space-x-6">
                     <li><a href="#features" class="text-slate-600 hover:text-indigo-600 transition duration-300">Features</a></li>
                     <li><a href="#cta" class="text-slate-600 hover:text-indigo-600 transition duration-300">Contact</a></li>
                 </ul>
             </nav>
-
-            <!-- Mobile Menu Button (Hamburger Icon) -->
             <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
                 </svg>
             </button>
         </div>
-
-        <!-- Mobile Menu (Hidden by default) -->
         <div id="mobile-menu" class="hidden md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <a href="#features" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Features</a>
             <a href="#cta" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Contact</a>
@@ -79,87 +112,103 @@
                     </svg>
                     Timer / Countdown
                 </h1>
-                <p class="text-lg sm:text-xl opacity-90">
-                    Set countdown timers or target date-time with fullscreen support
-                </p>
+                <p class="text-lg sm:text-xl opacity-90">Set countdown timers or target date-time with fullscreen support</p>
             </div>
         </section>
 
         <!-- Timer Section -->
         <section class="py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
             <div class="container mx-auto max-w-3xl">
-                <div class="bg-white p-8 rounded-xl shadow-xl text-slate-700">
+                <div class="timer-container bg-white p-8 rounded-xl shadow-xl text-slate-700">
                     <h2 class="text-3xl font-bold text-indigo-600 mb-6 text-center">Timer</h2>
 
-                    <!-- Input Method Tabs -->
-                    <div class="flex justify-center mb-8 bg-white rounded-lg shadow-md">
-                        <button class="tablinks flex-1 text-center rounded-l-lg active" onclick="openTab(event, 'duration-tab')">Duration</button>
-                        <button class="tablinks flex-1 text-center rounded-r-lg" onclick="openTab(event, 'datetime-tab')">Target Date-Time</button>
-                    </div>
+                    <!-- Normal View (inputs, tabs, controls) -->
+                    <div class="timer-normal-view">
+                        <!-- Input Method Tabs -->
+                        <div class="flex justify-center mb-8 bg-white rounded-lg shadow-md">
+                            <button class="tablinks flex-1 text-center rounded-l-lg active" onclick="openTab(event, 'duration-tab')">Duration</button>
+                            <button class="tablinks flex-1 text-center rounded-r-lg" onclick="openTab(event, 'datetime-tab')">Target Date-Time</button>
+                        </div>
 
-                    <!-- Duration Tab -->
-                    <div id="duration-tab" class="tabcontent bg-white p-0 rounded-lg shadow-xl text-slate-700 block">
-                        <div class="grid grid-cols-3 gap-4 mb-6">
-                            <div>
-                                <label for="hours" class="block text-slate-700 text-sm font-bold mb-2 text-center">Hours</label>
-                                <select id="hours" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline focus:border-indigo-500 text-center"></select>
+                        <!-- Duration Tab -->
+                        <div id="duration-tab" class="tabcontent bg-white p-0 rounded-lg shadow-xl text-slate-700 block">
+                            <div class="grid grid-cols-3 gap-4 mb-6">
+                                <div>
+                                    <label for="hours" class="block text-slate-700 text-sm font-bold mb-2 text-center">Hours</label>
+                                    <select id="hours" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline focus:border-indigo-500 text-center"></select>
+                                </div>
+                                <div>
+                                    <label for="minutes" class="block text-slate-700 text-sm font-bold mb-2 text-center">Minutes</label>
+                                    <select id="minutes" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline focus:border-indigo-500 text-center"></select>
+                                </div>
+                                <div>
+                                    <label for="seconds" class="block text-slate-700 text-sm font-bold mb-2 text-center">Seconds</label>
+                                    <select id="seconds" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline focus:border-indigo-500 text-center"></select>
+                                </div>
                             </div>
-                            <div>
-                                <label for="minutes" class="block text-slate-700 text-sm font-bold mb-2 text-center">Minutes</label>
-                                <select id="minutes" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline focus:border-indigo-500 text-center"></select>
-                            </div>
-                            <div>
-                                <label for="seconds" class="block text-slate-700 text-sm font-bold mb-2 text-center">Seconds</label>
-                                <select id="seconds" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline focus:border-indigo-500 text-center"></select>
+                        </div>
+
+                        <!-- Target Date-Time Tab -->
+                        <div id="datetime-tab" class="tabcontent bg-white p-0 rounded-lg shadow-xl text-slate-700 hidden">
+                            <div class="mb-6">
+                                <label for="dateTimeInput" class="block text-slate-700 text-sm font-bold mb-2">Target Date & Time</label>
+                                <input type="datetime-local" id="dateTimeInput" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline focus:border-indigo-500">
                             </div>
                         </div>
                     </div>
 
-                    <!-- Target Date-Time Tab -->
-                    <div id="datetime-tab" class="tabcontent bg-white p-0 rounded-lg shadow-xl text-slate-700 hidden">
-                        <div class="mb-6">
-                            <label for="dateTimeInput" class="block text-slate-700 text-sm font-bold mb-2">Target Date & Time</label>
-                            <input type="datetime-local" id="dateTimeInput" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline focus:border-indigo-500">
+                    <!-- Timer Display Area (shown in both normal and fullscreen) -->
+                    <div class="timer-display-area flex flex-col items-center justify-center my-8">
+                        <!-- Circular Progress -->
+                        <div class="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 mb-6">
+                            <svg class="circle-progress w-full h-full" viewBox="0 0 200 200">
+                                <!-- Background circle -->
+                                <circle class="circle-progress-bg" cx="100" cy="100" r="90" fill="none" stroke="#e2e8f0" stroke-width="12"/>
+                                <!-- Progress circle -->
+                                <circle id="progressCircle" class="circle-progress-fg" cx="100" cy="100" r="90" fill="none" stroke="#4f46e5" stroke-width="12" stroke-linecap="round" stroke-dasharray="565.48" stroke-dashoffset="0"/>
+                            </svg>
+                            <!-- Timer text in center of circle -->
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <div id="timerDisplay" class="font-mono text-4xl sm:text-5xl lg:text-6xl font-bold text-center text-indigo-600 select-none" aria-live="polite">
+                                    00:00:00
+                                </div>
+                                <div id="timerLabel" class="text-slate-500 text-sm mt-1 hidden">Time Remaining</div>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Timer Display -->
-                    <div id="timerDisplay" class="font-mono text-5xl sm:text-6xl lg:text-7xl font-bold text-center text-indigo-600 my-8 select-none" aria-live="polite">
-                        00:00:00
-                    </div>
+                        <!-- Controls (normal view) -->
+                        <div class="controls flex flex-wrap justify-center gap-3 mb-6" id="controlButtons">
+                            <button id="startBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105" title="Start">
+                                <svg class="w-6 h-6 inline-block" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                <span class="ml-2 hidden sm:inline">Start</span>
+                            </button>
+                            <button id="pauseBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105 hidden" title="Pause">
+                                <svg class="w-6 h-6 inline-block" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
+                                <span class="ml-2 hidden sm:inline">Pause</span>
+                            </button>
+                            <button id="resumeBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105 hidden" title="Resume">
+                                <svg class="w-6 h-6 inline-block" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                <span class="ml-2 hidden sm:inline">Resume</span>
+                            </button>
+                            <button id="resetBtn" class="bg-slate-500 hover:bg-slate-600 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105" title="Reset">
+                                <svg class="w-6 h-6 inline-block" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c6 0 11 5 11 11 0 4.97-3.1 9.24-7.44 10.71L18 21l-4-4-4 4V15c0-5.5-4.5-10-10-10S2 9.5 2 15s4.5 10 10 10c3.68 0 6.93-2.05 8.6-5L14 17v4h4V4H12z"/></svg>
+                                <span class="ml-2 hidden sm:inline">Reset</span>
+                            </button>
+                            <button id="fullscreenBtn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105" title="Fullscreen">
+                                <svg class="w-6 h-6 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                                <span class="ml-2 hidden sm:inline">Fullscreen</span>
+                            </button>
+                        </div>
 
-                    <!-- Controls -->
-                    <div class="controls flex flex-wrap justify-center gap-4 mb-6">
-                        <button id="startBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105" title="Start">
-                            <svg class="w-6 h-6 inline-block" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                            <span class="ml-2">Start</span>
+                        <button id="exitFullscreenBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105 w-full hidden timer-fullscreen-only" title="Exit Fullscreen">
+                            <svg class="w-6 h-6 inline-block mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l5 5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                            <span class="ml-2 hidden sm:inline">Exit Fullscreen</span>
                         </button>
-                        <button id="pauseBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105 hidden" title="Pause">
-                            <svg class="w-6 h-6 inline-block" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
-                            <span class="ml-2">Pause</span>
-                        </button>
-                        <button id="resumeBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105 hidden" title="Resume">
-                            <svg class="w-6 h-6 inline-block" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                            <span class="ml-2">Resume</span>
-                        </button>
-                        <button id="resetBtn" class="bg-slate-500 hover:bg-slate-600 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105" title="Reset">
-                            <svg class="w-6 h-6 inline-block" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c6 0 11 5 11 11 0 4.97-3.1 9.24-7.44 10.71L18 21l-4-4-4 4V15c0-5.5-4.5-10-10-10S2 9.5 2 15s4.5 10 10 10c3.68 0 6.93-2.05 8.6-5L14 17v4h4V4H12z"/></svg>
-                            <span class="ml-2">Reset</span>
-                        </button>
-                        <button id="fullscreenBtn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105" title="Fullscreen">
-                            <svg class="w-6 h-6 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
-                            <span class="ml-2">Fullscreen</span>
-                        </button>
-                    </div>
 
-                    <button id="exitFullscreenBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105 w-full hidden" title="Exit Fullscreen">
-                        <svg class="w-6 h-6 inline-block mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
-                        <span class="ml-2">Exit Fullscreen</span>
-                    </button>
-
-                    <!-- Timer Ended Message -->
-                    <div id="timerEnded" class="mt-6 p-4 bg-green-100 rounded-md border border-green-200 hidden text-center">
-                        <p class="text-lg font-semibold text-green-700">⏰ Time up!</p>
+                        <!-- Timer Ended Message -->
+                        <div id="timerEnded" class="mt-6 p-4 bg-green-100 rounded-md border border-green-200 hidden text-center w-full max-w-md">
+                            <p class="text-lg font-semibold text-green-700">⏰ Time up!</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -169,16 +218,10 @@
         <section id="cta" class="bg-indigo-700 py-16 px-4 sm:px-6 lg:px-8 text-white text-center rounded-t-2xl shadow-lg">
             <div class="container mx-auto max-w-3xl">
                 <h2 class="text-3xl sm:text-4xl font-bold mb-6">Explore Other Services</h2>
-                <p class="text-lg sm:text-xl mb-8 opacity-90">
-                    Learn, Grow, and Implement
-                </p>
+                <p class="text-lg sm:text-xl mb-8 opacity-90">Learn, Grow, and Implement</p>
                 <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <a href="www.statmania.info" class="inline-block bg-white text-indigo-700 hover:bg-indigo-100 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
-                        Learn
-                    </a>
-                    <a href="#" class="inline-block bg-transparent border-2 border-white text-white hover:bg-white hover:text-indigo-700 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
-                        Start Data Science
-                    </a>
+                    <a href="www.statmania.info" class="inline-block bg-white text-indigo-700 hover:bg-indigo-100 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">Learn</a>
+                    <a href="#" class="inline-block bg-transparent border-2 border-white text-white hover:bg-white hover:text-indigo-700 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">Start Data Science</a>
                 </div>
             </div>
         </section>
@@ -197,86 +240,83 @@
     </footer>
 
     <script>
-        // JavaScript for mobile menu toggle
+        // Mobile menu toggle
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
 
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-
-        // Hide mobile menu when a link is clicked
-        const mobileMenuLinks = mobileMenu.querySelectorAll('a');
-        mobileMenuLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.add('hidden');
-            });
-        });
-
-        // --- Tab Functionality ---
+        // Tab functionality
         function openTab(evt, tabName) {
-            let i, tabcontent, tablinks;
-
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
-
-            tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].classList.remove("active");
-            }
-
-            document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.classList.add("active");
+            document.querySelectorAll('.tabcontent').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.tablinks').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName).style.display = 'block';
+            evt.currentTarget.classList.add('active');
         }
 
-        // --- Timer Logic ---
-        let intervalId, remaining = 0, targetTime = null, paused = false;
+        // Timer logic
+        let intervalId, remaining = 0, targetTime = null, paused = false, totalDuration = 0;
 
-        const display = document.getElementById("timerDisplay");
-        const hoursSel = document.getElementById("hours");
-        const minutesSel = document.getElementById("minutes");
-        const secondsSel = document.getElementById("seconds");
-        const dateTimeInput = document.getElementById("dateTimeInput");
-        const timerEnded = document.getElementById("timerEnded");
+        const display = document.getElementById('timerDisplay');
+        const progressCircle = document.getElementById('progressCircle');
+        const timerLabel = document.getElementById('timerLabel');
+        const timerEnded = document.getElementById('timerEnded');
+        const hoursSel = document.getElementById('hours');
+        const minutesSel = document.getElementById('minutes');
+        const secondsSel = document.getElementById('seconds');
+        const dateTimeInput = document.getElementById('dateTimeInput');
 
-        // Buttons
-        const startBtn = document.getElementById("startBtn");
-        const pauseBtn = document.getElementById("pauseBtn");
-        const resumeBtn = document.getElementById("resumeBtn");
-        const resetBtn = document.getElementById("resetBtn");
-        const fullscreenBtn = document.getElementById("fullscreenBtn");
-        const exitFullscreenBtn = document.getElementById("exitFullscreenBtn");
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resumeBtn = document.getElementById('resumeBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const exitFullscreenBtn = document.getElementById('exitFullscreenBtn');
+        const controlButtons = document.getElementById('controlButtons');
 
-        // Populate dropdowns
-        for (let i = 0; i < 24; i++) hoursSel.add(new Option(i.toString().padStart(2, "0"), i));
-        for (let i = 0; i < 60; i++) {
-            minutesSel.add(new Option(i.toString().padStart(2, "0"), i));
-            secondsSel.add(new Option(i.toString().padStart(2, "0"), i));
+        const CIRCUMFERENCE = 2 * Math.PI * 90; // 565.48
+
+        function setProgress(percent) {
+            const offset = CIRCUMFERENCE * (1 - percent);
+            progressCircle.style.strokeDashoffset = offset;
+            // Color transition: green -> yellow -> red
+            if (percent > 0.5) {
+                progressCircle.style.stroke = '#22c55e'; // green
+            } else if (percent > 0.15) {
+                progressCircle.style.stroke = '#eab308'; // yellow
+            } else {
+                progressCircle.style.stroke = '#ef4444'; // red
+            }
         }
 
         function format(sec) {
-            if (sec < 0) return "00:00:00";
-            const h = Math.floor(sec / 3600).toString().padStart(2, "0");
-            const m = Math.floor((sec % 3600) / 60).toString().padStart(2, "0");
-            const s = (sec % 60).toString().padStart(2, "0");
+            if (sec < 0) return '00:00:00';
+            const h = Math.floor(sec / 3600).toString().padStart(2, '0');
+            const m = Math.floor((sec % 3600) / 60).toString().padStart(2, '0');
+            const s = (sec % 60).toString().padStart(2, '0');
             return `${h}:${m}:${s}`;
         }
 
         function updateDisplay() {
             if (targetTime) remaining = Math.floor((targetTime - Date.now()) / 1000);
             display.textContent = format(remaining);
+
+            if (totalDuration > 0) {
+                const percent = Math.max(0, remaining / totalDuration);
+                setProgress(percent);
+                timerLabel.classList.remove('hidden');
+            }
+
             if (remaining <= 0) {
                 clearInterval(intervalId);
-                display.textContent = "00:00:00";
+                display.textContent = '00:00:00';
+                setProgress(0);
                 timerEnded.classList.remove('hidden');
                 setButtonStates('ended');
             }
         }
 
         function setButtonStates(state) {
-            // state: 'idle', 'running', 'paused', 'ended'
             startBtn.classList.add('hidden');
             pauseBtn.classList.add('hidden');
             resumeBtn.classList.add('hidden');
@@ -299,15 +339,19 @@
             clearInterval(intervalId);
             paused = false;
             timerEnded.classList.add('hidden');
+            timerLabel.classList.add('hidden');
 
             if (dateTimeInput.value) {
                 targetTime = new Date(dateTimeInput.value).getTime();
+                totalDuration = Math.floor((targetTime - Date.now()) / 1000);
             } else {
                 const h = +hoursSel.value, m = +minutesSel.value, s = +secondsSel.value;
                 remaining = h * 3600 + m * 60 + s;
                 if (remaining === 0) return;
+                totalDuration = remaining;
                 targetTime = Date.now() + remaining * 1000;
             }
+            setProgress(1);
             updateDisplay();
             intervalId = setInterval(updateDisplay, 1000);
             setButtonStates('running');
@@ -334,15 +378,18 @@
 
         resetBtn.onclick = () => {
             clearInterval(intervalId);
-            display.textContent = "00:00:00";
+            display.textContent = '00:00:00';
+            setProgress(0);
             remaining = 0;
             targetTime = null;
+            totalDuration = 0;
             paused = false;
             timerEnded.classList.add('hidden');
-            dateTimeInput.value = "";
-            hoursSel.value = "0";
-            minutesSel.value = "0";
-            secondsSel.value = "0";
+            timerLabel.classList.add('hidden');
+            dateTimeInput.value = '';
+            hoursSel.value = '0';
+            minutesSel.value = '0';
+            secondsSel.value = '0';
             setButtonStates('idle');
         };
 
@@ -351,7 +398,7 @@
                 try {
                     await document.documentElement.requestFullscreen();
                 } catch (err) {
-                    console.log("Fullscreen request failed:", err);
+                    console.log('Fullscreen request failed:', err);
                 }
             }
         };
@@ -360,17 +407,24 @@
             if (document.fullscreenElement) document.exitFullscreen();
         };
 
-        document.addEventListener("fullscreenchange", () => {
+        document.addEventListener('fullscreenchange', () => {
             if (document.fullscreenElement) {
-                document.getElementById("controlButtons").style.display = "none";
+                controlButtons.style.display = 'none';
                 exitFullscreenBtn.classList.remove('hidden');
+                timerLabel.textContent = 'Time Remaining';
             } else {
-                document.getElementById("controlButtons").style.display = "flex";
+                controlButtons.style.display = 'flex';
                 exitFullscreenBtn.classList.add('hidden');
             }
         });
 
-        // Initialize button states
+        // Populate dropdowns
+        for (let i = 0; i < 24; i++) hoursSel.add(new Option(i.toString().padStart(2, '0'), i));
+        for (let i = 0; i < 60; i++) {
+            minutesSel.add(new Option(i.toString().padStart(2, '0'), i));
+            secondsSel.add(new Option(i.toString().padStart(2, '0'), i));
+        }
+
         setButtonStates('idle');
     </script>
 </body>
