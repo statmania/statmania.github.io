@@ -125,9 +125,9 @@
                     <!-- Normal View (inputs, tabs, controls) -->
                     <div class="timer-normal-view">
                         <!-- Input Method Tabs -->
-                        <div class="flex justify-center mb-8 bg-white rounded-lg shadow-md">
-                            <button class="tablinks flex-1 text-center rounded-l-lg active" onclick="openTab(event, 'duration-tab')">Duration</button>
-                            <button class="tablinks flex-1 text-center rounded-r-lg" onclick="openTab(event, 'datetime-tab')">Target Date-Time</button>
+                        <div class="flex justify-center mb-8 gap-2">
+                            <button class="tablinks px-6 py-3 rounded-lg bg-indigo-50 text-indigo-700 font-medium hover:bg-indigo-100 transition-colors active" onclick="openTab(event, 'duration-tab')">Duration</button>
+                            <button class="tablinks px-6 py-3 rounded-lg bg-purple-50 text-purple-700 font-medium hover:bg-purple-100 transition-colors" onclick="openTab(event, 'datetime-tab')">Target Date-Time</button>
                         </div>
 
                         <!-- Duration Tab -->
@@ -195,14 +195,13 @@
                                 <span class="ml-2 hidden sm:inline">Reset</span>
                             </button>
                             <button id="fullscreenBtn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105" title="Fullscreen">
-                                <svg class="w-6 h-6 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                                <span class="text-2xl leading-none">⤡</span>
                                 <span class="ml-2 hidden sm:inline">Fullscreen</span>
                             </button>
                         </div>
 
-                        <button id="exitFullscreenBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105 w-full hidden timer-fullscreen-only" title="Exit Fullscreen">
-                            <svg class="w-6 h-6 inline-block mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l5 5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
-                            <span class="ml-2 hidden sm:inline">Exit Fullscreen</span>
+                        <button id="exitFullscreenBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-5 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105 hidden timer-fullscreen-only" title="Exit Fullscreen" aria-label="Exit Fullscreen">
+                            <span class="text-2xl leading-none">⤢</span>
                         </button>
 
                         <!-- Timer Ended Message -->
@@ -357,6 +356,22 @@
             setButtonStates('running');
         }
 
+        // Update preview when duration dropdowns change (only when idle)
+        function updateDurationPreview() {
+            if (paused || targetTime) return; // Don't update if timer is running or paused
+            const h = +hoursSel.value, m = +minutesSel.value, s = +secondsSel.value;
+            const totalSec = h * 3600 + m * 60 + s;
+            display.textContent = format(totalSec);
+            if (totalSec > 0) {
+                totalDuration = totalSec;
+                setProgress(1);
+                timerLabel.classList.remove('hidden');
+            } else {
+                setProgress(0);
+                timerLabel.classList.add('hidden');
+            }
+        }
+
         startBtn.onclick = startTimer;
 
         pauseBtn.onclick = () => {
@@ -424,6 +439,11 @@
             minutesSel.add(new Option(i.toString().padStart(2, '0'), i));
             secondsSel.add(new Option(i.toString().padStart(2, '0'), i));
         }
+
+        // Add event listeners for dynamic preview update
+        [hoursSel, minutesSel, secondsSel].forEach(sel => {
+            sel.addEventListener('change', updateDurationPreview);
+        });
 
         setButtonStates('idle');
     </script>
