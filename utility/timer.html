@@ -319,7 +319,7 @@
             }
 
             // Play beep sound on each second tick (when timer is running)
-            if (!isMuted && targetTime && !paused && intervalId) {
+            if (!isMuted && targetTime && !paused) {
                 beepSound.currentTime = 0;
                 beepSound.play().catch(() => {}); // Ignore autoplay policy errors
             }
@@ -375,6 +375,13 @@
             }
             setProgress(1);
             updateDisplay();
+
+            // Play first beep immediately (within user interaction context)
+            if (!isMuted) {
+                beepSound.currentTime = 0;
+                beepSound.play().catch(() => {});
+            }
+
             intervalId = setInterval(updateDisplay, 1000);
             setButtonStates('running');
         }
