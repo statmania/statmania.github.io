@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stat Mania - Making sense of statistics</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Tailwind: bg-slate-50 */
+            color: #334155; /* Tailwind: text-slate-700 */
+        }
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0; /* Tailwind: bg-slate-200 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8; /* Tailwind: bg-slate-400 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b; /* Tailwind: bg-slate-500 */
+        }
+
+        /* Styles for the tabs */
+        .tablinks {
+            background-color: #f1f5f9; /* Tailwind: bg-slate-100 */
+            color: #475569; /* Tailwind: text-slate-600 */
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 17px;
+            border-radius: 0.5rem 0.5rem 0 0; /* Rounded top corners */
+        }
+
+        .tablinks:hover {
+            background-color: #e2e8f0; /* Tailwind: bg-slate-200 */
+        }
+
+        .tablinks.active {
+            background-color: #ffffff; /* White background for active tab */
+            color: #4f46e5; /* Tailwind: text-indigo-600 */
+            font-weight: 600; /* Tailwind: font-semibold */
+            border-bottom: 2px solid #4f46e5; /* Indigo border bottom */
+        }
+
+        .tabcontent {
+            display: none;
+            padding: 20px 0; /* Adjust padding as needed */
+            border-top: none;
+            animation: fadeEffect 1s; /* Fading animation for content */
+        }
+
+        /* Fade in animation */
+        @keyframes fadeEffect {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header/Navbar -->
+    <header class="bg-white shadow-sm py-4">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <!-- Logo, Title, and Motto -->
+            <div class="flex items-center space-x-3">
+                <img src="../img/statmania_logo.png" alt="Stat Mania Logo" class="w-10 h-10 rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/40x40/4f46e5/ffffff?text=Logo';">
+                <div>
+                    <div class="text-2xl font-bold text-indigo-600">Stat Mania</div>
+                    <p class="text-sm text-slate-500">Making sense of statistics</p>
+                </div>
+            </div>
+
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="#features" class="text-slate-600 hover:text-indigo-600 transition duration-300">Features</a></li>
+                    <li><a href="#cta" class="text-slate-600 hover:text-indigo-600 transition duration-300">Contact</a></li>
+                </ul>
+            </nav>
+
+            <!-- Mobile Menu Button (Hamburger Icon) -->
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="#features" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Features</a>
+            <a href="#cta" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Contact</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-8 px-4 sm:px-6 lg:px-8 rounded-b-2xl shadow-lg">
+            <div class="container mx-auto text-center max-w-4xl">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-4 flex items-center justify-center gap-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-12 h-12 text-white">
+                        <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695L12 22.105l-7.111-1.305a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" />
+                    </svg>
+                    Health Calculators
+                </h1>
+                <p class="text-lg sm:text-xl opacity-90">
+                    Calculate your BMI and find your ideal weight range.
+                </p>
+            </div>
+        </section>
+
+        <!-- Calculators Section with Tabs -->
+        <section class="py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
+            <div class="container mx-auto max-w-3xl">
+
+                <!-- Tab Buttons -->
+                <div class="flex justify-center mb-8 bg-white rounded-t-lg shadow-md">
+                    <button class="tablinks flex-1 text-center rounded-tl-lg" onclick="openTab(event, 'bmi-calculator')" id="defaultOpen">BMI Calculator</button>
+                    <button class="tablinks flex-1 text-center rounded-tr-lg" onclick="openTab(event, 'safe-weight-calculator')">Safe Weight Calculator</button>
+                </div>
+
+                <!-- Tab Content - BMI Calculator -->
+                <div id="bmi-calculator" class="tabcontent bg-white p-8 rounded-lg shadow-xl text-slate-700">
+                    <h2 class="text-3xl font-bold text-indigo-600 mb-6 text-center">BMI Calculator</h2>
+                    <div class="mb-6 text-left">
+                        <label for="bmi-weight" class="block text-slate-700 text-sm font-bold mb-2">Weight (kg):</label>
+                        <input type="number" id="bmi-weight" placeholder="Enter weight in kilograms" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline focus:border-indigo-500" min="1" step="0.1">
+                    </div>
+
+                    <!-- Height Unit Selection for BMI -->
+                    <div class="mb-4 text-left">
+                        <label class="block text-slate-700 text-sm font-bold mb-2">Height Unit:</label>
+                        <div class="flex items-center space-x-4">
+                            <label class="inline-flex items-center">
+                                <input type="radio" class="form-radio text-indigo-600" name="bmiHeightUnit" value="cm" id="bmi-unit-cm" checked>
+                                <span class="ml-2 text-slate-700">Centimeters (cm)</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" class="form-radio text-indigo-600" name="bmiHeightUnit" value="ft-in" id="bmi-unit-ft-in">
+                                <span class="ml-2 text-slate-700">Feet & Inches (ft/in)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Height Input - Centimeters for BMI -->
+                    <div id="bmi-height-cm-group" class="mb-6 text-left">
+                        <label for="bmi-height-cm" class="block text-slate-700 text-sm font-bold mb-2">Height (cm):</label>
+                        <input type="number" id="bmi-height-cm" placeholder="Enter height in centimeters" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline focus:border-indigo-500" min="1" step="0.1">
+                    </div>
+
+                    <!-- Height Input - Feet & Inches for BMI (hidden by default) -->
+                    <div id="bmi-height-ft-in-group" class="mb-6 text-left hidden">
+                        <label class="block text-slate-700 text-sm font-bold mb-2">Height:</label>
+                        <div class="flex space-x-4">
+                            <div class="w-1/2">
+                                <label for="bmi-height-ft" class="block text-slate-700 text-xs font-bold mb-1">Feet:</label>
+                                <input type="number" id="bmi-height-ft" placeholder="Feet" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline focus:border-indigo-500" min="0" step="1">
+                            </div>
+                            <div class="w-1/2">
+                                <label for="bmi-height-in" class="block text-slate-700 text-xs font-bold mb-1">Inches:</label>
+                                <input type="number" id="bmi-height-in" placeholder="Inches" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline focus:border-indigo-500" min="0" max="11" step="0.1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="calculate-bmi" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105 w-full">
+                        Calculate BMI
+                    </button>
+                    <div id="bmi-result" class="mt-6 p-4 bg-slate-100 rounded-md border border-slate-200 hidden">
+                        <p class="text-lg font-semibold mb-2">Your BMI: <span id="bmi-value" class="text-indigo-600"></span></p>
+                        <p id="bmi-category" class="text-md"></p>
+                    </div>
+                     <div id="bmi-error" class="mt-4 p-3 bg-red-100 text-red-700 rounded-md border border-red-200 hidden">
+                        Please enter valid numbers for both weight and height.
+                    </div>
+                </div>
+
+                <!-- Tab Content - Safe Weight Calculator -->
+                <div id="safe-weight-calculator" class="tabcontent bg-white p-8 rounded-lg shadow-xl text-slate-700">
+                    <h2 class="text-3xl font-bold text-indigo-600 mb-6 text-center">Safe Weight Calculator</h2>
+                    <!-- Height Unit Selection for Safe Weight -->
+                    <div class="mb-4 text-left">
+                        <label class="block text-slate-700 text-sm font-bold mb-2">Height Unit:</label>
+                        <div class="flex items-center space-x-4">
+                            <label class="inline-flex items-center">
+                                <input type="radio" class="form-radio text-indigo-600" name="safeWeightHeightUnit" value="cm" id="safe-weight-unit-cm" checked>
+                                <span class="ml-2 text-slate-700">Centimeters (cm)</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" class="form-radio text-indigo-600" name="safeWeightHeightUnit" value="ft-in" id="safe-weight-unit-ft-in">
+                                <span class="ml-2 text-slate-700">Feet & Inches (ft/in)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Height Input - Centimeters for Safe Weight -->
+                    <div id="safe-weight-height-cm-group" class="mb-6 text-left">
+                        <label for="safe-weight-height-cm" class="block text-slate-700 text-sm font-bold mb-2">Height (cm):</label>
+                        <input type="number" id="safe-weight-height-cm" placeholder="Enter height in centimeters" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline focus:border-indigo-500" min="1" step="0.1">
+                    </div>
+
+                    <!-- Height Input - Feet & Inches for Safe Weight (hidden by default) -->
+                    <div id="safe-weight-height-ft-in-group" class="mb-6 text-left hidden">
+                        <label class="block text-slate-700 text-sm font-bold mb-2">Height:</label>
+                        <div class="flex space-x-4">
+                            <div class="w-1/2">
+                                <label for="safe-weight-height-ft" class="block text-slate-700 text-xs font-bold mb-1">Feet:</label>
+                                <input type="number" id="safe-weight-height-ft" placeholder="Feet" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline focus:border-indigo-500" min="0" step="1">
+                            </div>
+                            <div class="w-1/2">
+                                <label for="safe-weight-height-in" class="block text-slate-700 text-xs font-bold mb-1">Inches:</label>
+                                <input type="number" id="safe-weight-height-in" placeholder="Inches" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline focus:border-indigo-500" min="0" max="11" step="0.1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="calculate-safe-weight" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105 w-full">
+                        Calculate Safe Weight
+                    </button>
+                    <div id="safe-weight-result" class="mt-6 p-4 bg-slate-100 rounded-md border border-slate-200 hidden">
+                        <p class="text-lg font-semibold mb-2">For your height, your weight should be between:</p>
+                        <p class="text-lg font-semibold"><span id="safe-weight-min" class="text-indigo-600"></span> kg and <span id="safe-weight-max" class="text-indigo-600"></span> kg</p>
+                    </div>
+                     <div id="safe-weight-error" class="mt-4 p-3 bg-red-100 text-red-700 rounded-md border border-red-200 hidden">
+                        Please enter a valid height.
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- Call to Action Section -->
+        <section id="cta" class="bg-indigo-700 py-16 px-4 sm:px-6 lg:px-8 text-white text-center rounded-t-2xl shadow-lg">
+            <div class="container mx-auto max-w-3xl">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-6">Explore Other Services</h2>
+                <p class="text-lg sm:text-xl mb-8 opacity-90">
+                    Learn, Grow, and Implement
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="www.statmania.info" class="inline-block bg-white text-indigo-700 hover:bg-indigo-100 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
+                        Learn
+                    </a>
+                    <a href="#" class="inline-block bg-transparent border-2 border-white text-white hover:bg-white hover:text-indigo-700 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
+                        Start Data Science
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-white py-8 px-4 sm:px-6 lg:px-8 text-center rounded-t-lg shadow-inner">
+        <div class="container mx-auto">
+            <p class="mb-4">&copy; 2024 Stat Mania. All rights reserved.</p>
+            <div class="flex justify-center space-x-6">
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Privacy Policy</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Terms of Service</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Sitemap</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // JavaScript for mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Hide mobile menu when a link is clicked
+        const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // --- Tab Functionality ---
+        function openTab(evt, tabName) {
+            // Declare all variables
+            let i, tabcontent, tablinks;
+
+            // Get all elements with class="tabcontent" and hide them
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            // Get all elements with class="tablinks" and remove the class "active"
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.classList.add("active");
+
+            // Re-initialize height input visibility for the active tab
+            if (tabName === 'bmi-calculator') {
+                switchBmiHeightInput();
+            } else if (tabName === 'safe-weight-calculator') {
+                switchSafeWeightHeightInput();
+            }
+        }
+
+        // --- BMI Calculator Logic ---
+        const calculateBmiButton = document.getElementById('calculate-bmi');
+        const bmiWeightInput = document.getElementById('bmi-weight');
+        const bmiHeightCmInput = document.getElementById('bmi-height-cm');
+        const bmiHeightFtInput = document.getElementById('bmi-height-ft');
+        const bmiHeightInInput = document.getElementById('bmi-height-in');
+        const bmiUnitCmRadio = document.getElementById('bmi-unit-cm');
+        const bmiUnitFtInRadio = document.getElementById('bmi-unit-ft-in');
+        const bmiHeightCmGroup = document.getElementById('bmi-height-cm-group');
+        const bmiHeightFtInGroup = document.getElementById('bmi-height-ft-in-group');
+        const bmiResultDiv = document.getElementById('bmi-result');
+        const bmiValueSpan = document.getElementById('bmi-value');
+        const bmiCategoryP = document.getElementById('bmi-category');
+        const bmiErrorDiv = document.getElementById('bmi-error');
+
+        // Function to switch height input fields visibility for BMI calculator
+        function switchBmiHeightInput() {
+            if (bmiUnitCmRadio.checked) {
+                bmiHeightCmGroup.classList.remove('hidden');
+                bmiHeightFtInGroup.classList.add('hidden');
+                // Clear feet/inches values when switching to cm
+                bmiHeightFtInput.value = '';
+                bmiHeightInInput.value = '';
+            } else {
+                bmiHeightCmGroup.classList.add('hidden');
+                bmiHeightFtInGroup.classList.remove('hidden');
+                // Clear cm value when switching to feet/inches
+                bmiHeightCmInput.value = '';
+            }
+            // Hide previous results and errors when switching units
+            bmiResultDiv.classList.add('hidden');
+            bmiErrorDiv.classList.add('hidden');
+        }
+
+        // Add event listeners to BMI unit radio buttons
+        bmiUnitCmRadio.addEventListener('change', switchBmiHeightInput);
+        bmiUnitFtInRadio.addEventListener('change', switchBmiHeightInput);
+
+        calculateBmiButton.addEventListener('click', () => {
+            const weight = parseFloat(bmiWeightInput.value);
+            let heightInMeters;
+
+            // Hide previous results and errors
+            bmiResultDiv.classList.add('hidden');
+            bmiErrorDiv.classList.add('hidden');
+
+            if (isNaN(weight) || weight <= 0) {
+                bmiErrorDiv.classList.remove('hidden');
+                return;
+            }
+
+            if (bmiUnitCmRadio.checked) {
+                const heightCm = parseFloat(bmiHeightCmInput.value);
+                if (isNaN(heightCm) || heightCm <= 0) {
+                    bmiErrorDiv.classList.remove('hidden');
+                    return;
+                }
+                heightInMeters = heightCm / 100; // Convert cm to meters
+            } else {
+                const heightFt = parseFloat(bmiHeightFtInput.value);
+                const heightIn = parseFloat(bmiHeightInInput.value);
+
+                // Validate feet and inches inputs
+                if (isNaN(heightFt) || isNaN(heightIn) || heightFt < 0 || heightIn < 0 || heightIn >= 12 || (heightFt === 0 && heightIn === 0)) {
+                    bmiErrorDiv.classList.remove('hidden');
+                    return;
+                }
+
+                // Convert feet and inches to total inches, then to meters
+                const totalInches = (heightFt * 12) + heightIn;
+                heightInMeters = totalInches * 0.0254; // Convert inches to meters
+            }
+
+            // Calculate BMI
+            const bmi = weight / (heightInMeters * heightInMeters);
+            bmiValueSpan.textContent = bmi.toFixed(2); // Display BMI rounded to 2 decimal places
+
+            let category = '';
+            let categoryColorClass = '';
+            if (bmi < 18.5) {
+                category = 'Underweight';
+                categoryColorClass = 'text-orange-500';
+            } else if (bmi >= 18.5 && bmi < 24.9) {
+                category = 'Normal weight';
+                categoryColorClass = 'text-green-600';
+            } else if (bmi >= 25 && bmi < 29.9) {
+                category = 'Overweight';
+                categoryColorClass = 'text-orange-600';
+            } else {
+                category = 'Obesity';
+                categoryColorClass = 'text-red-600';
+            }
+            bmiCategoryP.textContent = `Category: ${category}`;
+            bmiCategoryP.className = `text-md ${categoryColorClass}`; // Apply specific color for category
+            bmiResultDiv.classList.remove('hidden');
+        });
+
+        // --- Safe Weight Calculator Logic ---
+        const calculateSafeWeightButton = document.getElementById('calculate-safe-weight');
+        const safeWeightHeightCmInput = document.getElementById('safe-weight-height-cm');
+        const safeWeightHeightFtInput = document.getElementById('safe-weight-height-ft');
+        const safeWeightHeightInInput = document.getElementById('safe-weight-height-in');
+        const safeWeightUnitCmRadio = document.getElementById('safe-weight-unit-cm');
+        const safeWeightUnitFtInRadio = document.getElementById('safe-weight-unit-ft-in');
+        const safeWeightHeightCmGroup = document.getElementById('safe-weight-height-cm-group');
+        const safeWeightHeightFtInGroup = document.getElementById('safe-weight-height-ft-in-group');
+        const safeWeightResultDiv = document.getElementById('safe-weight-result');
+        const safeWeightMinSpan = document.getElementById('safe-weight-min');
+        const safeWeightMaxSpan = document.getElementById('safe-weight-max');
+        const safeWeightErrorDiv = document.getElementById('safe-weight-error');
+
+        // Function to switch height input fields visibility for Safe Weight calculator
+        function switchSafeWeightHeightInput() {
+            if (safeWeightUnitCmRadio.checked) {
+                safeWeightHeightCmGroup.classList.remove('hidden');
+                safeWeightHeightFtInGroup.classList.add('hidden');
+                // Clear feet/inches values when switching to cm
+                safeWeightHeightFtInput.value = '';
+                safeWeightHeightInInput.value = '';
+            } else {
+                safeWeightHeightCmGroup.classList.add('hidden');
+                safeWeightHeightFtInGroup.classList.remove('hidden');
+                // Clear cm value when switching to feet/inches
+                safeWeightHeightCmInput.value = '';
+            }
+            // Hide previous results and errors when switching units
+            safeWeightResultDiv.classList.add('hidden');
+            safeWeightErrorDiv.classList.add('hidden');
+        }
+
+        // Add event listeners to Safe Weight unit radio buttons
+        safeWeightUnitCmRadio.addEventListener('change', switchSafeWeightHeightInput);
+        safeWeightUnitFtInRadio.addEventListener('change', switchSafeWeightHeightInput);
+
+        calculateSafeWeightButton.addEventListener('click', () => {
+            let heightInMeters;
+
+            // Hide previous results and errors
+            safeWeightResultDiv.classList.add('hidden');
+            safeWeightErrorDiv.classList.add('hidden');
+
+            if (safeWeightUnitCmRadio.checked) {
+                const heightCm = parseFloat(safeWeightHeightCmInput.value);
+                if (isNaN(heightCm) || heightCm <= 0) {
+                    safeWeightErrorDiv.classList.remove('hidden');
+                    return;
+                }
+                heightInMeters = heightCm / 100; // Convert cm to meters
+            } else {
+                const heightFt = parseFloat(safeWeightHeightFtInput.value);
+                const heightIn = parseFloat(safeWeightHeightInInput.value);
+
+                // Validate feet and inches inputs
+                if (isNaN(heightFt) || isNaN(heightIn) || heightFt < 0 || heightIn < 0 || heightIn >= 12 || (heightFt === 0 && heightIn === 0)) {
+                    safeWeightErrorDiv.classList.remove('hidden');
+                    return;
+                }
+
+                // Convert feet and inches to total inches, then to meters
+                const totalInches = (heightFt * 12) + heightIn;
+                heightInMeters = totalInches * 0.0254; // Convert inches to meters
+            }
+
+            // Calculate safe weight range based on normal BMI (18.5 to 24.9)
+            const minBmi = 18.5;
+            const maxBmi = 24.9;
+
+            const minWeight = minBmi * (heightInMeters * heightInMeters);
+            const maxWeight = maxBmi * (heightInMeters * heightInMeters);
+
+            safeWeightMinSpan.textContent = minWeight.toFixed(1);
+            safeWeightMaxSpan.textContent = maxWeight.toFixed(1);
+            safeWeightResultDiv.classList.remove('hidden');
+        });
+
+        // Open the default tab on page load
+        document.getElementById("defaultOpen").click();
+    </script>
+
+</body>
+</html>
