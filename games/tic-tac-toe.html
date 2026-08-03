@@ -3,88 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic-Tac-Toe - Stat Mania</title>
-    <link rel="stylesheet" href="css/style.css">
-    <script src="js/main.js" defer></script>
-        <style>
-        h1 {
-            text-align: center;
+    <title>Stat Mania - Tic-Tac-Toe</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 2px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+        .cell:hover {
+            background-color: #e2e8f0;
+            border-color: #cbd5e1;
+        }
+        .cell.x { color: #ef4444; }
+        .cell.o { color: #3b82f6; }
+        .cell.winner {
+            background-color: #dcfce7;
+            border-color: #22c55e;
         }
         #board {
             display: grid;
             grid-template-columns: repeat(3, 100px);
             grid-template-rows: repeat(3, 100px);
-            gap: 5px;
+            gap: 8px;
         }
-        .cell {
-            width: 100px;
-            height: 100px;
-            background-color: #f2f2f2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2em;
-            cursor: pointer;
-            border: 2px solid #333;
-        }
-        .cell:hover {
-            background-color: #e0e0e0;
-        }
-        #message {
-            margin-top: 20px;
-            font-size: 1.2em;
-        }
-        button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
+        @media (max-width: 400px) {
+            .cell { width: 80px; height: 80px; font-size: 2.5rem; }
+            #board { grid-template-columns: repeat(3, 80px); grid-template-rows: repeat(3, 80px); }
         }
     </style>
 </head>
-<body>
-    <header></header>
-     <div class="main-content">
+<body class="antialiased flex flex-col min-h-screen">
 
-<!-- Game Contents STARTS-->
+    <!-- Header/Navbar -->
+    <header class="bg-white shadow-sm py-4">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <a href="https://www.statmania.info" class="flex items-center space-x-3 no-underline hover:opacity-80 transition-opacity" target="_blank" rel="noopener noreferrer">
+                <img src="../img/statmania_logo.png" alt="Stat Mania Logo" class="w-10 h-10 rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/40x40/4f46e5/ffffff?text=Logo';">
+                <div>
+                    <div class="text-2xl font-bold text-indigo-600">Stat Mania</div>
+                    <p class="text-sm text-slate-500">Making sense of statistics</p>
+                </div>
+            </a>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="#features" class="text-slate-600 hover:text-indigo-600 transition duration-300">Features</a></li>
+                    <li><a href="#cta" class="text-slate-600 hover:text-indigo-600 transition duration-300">Contact</a></li>
+                </ul>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="#features" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Features</a>
+            <a href="#cta" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Contact</a>
+        </div>
+    </header>
 
-    <h1>Tic-Tac-Toe (You vs Computer)</h1>
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-8 px-4 sm:px-6 lg:px-8 rounded-b-2xl shadow-lg">
+            <div class="container mx-auto text-center max-w-4xl">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-4 flex items-center justify-center gap-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-12 h-12 text-white">
+                        <path fill-rule="evenodd" d="M3.75 5.25a.75.75 0 0 1 .75-.75h6.5a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1-.75-.75zm0 6.5a.75.75 0 0 1 .75-.75h6.5a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1-.75-.75zm0 6.5a.75.75 0 0 1 .75-.75h6.5a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1-.75-.75zm8.5-13a.75.75 0 0 1 .75-.75h6.5a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1-.75-.75zm0 6.5a.75.75 0 0 1 .75-.75h6.5a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1-.75-.75zm0 6.5a.75.75 0 0 1 .75-.75h6.5a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1-.75-.75zm8.5-13a.75.75 0 0 1 .75-.75h6.5a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1-.75-.75zm0 6.5a.75.75 0 0 1 .75-.75h6.5a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1-.75-.75zm0 6.5a.75.75 0 0 1 .75-.75h6.5a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1-.75-.75z" clip-rule="evenodd" />
+                    </svg>
+                    Tic-Tac-Toe
+                </h1>
+                <p class="text-lg sm:text-xl opacity-90">Play X vs O against a smart AI (Minimax algorithm)</p>
+            </div>
+        </section>
 
-<div class="container">
-<div class="col">
- <h3> The Rules </h3>
-    <ol style = "text-align:left;">
-    <li> Click on any cell to start your turn. Your inputs will be shown as "X"</li>
-    <li> After your click, computer will input "O"</li>
-    <li> Try to fill with "X" in a row, column or a digonal to win. If computer can do so with "O', it will win.</li>
-    </ol> </br>
-       <div id="message"></div>
-    <button onclick="resetGame()">Restart Game</button>
-</div>
-<div class="col">
-<!--<button type="button" class="collapsible">See The Rules</button>
-<div class="content">
-  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-</div>
--->
+        <!-- Game Section -->
+        <section class="py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
+            <div class="container mx-auto max-w-2xl">
+                <div class="bg-white p-8 rounded-xl shadow-xl text-slate-700">
+                    <h2 class="text-3xl font-bold text-indigo-600 mb-6 text-center">Tic-Tac-Toe (You vs Computer)</h2>
 
-    <div id="board">
-        <div class="cell" onclick="playerMove(0)"></div>
-        <div class="cell" onclick="playerMove(1)"></div>
-        <div class="cell" onclick="playerMove(2)"></div>
-        <div class="cell" onclick="playerMove(3)"></div>
-        <div class="cell" onclick="playerMove(4)"></div>
-        <div class="cell" onclick="playerMove(5)"></div>
-        <div class="cell" onclick="playerMove(6)"></div>
-        <div class="cell" onclick="playerMove(7)"></div>
-        <div class="cell" onclick="playerMove(8)"></div>
-    </div>
-</div>
+                    <div class="text-center mb-6">
+                        <p class="text-slate-600">You are <span class="font-bold text-red-600">X</span>. Computer is <span class="font-bold text-blue-600">O</span>.</p>
+                    </div>
 
+                    <div class="flex justify-center mb-6">
+                        <div id="board"></div>
+                    </div>
 
+                    <div id="message" class="text-center min-h-[2rem] mb-4 text-lg font-medium"></div>
 
-</div>
+                    <div class="flex justify-center">
+                        <button onclick="resetGame()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105">
+                            Restart Game
+                        </button>
+                    </div>
+
+                    <!-- Rules -->
+                    <details class="mt-8">
+                        <summary class="cursor-pointer font-medium text-indigo-600 hover:text-indigo-700">Game Rules</summary>
+                        <div class="mt-4 text-sm text-slate-600 text-left">
+                            <ol class="list-decimal list-inside space-y-2">
+                                <li>Click on any empty cell to make your move. Your moves are <span class="font-bold text-red-600">X</span>.</li>
+                                <li>After your move, the computer will play as <span class="font-bold text-blue-600">O</span> using the Minimax algorithm (perfect play).</li>
+                                <li>Get 3 <span class="font-bold text-red-600">X</span> in a row, column, or diagonal to win.</li>
+                                <li>The computer will also try to get 3 <span class="font-bold text-blue-600">O</span> to win.</li>
+                                <li>If the board fills with no winner, it's a draw.</li>
+                            </ol>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action Section -->
+        <section id="cta" class="bg-indigo-700 py-16 px-4 sm:px-6 lg:px-8 text-white text-center rounded-t-2xl shadow-lg">
+            <div class="container mx-auto max-w-3xl">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-6">Explore Other Tools</h2>
+                <p class="text-lg sm:text-xl mb-8 opacity-90">Check out all available utilities</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="index.html" class="inline-block bg-white text-indigo-700 hover:bg-indigo-100 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">All Games</a>
+                    <a href="#" class="inline-block bg-transparent border-2 border-white text-white hover:bg-white hover:text-indigo-700 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">Back to Top</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-white py-8 px-4 sm:px-6 lg:px-8 text-center rounded-t-lg shadow-inner mt-auto">
+        <div class="container mx-auto">
+            <p class="mb-4">&copy; 2024 Stat Mania. All rights reserved.</p>
+            <div class="flex justify-center space-x-6">
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Privacy Policy</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Terms of Service</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Sitemap</a>
+            </div>
+        </div>
+    </footer>
 
     <script>
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+
+        // Game Logic
         let board = ["", "", "", "", "", "", "", "", ""];
         let currentPlayer = "X"; // Player is always "X"
         let gameActive = true;
@@ -94,19 +179,36 @@
             [0, 4, 8], [2, 4, 6]             // Diagonals
         ];
 
-        // Player move
+        const boardEl = document.getElementById("board");
+        const messageEl = document.getElementById("message");
+
+        // Create board cells
+        for (let i = 0; i < 9; i++) {
+            const cell = document.createElement("div");
+            cell.className = "cell";
+            cell.dataset.index = i;
+            cell.addEventListener("click", () => playerMove(i));
+            boardEl.appendChild(cell);
+        }
+
         function playerMove(index) {
             if (board[index] === "" && gameActive) {
                 board[index] = currentPlayer;
-                document.getElementsByClassName("cell")[index].innerText = currentPlayer;
+                const cell = boardEl.children[index];
+                cell.textContent = currentPlayer;
+                cell.classList.add(currentPlayer.toLowerCase());
+
                 if (checkForWinner() || checkForDraw()) return;
+
                 currentPlayer = "O";
-                computerMove(); // Let the smart computer play after the player
-                if (!checkForWinner() && !checkForDraw()) currentPlayer = "X";
+                computerMove();
+
+                if (!checkForWinner() && !checkForDraw()) {
+                    currentPlayer = "X";
+                }
             }
         }
 
-        // Smart computer move using Minimax algorithm
         function computerMove() {
             let bestScore = -Infinity;
             let bestMove;
@@ -122,19 +224,20 @@
                 }
             }
             board[bestMove] = "O";
-            document.getElementsByClassName("cell")[bestMove].innerText = "O";
+            const cell = boardEl.children[bestMove];
+            cell.textContent = "O";
+            cell.classList.add("o");
         }
 
-        // Minimax algorithm to make the computer smart
         function minimax(board, depth, isMaximizing) {
             let result = evaluateWinner();
             if (result !== null) {
                 if (result === "O") {
-                    return 10 - depth;  // Maximize for computer
+                    return 10 - depth;
                 } else if (result === "X") {
-                    return depth - 10;  // Minimize for player
+                    return depth - 10;
                 } else {
-                    return 0;  // Draw
+                    return 0;
                 }
             }
 
@@ -163,18 +266,26 @@
             }
         }
 
-        // Check for winner and announce
         function checkForWinner() {
             let winner = evaluateWinner();
             if (winner) {
-                document.getElementById("message").innerText = `${winner} won!`;
+                if (winner === "X") {
+                    messageEl.textContent = "You won! 🎉";
+                    messageEl.className = "text-center min-h-[2rem] mb-4 text-lg font-medium text-green-600";
+                } else if (winner === "O") {
+                    messageEl.textContent = "Computer won! 🤖";
+                    messageEl.className = "text-center min-h-[2rem] mb-4 text-lg font-medium text-red-600";
+                } else {
+                    messageEl.textContent = "It's a Draw!";
+                    messageEl.className = "text-center min-h-[2rem] mb-4 text-lg font-medium text-yellow-600";
+                }
+                highlightWinner(winner);
                 gameActive = false;
                 return true;
             }
             return false;
         }
 
-        // Function to evaluate the winner without ending the game
         function evaluateWinner() {
             for (let i = 0; i < winConditions.length; i++) {
                 const [a, b, c] = winConditions[i];
@@ -186,32 +297,41 @@
             return null;
         }
 
-        // Check for draw
+        function highlightWinner(winner) {
+            if (winner === "None") return;
+            for (let i = 0; i < winConditions.length; i++) {
+                const [a, b, c] = winConditions[i];
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    boardEl.children[a].classList.add('winner');
+                    boardEl.children[b].classList.add('winner');
+                    boardEl.children[c].classList.add('winner');
+                    break;
+                }
+            }
+        }
+
         function checkForDraw() {
             if (!board.includes("") && gameActive) {
-                document.getElementById("message").innerText = "It's a Draw!";
+                messageEl.textContent = "It's a Draw!";
+                messageEl.className = "text-center min-h-[2rem] mb-4 text-lg font-medium text-yellow-600";
                 gameActive = false;
                 return true;
             }
             return false;
         }
 
-        // Reset the game
         function resetGame() {
             board = ["", "", "", "", "", "", "", "", ""];
             currentPlayer = "X";
             gameActive = true;
-            document.getElementById("message").innerText = "";
-            let cells = document.getElementsByClassName("cell");
+            messageEl.textContent = "";
+            messageEl.className = "text-center min-h-[2rem] mb-4 text-lg font-medium";
+            const cells = boardEl.children;
             for (let i = 0; i < cells.length; i++) {
-                cells[i].innerText = "";
+                cells[i].textContent = "";
+                cells[i].className = "cell";
             }
         }
     </script>
-
-<!-- Game Contents ENDS-->
-
-  </div>
-    <footer></footer>
 </body>
 </html>
