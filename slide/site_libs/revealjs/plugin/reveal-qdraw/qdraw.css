@@ -16,6 +16,11 @@
   top: 10px; left: 10px;
   z-index: 1001;
 }
+
+#controlsWrapper.right {
+  left: auto;
+  right: 10px;
+}
 #controls {
   display: none;
   flex-direction: column;
@@ -38,7 +43,7 @@
   display: none; z-index: 1002;
 }
 
-#bgColorLabel, #penColorLabel, #penTool, #eraserTool, #resetBg, #undo, #clear, #downloadCanvas {
+#penColorLabel, #penTool, #eraserTool, #undo, #downloadCanvas, #about, #shapeTool, #bgTool, #pagesTool {
   cursor: pointer;
   font-size: 1.4em;
   padding: 6px;
@@ -47,9 +52,166 @@
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
 }
 
+#shapeOptions, #pageOptions, #eraserOptions, #bgOptions {
+  display: none;
+  position: absolute;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  background: #b3b3ff;
+  padding: 5px;
+  border-radius: 10px;
+  z-index: 1002;
+}
+
+#shapeOptions.show, #pageOptions.show, #eraserOptions.show, #bgOptions.show {
+  display: flex;
+}
+
+#prevPage, #nextPage, #addPage {
+  cursor: pointer;
+  font-size: 1em;
+  padding: 5px;
+  border-radius: 6px;
+  background-color: #ccccff;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+.shapeOption {
+  cursor: pointer;
+  font-size: 1em;
+  padding: 5px;
+  border-radius: 6px;
+  background-color: #ccccff;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+.shapeOption[data-shape="triangle"] i {
+  transform: rotate(-90deg);
+  display: inline-block;
+}
+
+#ellipseIcon {
+  transform: scaleX(1.6);
+  display: inline-block;
+}
+
+.shapeOption.active {
+  background-color: #8f246b;
+  color: #fff;
+}
+
+.eraserOption {
+  cursor: pointer;
+  font-size: 1em;
+  padding: 5px;
+  border-radius: 6px;
+  background-color: #ccccff;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+.eraserOption.active {
+  background-color: #8f246b;
+  color: #fff;
+}
+
+.bgOption {
+  cursor: pointer;
+  font-size: 1em;
+  padding: 5px;
+  border-radius: 6px;
+  background-color: #ccccff;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+.shapeFillToggle {
+  cursor: pointer;
+  font-size: 1em;
+  padding: 5px;
+  border-radius: 6px;
+  background-color: #ccccff;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  margin-left: 4px;
+  border-left: 1px solid rgba(0, 0, 0, 0.15);
+  padding-left: 9px;
+}
+
+.shapeFillToggle.active {
+  background-color: #8f246b;
+  color: #fff;
+}
+
+#pageLabel {
+  font-size: 0.8em;
+  font-weight: bold;
+  color: #333;
+  white-space: nowrap;
+}
+
+#moveControls {
+  display: none;
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1001;
+  width: 40px;
+  height: 40px;
+  border: none;
+  cursor: pointer;
+  font-size: 1.4em;
+  color: #333399;
+  border-radius: 6px;
+  background-color: #ccccff;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+#moveControls.left {
+  right: auto;
+  left: 10px;
+}
+
+#aboutPopover {
+  display: none;
+  position: absolute;
+  left: 50px;
+  bottom: 6px;
+  background: #fff;
+  color: #222;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.85em;
+  font-weight: normal;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  z-index: 1002;
+}
+
+#aboutPopover.show {
+  display: block;
+}
+
+#aboutPopover a {
+  color: #3366cc;
+}
+
+#controlsWrapper.right #aboutPopover {
+  left: auto;
+  right: 50px;
+}
+
 #penSize, #eraserSize { accent-color: green; }
 
 #penColorLabel i {
   transition: color 0.3s;
+}
+
+/* penTool/shapeTool icons track the selected pen color (see #penColorLabel),
+   which can wash out against the toolbar's light background - a dark
+   outline keeps them legible at any color. */
+.colorSynced i {
+  transition: color 0.3s;
+  -webkit-text-stroke: 0.2px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
 }
 
