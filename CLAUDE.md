@@ -17,6 +17,7 @@ Because the rendered HTML is committed, **most of the actual page content on the
 - 'blograw' generates 'blog'
 - gre and ielts were temporary projects. Ignore them unless explicitly made relevant later.
 - One of the primary tasks is in 'slide' directory. Here the lecture slides are stored. Slightly less important is 'utility'
+- Slides in 'slide' directory don't need rendering when only the css is changed in css/styles.css or styles.css.
 
 ## Quarto projects → output mapping
 
