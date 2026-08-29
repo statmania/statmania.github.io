@@ -1,0 +1,47 @@
+---
+title: "What's New in qdraw: Shapes, Pages, and a Smarter Eraser"
+author: "Abdullah Al Mahmud"
+date: "2026-08-29"
+categories: [tools, quarto, presentations]
+description: A tour of the latest qdraw features — a Quarto reveal.js extension for drawing and annotating directly on slides during a live presentation.
+---
+
+[qdraw](https://www.thinkermahmud.com/qdraw) is a small Quarto extension that adds a drawing layer on top of any `revealjs` presentation — handy for circling a formula, sketching a diagram, or annotating a plot live while teaching. It's the annotation tool behind the [Stat Mania lecture slides](https://www.statmania.info/lectures.html). The extension recently jumped from v1.0.0 to **v1.5.2**, and it's a much more capable tool now. Here's what's new.
+
+## Shapes, not just freehand lines
+
+Next to the pen tool there's now a **shape tool** with its own popover:
+
+- Line, rectangle, triangle, ellipse, and circle
+- A fill toggle, for solid shapes instead of just outlines
+- Circle drags from the center outward (so the radius stays equal in every direction), while the other shapes drag corner-to-corner
+
+The shape preview redraws live as you drag, so you see exactly what you'll get before releasing.
+
+## Multi-page canvas
+
+Annotations used to live on a single canvas for the whole deck. Now there's a **Pages** tool that lets you add new blank pages and flip between them with previous/next buttons — useful if you want a fresh canvas for each slide, or a scratch page, without erasing earlier work. Each page keeps its own undo history, so switching pages doesn't interfere with undoing on another.
+
+## A proper eraser menu
+
+The eraser used to just be "on" or "off." It now opens a small menu with three modes:
+
+- **Eraser** — the classic drag-to-erase, with an adjustable brush size
+- **Select area to erase** — drag a rectangle and release to erase everything inside it
+- **Clear all** — wipe the current page's drawing in one click
+
+## Background color
+
+A **Canvas Background** tool lets you tint the drawing surface with a color picker, and reset it back to transparent with one click — useful for highlighting a region behind your annotations.
+
+## Toolbar that moves out of your way
+
+If the toolbar is covering something you need to point at, click the move icon to flip it to the opposite edge of the screen.
+
+## Under the hood: more accurate on touch
+
+Pointer coordinates are now mapped through the canvas's actual rendered size instead of assumed to match the window size. On mobile, where the browser's address bar can show or hide and shift the canvas's rendered box, this fixes drawings landing away from where you actually touched.
+
+## Where to find it
+
+qdraw ships as a standard Quarto extension (`_extensions/mahmudstat/qdraw`) and is enabled on this site's lecture decks via `revealjs-plugins: [qdraw]` in `slide/_quarto.yml`. Open any [lecture slide](https://www.statmania.info/lectures.html), click the pen icon in the corner, and try it out — the **About** button in the toolbar links back to the [qdraw homepage](https://www.thinkermahmud.com/qdraw) for the full docs.
