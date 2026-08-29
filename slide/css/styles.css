@@ -13,15 +13,28 @@
   --sm-muted: #9aa4c2;
 }
 
-/* Slide background: dark radial glow instead of the old conic-gradient
-   rainbow experiments. */
-.reveal{
+/* Slide background: dark radial glow on <body>, with the starfield canvas
+   (injected via include-after-body, see _quarto.yml) fixed behind it and
+   .reveal itself made transparent so the animation shows through on every
+   slide — the same look as the homepage hero, running continuously. */
+body{
   background: radial-gradient(1200px 700px at 50% -10%, #0e1930 0%, var(--sm-bg) 65%) !important;
+  font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif;
   color: var(--sm-text);
 }
-body{
-  background-color: var(--sm-bg);
-  font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif;
+#sm-slide-canvas{
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  display: block;
+}
+.reveal{
+  background: transparent !important;
+  position: relative;
+  z-index: 1;
   color: var(--sm-text);
 }
 
