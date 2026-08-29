@@ -1,26 +1,32 @@
-/* Stat Mania Lectures — dark "futuristic" reveal.js theme, matching the
-   cyan/purple/pink palette used across the rest of the site (see
-   raw/styles.css and games/css/dark-theme.css for the same tokens). */
+/* Stat Mania Lectures — "futuristic" reveal.js theme.
+   The slide canvas itself is a light warm-yellow/cool-blue gradient (not
+   dark) because the qdraw annotation plugin's default pen is black, and
+   black-on-near-black was unreadable. Dark accent panels (code/output
+   boxes, the footer, the slide menu) stay dark for contrast/interest —
+   annotation happens over the light slide body, not those. */
 
 :root{
-  --sm-bg: #05070d;
   --sm-bg2: #0a0f1e;
-  --sm-cyan: #00e5ff;
-  --sm-purple: #a855f7;
-  --sm-pink: #ff2fb4;
-  --sm-line: rgba(0,229,255,0.25);
+  --sm-ink: #1e293b;
+  --sm-muted-ink: #56637a;
+  --sm-teal: #0891b2;
+  --sm-purple: #7c3aed;
+  --sm-pink: #db2777;
+  --sm-line: rgba(8,145,178,0.3);
   --sm-text: #e8ecf7;
   --sm-muted: #9aa4c2;
 }
 
-/* Slide background: dark radial glow on <body>, with the starfield canvas
-   (injected via include-after-body, see _quarto.yml) fixed behind it and
-   .reveal itself made transparent so the animation shows through on every
-   slide — the same look as the homepage hero, running continuously. */
+/* Slide background: warm-yellow-to-cool-blue gradient, with the starfield
+   canvas (injected via include-after-body, see _quarto.yml) fixed behind
+   it and .reveal itself made transparent so the animation shows through
+   on every slide. */
 body{
-  background: radial-gradient(1200px 700px at 50% -10%, #0e1930 0%, var(--sm-bg) 65%) !important;
+  background:
+    radial-gradient(900px 500px at 85% -10%, rgba(124,58,237,0.10) 0%, transparent 60%),
+    linear-gradient(135deg, #fff8e6 0%, #f3f2ee 45%, #e8f1fb 100%) !important;
   font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif;
-  color: var(--sm-text);
+  color: var(--sm-ink);
 }
 #sm-slide-canvas{
   position: fixed;
@@ -35,14 +41,14 @@ body{
   background: transparent !important;
   position: relative;
   z-index: 1;
-  color: var(--sm-text);
+  color: var(--sm-ink);
 }
 
-/* Headings: title slides get the animated gradient treatment, section/body
-   headings stay a calmer solid cyan so slides remain easy to read while
-   teaching. */
+/* Headings: title slides get the animated gradient treatment (deep
+   teal/purple/pink so it stays legible on the light background), section
+   and body headings stay a calmer solid teal. */
 .reveal h1{
-  background: linear-gradient(90deg, var(--sm-cyan), #7dd3fc 25%, var(--sm-purple) 55%, var(--sm-pink) 85%);
+  background: linear-gradient(90deg, var(--sm-teal), var(--sm-purple) 55%, var(--sm-pink) 90%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -56,12 +62,12 @@ body{
   100% { background-position: 0% 50%; }
 }
 .reveal h2, .reveal h3, .reveal h4, .reveal h5{
-  color: var(--sm-cyan);
+  color: var(--sm-teal);
   text-transform: none;
 }
 
-.reveal a{ color: var(--sm-cyan); }
-.reveal a:hover{ color: #7dd3fc; }
+.reveal a{ color: var(--sm-purple); }
+.reveal a:hover{ color: var(--sm-pink); }
 
 .reveal ul li{
   list-style-type: disc !important;
@@ -70,20 +76,20 @@ body{
 /* Inline / display math */
 .reveal .mjx-math,
 .reveal .mjx-container{
-  color: var(--sm-text);
+  color: var(--sm-ink);
 }
 
 /* Blockquote */
 blockquote{
-  background: rgba(255,255,255,0.04);
-  border-left: 4px solid var(--sm-cyan);
-  color: var(--sm-muted);
+  background: rgba(8,145,178,0.06);
+  border-left: 4px solid var(--sm-teal);
+  color: var(--sm-muted-ink);
   margin: 1.5em 10px;
   padding: 0.5em 1em;
   quotes: "\201C""\201D""\2018""\2019";
 }
 blockquote:before{
-  color: var(--sm-cyan);
+  color: var(--sm-teal);
   content: open-quote;
   font-size: 4em;
   line-height: 0.1em;
@@ -96,25 +102,26 @@ blockquote:before{
 .reveal table th,
 .reveal table td{
   border-collapse: collapse !important;
-  border: 1px solid rgba(255,255,255,0.18) !important;
+  border: 1px solid rgba(30,41,59,0.2) !important;
 }
 .reveal th,
 .reveal td{
   padding: 6px !important;
   text-align: center !important;
-  color: var(--sm-text);
+  color: var(--sm-ink);
 }
 .reveal thead tr th{
-  border-bottom: 2px solid var(--sm-cyan) !important;
-  background-color: rgba(0,229,255,0.08) !important;
+  border-bottom: 2px solid var(--sm-teal) !important;
+  background-color: rgba(8,145,178,0.08) !important;
 }
 .reveal tbody tr:last-child td{
-  border-bottom: 1px solid rgba(255,255,255,0.18) !important;
+  border-bottom: 1px solid rgba(30,41,59,0.2) !important;
 }
 
 img{ border: 0; }
 
-/* Computational cell output (R/Python console output, printed data frames) */
+/* Computational cell output (R/Python console output, printed data frames)
+   — kept as a dark accent panel for contrast against the light slide body. */
 .cell-output,
 .cell-output-stdout,
 .cell-output pre{
@@ -141,7 +148,7 @@ img{ border: 0; }
 #thanks{
   padding: 100px 0;
   font-size: 80px;
-  color: var(--sm-cyan);
+  color: var(--sm-purple);
   font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif;
   text-align: center;
 }
@@ -153,7 +160,7 @@ img{ border: 0; }
 }
 .big{ font-size: 10px; }
 .bluetext{
-  color: var(--sm-cyan);
+  color: var(--sm-teal);
   font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif;
   background-color: none;
 }
@@ -173,28 +180,29 @@ img{ border: 0; }
 
 div.gallery{
   margin: 5px;
-  border: 1px solid rgba(255,255,255,0.18);
+  border: 1px solid rgba(30,41,59,0.2);
   float: left;
   width: 220px;
   font-size: 22px;
   font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif;
-  background: rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.5);
 }
-div.gallery:hover{ border-color: var(--sm-cyan); }
+div.gallery:hover{ border-color: var(--sm-teal); }
 div.gallery img{ width: 100%; height: auto; }
 div.desc{ padding: 15px; text-align: center; }
 
 .box{
   width: 300px;
-  border: 2px solid var(--sm-cyan);
+  border: 2px solid var(--sm-teal);
   border-radius: 1rem;
   padding: 50px;
   margin: 20px;
-  color: var(--sm-text);
-  background: rgba(0,229,255,0.06);
+  color: var(--sm-ink);
+  background: rgba(8,145,178,0.06);
 }
 
-/* Footer text (Quarto revealjs `footer:` option) */
+/* Footer text (Quarto revealjs `footer:` option) — kept dark for a toolbar
+   feel against the light slide body. */
 #header-footer .slide-footer{
   position: fixed;
   bottom: 0;
@@ -203,7 +211,7 @@ div.desc{ padding: 15px; text-align: center; }
   height: 20px;
   text-align: center;
   font-size: 100%;
-  color: var(--sm-muted);
+  color: var(--sm-muted-ink);
 }
 
 /* Optional common project footer bar, and its marquee variant */
