@@ -48,7 +48,7 @@
         var dx = p.x - q.x, dy = p.y - q.y;
         var dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < maxDist) {
-          ctx.strokeStyle = 'rgba(8,145,178,' + (0.1 * (1 - dist / maxDist)) + ')';
+          ctx.strokeStyle = 'rgba(0,229,255,' + (0.16 * (1 - dist / maxDist)) + ')';
           ctx.lineWidth = 1;
           ctx.beginPath();
           ctx.moveTo(p.x, p.y);
@@ -60,7 +60,7 @@
     for (var k = 0; k < particles.length; k++) {
       var pt = particles[k];
       ctx.beginPath();
-      ctx.fillStyle = 'rgba(124,58,237,0.35)';
+      ctx.fillStyle = 'rgba(180,225,255,0.85)';
       ctx.arc(pt.x, pt.y, pt.r, 0, Math.PI * 2);
       ctx.fill();
     }
