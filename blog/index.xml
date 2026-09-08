@@ -1174,6 +1174,81 @@ font-style: inherit;">'cache --timeout=3600'</span></span></code></pre></div></d
   <pubDate>Sun, 04 Jan 2026 18:00:00 GMT</pubDate>
 </item>
 <item>
+  <title>How to Make Git Ignore a Folder</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://portal.statmania.info/posts/gitignore-folder.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>To make Git ignore a folder, you need to add it to your <a href="https://www.w3schools.com/git/git_ignore.asp?remote=github"><code>.gitignore</code></a> file. The exact steps depend on whether Git is already tracking that folder.</p>
+<section id="case-1-the-folder-has-not-been-tracked-yet" class="level2">
+<h2 class="anchored" data-anchor-id="case-1-the-folder-has-not-been-tracked-yet">Case 1: The Folder Has Not Been Tracked Yet</h2>
+<ol type="1">
+<li>Open or create a file named <code>.gitignore</code> in the root directory of your project.</li>
+<li>Add the folder name with a trailing forward slash (<code>/</code>) on a new line:</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Ignore a folder anywhere in the project</span></span>
+<span id="cb1-2"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">folder_name/</span></span>
+<span id="cb1-3"></span>
+<span id="cb1-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Or, ignore a folder ONLY at the root level of your project</span></span>
+<span id="cb1-5"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">/folder_name/</span></span></code></pre></div></div>
+</section>
+<section id="case-2-the-folder-is-already-tracked" class="level2">
+<h2 class="anchored" data-anchor-id="case-2-the-folder-is-already-tracked">Case 2: The Folder Is Already Tracked</h2>
+<p>If you previously committed the folder, simply adding it to <code>.gitignore</code> won’t stop Git from tracking it — you must clear it from Git’s index first.</p>
+<ol type="1">
+<li>Open your terminal at the project root.</li>
+<li>Untrack the folder. The <code>--cached</code> flag ensures the folder stays safe on your hard drive and is only removed from Git’s tracking:</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> rm <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-r</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--cached</span> folder_name/</span></code></pre></div></div>
+<ol start="3" type="1">
+<li>Add <code>folder_name/</code> to your <code>.gitignore</code> file.</li>
+<li>Commit the changes:</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> add .gitignore</span>
+<span id="cb3-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Stop tracking folder_name"</span></span></code></pre></div></div>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>Whether a folder is untracked or already committed, the fix is the same idea: tell Git to ignore it going forward, and if it was already tracked, explicitly remove it from the index with <code>git rm -r --cached</code>. See the <a href="https://git-scm.com/docs/gitignore">Git documentation on gitignore</a> and <a href="https://linuxize.com/post/gitignore-ignoring-files-in-git/">Linuxize’s guide</a> for more advanced patterns like negation and wildcards.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>Git</category>
+  <category>DevOps</category>
+  <category>Tutorial</category>
+  <guid>https://portal.statmania.info/posts/gitignore-folder.html</guid>
+  <pubDate>Sun, 04 Jan 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://portal.statmania.info/img/gitignore.jpeg" medium="image" type="image/jpeg"/>
+</item>
+<item>
   <title>Reading Papers in the AI Age: A Hybrid Workflow</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://portal.statmania.info/posts/reading-paper-ai-age.html</link>
@@ -2477,302 +2552,6 @@ font-style: inherit;">"periodic"</span>))</span></code></pre></div></div>
   <category>programming</category>
   <guid>https://portal.statmania.info/posts/r-package-workflow.html</guid>
   <pubDate>Thu, 28 Aug 2025 18:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Interpretation of an Auto SARIMAX model output in R</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://portal.statmania.info/posts/auto-arima-explanation.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>The model we run is this</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(forecast)</span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(ggplot2)</span>
-<span id="cb1-3"></span>
-<span id="cb1-4"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Create sample data</span></span>
-<span id="cb1-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">123</span>)</span>
-<span id="cb1-6">n <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">120</span></span>
-<span id="cb1-7">time <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span>n</span>
-<span id="cb1-8"></span>
-<span id="cb1-9"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Main time series with trend + seasonality</span></span>
-<span id="cb1-10">y <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">50</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.3</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>time <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sin</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>pi<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>time<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">12</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rnorm</span>(n, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>)</span>
-<span id="cb1-11"></span>
-<span id="cb1-12"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># External variable (e.g., marketing spend)</span></span>
-<span id="cb1-13">x1 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>time <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rnorm</span>(n, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>)</span>
-<span id="cb1-14"></span>
-<span id="cb1-15"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Convert to time series object</span></span>
-<span id="cb1-16">y_ts <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ts</span>(y, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">frequency =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">12</span>)</span>
-<span id="cb1-17">x1_ts <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ts</span>(x1, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">frequency =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">12</span>)</span>
-<span id="cb1-18"></span>
-<span id="cb1-19"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Let R find optimal parameters</span></span>
-<span id="cb1-20">sarimax_model <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">auto.arima</span>(y_ts,</span>
-<span id="cb1-21">                            <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">seasonal =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>,</span>
-<span id="cb1-22">                            <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">stepwise =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>,</span>
-<span id="cb1-23">                            <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">approximation =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>,</span>
-<span id="cb1-24">                            <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">xreg =</span> x1_ts)</span>
-<span id="cb1-25"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">summary</span>(sarimax_model)</span></code></pre></div></div>
-<p>Now the output we get is</p>
-<p><img src="https://portal.statmania.info/img/sarimax-r.png" class="img-fluid"></p>
-<section id="interpretation" class="level2">
-<h2 class="anchored" data-anchor-id="interpretation">Interpretation</h2>
-<p>Here’s a comprehensive interpretation of our SARIMAX model output:</p>
-</section>
-<section id="model-structure" class="level2">
-<h2 class="anchored" data-anchor-id="model-structure">Model Structure</h2>
-<p><strong>SARIMAX(2,0,1)(2,1,1)[12] with external regressor</strong></p>
-<ul>
-<li><strong>Non-seasonal part</strong>: AR(2) + MA(1)</li>
-<li><strong>Seasonal part</strong>: Seasonal AR(2) + Seasonal MA(1) with seasonal differencing (D=1)</li>
-<li><strong>Seasonality</strong>: 12 months (monthly data)</li>
-<li><strong>External regressor</strong>: One predictor variable (<code>xreg</code>)</li>
-</ul>
-</section>
-<section id="coefficients-interpretation" class="level2">
-<h2 class="anchored" data-anchor-id="coefficients-interpretation">Coefficients Interpretation</h2>
-<section id="non-seasonal-components" class="level3">
-<h3 class="anchored" data-anchor-id="non-seasonal-components">Non-seasonal Components:</h3>
-<ul>
-<li><strong>AR(1) = -0.75</strong>: Strong negative autoregressive effect - high values tend to be followed by low values</li>
-<li><strong>AR(2) = -0.09</strong>: Weak negative second-order autoregressive effect</li>
-<li><strong>MA(1) = 0.79</strong>: Strong moving average effect - shocks persist for one period</li>
-</ul>
-</section>
-<section id="seasonal-components-12-month-cycle" class="level3">
-<h3 class="anchored" data-anchor-id="seasonal-components-12-month-cycle">Seasonal Components (12-month cycle):</h3>
-<ul>
-<li><strong>SAR(1) = -0.19</strong>: Moderate negative seasonal autoregressive effect</li>
-<li><strong>SAR(2) = 0.04</strong>: Very weak positive seasonal effect</li>
-<li><strong>SMA(1) = -0.85</strong>: Strong negative seasonal moving average - seasonal shocks reverse quickly</li>
-</ul>
-</section>
-<section id="external-effects" class="level3">
-<h3 class="anchored" data-anchor-id="external-effects">External Effects:</h3>
-<ul>
-<li><strong>Drift = 0.26</strong>: Positive trend component (0.26 units increase per period)</li>
-<li><strong>xreg = 0.30</strong>: External variable has positive effect - 1 unit increase in xreg predicts 0.30 unit increase in y</li>
-</ul>
-</section>
-</section>
-<section id="model-quality-assessment" class="level2">
-<h2 class="anchored" data-anchor-id="model-quality-assessment">Model Quality Assessment</h2>
-<section id="statistical-significance" class="level3">
-<h3 class="anchored" data-anchor-id="statistical-significance">Statistical Significance:</h3>
-<ul>
-<li><strong>Significant coefficients</strong>: AR(1), MA(1), SMA(1), Drift (coefficient &gt; 2× standard error)</li>
-<li><strong>Borderline</strong>: xreg (2.07× SE), SAR(1) (1.08× SE)</li>
-<li><strong>Insignificant</strong>: AR(2), SAR(2) (coefficient &lt; SE)</li>
-</ul>
-</section>
-<section id="model-fit-statistics" class="level3">
-<h3 class="anchored" data-anchor-id="model-fit-statistics">Model Fit Statistics:</h3>
-<ul>
-<li><strong>AIC = 666.56, BIC = 690.7</strong>: Good for model comparison (lower is better)</li>
-<li><strong>Log-likelihood = -324.28</strong>: Baseline for model comparison</li>
-<li><strong>σ² = 21.51</strong>: Error variance</li>
-</ul>
-</section>
-<section id="forecast-accuracy" class="level3">
-<h3 class="anchored" data-anchor-id="forecast-accuracy">Forecast Accuracy:</h3>
-<ul>
-<li><strong>RMSE = 4.23</strong>: Average forecast error magnitude</li>
-<li><strong>MAE = 3.17</strong>: Average absolute error</li>
-<li><strong>MAPE = 4.72%</strong>: Excellent accuracy (error &lt;5% of actual values)</li>
-<li><strong>MASE = 0.52</strong>: Model performs 48% better than naive forecast</li>
-</ul>
-</section>
-</section>
-<section id="key-insights-recommendations" class="level2">
-<h2 class="anchored" data-anchor-id="key-insights-recommendations">Key Insights &amp; Recommendations</h2>
-<section id="strengths" class="level3">
-<h3 class="anchored" data-anchor-id="strengths">Strengths:</h3>
-<ol type="1">
-<li><strong>Excellent predictive accuracy</strong> (MAPE &lt;5%)</li>
-<li><strong>Strong seasonal patterns</strong> captured effectively</li>
-<li><strong>Good model fit</strong> with reasonable complexity</li>
-<li><strong>External variable adds value</strong> to predictions</li>
-</ol>
-</section>
-<section id="concerns" class="level3">
-<h3 class="anchored" data-anchor-id="concerns">Concerns:</h3>
-<ol type="1">
-<li><strong>Over-parameterization</strong>: AR(2) and SAR(2) appear unnecessary</li>
-<li><strong>Some coefficients borderline significant</strong></li>
-</ol>
-</section>
-<section id="suggested-improvement" class="level3">
-<h3 class="anchored" data-anchor-id="suggested-improvement">Suggested Improvement:</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Try simplified model</span></span>
-<span id="cb2-2">better_model <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">Arima</span>(y_ts, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">seasonal =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">xreg =</span> xreg)</span></code></pre></div></div>
-</section>
-<section id="business-interpretation" class="level3">
-<h3 class="anchored" data-anchor-id="business-interpretation">Business Interpretation:</h3>
-<ul>
-<li>The time series shows <strong>strong seasonal patterns</strong> with 12-month cycles</li>
-<li>There’s a <strong>positive underlying trend</strong> (0.26 units/period)</li>
-<li>The external variable has <strong>moderate predictive power</strong></li>
-<li>Model provides <strong>highly accurate forecasts</strong> with ~4.7% average error</li>
-</ul>
-<p>This is generally a <strong>good quality model</strong> that should provide reliable forecasts for business planning.</p>
-
-
-</section>
-</section>
-
- ]]></description>
-  <category>statistics</category>
-  <category>time-series</category>
-  <category>R</category>
-  <guid>https://portal.statmania.info/posts/auto-arima-explanation.html</guid>
-  <pubDate>Fri, 15 Mar 2024 18:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>

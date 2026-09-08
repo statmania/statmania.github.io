@@ -1,0 +1,47 @@
+---
+title: "How to Make Git Ignore a Folder"
+description: "Two ways to stop Git from tracking a folder — depending on whether it's already been committed or not."
+author: "Abdullah Al Mahmud"
+date: "2026-01-05"
+categories: [Git, DevOps, Tutorial]
+tags: [git, gitignore]
+image: "../img/gitignore.jpeg"
+---
+
+To make Git ignore a folder, you need to add it to your [`.gitignore`](https://www.w3schools.com/git/git_ignore.asp?remote=github) file. The exact steps depend on whether Git is already tracking that folder.
+
+## Case 1: The Folder Has Not Been Tracked Yet
+
+1. Open or create a file named `.gitignore` in the root directory of your project.
+2. Add the folder name with a trailing forward slash (`/`) on a new line:
+
+```bash
+# Ignore a folder anywhere in the project
+folder_name/
+
+# Or, ignore a folder ONLY at the root level of your project
+/folder_name/
+```
+
+## Case 2: The Folder Is Already Tracked
+
+If you previously committed the folder, simply adding it to `.gitignore` won't stop Git from tracking it — you must clear it from Git's index first.
+
+1. Open your terminal at the project root.
+2. Untrack the folder. The `--cached` flag ensures the folder stays safe on your hard drive and is only removed from Git's tracking:
+
+```bash
+git rm -r --cached folder_name/
+```
+
+3. Add `folder_name/` to your `.gitignore` file.
+4. Commit the changes:
+
+```bash
+git add .gitignore
+git commit -m "Stop tracking folder_name"
+```
+
+## Conclusion
+
+Whether a folder is untracked or already committed, the fix is the same idea: tell Git to ignore it going forward, and if it was already tracked, explicitly remove it from the index with `git rm -r --cached`. See the [Git documentation on gitignore](https://git-scm.com/docs/gitignore) and [Linuxize's guide](https://linuxize.com/post/gitignore-ignoring-files-in-git/) for more advanced patterns like negation and wildcards.
