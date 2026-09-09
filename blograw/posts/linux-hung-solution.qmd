@@ -1,0 +1,37 @@
+---
+title: "How to Recover a Frozen Linux Desktop"
+description: "Two escalating fixes for a hung Linux graphical session, from restarting the display manager over TTY to a safe REISUB reboot."
+date: "2026-09-09"
+categories: [Linux, Troubleshooting]
+author: "Abdullah Al Mahmud"
+image: ../img/linux-hung.jpeg
+---
+
+Your graphical interface has frozen, which happens when the desktop environment or display server stops responding to inputs while the kernel still tracks the mouse hardware.
+
+![](../img/linux-hung.jpeg)
+
+## Recover Using a Virtual Terminal
+
+If your system is only partially frozen, you can switch to a text-based terminal to restart the desktop.
+
+* **Open a TTY**: Press `Ctrl + Alt + F3` (or `F4` / `F5`) to switch to a terminal screen.
+* **Log in**: Type your username and password when prompted (the password characters will not show as you type).
+* **Restart the display manager**:
+  * For Ubuntu/GNOME: `sudo systemctl restart gdm`
+  * For KDE Plasma: `sudo systemctl restart sddm`
+  * For Linux Mint/XFCE: `sudo systemctl restart lightdm`
+* Press Enter and enter your password if asked. This restarts your desktop environment.
+
+## Force Safe Reboot (Magic SysRq)
+
+If the keyboard shortcuts and terminal do not work, your entire system kernel is locked. Use the safe **REISUB** shortcut instead of holding the power button.
+
+::: {.callout-note}
+## Why REISUB is safer
+Holding the power button cuts power immediately, risking filesystem corruption. REISUB steps through unmounting and syncing disks first, so the reboot is much less likely to damage your data.
+:::
+
+* Hold down `Alt` and `Print Screen` (SysRq) together.
+* While holding them, slowly press these keys one by one with a short pause in between: `R`, `E`, `I`, `S`, `U`, `B`.
+* Your computer will safely sync disks, unmount filesystems, and reboot.

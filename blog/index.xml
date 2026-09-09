@@ -293,6 +293,65 @@ font-style: inherit;">theme_minimal</span>()</span></code></pre></div></div>
   <pubDate>Sun, 11 Oct 2026 18:00:00 GMT</pubDate>
 </item>
 <item>
+  <title>How to Recover a Frozen Linux Desktop</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/posts/linux-hung-solution.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>Your graphical interface has frozen, which happens when the desktop environment or display server stops responding to inputs while the kernel still tracks the mouse hardware.</p>
+<p><img src="https://www.statmania.info/img/linux-hung.jpeg" class="img-fluid"></p>
+<section id="recover-using-a-virtual-terminal" class="level2">
+<h2 class="anchored" data-anchor-id="recover-using-a-virtual-terminal">Recover Using a Virtual Terminal</h2>
+<p>If your system is only partially frozen, you can switch to a text-based terminal to restart the desktop.</p>
+<ul>
+<li><strong>Open a TTY</strong>: Press <code>Ctrl + Alt + F3</code> (or <code>F4</code> / <code>F5</code>) to switch to a terminal screen.</li>
+<li><strong>Log in</strong>: Type your username and password when prompted (the password characters will not show as you type).</li>
+<li><strong>Restart the display manager</strong>:
+<ul>
+<li>For Ubuntu/GNOME: <code>sudo systemctl restart gdm</code></li>
+<li>For KDE Plasma: <code>sudo systemctl restart sddm</code></li>
+<li>For Linux Mint/XFCE: <code>sudo systemctl restart lightdm</code></li>
+</ul></li>
+<li>Press Enter and enter your password if asked. This restarts your desktop environment.</li>
+</ul>
+</section>
+<section id="force-safe-reboot-magic-sysrq" class="level2">
+<h2 class="anchored" data-anchor-id="force-safe-reboot-magic-sysrq">Force Safe Reboot (Magic SysRq)</h2>
+<p>If the keyboard shortcuts and terminal do not work, your entire system kernel is locked. Use the safe <strong>REISUB</strong> shortcut instead of holding the power button.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Why REISUB is safer
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Holding the power button cuts power immediately, risking filesystem corruption. REISUB steps through unmounting and syncing disks first, so the reboot is much less likely to damage your data.</p>
+</div>
+</div>
+<ul>
+<li>Hold down <code>Alt</code> and <code>Print Screen</code> (SysRq) together.</li>
+<li>While holding them, slowly press these keys one by one with a short pause in between: <code>R</code>, <code>E</code>, <code>I</code>, <code>S</code>, <code>U</code>, <code>B</code>.</li>
+<li>Your computer will safely sync disks, unmount filesystems, and reboot.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>Linux</category>
+  <category>Troubleshooting</category>
+  <guid>https://www.statmania.info/posts/linux-hung-solution.html</guid>
+  <pubDate>Tue, 08 Sep 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/img/linux-hung.jpeg" medium="image" type="image/jpeg"/>
+</item>
+<item>
   <title>The Ultimate Guide to Making Fish Your Default Shell</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://www.statmania.info/posts/make-fish-default-shell.html</link>
@@ -2488,64 +2547,6 @@ font-style: inherit;">"periodic"</span>))</span></code></pre></div></div>
   <category>CRAN</category>
   <category>submission</category>
   <guid>https://www.statmania.info/posts/r-package-submission.html</guid>
-  <pubDate>Thu, 28 Aug 2025 18:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>R Package Development Workflow</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/posts/r-package-workflow.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>Here are the key <code>devtools</code> functions important in the R package development cycle.</p>
-<section id="project-setup" class="level3">
-<h3 class="anchored" data-anchor-id="project-setup">Project Setup</h3>
-<ul>
-<li><code>usethis::create_package()</code>: Creates a new package with the correct directory structure.</li>
-<li><code>usethis::use_git()</code>: Initializes a Git repository for version control.</li>
-<li><code>usethis::use_r()</code>: Creates a new <code>.R</code> file in the <code>R/</code> directory.</li>
-</ul>
-<hr>
-</section>
-<section id="development-and-documentation" class="level3">
-<h3 class="anchored" data-anchor-id="development-and-documentation">Development and Documentation</h3>
-<ul>
-<li><code>devtools::load_all()</code>: Loads all functions in the <code>R/</code> directory, allowing you to quickly test them without installing the package.</li>
-<li><code>devtools::document()</code>: Generates documentation (<code>.Rd</code> files in the <code>man/</code> directory) and the <code>NAMESPACE</code> file from roxygen2 comments.</li>
-<li><code>devtools::install()</code>: Installs the package from the source directory, making it available for use on your system.</li>
-</ul>
-<hr>
-</section>
-<section id="testing-and-checking" class="level3">
-<h3 class="anchored" data-anchor-id="testing-and-checking">Testing and Checking</h3>
-<ul>
-<li><code>usethis::use_testthat()</code>: Sets up the <code>testthat</code> framework for unit testing.</li>
-<li><code>usethis::use_test()</code>: Creates a new test file in <code>tests/testthat/</code>.</li>
-<li><code>devtools::test()</code>: Runs all the tests in the <code>tests/testthat/</code> directory.</li>
-<li><code>devtools::check()</code>: Runs the comprehensive suite of <code>R CMD check</code> tests to identify errors, warnings, and notes.</li>
-<li><code>devtools::check_win_devel()</code>: Submits the package to the win-builder service to check for platform-specific issues on Windows.</li>
-</ul>
-<hr>
-</section>
-<section id="publishing" class="level3">
-<h3 class="anchored" data-anchor-id="publishing">Publishing</h3>
-<ul>
-<li><code>usethis::use_vignette()</code>: Creates a new vignette (<code>.Rmd</code> file) for package tutorials.</li>
-<li><code>pkgdown::build_site()</code>: Builds a complete website for your package.</li>
-<li><code>devtools::submit_cran()</code>: Helps with the final steps of submitting your package to CRAN.</li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>R</category>
-  <category>package</category>
-  <category>programming</category>
-  <guid>https://www.statmania.info/posts/r-package-workflow.html</guid>
   <pubDate>Thu, 28 Aug 2025 18:00:00 GMT</pubDate>
 </item>
 </channel>
