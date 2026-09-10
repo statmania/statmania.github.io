@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Abdullah Al Mahmud">
-<meta name="dcterms.date" content="2026-10-12">
+<meta name="dcterms.date" content="2026-05-12">
 <meta name="description" content="The negative binomial distribution models the number of trials needed to achieve a fixed number of successes. This post explains its formulation, real-world applications, and provides a visual example.">
 
 <title>Understanding the Negative Binomial Distribution – Stat Mania</title>
@@ -235,7 +235,7 @@ window.Quarto = {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">October 12, 2026</p>
+        <p class="date">May 12, 2026</p>
       </div>
     </div>
     
@@ -300,8 +300,9 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="key-properties">Key Properties</h2>
 <ul>
 <li><strong>Mean</strong> (trials formulation): <span class="math inline">\(E[X] = \frac{r}{p}\)</span></li>
-<li><strong>Variance</strong> (trials formulation): <span class="math inline">\(Var(X) = \frac{r(1-p)}{p^2}\)</span></li>
-<li><strong>Overdispersion</strong>: The variance is greater than the mean, making it suitable for count data with extra variability (unlike the Poisson distribution).</li>
+<li><strong>Mean</strong> (failures formulation): <span class="math inline">\(E[Y] = \frac{r(1-p)}{p}\)</span></li>
+<li><strong>Variance</strong> (same for both formulations, since <span class="math inline">\(X = Y + r\)</span>): <span class="math inline">\(Var(X) = Var(Y) = \frac{r(1-p)}{p^2}\)</span></li>
+<li><strong>Overdispersion</strong>: Comparing against the failures count <span class="math inline">\(Y\)</span> — the formulation analogous to a Poisson count — the variance exceeds the mean whenever <span class="math inline">\(p &lt; 1\)</span>, i.e.&nbsp;<span class="math inline">\(\frac{Var(Y)}{E[Y]} = \frac{1}{p} &gt; 1\)</span>. This is why the negative binomial suits count data with extra variability (unlike the Poisson distribution, where variance always equals the mean). Note this comparison does <strong>not</strong> hold for the trials count <span class="math inline">\(X\)</span> itself — <span class="math inline">\(Var(X) &gt; E[X]\)</span> only when <span class="math inline">\(p &lt; 0.5\)</span>.</li>
 </ul>
 <hr>
 </section>
@@ -365,6 +366,7 @@ window.Quarto = {
 </section>
 <section id="comparison-with-poisson-distribution" class="level2">
 <h2 class="anchored" data-anchor-id="comparison-with-poisson-distribution">Comparison with Poisson Distribution</h2>
+<p>All rows below use the <strong>failures formulation</strong> (<span class="math inline">\(Y\)</span> = number of failures before the <span class="math inline">\(r\)</span>-th success), since that is the count analogous to a Poisson-distributed count.</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -376,7 +378,7 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td>Mean</td>
-<td><span class="math inline">\(\frac{r(1-p)}{p}\)</span> (failures form)</td>
+<td><span class="math inline">\(\frac{r(1-p)}{p}\)</span></td>
 <td><span class="math inline">\(\lambda\)</span></td>
 </tr>
 <tr class="even">
