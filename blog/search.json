@@ -7,312 +7,151 @@
     "text": "A z-score (also known as a standard score or z-value) measures how many standard deviations a data point is from the mean of a distribution. It’s a way of standardizing individual data points so they can be compared, regardless of the scale of the data.\n\nHow to calculate the z-score:\nThe formula for the z-score of a data point is:\n\\(z = \\frac{X - \\mu}{\\sigma}\\)\nWhere:\n\n\\(X\\) = the value of the data point.\n\\(\\mu\\) = the mean (average) of the dataset.\n\\(\\sigma\\) = the standard deviation of the dataset.\n\n\n\nSteps to calculate the z-score:\n\nFind the mean of the dataset.\nFind the standard deviation of the dataset.\nSubtract the mean from the data point you’re interested in.\nDivide the result by the standard deviation.\n\n\n\nExample:\nImagine you have the following dataset of test scores: [80, 85, 90, 95, 100]\n\nMean (μ): ((80 + 85 + 90 + 95 + 100) / 5 = 90)\nStandard Deviation (σ): Calculate the standard deviation of the dataset (you could use a standard formula or a calculator for this). Let’s say it’s 7.91.\nTo find the z-score for a score of 85:\n\\(z = \\frac{85 - 90}{7.91} \\approx -0.63\\)\nThis means the score of 85 is 0.63 standard deviations below the mean.\n\n\n\n\nCommon uses of the z-score:\n\nStandardizing data: Z-scores are used to standardize data, especially when you want to compare values from different datasets with different units or scales.\nIdentifying outliers: A data point with a z-score greater than +3 or less than -3 is often considered an outlier because it lies more than 3 standard deviations away from the mean.\nProbability and normal distribution: In statistics, z-scores are crucial when working with the normal distribution. They can be used to find the probability of a value occurring within a normal distribution by looking up the z-score in a standard normal distribution table (or using statistical software).\nComparing scores across different distributions: For example, in education, z-scores allow you to compare scores from different tests, even if those tests have different scales (e.g., SAT vs. ACT scores). You can convert raw scores into z-scores to compare relative performance.\nRisk assessment and finance: In finance, z-scores can be used to assess the risk or financial stability of a company. The Altman Z-score, for instance, is used to predict the likelihood of bankruptcy.\nQuality control and manufacturing: In quality control, z-scores help assess whether a product meets specifications, identifying whether the production process is consistent or if corrective action is needed."
   },
   {
-    "objectID": "posts/t-test-to-anova.html",
-    "href": "posts/t-test-to-anova.html",
-    "title": "From t-test to Anova",
+    "objectID": "posts/using-markitdown.html",
+    "href": "posts/using-markitdown.html",
+    "title": "Batch-Converting PDFs to Markdown with MarkItDown",
     "section": "",
-    "text": "Let’s build a t-test and then showing how it generalizes naturally into ANOVA (Analysis of Variance)."
+    "text": "MarkItDown is Microsoft’s command-line tool for converting documents — PDFs, Office files, images, HTML, and more — into clean Markdown, which makes it handy for feeding documents into an LLM pipeline. Install it with PDF support first:"
   },
   {
-    "objectID": "posts/t-test-to-anova.html#step-1.-the-t-test-comparing-two-means",
-    "href": "posts/t-test-to-anova.html#step-1.-the-t-test-comparing-two-means",
-    "title": "From t-test to Anova",
-    "section": "Step 1. The t-test — comparing two means",
-    "text": "Step 1. The t-test — comparing two means\nLet’s imagine two groups of students and their test scores:\n\n\n\nGroup\nScores\n\n\n\n\nGroup A\n70, 75, 80\n\n\nGroup B\n85, 90, 95\n\n\n\nWe want to know:\n\nAre the mean scores of Group A and Group B significantly different?\n\n\nHypotheses\n\\(H_0: \\mu_A = \\mu_B \\quad \\text{(means are equal)}\\)\n\\(H_1: \\mu_A \\ne \\mu_B\\)\n\n\nLogic of the t-test\nWe calculate:\n\nThe difference between sample means \\(\\bar X_A - \\bar X_B\\)\nThe standard error of that difference (based on the variances and sample sizes)\nThe t-statistic\n\\(t = \\frac{(\\bar X_A - \\bar X_B)}{SE}\\)\n\nIf the difference is large relative to its expected variation, we reject \\(H_0\\).\n\n\n\nIntuition\n\nThe numerator measures how far apart the groups are.\nThe denominator measures how noisy the data are.\nA large t-value ⇒ groups differ more than we’d expect by chance.\n\nSo the two-sample t-test compares between-group difference to within-group variability."
+    "objectID": "posts/using-markitdown.html#converting-a-single-pdf",
+    "href": "posts/using-markitdown.html#converting-a-single-pdf",
+    "title": "Batch-Converting PDFs to Markdown with MarkItDown",
+    "section": "Converting a Single PDF",
+    "text": "Converting a Single PDF\nTo convert one PDF and save the output, use the -o flag:\nmarkitdown document.pdf -o output.md\nSince MarkItDown prints to stdout by default, plain shell redirection works just as well:\nmarkitdown document.pdf &gt; output.md"
   },
   {
-    "objectID": "posts/t-test-to-anova.html#step-2.-extending-to-more-than-two-groups",
-    "href": "posts/t-test-to-anova.html#step-2.-extending-to-more-than-two-groups",
-    "title": "From t-test to Anova",
-    "section": "Step 2. Extending to more than two groups",
-    "text": "Step 2. Extending to more than two groups\nNow add a third group:\n\n\n\nGroup\nScores\n\n\n\n\nGroup A\n70, 75, 80\n\n\nGroup B\n85, 90, 95\n\n\nGroup C\n60, 65, 70\n\n\n\nNow what if we ask:\n\nAre all group means equal?\n\nYou could do multiple t-tests (A vs B, A vs C, B vs C), but that inflates the chance of false positives. Instead, ANOVA does it all at once."
+    "objectID": "posts/using-markitdown.html#converting-all-pdfs-in-a-folder",
+    "href": "posts/using-markitdown.html#converting-all-pdfs-in-a-folder",
+    "title": "Batch-Converting PDFs to Markdown with MarkItDown",
+    "section": "Converting All PDFs in a Folder",
+    "text": "Converting All PDFs in a Folder\nThe CLI only targets one file at a time, so batch-converting a directory means wrapping it in a loop.\nBash / Zsh (Linux & macOS):\nfor file in *.pdf; do\n    markitdown \"$file\" -o \"${file%.pdf}.md\"\ndone\nPowerShell (Windows):\nGet-ChildItem *.pdf | ForEach-Object {\n    markitdown $_.FullName -o ($_.BaseName + \".md\")\n}"
   },
   {
-    "objectID": "posts/t-test-to-anova.html#step-3.-anova-conceptually",
-    "href": "posts/t-test-to-anova.html#step-3.-anova-conceptually",
-    "title": "From t-test to Anova",
-    "section": "Step 3. ANOVA conceptually",
-    "text": "Step 3. ANOVA conceptually\n\nHypotheses\n\\(H_0: \\mu_A = \\mu_B = \\mu_C \\quad \\text{(all equal)}\\)\n\\(H_1: \\text{At least one mean differs}\\)\n\n\nHow ANOVA works\nANOVA decomposes total variability into two parts:\n\\(\\text{Total Variation} = \\text{Between-group Variation} + \\text{Within-group Variation}\\)\nIt then forms a ratio:\n\\(F = \\frac{\\text{Between-group Mean Square}}{\\text{Within-group Mean Square}}\\)\n\nIf \\(H_0\\) is true, both parts estimate the same thing → \\(F \\approx 1\\).\nIf group means differ more than expected, \\(F &gt; 1\\) → reject \\(H_0\\)."
+    "objectID": "posts/using-markitdown.html#batch-converting-with-the-python-api",
+    "href": "posts/using-markitdown.html#batch-converting-with-the-python-api",
+    "title": "Batch-Converting PDFs to Markdown with MarkItDown",
+    "section": "Batch Converting with the Python API",
+    "text": "Batch Converting with the Python API\nFor more control — say, catching per-file failures instead of letting one bad PDF kill the whole batch — call MarkItDown directly from Python:\nfrom pathlib import Path\nfrom markitdown import MarkItDown\n\nmd = MarkItDown()\n\ninput_dir = Path(\"./my_pdfs\")\noutput_dir = Path(\"./converted_markdown\")\noutput_dir.mkdir(parents=True, exist_ok=True)\n\nfor pdf_path in input_dir.glob(\"*.pdf\"):\n    try:\n        result = md.convert(str(pdf_path))\n        output_file = output_dir / f\"{pdf_path.stem}.md\"\n        output_file.write_text(result.text_content, encoding=\"utf-8\")\n        print(f\"Converted: {pdf_path.name} -&gt; {output_file.name}\")\n    except Exception as e:\n        print(f\"Failed to convert {pdf_path.name}: {e}\")"
   },
   {
-    "objectID": "posts/t-test-to-anova.html#step-4.-conceptual-link-between-t-and-f",
-    "href": "posts/t-test-to-anova.html#step-4.-conceptual-link-between-t-and-f",
-    "title": "From t-test to Anova",
-    "section": "Step 4. Conceptual link between t and F",
-    "text": "Step 4. Conceptual link between t and F\nFor two groups, ANOVA and t-test give the same result:\n\\(F = t^2\\)\nSo ANOVA is just a generalization of the t-test from 2 groups to many groups.\n\n\n\n\n\n\n\n\n\nTest\nGroups\nStatistic\nDistribution\n\n\n\n\nt-test\n2\n\\(t\\)\nt-distribution\n\n\nANOVA\n≥ 2\n\\(F = \\frac{\\text{Between}}{\\text{Within}}\\)\nF-distribution"
-  },
-  {
-    "objectID": "posts/t-test-to-anova.html#step-5.-interpretation",
-    "href": "posts/t-test-to-anova.html#step-5.-interpretation",
-    "title": "From t-test to Anova",
-    "section": "Step 5. Interpretation",
-    "text": "Step 5. Interpretation\n\nIf \\(F\\) (or \\(|t|\\)) is large and the p-value &lt; 0.05, we reject \\(H_0\\). → The means are not all equal.\nIf not, we conclude that differences among sample means could just be random noise."
-  },
-  {
-    "objectID": "posts/t-test-to-anova.html#summary-table",
-    "href": "posts/t-test-to-anova.html#summary-table",
-    "title": "From t-test to Anova",
-    "section": "Summary Table",
-    "text": "Summary Table\n\n\n\n\n\n\n\n\nAspect\nt-test\nANOVA\n\n\n\n\nPurpose\nCompare two means\nCompare two or more means\n\n\nHypothesis\n\\(H_0: \\mu_1 = \\mu_2\\)\n\\(H_0: \\mu_1 = \\mu_2 = \\mu_3 = \\dots\\)\n\n\nStatistic\nt\nF\n\n\nLogic\nDifference of means / error\nRatio of between-group / within-group variance\n\n\nLink\n\\(F = t^2\\) for 2 groups\n—"
-  },
-  {
-    "objectID": "posts/t-test-to-anova.html#why-not-many-t-tests",
-    "href": "posts/t-test-to-anova.html#why-not-many-t-tests",
-    "title": "From t-test to Anova",
-    "section": "Why not many t-tests?",
-    "text": "Why not many t-tests?\nDoing multiple t-tests increases the Type I error rate (false positive probability).\nLet us see how.\n\nSuppose you have \\(k = 3\\) groups:\n\n\\(G_1, G_2, G_3\\)\n\nTo compare them, you could do pairwise t-tests:\n\\(G_1 \\text{ vs } G_2,\\quad G_1 \\text{ vs } G_3,\\quad G_2 \\text{ vs } G_3\\)\nThat’s \\(C(k,2) = 3\\) tests.\nEach test has significance level \\(\\alpha = 0.05\\). So the chance of no false positive across all tests = \\((1-\\alpha)^m\\), where \\(m\\) = number of tests.\nHence, the overall false positive rate (familywise error rate) is:\n\\(\\text{FWER} = 1 - (1 - \\alpha)^m\\)\nFor \\(k=3\\) groups, \\(m=3\\):\n\\(\\text{FWER} = 1 - (1 - 0.05)^3 = 1 - 0.95^3 = 0.1426\\)\nSo even if all population means are equal, there’s ≈14% chance you’ll (wrongly) find at least one “significant difference”.\nThis is why ANOVA tests all means simultaneously with a single α = 0.05 — controlling the false positive rate."
-  },
-  {
-    "objectID": "posts/t-test-to-anova.html#minimal-empirical-example",
-    "href": "posts/t-test-to-anova.html#minimal-empirical-example",
-    "title": "From t-test to Anova",
-    "section": "Minimal empirical example",
-    "text": "Minimal empirical example\nLet’s make up a small dataset:\n\n\n\nGroup\nValues\n\n\n\n\nA\n5, 6, 7\n\n\nB\n6, 7, 8\n\n\nC\n5, 7, 9\n\n\n\nAll groups have similar means (~6.5–7). True means are equal (in population), but random variation exists.\nNow:\n\nStep 1. Pairwise t-tests\nWe do:\n\nA vs B → p = 0.08\nA vs C → p = 0.04\nB vs C → p = 0.06\n\nOne of them (A vs C) is &lt;0.05 → you’d claim a “significant” difference. But that’s a false positive, since groups were drawn from the same population.\nIf you repeated this experiment 1000 times, around 14% of runs would falsely detect something significant — matching our theoretical 0.1426."
-  },
-  {
-    "objectID": "posts/t-test-to-anova.html#key-takeaway",
-    "href": "posts/t-test-to-anova.html#key-takeaway",
-    "title": "From t-test to Anova",
-    "section": "Key takeaway",
-    "text": "Key takeaway\n\n\n\n\n\n\n\n\n\nMethod\nNumber of tests\nNominal α per test\nFamilywise α (true false positive rate)\n\n\n\n\nOne-way ANOVA\n1\n0.05\n0.05\n\n\nThree t-tests\n3\n0.05\n0.14\n\n\nTen t-tests\n10\n0.05\n0.40"
-  },
-  {
-    "objectID": "posts/spatio-temporal.html",
-    "href": "posts/spatio-temporal.html",
-    "title": "Spatio-temporal Analysis Workflow",
+    "objectID": "posts/save-git-credentials.html",
+    "href": "posts/save-git-credentials.html",
+    "title": "How to Save Git Credentials on Windows, macOS, and Linux",
     "section": "",
-    "text": "Spatio-temporal analysis sits right at the intersection of statistics, data science, GIS, and environmental applications.\n📚 Step 1: Build Foundations\nSpatial Statistics"
+    "text": "To save your Git credentials and stop typing your password every time, configure Git to use a credential helper.\nOpen your terminal or command prompt and run one of the following commands based on your operating system and security preferences."
   },
   {
-    "objectID": "posts/spatio-temporal.html#time-series-temporal-analysis",
-    "href": "posts/spatio-temporal.html#time-series-temporal-analysis",
-    "title": "Spatio-temporal Analysis Workflow",
-    "section": "Time Series / Temporal Analysis",
-    "text": "Time Series / Temporal Analysis\n\nRefresh time series models (ARIMA, state-space, spectral methods).\nAdd temporal clustering and forecasting methods."
+    "objectID": "posts/save-git-credentials.html#secure-os-native-helpers-recommended",
+    "href": "posts/save-git-credentials.html#secure-os-native-helpers-recommended",
+    "title": "How to Save Git Credentials on Windows, macOS, and Linux",
+    "section": "Secure OS-Native Helpers (Recommended)",
+    "text": "Secure OS-Native Helpers (Recommended)\nThese helpers securely encrypt your credentials using your operating system’s native keychain management system.\n\nWindows\ngit config --global credential.helper manager\n\n\nmacOS\ngit config --global credential.helper osxkeychain\n\n\nLinux (Ubuntu/Debian)\ngit config --global credential.helper libsecret"
   },
   {
-    "objectID": "posts/spatio-temporal.html#spatio-temporal-models",
-    "href": "posts/spatio-temporal.html#spatio-temporal-models",
-    "title": "Spatio-temporal Analysis Workflow",
-    "section": "Spatio-Temporal Models",
-    "text": "Spatio-Temporal Models\n\nCombine both: spatio-temporal kriging, Gaussian random fields, Bayesian hierarchical models.\nBook: Hierarchical Modelling of Spatial Data Using R-INLA (Blangiardo & Cameletti).\n\n🛠 Step 2: Learn the Tools"
+    "objectID": "posts/save-git-credentials.html#permanent-hard-drive-storage-less-secure",
+    "href": "posts/save-git-credentials.html#permanent-hard-drive-storage-less-secure",
+    "title": "How to Save Git Credentials on Windows, macOS, and Linux",
+    "section": "Permanent Hard Drive Storage (Less Secure)",
+    "text": "Permanent Hard Drive Storage (Less Secure)\nThis saves your credentials indefinitely in a plaintext file (~/.git-credentials) on your disk. Only use this on trusted, private machines.\ngit config --global credential.helper store"
   },
   {
-    "objectID": "posts/spatio-temporal.html#r-packages",
-    "href": "posts/spatio-temporal.html#r-packages",
-    "title": "Spatio-temporal Analysis Workflow",
-    "section": "R packages",
-    "text": "R packages\n\nsf (modern spatial objects)\nstars (spatio-temporal arrays)\nterra (raster/vector operations)\nspacetime (older but still used)\ngstat (variograms, kriging)\nspdep (spatial dependence)\nINLA (Bayesian spatio-temporal modeling)\nPython equivalents (optional, if you want dual skillset): geopandas, xarray, rasterio, pySTL, pysal, scikit-mobility\n\n🔬 Step 3: Practice with Data"
+    "objectID": "posts/save-git-credentials.html#temporary-memory-cache",
+    "href": "posts/save-git-credentials.html#temporary-memory-cache",
+    "title": "How to Save Git Credentials on Windows, macOS, and Linux",
+    "section": "⏱️ Temporary Memory Cache",
+    "text": "⏱️ Temporary Memory Cache\nThis keeps your credentials safely in your computer’s RAM memory for a set period so they never touch your hard drive.\n# Caches your credentials for 1 hour (3600 seconds)\ngit config --global credential.helper 'cache --timeout=3600'"
   },
   {
-    "objectID": "posts/spatio-temporal.html#sources-of-free-spatio-temporal-datasets",
-    "href": "posts/spatio-temporal.html#sources-of-free-spatio-temporal-datasets",
-    "title": "Spatio-temporal Analysis Workflow",
-    "section": "Sources of free spatio-temporal datasets:",
-    "text": "Sources of free spatio-temporal datasets:\n\nEarth observation: NASA EarthData, Copernicus (Sentinel satellites)\nClimate: ERA5 reanalysis (ECMWF)\nHealth: COVID-19 spatio-temporal data (Johns Hopkins)\nUrban/mobility: OpenStreetMap, Google Mobility Reports\nYou could start with simple projects:\nMapping air quality trends across time.\nSpatio-temporal spread of disease (e.g., dengue in Bangladesh).\nDetecting land cover change from satellite images.\n\n🤝 Step 4: Contribute"
+    "objectID": "posts/save-git-credentials.html#how-to-apply-the-changes",
+    "href": "posts/save-git-credentials.html#how-to-apply-the-changes",
+    "title": "How to Save Git Credentials on Windows, macOS, and Linux",
+    "section": "How to Apply the Changes",
+    "text": "How to Apply the Changes\nTo activate your new credential manager setting, follow these three steps:\n\nRun your chosen configuration command from the options above.\nPerform a remote operation like git pull or git push.\nEnter your username and password/token when prompted.\n\nGit will securely save them for all future actions.\n\n\n\n\n\n\nNoteGitHub Authentication\n\n\n\nIf you are pushing or pulling from GitHub, remember to use your Personal Access Token (PAT) instead of your account password when prompted by the terminal."
   },
   {
-    "objectID": "posts/spatio-temporal.html#open-source-contributions",
-    "href": "posts/spatio-temporal.html#open-source-contributions",
-    "title": "Spatio-temporal Analysis Workflow",
-    "section": "Open-Source Contributions",
-    "text": "Open-Source Contributions\n\nHelp improve documentation or examples in sf, stars, or spacetime.\nBuild teaching vignettes for gstat or spdep."
-  },
-  {
-    "objectID": "posts/spatio-temporal.html#research-contributions",
-    "href": "posts/spatio-temporal.html#research-contributions",
-    "title": "Spatio-temporal Analysis Workflow",
-    "section": "Research Contributions",
-    "text": "Research Contributions\n\nApply spatio-temporal models to a new real-world problem (climate, urban growth, seismicity).\nPublish datasets + reproducible code (on GitHub + Zenodo)."
-  },
-  {
-    "objectID": "posts/spatio-temporal.html#community-involvement",
-    "href": "posts/spatio-temporal.html#community-involvement",
-    "title": "Spatio-temporal Analysis Workflow",
-    "section": "Community Involvement",
-    "text": "Community Involvement\n\nJoin R-Spatial community (https://r-spatial.org).\nFollow Edzer Pebesma, Roger Bivand, and Virgilio Gómez-Rubio.\nPresent small case studies in workshops/webinars.\n\n⚡ A good starting project for you could be:\n“Spatio-temporal visualization of earthquake aftershocks in Bangladesh/Asia using USGS data”"
-  },
-  {
-    "objectID": "posts/sarimax-r.html",
-    "href": "posts/sarimax-r.html",
-    "title": "SARIMAX Time Series Models with R Code",
+    "objectID": "posts/reset-usb.html",
+    "href": "posts/reset-usb.html",
+    "title": "How to Reset a Bootable USB Drive Using the Linux Command Line",
     "section": "",
-    "text": "Here’s a comprehensive guide to SARIMAX in R with examples and interpretation:"
+    "text": "When you create a bootable Linux live USB, it alters the drive’s partition table and filesystem structure. This often makes the drive read-only or unrecognizable when plugged into standard file managers.\nTo restore your USB drive back to a normal storage device, you must wipe its hidden boot signatures and create a fresh filesystem using the terminal."
   },
   {
-    "objectID": "posts/sarimax-r.html#what-is-sarimax",
-    "href": "posts/sarimax-r.html#what-is-sarimax",
-    "title": "SARIMAX Time Series Models with R Code",
-    "section": "1. What is SARIMAX?",
-    "text": "1. What is SARIMAX?\nSARIMAX = Seasonal AutoRegressive Integrated Moving Average with eXogenous variables\n\nSARIMA: Handles seasonality and trends\nX: Includes external predictors (covariates)"
+    "objectID": "posts/reset-usb.html#critical-warning",
+    "href": "posts/reset-usb.html#critical-warning",
+    "title": "How to Reset a Bootable USB Drive Using the Linux Command Line",
+    "section": "Critical Warning",
+    "text": "Critical Warning\nEnsure you select the correct drive identifier (e.g., /dev/sdb). Specifying the wrong drive path will permanently destroy your computer’s main operating system or data."
   },
   {
-    "objectID": "posts/sarimax-r.html#basic-syntax-in-r",
-    "href": "posts/sarimax-r.html#basic-syntax-in-r",
-    "title": "SARIMAX Time Series Models with R Code",
-    "section": "2. Basic Syntax in R",
-    "text": "2. Basic Syntax in R\nlibrary(forecast)\n\n# Fit SARIMAX model\nmodel &lt;- Arima(y,\n               order = c(p, d, q),           # non-seasonal ARIMA order\n               seasonal = c(P, D, Q, S),     # seasonal order (S = period)\n               xreg = xreg_data)             # exogenous variables"
+    "objectID": "posts/reset-usb.html#step-by-step-reset-procedure",
+    "href": "posts/reset-usb.html#step-by-step-reset-procedure",
+    "title": "How to Reset a Bootable USB Drive Using the Linux Command Line",
+    "section": "Step-by-Step Reset Procedure",
+    "text": "Step-by-Step Reset Procedure\n\nStep 1: Identify your USB drive\nPlug in your USB drive and list all connected storage disks to find its system path:\nsudo fdisk -l\n\nLook through the output to match your USB drive’s capacity (e.g., a 16GB drive might show up as 14.9 GiB).\nNote its device path, which usually looks like /dev/sdb or /dev/sdc.\n\n\n\nStep 2: Unmount the drive\nYou cannot modify a drive while the system actively mounts it. Unmount all partitions on the device (replace sdb with your actual drive letter):\nsudo umount /dev/sdb*\n\n\nStep 3: Wipe the bootable partition table\nOverwriting the first few megabytes deletes the hidden boot sector signatures and ISO filesystems:\nsudo dd if=/dev/zero of=/dev/sdb bs=1M count=10 status=progress\n\nif=/dev/zero: Sends a stream of zeros to overwrite data.\nof=/dev/sdb: The target drive path (do not include partition numbers like sdb1).\n\n\n\nStep 4: Create a fresh partition table\nCreate a standard Master Boot Record (msdos) partition layout so the drive works on all devices:\nsudo parted /dev/sdb mklabel msdos\n\n\nStep 5: Allocate a new primary partition\nInstruct the partition manager to allocate 100% of the available space to a single new partition:\nsudo parted -a optimal /dev/sdb mkpart primary fat32 0% 100%\n\n\nStep 6: Format the filesystem\nFormat the newly created partition to FAT32 for universal compatibility across Windows, macOS, and Linux:\nsudo mkfs.vfat -F 32 -n \"MY_USB\" /dev/sdb1\n\n-n \"MY_USB\": Sets the name/label for your drive.\nNote that you are formatting the partition (/dev/sdb1), not the raw disk (/dev/sdb)."
   },
   {
-    "objectID": "posts/sarimax-r.html#example-1-simple-sarimax-with-one-external-variable",
-    "href": "posts/sarimax-r.html#example-1-simple-sarimax-with-one-external-variable",
-    "title": "SARIMAX Time Series Models with R Code",
-    "section": "3. Example 1: Simple SARIMAX with One External Variable",
-    "text": "3. Example 1: Simple SARIMAX with One External Variable\nlibrary(forecast)\nlibrary(ggplot2)\n\n# Create sample data\nset.seed(123)\nn &lt;- 120\ntime &lt;- 1:n\n\n# Main time series with trend + seasonality\ny &lt;- 50 + 0.3*time + 10*sin(2*pi*time/12) + rnorm(n, 0, 5)\n\n# External variable (e.g., marketing spend)\nx1 &lt;- 20 + 0.1*time + rnorm(n, 0, 3)\n\n# Convert to time series object\ny_ts &lt;- ts(y, frequency = 12)\nx1_ts &lt;- ts(x1, frequency = 12)\n\n# Fit SARIMAX model\nsarimax_model &lt;- Arima(y_ts,\n                       order = c(1, 1, 0),      # Remove MA term\n                       seasonal = c(1, 1, 0),   # Remove seasonal MA\n                       xreg = x1_ts)\n\nsummary(sarimax_model)"
+    "objectID": "posts/reset-usb.html#conclusion",
+    "href": "posts/reset-usb.html#conclusion",
+    "title": "How to Reset a Bootable USB Drive Using the Linux Command Line",
+    "section": "Conclusion",
+    "text": "Conclusion\nYour USB drive is now completely wiped, restored to its full capacity, and ready for everyday file storage."
   },
   {
-    "objectID": "posts/sarimax-r.html#example-2-multiple-external-variables",
-    "href": "posts/sarimax-r.html#example-2-multiple-external-variables",
-    "title": "SARIMAX Time Series Models with R Code",
-    "section": "4. Example 2: Multiple External Variables",
-    "text": "4. Example 2: Multiple External Variables\n# Add second external variable\nx2 &lt;- 15 + 0.05*time + rnorm(n, 0, 2)\nxreg_matrix &lt;- cbind(x1_ts, x2_ts)\n\n# Fit model with multiple external variables\nsarimax_model2 &lt;- Arima(y_ts,\n                       order = c(1, 1, 1),\n                       seasonal = c(1, 1, 1),\n                       xreg = xreg_matrix)\n\nsummary(sarimax_model2)"
-  },
-  {
-    "objectID": "posts/sarimax-r.html#model-diagnostics",
-    "href": "posts/sarimax-r.html#model-diagnostics",
-    "title": "SARIMAX Time Series Models with R Code",
-    "section": "5. Model Diagnostics",
-    "text": "5. Model Diagnostics\n# Residual diagnostics\ncheckresiduals(sarimax_model)\n\n# Coefficients and significance\ncoef(sarimax_model)\nsqrt(diag(sarimax_model$var.coef))  # standard errors\n\n# Confidence intervals\nconfint(sarimax_model)"
-  },
-  {
-    "objectID": "posts/sarimax-r.html#forecasting-with-external-variables",
-    "href": "posts/sarimax-r.html#forecasting-with-external-variables",
-    "title": "SARIMAX Time Series Models with R Code",
-    "section": "6. Forecasting with External Variables",
-    "text": "6. Forecasting with External Variables\n# Create future values of external variables\nfuture_periods &lt;- 12\nx1_future &lt;- ts(30 + 0.1*(121:132), frequency = 12)\nx2_future &lt;- ts(20 + 0.05*(121:132), frequency = 12)\nxreg_future &lt;- cbind(x1_future, x2_future)\n\n# Generate forecasts\nforecast_result &lt;- forecast(sarimax_model2,\n                           h = future_periods,\n                           xreg = xreg_future)\n\n# Plot results\nautoplot(forecast_result) +\n  ggtitle(\"SARIMAX Forecast with External Variables\")"
-  },
-  {
-    "objectID": "posts/sarimax-r.html#automated-model-selection",
-    "href": "posts/sarimax-r.html#automated-model-selection",
-    "title": "SARIMAX Time Series Models with R Code",
-    "section": "7. Automated Model Selection",
-    "text": "7. Automated Model Selection\n# Let auto.arima select best SARIMAX model\nauto_model &lt;- auto.arima(y_ts,\n                        seasonal = TRUE,\n                        stepwise = TRUE,\n                        approximation = FALSE,\n                        xreg = xreg_matrix)\n\nsummary(auto_model)"
-  },
-  {
-    "objectID": "posts/sarimax-r.html#real-dataset-example-airpassengers-with-exogenous-var",
-    "href": "posts/sarimax-r.html#real-dataset-example-airpassengers-with-exogenous-var",
-    "title": "SARIMAX Time Series Models with R Code",
-    "section": "8. Real Dataset Example (AirPassengers with exogenous var)",
-    "text": "8. Real Dataset Example (AirPassengers with exogenous var)\n# Using AirPassengers dataset\ndata(\"AirPassengers\")\n\n# Create dummy external variable (e.g., economic index)\nset.seed(123)\neconomic_index &lt;- 100 + 0.5*time(AirPassengers) + rnorm(length(AirPassengers), 0, 10)\n\n# Fit SARIMAX\nair_model &lt;- Arima(AirPassengers,\n                  order = c(0, 1, 1),\n                  seasonal = c(0, 1, 1),\n                  xreg = economic_index)\n\n# Forecast with assumed future economic index\nfuture_econ &lt;- 150 + 0.5*(1961 + (0:11)/12)  # 1961 values\nair_forecast &lt;- forecast(air_model,\n                        h = 12,\n                        xreg = future_econ)\n\nautoplot(air_forecast)"
-  },
-  {
-    "objectID": "posts/sarimax-r.html#interpretation-of-coefficients",
-    "href": "posts/sarimax-r.html#interpretation-of-coefficients",
-    "title": "SARIMAX Time Series Models with R Code",
-    "section": "9. Interpretation of Coefficients",
-    "text": "9. Interpretation of Coefficients\nFor the model:\n# If output shows:\n# ar1 = 0.85, ma1 = -0.32, sar1 = 0.72, sma1 = -0.45, xreg1 = 0.65\nInterpretation: - ar1 = 0.85: Strong positive autocorrelation (persistence) - ma1 = -0.32: Negative momentum effects - sar1 = 0.72: Strong seasonal autocorrelation - sma1 = -0.45: Negative seasonal momentum - xreg1 = 0.65: 1-unit increase in external variable increases y by 0.65 units"
-  },
-  {
-    "objectID": "posts/sarimax-r.html#important-notes",
-    "href": "posts/sarimax-r.html#important-notes",
-    "title": "SARIMAX Time Series Models with R Code",
-    "section": "10. Important Notes",
-    "text": "10. Important Notes\n\nStationarity: Ensure both y and xreg variables are stationary (use differencing if needed)\nCorrelation ≠ Causation: External variables should theoretically make sense\nModel Validation: Always check residuals for autocorrelation\nOverfitting: Avoid too many external variables relative to data length\n\nThis gives you a solid foundation for implementing SARIMAX models in R!"
-  },
-  {
-    "objectID": "posts/regression-interaction.html",
-    "href": "posts/regression-interaction.html",
-    "title": "Interaction Effect in Regression Analysis",
+    "objectID": "posts/reading-paper-ai-age.html",
+    "href": "posts/reading-paper-ai-age.html",
+    "title": "Reading Papers in the AI Age: A Hybrid Workflow",
     "section": "",
-    "text": "An interaction effect means:\n\nThe effect of one variable on the outcome depends on the level of another variable.\n\nSo, the relationship between \\(X_1\\) and \\(Y\\) changes depending on the value of \\(X_2\\)."
+    "text": "In the AI age, the strategy isn’t “either/or”—it’s a strategic hybrid workflow. Here is the breakdown of why, along with a practical system for how to read in the AI age.\n\n\n\n1. The Case for AI Summaries (NotebookLM, ChatGPT, etc.)\nAI shines at the “80% level”: triage, context, and cross-pollination.\n\nMassive Triage: You cannot read 50 papers a week. AI can ingest an entire corpus, map out debates, and tell you which 2 or 3 papers are actually worth your time.\nContext Switching: If you are moving between fields (e.g., from NLP to computational biology), AI breaks down the jargon so you can understand the high-level problem immediately.\nCross-Referencing: Tools like NotebookLM are amazing at connecting disparate ideas across multiple PDFs that you wouldn’t have linked mentally.\n\n\n\n\n2. The Case for Reading the Full Paper (Human)\nThe AI summary is a “map”—but you need to walk the terrain.\n\nThe Methodology Trap: LLMs are notoriously bad at catching flawed experimental design. They summarize what the authors did, but they rarely flag why the methodology is wrong (e.g., data leakage, improper baselines). Only you, reading the methodology, will catch that the “state-of-the-art” result is actually cheating.\nThe “Why” is lost: Summaries tell you the finding (e.g., “Model X achieves 95% accuracy”). They often omit the assumptions (e.g., “This only works if your data is perfectly balanced”).\nFalse Hallucinations: NotebookLM is heavily grounded in your uploaded text, but it still invents connections. If you don’t read the original, you will cite false claims that don’t actually exist in the paper.\nMathematical Nuance: AI struggles with complex equations. If you skim over a loss function, you might miss the core architectural insight that makes the paper special.\n\n\n\n\n3. The Optimal Hybrid Workflow (The “3-Pass” Method)\nAdopt this pipeline to save time and retain depth:\n\nPass 1 (AI Screening):\n\nFeed the paper to NotebookLM/Claude.\nAsk: “What is the core problem, the proposed solution, and the key result in layman’s terms?”\nAsk: “What are the main limitations mentioned?”\nDecision: If it’s not relevant, delete it. If it is relevant, proceed.\n\nPass 2 (Human Abstract + Figures):\n\nOpen the PDF and read the Abstract, Conclusion, and look at every figure/table.\nDo not read the body yet. Ask yourself: “Does the data actually support their claim visually?” If the charts look shaky, you can stop here.\n\nPass 3 (Human Deep Dive):\n\nOnly read the Methodology and Results sections for the 2–3 papers that passed Pass 2.\nCrucial step: Use AI during this deep read. When you hit a confusing equation, copy it into ChatGPT and say: “Explain this equation step-by-step and translate it into plain English.” (This gives you the depth without getting bogged down by notation).\n\n\n\n\n\n4. The Golden Rule of AI Reading\n\n“AI for the forest; Human for the trees.”\n\nUse AI to understand the story of the paper (the narrative). Keep the human brain strictly for the skepticism and logic.\nWarning: If you only read summaries, you will eventually absorb a “hallucinated consensus” that doesn’t exist. Research is messy; papers often disagree. AI smooths over these disagreements to give you one neat answer. Reading the original lets you hear the actual argument.\nConclusion: Embrace NotebookLM as your Research Assistant, not your Research Replacement. Use it to generate questions about the paper, not to replace the paper itself."
   },
   {
-    "objectID": "posts/regression-interaction.html#what-an-interaction-means-intuitive-view",
-    "href": "posts/regression-interaction.html#what-an-interaction-means-intuitive-view",
-    "title": "Interaction Effect in Regression Analysis",
+    "objectID": "posts/r-package-submission.html",
+    "href": "posts/r-package-submission.html",
+    "title": "CRAN Package Submission Checklist",
     "section": "",
-    "text": "An interaction effect means:\n\nThe effect of one variable on the outcome depends on the level of another variable.\n\nSo, the relationship between \\(X_1\\) and \\(Y\\) changes depending on the value of \\(X_2\\)."
+    "text": "Before submitting your R package to CRAN, you should go through a thorough checklist to ensure it meets all the requirements. Failure to meet these standards will result in rejection. The submission process is a manual review, and reviewers are strict about the rules.\n\n\n1. Code Quality and Checks\n\nPass R CMD check --as-cran without any errors, warnings, or notes. This is the most critical step. Run this command from your package’s root directory. Address every single issue.\nNo Hardcoded Paths: Don’t use absolute paths like C:/Users/User/my_file.csv. Use system.file() to locate files within your package.\nNo Non-Standard Library Dependencies: Ensure you are not using libraries that are not on CRAN or Bioconductor.\nPackage Size: CRAN has a size limit, which is typically around 5 MB, though larger packages are sometimes accepted if they are well-justified. Use devtools::check_for_size()\n\n\n\n\n2. Documentation and Metadata\n\nDESCRIPTION File: Ensure this file is complete and accurate.\n\nVersion: The version number should be in the format A.B.C (e.g., 1.0.0).\nTitle: This should be concise and capitalized.\nDescription: A detailed, multi-sentence description of what your package does.\nLicense: Specify a valid open-source license, such as MIT or GPL-3.\nURL and BugReports: Include links to your GitHub repository or website.\nImports: List all packages your code uses.\nSuggests: List packages used in examples or vignettes but not essential for core functionality.\n\nman/ Directory: All functions must have a .Rd help file, and all function arguments should be documented. The examples in the help files should be runnable.\nVignettes: Include at least one vignette (.Rmd file in the vignettes/ directory) that provides a user-friendly introduction to your package’s main features.\nNEWS.md: A file documenting changes between versions is highly recommended.\nREADME File: A comprehensive README.md file in the package’s root directory is standard practice.\n\n\n\n\n3. User Experience and Best Practices\n\nInformative Error Messages: Your functions should provide clear, user-friendly error messages with stop() and warning() when things go wrong.\nAvoid Namespace Pollution: Use :: to call functions from other packages (e.g., ggplot2::ggplot()) unless a package is attached with library(). This prevents conflicts between functions with the same name.\nMinimal Dependencies: Only import packages you absolutely need to.\nUnit Tests: While not strictly required for a first submission, having a comprehensive suite of unit tests using testthat is highly recommended. They protect against regressions in future versions.\nData: If your package includes data, it should be placed in the data/ directory and documented with a .Rd file.\n\n\n\n\n4. Submission\n\ncran-checks: Check your package against the cran-checks GitHub action if you’ve set it up.\ndevtools::submit_cran(): This function from the devtools package automates much of the submission process, including creating the submission email.\nMaintain Patience: The review process can take anywhere from a few days to several weeks. Be ready to respond to reviewer feedback and make necessary changes.\n\n\n\nHadley Recommendation\nThese are the major steps in the release process:\n\nDetermine the release type, which dictates the version number.\nIf the package is already on CRAN: Do due diligence on existing CRAN results. If this is a first release: confirm you are in compliance with CRAN policies.\nFreshen up documentation files, such as README.md and NEWS.md.\nDouble check() that your package is passing cleanly on multiple operating systems and on the released and development version of R.\nPerform reverse dependency checks, if other packages depend on yours.\nSubmit the package to CRAN and wait for acceptance.\nCreate a GitHub release and prepare for the next version by incrementing the version number.\nPublicize the new version."
   },
   {
-    "objectID": "posts/regression-interaction.html#a-simple-regression-without-interaction",
-    "href": "posts/regression-interaction.html#a-simple-regression-without-interaction",
-    "title": "Interaction Effect in Regression Analysis",
-    "section": "2. A simple regression without interaction",
-    "text": "2. A simple regression without interaction\nSay we model income as a function of gender and education:\n\\(\\text{Income} = \\beta_0 + \\beta_1(\\text{Gender}) + \\beta_2(\\text{Education}) + \\epsilon\\)\nHere:\n\n\\(\\beta_1\\): average difference between males and females (assuming Gender is dummy coded, say Male=1, Female=0)\n\\(\\beta_2\\): effect of moving from one education level to another\nThe two effects are independent — the gender gap is the same across all education levels."
-  },
-  {
-    "objectID": "posts/regression-interaction.html#add-an-interaction-term",
-    "href": "posts/regression-interaction.html#add-an-interaction-term",
-    "title": "Interaction Effect in Regression Analysis",
-    "section": "3. Add an interaction term",
-    "text": "3. Add an interaction term\nNow we include a product term:\n\\(\\text{Income} = \\beta_0 + \\beta_1(\\text{Gender}) + \\beta_2(\\text{Education}) + \\beta_3(\\text{Gender} \\times \\text{Education}) + \\epsilon\\)\nThat last term — \\(\\beta_3(\\text{Gender} \\times \\text{Education})\\) — is the interaction.\n\nMeaning:\nIt tells us whether the effect of education differs by gender.\n\nIf \\(\\beta_3 = 0\\): no interaction — both genders gain equally from higher education.\nIf \\(\\beta_3 &gt; 0\\): the return to education (effect on income) is greater for males than females.\nIf \\(\\beta_3 &lt; 0\\): the return to education is greater for females than males."
-  },
-  {
-    "objectID": "posts/regression-interaction.html#example-with-numbers",
-    "href": "posts/regression-interaction.html#example-with-numbers",
-    "title": "Interaction Effect in Regression Analysis",
-    "section": "4. Example with numbers",
-    "text": "4. Example with numbers\nSuppose you fit this model (Gender=1 for Male, 0 for Female; Education=years of schooling):\n\\(\\text{Income} = 20{,}000 + 5{,}000(\\text{Education}) + 3{,}000(\\text{Gender}) + 1{,}000(\\text{Gender} \\times \\text{Education})\\)\nInterpretation:\n\n\n\n\n\n\n\nTerm\nMeaning\n\n\n\n\n20,000\nAverage income for a female with 0 years of education (baseline).\n\n\n5,000\nEach year of education increases income by $5,000 for females.\n\n\n3,000\nMales earn $3,000 more than females at 0 years of education.\n\n\n1,000\nFor males, the effect of each additional year of education is $1,000 higher.\n\n\n\nSo:\n\nFor females: effect of education = 5,000 per year\nFor males: effect of education = 5,000 + 1,000 = 6,000 per year\n\nThat difference (1,000) is the interaction effect."
-  },
-  {
-    "objectID": "posts/regression-interaction.html#in-general",
-    "href": "posts/regression-interaction.html#in-general",
-    "title": "Interaction Effect in Regression Analysis",
-    "section": "5. In general",
-    "text": "5. In general\nInteractions can occur between:\n\nTwo categorical variables (e.g., gender × marital status)\nCategorical × continuous (e.g., gender × education years)\nTwo continuous (e.g., age × income in predicting health)\n\nEach type changes the interpretation slightly — but the core idea is always:\n\nthe slope (or effect) of one predictor depends on the value of another."
-  },
-  {
-    "objectID": "posts/r-package-workflow.html",
-    "href": "posts/r-package-workflow.html",
-    "title": "R Package Development Workflow",
+    "objectID": "posts/paper-writing-sequence.html",
+    "href": "posts/paper-writing-sequence.html",
+    "title": "The Best Order to Write a Research Paper",
     "section": "",
-    "text": "Here are the key devtools functions important in the R package development cycle.\n\nProject Setup\n\nusethis::create_package(): Creates a new package with the correct directory structure.\nusethis::use_git(): Initializes a Git repository for version control.\nusethis::use_r(): Creates a new .R file in the R/ directory.\n\n\n\n\nDevelopment and Documentation\n\ndevtools::load_all(): Loads all functions in the R/ directory, allowing you to quickly test them without installing the package.\ndevtools::document(): Generates documentation (.Rd files in the man/ directory) and the NAMESPACE file from roxygen2 comments.\ndevtools::install(): Installs the package from the source directory, making it available for use on your system.\n\n\n\n\nTesting and Checking\n\nusethis::use_testthat(): Sets up the testthat framework for unit testing.\nusethis::use_test(): Creates a new test file in tests/testthat/.\ndevtools::test(): Runs all the tests in the tests/testthat/ directory.\ndevtools::check(): Runs the comprehensive suite of R CMD check tests to identify errors, warnings, and notes.\ndevtools::check_win_devel(): Submits the package to the win-builder service to check for platform-specific issues on Windows.\n\n\n\n\nPublishing\n\nusethis::use_vignette(): Creates a new vignette (.Rmd file) for package tutorials.\npkgdown::build_site(): Builds a complete website for your package.\ndevtools::submit_cran(): Helps with the final steps of submitting your package to CRAN."
+    "text": "A final paper is always read from Introduction to Conclusion, but writing it in that order is inefficient. Starting with the introduction often causes writer’s block, because the narrative’s final nuances aren’t clear yet — you don’t fully know what story you’re introducing until you’ve analyzed your own results.\nExperienced researchers instead use an inside-out sequence: start with the easiest, most concrete, data-driven sections and move toward the harder, more abstract ones."
   },
   {
-    "objectID": "posts/qdraw-new-features.html",
-    "href": "posts/qdraw-new-features.html",
-    "title": "What’s New in qdraw: Shapes, Pages, and a Smarter Eraser",
-    "section": "",
-    "text": "qdraw is a small Quarto extension that adds a drawing layer on top of any revealjs presentation — handy for circling a formula, sketching a diagram, or annotating a plot live while teaching. It’s the annotation tool behind the Stat Mania lecture slides. The extension recently jumped from v1.0.0 to v1.5.2, and it’s a much more capable tool now. Here’s what’s new."
+    "objectID": "posts/paper-writing-sequence.html#the-recommended-inside-out-sequence",
+    "href": "posts/paper-writing-sequence.html#the-recommended-inside-out-sequence",
+    "title": "The Best Order to Write a Research Paper",
+    "section": "The Recommended Inside-Out Sequence",
+    "text": "The Recommended Inside-Out Sequence\n\n\n\n\n\n\n\n\nStep\nSection\nWhy This Order Works\n\n\n\n\n1\nFigures, Tables & Data Visualizations\nThe core of the work. Organizing graphs and tables first creates a structural roadmap for everything you write after.\n\n\n2\nMethods\nThe easiest section — it just describes what you did. Often draftable straight from lab notes or protocols, switched to past tense.\n\n\n3\nResults\nDescribe findings objectively based on the figures from Step 1: facts, percentages, and trends — without interpreting what they mean yet.\n\n\n4\nDiscussion\nInterpret the results, explain why they matter, note limitations, and compare against existing literature.\n\n\n5\nIntroduction\nNow that you fully understand your findings and how they fit the field, framing the “gap in knowledge” your paper bridges is easy.\n\n\n6\nConclusion & References\nSummarize the main takeaway, suggest future work, and tidy up citations with a reference manager.\n\n\n7\nAbstract & Title\nAlways last — you can’t compress an entire paper into a tight summary until the full text is finished."
   },
   {
-    "objectID": "posts/qdraw-new-features.html#shapes-not-just-freehand-lines",
-    "href": "posts/qdraw-new-features.html#shapes-not-just-freehand-lines",
-    "title": "What’s New in qdraw: Shapes, Pages, and a Smarter Eraser",
-    "section": "Shapes, not just freehand lines",
-    "text": "Shapes, not just freehand lines\nNext to the pen tool there’s now a shape tool with its own popover:\n\nLine, rectangle, triangle, ellipse, and circle\nA fill toggle, for solid shapes instead of just outlines\nCircle drags from the center outward (so the radius stays equal in every direction), while the other shapes drag corner-to-corner\n\nThe shape preview redraws live as you drag, so you see exactly what you’ll get before releasing."
+    "objectID": "posts/paper-writing-sequence.html#phase-1-the-core-data-mechanics",
+    "href": "posts/paper-writing-sequence.html#phase-1-the-core-data-mechanics",
+    "title": "The Best Order to Write a Research Paper",
+    "section": "Phase 1: The Core (Data & Mechanics)",
+    "text": "Phase 1: The Core (Data & Mechanics)\n\nFigures & Tables: Lay out visual data in a logical sequence that tells a story, even if it differs from the chronological order the experiments were run in.\nMethods: Break this into standard subsections — study design, materials/population, data collection procedures, and statistical analysis."
   },
   {
-    "objectID": "posts/qdraw-new-features.html#multi-page-canvas",
-    "href": "posts/qdraw-new-features.html#multi-page-canvas",
-    "title": "What’s New in qdraw: Shapes, Pages, and a Smarter Eraser",
-    "section": "Multi-page canvas",
-    "text": "Multi-page canvas\nAnnotations used to live on a single canvas for the whole deck. Now there’s a Pages tool that lets you add new blank pages and flip between them with previous/next buttons — useful if you want a fresh canvas for each slide, or a scratch page, without erasing earlier work. Each page keeps its own undo history, so switching pages doesn’t interfere with undoing on another."
+    "objectID": "posts/paper-writing-sequence.html#phase-2-the-narrative-interpretation",
+    "href": "posts/paper-writing-sequence.html#phase-2-the-narrative-interpretation",
+    "title": "The Best Order to Write a Research Paper",
+    "section": "Phase 2: The Narrative (Interpretation)",
+    "text": "Phase 2: The Narrative (Interpretation)\n\nResults: Stick strictly to facts. Use phrasing like “Figure 1 demonstrates that…” or “Group A exhibited a 12% increase compared to Group B.”\nDiscussion: Structure paragraphs with the TEEL formula:\n\nTopic sentence: state the core claim or finding.\nExplain: elaborate on what the data implies.\nEvidence: cite prior studies that agree or disagree with the outcome.\nLink: connect the paragraph back to the overall research question."
   },
   {
-    "objectID": "posts/qdraw-new-features.html#a-proper-eraser-menu",
-    "href": "posts/qdraw-new-features.html#a-proper-eraser-menu",
-    "title": "What’s New in qdraw: Shapes, Pages, and a Smarter Eraser",
-    "section": "A proper eraser menu",
-    "text": "A proper eraser menu\nThe eraser used to just be “on” or “off.” It now opens a small menu with three modes:\n\nEraser — the classic drag-to-erase, with an adjustable brush size\nSelect area to erase — drag a rectangle and release to erase everything inside it\nClear all — wipe the current page’s drawing in one click"
+    "objectID": "posts/paper-writing-sequence.html#phase-3-the-frame-contextualizing",
+    "href": "posts/paper-writing-sequence.html#phase-3-the-frame-contextualizing",
+    "title": "The Best Order to Write a Research Paper",
+    "section": "Phase 3: The Frame (Contextualizing)",
+    "text": "Phase 3: The Frame (Contextualizing)\n\nIntroduction: Use a funnel approach — start broad with the big-picture problem, narrow to the specific gap in current literature, and end with the specific hypothesis or objective.\nAbstract: Package the paper by pulling one or two sentences each from the Introduction, Methods, Results, and Conclusion into a stand-alone summary."
   },
   {
-    "objectID": "posts/qdraw-new-features.html#background-color",
-    "href": "posts/qdraw-new-features.html#background-color",
-    "title": "What’s New in qdraw: Shapes, Pages, and a Smarter Eraser",
-    "section": "Background color",
-    "text": "Background color\nA Canvas Background tool lets you tint the drawing surface with a color picker, and reset it back to transparent with one click — useful for highlighting a region behind your annotations."
-  },
-  {
-    "objectID": "posts/qdraw-new-features.html#toolbar-that-moves-out-of-your-way",
-    "href": "posts/qdraw-new-features.html#toolbar-that-moves-out-of-your-way",
-    "title": "What’s New in qdraw: Shapes, Pages, and a Smarter Eraser",
-    "section": "Toolbar that moves out of your way",
-    "text": "Toolbar that moves out of your way\nIf the toolbar is covering something you need to point at, click the move icon to flip it to the opposite edge of the screen."
-  },
-  {
-    "objectID": "posts/qdraw-new-features.html#under-the-hood-more-accurate-on-touch",
-    "href": "posts/qdraw-new-features.html#under-the-hood-more-accurate-on-touch",
-    "title": "What’s New in qdraw: Shapes, Pages, and a Smarter Eraser",
-    "section": "Under the hood: more accurate on touch",
-    "text": "Under the hood: more accurate on touch\nPointer coordinates are now mapped through the canvas’s actual rendered size instead of assumed to match the window size. On mobile, where the browser’s address bar can show or hide and shift the canvas’s rendered box, this fixes drawings landing away from where you actually touched."
-  },
-  {
-    "objectID": "posts/qdraw-new-features.html#where-to-find-it",
-    "href": "posts/qdraw-new-features.html#where-to-find-it",
-    "title": "What’s New in qdraw: Shapes, Pages, and a Smarter Eraser",
-    "section": "Where to find it",
-    "text": "Where to find it\nqdraw ships as a standard Quarto extension (_extensions/mahmudstat/qdraw) and is enabled on this site’s lecture decks via revealjs-plugins: [qdraw] in slide/_quarto.yml. Open any lecture slide, click the pen icon in the corner, and try it out — the About button in the toolbar links back to the qdraw homepage for the full docs."
+    "objectID": "posts/paper-writing-sequence.html#takeaway",
+    "href": "posts/paper-writing-sequence.html#takeaway",
+    "title": "The Best Order to Write a Research Paper",
+    "section": "Takeaway",
+    "text": "Takeaway\nWrite in the order you can answer questions with confidence: what you did, what you found, what it means, and only then why it matters to the field. The introduction and abstract come last because they’re summaries of a story you can’t yet tell until the rest is written."
   },
   {
     "objectID": "posts/make-fish-default-shell.html",
@@ -508,7 +347,7 @@
     "href": "index.html",
     "title": "Stat Mania Blog",
     "section": "",
-    "text": "Statistics · Mathematics · Data Science\n    Stat Mania Blog\n    Tutorials, statistical theory, and dev notes — written to make sense of data, one post at a time.\n  \n\n\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Title\n      \n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Author\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\n\n\n\n\nWhy Dispersion Matters as Much as Central Tendency\n\n3 min\n\n\nstatistics\n\ntheory\n\ndispersion\n\n\n\nThe mean or median only tells half the story — measures of spread like variance, standard deviation, and IQR reveal risk and consistency that averages hide.\n\n\n\nAbdullah Al Mahmud\n\n\nSep 9, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\nHow to Recover a Frozen Linux Desktop\n\n2 min\n\n\nLinux\n\nTroubleshooting\n\n\n\nTwo escalating fixes for a hung Linux graphical session, from restarting the display manager over TTY to a safe REISUB reboot.\n\n\n\nAbdullah Al Mahmud\n\n\nSep 9, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe Ultimate Guide to Making Fish Your Default Shell\n\n3 min\n\n\nShell\n\nLinux\n\nTutorial\n\n\n\nHow to install Fish and set it as your default shell on Ubuntu, Fedora, Arch, and Pop!_OS — including the terminal-profile workaround GNOME-based distros need.\n\n\n\nAbdullah Al Mahmud\n\n\nSep 7, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\nReading Papers in the AI Age: A Hybrid Workflow\n\n3 min\n\n\nstatistics\n\ntheory\n\nML\n\nalgorithm\n\n\n\nWhy the best strategy for reading research today isn’t AI summaries or full reads alone, but a 3-pass hybrid workflow that combines both.\n\n\n\nAbdullah Al Mahmud\n\n\nSep 5, 2026\n\n\n\n\n\n\n\n\n\n\n\nWhat’s New in qdraw: Shapes, Pages, and a Smarter Eraser\n\n3 min\n\n\ntools\n\nquarto\n\npresentations\n\n\n\nA tour of the latest qdraw features — a Quarto reveal.js extension for drawing and annotating directly on slides during a live presentation.\n\n\n\nAbdullah Al Mahmud\n\n\nAug 29, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\nWhy Use the Geometric Distribution?\n\n2 min\n\n\nprobability\n\ndiscrete distributions\n\ngeometric distribution\n\n\n\nThe geometric distribution models the number of trials until the first success in independent Bernoulli trials. This post explains when and why to use it, with a real-world…\n\n\n\nAbdullah Al Mahmud\n\n\nAug 5, 2026\n\n\n\n\n\n\n\n\n\n\n\nHow to Reset a Bootable USB Drive Using the Linux Command Line\n\n2 min\n\n\nLinux\n\nTutorial\n\nCLI\n\n\n\nA step-by-step guide to safely wiping a bootable Linux live USB and converting it back into a standard storage drive.\n\n\n\nDev Author\n\n\nJun 2, 2026\n\n\n\n\n\n\n\n\n\n\n\nHow to Save Git Credentials on Windows, macOS, and Linux\n\n2 min\n\n\nGit\n\nDevOps\n\nWorkflow\n\n\n\nA quick guide to configuring Git credential helpers so you never have to re-type your password or token.\n\n\n\nDev Author\n\n\nJun 1, 2026\n\n\n\n\n\n\n\n\n\n\n\nUnderstanding the Negative Binomial Distribution\n\n4 min\n\n\nprobability\n\ndiscrete distributions\n\nnegative binomial\n\n\n\nThe negative binomial distribution models the number of trials needed to achieve a fixed number of successes. This post explains its formulation, real-world applications…\n\n\n\nAbdullah Al Mahmud\n\n\nMay 12, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\nBe Impressive with Mathematics\n\n1 min\n\n\nMathematics\n\nrecreational-math\n\n\n\nA satirical note showing how (1+1=2) can be obscured using complex identities to appear more impressive for academic reviewers.\n\n\n\nAbdullah Al Mahmud\n\n\nApr 23, 2026\n\n\n\n\n\n\n\n\n\n\n\nSVM vs ANN: relative power, and usage guidelines\n\n4 min\n\n\nstatistics\n\ntheory\n\nML\n\nalgorithm\n\n\n\nHere’s a clear comparison of SVM vs ANN, their relative power, and usage guidelines.\n\n\n\nAbdullah Al Mahmud\n\n\nJan 5, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\nHow to Make Git Ignore a Folder\n\n1 min\n\n\nGit\n\nDevOps\n\nTutorial\n\n\n\nTwo ways to stop Git from tracking a folder — depending on whether it’s already been committed or not.\n\n\n\nAbdullah Al Mahmud\n\n\nJan 5, 2026\n\n\n\n\n\n\n\n\n\n\n\nInteraction Effect in Regression Analysis\n\n3 min\n\n\nstatistics\n\ntheory\n\nregression\n\n\n\nAn interaction effect means the effect of one variable on the outcome depends on the level of another variable.\n\n\n\nAbdullah Al Mahmud\n\n\nNov 19, 2025\n\n\n\n\n\n\n\n\n\n\n\nZ-score: What it is and what it does\n\n3 min\n\n\nstatistics\n\ntheory\n\nprobability\n\n\n\nA z-score (also known as a standard score or z-value) measures how many standard deviations a data point is from the mean of a distribution. It’s a way of…\n\n\n\nAbdullah Al Mahmud\n\n\nNov 19, 2025\n\n\n\n\n\n\n\n\n\n\n\nA/B Testing: A Sample Analysis\n\n2 min\n\n\nstatistics\n\ntheory\n\nbusiness\n\n\n\nA/B Testing– A Sample Analysis. Scenario– Testing a new button color.\n\n\n\nAbdullah Al Mahmud\n\n\nNov 18, 2025\n\n\n\n\n\n\n\n\n\n\n\nIQR in Statistics\n\n2 min\n\n\nstatistics\n\ntheory\n\ndispersion\n\n\n\nThe Interquartile Range (IQR) is a measure of statistical dispersion that describes the spread of the middle 50% of data.\n\n\n\nAbdullah Al Mahmud\n\n\nNov 5, 2025\n\n\n\n\n\n\n\n\n\n\n\nFrom t-test to Anova\n\n7 min\n\n\nstatistics\n\ntheory\n\nanova\n\n\n\nLet’s build this step by step, starting from a t-test and then showing how it generalizes naturally into ANOVA (Analysis of Variance).\n\n\n\nAbdullah Al Mahmud\n\n\nOct 10, 2025\n\n\n\n\n\n\n\n\n\n\n\nARIMA and SARIMA Time Series Models\n\n4 min\n\n\nstatistics\n\ntime-series\n\nR\n\n\n\nA clear, concise explanation of ARIMA, SARIMA, and related models — followed by minimal R examples..\n\n\n\nAbdullah Al Mahmud\n\n\nOct 6, 2025\n\n\n\n\n\n\n\n\n\n\n\nSpatio-temporal Analysis Workflow\n\n2 min\n\n\nR\n\nGIS\n\n\n\nThe announcement of the clockplot package.\n\n\n\nAbdullah Al Mahmud\n\n\nSep 10, 2025\n\n\n\n\n\n\n\n\n\n\n\n\n\nclockplot: Plot Event Times on a 24-Hour Clock\n\n1 min\n\n\nR\n\nclockplot\n\n\n\nThe announcement of the clockplot package.\n\n\n\nAbdullah Al Mahmud\n\n\nAug 30, 2025\n\n\n\n\n\n\n\n\n\n\n\nCRAN Package Submission Checklist\n\n4 min\n\n\nR\n\npackage\n\nCRAN\n\nsubmission\n\n\n\nA comprehensive checklist for a smooth R package submission to CRAN.\n\n\n\nAbdullah Al Mahmud\n\n\nAug 29, 2025\n\n\n\n\n\n\n\n\n\n\n\nR Package Development Workflow\n\n1 min\n\n\nR\n\npackage\n\nprogramming\n\n\n\nThe Workflow that you may follow while developing your own R package.\n\n\n\nAbdullah Al Mahmud\n\n\nAug 29, 2025\n\n\n\n\n\n\n\n\n\n\n\nInterpretation of an Auto SARIMAX model output in R\n\n3 min\n\n\nstatistics\n\ntime-series\n\nR\n\n\n\nA comprehensive explanation of AR (AutoRegressive) and MA (Moving Average) models and their parameters.\n\n\n\nAbdullah Al Mahmud\n\n\nMar 16, 2024\n\n\n\n\n\n\n\n\n\n\n\nAutoRegressive and Moving Average Time Series Models with R Code\n\n3 min\n\n\nstatistics\n\ntime-series\n\nR\n\n\n\nA comprehensive explanation of AR (AutoRegressive) and MA (Moving Average) models and their parameters.\n\n\n\nAbdullah Al Mahmud\n\n\nFeb 23, 2024\n\n\n\n\n\n\n\n\n\n\n\nSARIMAX Time Series Models with R Code\n\n5 min\n\n\nstatistics\n\ntime-series\n\nR\n\n\n\nA clear, concise explanation of ARIMA, SARIMA, and related models — followed by minimal R examples..\n\n\n\nAbdullah Al Mahmud\n\n\nJan 20, 2024\n\n\n\n\n\n\nNo matching items"
+    "text": "Statistics · Mathematics · Data Science\n    Stat Mania Blog\n    Tutorials, statistical theory, and dev notes — written to make sense of data, one post at a time.\n  \n\n\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Title\n      \n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Author\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\n\n\n\n\nThe Best Order to Write a Research Paper\n\n3 min\n\n\nresearch\n\nwriting\n\n\n\nWhy writing a paper top-to-bottom causes writer’s block, and the inside-out sequence experienced researchers use instead.\n\n\n\nAbdullah Al Mahmud\n\n\nSep 11, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\nBatch-Converting PDFs to Markdown with MarkItDown\n\n2 min\n\n\nTools\n\nPython\n\nCLI\n\n\n\nMicrosoft’s MarkItDown CLI only converts one file at a time — here’s how to batch an entire folder of PDFs with a shell loop or a short Python script.\n\n\n\nAbdullah Al Mahmud\n\n\nSep 11, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\nWhy Dispersion Matters as Much as Central Tendency\n\n3 min\n\n\nstatistics\n\ntheory\n\ndispersion\n\n\n\nThe mean or median only tells half the story — measures of spread like variance, standard deviation, and IQR reveal risk and consistency that averages hide.\n\n\n\nAbdullah Al Mahmud\n\n\nSep 9, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\nHow to Recover a Frozen Linux Desktop\n\n2 min\n\n\nLinux\n\nTroubleshooting\n\n\n\nTwo escalating fixes for a hung Linux graphical session, from restarting the display manager over TTY to a safe REISUB reboot.\n\n\n\nAbdullah Al Mahmud\n\n\nSep 9, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe Ultimate Guide to Making Fish Your Default Shell\n\n3 min\n\n\nShell\n\nLinux\n\nTutorial\n\n\n\nHow to install Fish and set it as your default shell on Ubuntu, Fedora, Arch, and Pop!_OS — including the terminal-profile workaround GNOME-based distros need.\n\n\n\nAbdullah Al Mahmud\n\n\nSep 7, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\nReading Papers in the AI Age: A Hybrid Workflow\n\n3 min\n\n\nstatistics\n\ntheory\n\nML\n\nalgorithm\n\n\n\nWhy the best strategy for reading research today isn’t AI summaries or full reads alone, but a 3-pass hybrid workflow that combines both.\n\n\n\nAbdullah Al Mahmud\n\n\nSep 5, 2026\n\n\n\n\n\n\n\n\n\n\n\nWhat’s New in qdraw: Shapes, Pages, and a Smarter Eraser\n\n3 min\n\n\ntools\n\nquarto\n\npresentations\n\n\n\nA tour of the latest qdraw features — a Quarto reveal.js extension for drawing and annotating directly on slides during a live presentation.\n\n\n\nAbdullah Al Mahmud\n\n\nAug 29, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\nWhy Use the Geometric Distribution?\n\n2 min\n\n\nprobability\n\ndiscrete distributions\n\ngeometric distribution\n\n\n\nThe geometric distribution models the number of trials until the first success in independent Bernoulli trials. This post explains when and why to use it, with a real-world…\n\n\n\nAbdullah Al Mahmud\n\n\nAug 5, 2026\n\n\n\n\n\n\n\n\n\n\n\nHow to Reset a Bootable USB Drive Using the Linux Command Line\n\n2 min\n\n\nLinux\n\nTutorial\n\nCLI\n\n\n\nA step-by-step guide to safely wiping a bootable Linux live USB and converting it back into a standard storage drive.\n\n\n\nDev Author\n\n\nJun 2, 2026\n\n\n\n\n\n\n\n\n\n\n\nHow to Save Git Credentials on Windows, macOS, and Linux\n\n2 min\n\n\nGit\n\nDevOps\n\nWorkflow\n\n\n\nA quick guide to configuring Git credential helpers so you never have to re-type your password or token.\n\n\n\nDev Author\n\n\nJun 1, 2026\n\n\n\n\n\n\n\n\n\n\n\nUnderstanding the Negative Binomial Distribution\n\n4 min\n\n\nprobability\n\ndiscrete distributions\n\nnegative binomial\n\n\n\nThe negative binomial distribution models the number of trials needed to achieve a fixed number of successes. This post explains its formulation, real-world applications…\n\n\n\nAbdullah Al Mahmud\n\n\nMay 12, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\nBe Impressive with Mathematics\n\n1 min\n\n\nMathematics\n\nrecreational-math\n\n\n\nA satirical note showing how (1+1=2) can be obscured using complex identities to appear more impressive for academic reviewers.\n\n\n\nAbdullah Al Mahmud\n\n\nApr 23, 2026\n\n\n\n\n\n\n\n\n\n\n\nSVM vs ANN: relative power, and usage guidelines\n\n4 min\n\n\nstatistics\n\ntheory\n\nML\n\nalgorithm\n\n\n\nHere’s a clear comparison of SVM vs ANN, their relative power, and usage guidelines.\n\n\n\nAbdullah Al Mahmud\n\n\nJan 5, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\nHow to Make Git Ignore a Folder\n\n1 min\n\n\nGit\n\nDevOps\n\nTutorial\n\n\n\nTwo ways to stop Git from tracking a folder — depending on whether it’s already been committed or not.\n\n\n\nAbdullah Al Mahmud\n\n\nJan 5, 2026\n\n\n\n\n\n\n\n\n\n\n\nInteraction Effect in Regression Analysis\n\n3 min\n\n\nstatistics\n\ntheory\n\nregression\n\n\n\nAn interaction effect means the effect of one variable on the outcome depends on the level of another variable.\n\n\n\nAbdullah Al Mahmud\n\n\nNov 19, 2025\n\n\n\n\n\n\n\n\n\n\n\nZ-score: What it is and what it does\n\n3 min\n\n\nstatistics\n\ntheory\n\nprobability\n\n\n\nA z-score (also known as a standard score or z-value) measures how many standard deviations a data point is from the mean of a distribution. It’s a way of…\n\n\n\nAbdullah Al Mahmud\n\n\nNov 19, 2025\n\n\n\n\n\n\n\n\n\n\n\nA/B Testing: A Sample Analysis\n\n2 min\n\n\nstatistics\n\ntheory\n\nbusiness\n\n\n\nA/B Testing– A Sample Analysis. Scenario– Testing a new button color.\n\n\n\nAbdullah Al Mahmud\n\n\nNov 18, 2025\n\n\n\n\n\n\n\n\n\n\n\nIQR in Statistics\n\n2 min\n\n\nstatistics\n\ntheory\n\ndispersion\n\n\n\nThe Interquartile Range (IQR) is a measure of statistical dispersion that describes the spread of the middle 50% of data.\n\n\n\nAbdullah Al Mahmud\n\n\nNov 5, 2025\n\n\n\n\n\n\n\n\n\n\n\nFrom t-test to Anova\n\n7 min\n\n\nstatistics\n\ntheory\n\nanova\n\n\n\nLet’s build this step by step, starting from a t-test and then showing how it generalizes naturally into ANOVA (Analysis of Variance).\n\n\n\nAbdullah Al Mahmud\n\n\nOct 10, 2025\n\n\n\n\n\n\n\n\n\n\n\nARIMA and SARIMA Time Series Models\n\n4 min\n\n\nstatistics\n\ntime-series\n\nR\n\n\n\nA clear, concise explanation of ARIMA, SARIMA, and related models — followed by minimal R examples..\n\n\n\nAbdullah Al Mahmud\n\n\nOct 6, 2025\n\n\n\n\n\n\n\n\n\n\n\nSpatio-temporal Analysis Workflow\n\n2 min\n\n\nR\n\nGIS\n\n\n\nThe announcement of the clockplot package.\n\n\n\nAbdullah Al Mahmud\n\n\nSep 10, 2025\n\n\n\n\n\n\n\n\n\n\n\n\n\nclockplot: Plot Event Times on a 24-Hour Clock\n\n1 min\n\n\nR\n\nclockplot\n\n\n\nThe announcement of the clockplot package.\n\n\n\nAbdullah Al Mahmud\n\n\nAug 30, 2025\n\n\n\n\n\n\n\n\n\n\n\nCRAN Package Submission Checklist\n\n4 min\n\n\nR\n\npackage\n\nCRAN\n\nsubmission\n\n\n\nA comprehensive checklist for a smooth R package submission to CRAN.\n\n\n\nAbdullah Al Mahmud\n\n\nAug 29, 2025\n\n\n\n\n\n\n\n\n\n\n\nR Package Development Workflow\n\n1 min\n\n\nR\n\npackage\n\nprogramming\n\n\n\nThe Workflow that you may follow while developing your own R package.\n\n\n\nAbdullah Al Mahmud\n\n\nAug 29, 2025\n\n\n\n\n\n\n\n\n\n\n\nInterpretation of an Auto SARIMAX model output in R\n\n3 min\n\n\nstatistics\n\ntime-series\n\nR\n\n\n\nA comprehensive explanation of AR (AutoRegressive) and MA (Moving Average) models and their parameters.\n\n\n\nAbdullah Al Mahmud\n\n\nMar 16, 2024\n\n\n\n\n\n\n\n\n\n\n\nAutoRegressive and Moving Average Time Series Models with R Code\n\n3 min\n\n\nstatistics\n\ntime-series\n\nR\n\n\n\nA comprehensive explanation of AR (AutoRegressive) and MA (Moving Average) models and their parameters.\n\n\n\nAbdullah Al Mahmud\n\n\nFeb 23, 2024\n\n\n\n\n\n\n\n\n\n\n\nSARIMAX Time Series Models with R Code\n\n5 min\n\n\nstatistics\n\ntime-series\n\nR\n\n\n\nA clear, concise explanation of ARIMA, SARIMA, and related models — followed by minimal R examples..\n\n\n\nAbdullah Al Mahmud\n\n\nJan 20, 2024\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "about.html",
@@ -826,80 +665,311 @@
     "text": "Further Reading\n\nNegative binomial distribution on Wikipedia\nOverdispersion in count data"
   },
   {
-    "objectID": "posts/r-package-submission.html",
-    "href": "posts/r-package-submission.html",
-    "title": "CRAN Package Submission Checklist",
+    "objectID": "posts/qdraw-new-features.html",
+    "href": "posts/qdraw-new-features.html",
+    "title": "What’s New in qdraw: Shapes, Pages, and a Smarter Eraser",
     "section": "",
-    "text": "Before submitting your R package to CRAN, you should go through a thorough checklist to ensure it meets all the requirements. Failure to meet these standards will result in rejection. The submission process is a manual review, and reviewers are strict about the rules.\n\n\n1. Code Quality and Checks\n\nPass R CMD check --as-cran without any errors, warnings, or notes. This is the most critical step. Run this command from your package’s root directory. Address every single issue.\nNo Hardcoded Paths: Don’t use absolute paths like C:/Users/User/my_file.csv. Use system.file() to locate files within your package.\nNo Non-Standard Library Dependencies: Ensure you are not using libraries that are not on CRAN or Bioconductor.\nPackage Size: CRAN has a size limit, which is typically around 5 MB, though larger packages are sometimes accepted if they are well-justified. Use devtools::check_for_size()\n\n\n\n\n2. Documentation and Metadata\n\nDESCRIPTION File: Ensure this file is complete and accurate.\n\nVersion: The version number should be in the format A.B.C (e.g., 1.0.0).\nTitle: This should be concise and capitalized.\nDescription: A detailed, multi-sentence description of what your package does.\nLicense: Specify a valid open-source license, such as MIT or GPL-3.\nURL and BugReports: Include links to your GitHub repository or website.\nImports: List all packages your code uses.\nSuggests: List packages used in examples or vignettes but not essential for core functionality.\n\nman/ Directory: All functions must have a .Rd help file, and all function arguments should be documented. The examples in the help files should be runnable.\nVignettes: Include at least one vignette (.Rmd file in the vignettes/ directory) that provides a user-friendly introduction to your package’s main features.\nNEWS.md: A file documenting changes between versions is highly recommended.\nREADME File: A comprehensive README.md file in the package’s root directory is standard practice.\n\n\n\n\n3. User Experience and Best Practices\n\nInformative Error Messages: Your functions should provide clear, user-friendly error messages with stop() and warning() when things go wrong.\nAvoid Namespace Pollution: Use :: to call functions from other packages (e.g., ggplot2::ggplot()) unless a package is attached with library(). This prevents conflicts between functions with the same name.\nMinimal Dependencies: Only import packages you absolutely need to.\nUnit Tests: While not strictly required for a first submission, having a comprehensive suite of unit tests using testthat is highly recommended. They protect against regressions in future versions.\nData: If your package includes data, it should be placed in the data/ directory and documented with a .Rd file.\n\n\n\n\n4. Submission\n\ncran-checks: Check your package against the cran-checks GitHub action if you’ve set it up.\ndevtools::submit_cran(): This function from the devtools package automates much of the submission process, including creating the submission email.\nMaintain Patience: The review process can take anywhere from a few days to several weeks. Be ready to respond to reviewer feedback and make necessary changes.\n\n\n\nHadley Recommendation\nThese are the major steps in the release process:\n\nDetermine the release type, which dictates the version number.\nIf the package is already on CRAN: Do due diligence on existing CRAN results. If this is a first release: confirm you are in compliance with CRAN policies.\nFreshen up documentation files, such as README.md and NEWS.md.\nDouble check() that your package is passing cleanly on multiple operating systems and on the released and development version of R.\nPerform reverse dependency checks, if other packages depend on yours.\nSubmit the package to CRAN and wait for acceptance.\nCreate a GitHub release and prepare for the next version by incrementing the version number.\nPublicize the new version."
+    "text": "qdraw is a small Quarto extension that adds a drawing layer on top of any revealjs presentation — handy for circling a formula, sketching a diagram, or annotating a plot live while teaching. It’s the annotation tool behind the Stat Mania lecture slides. The extension recently jumped from v1.0.0 to v1.5.2, and it’s a much more capable tool now. Here’s what’s new."
   },
   {
-    "objectID": "posts/reading-paper-ai-age.html",
-    "href": "posts/reading-paper-ai-age.html",
-    "title": "Reading Papers in the AI Age: A Hybrid Workflow",
+    "objectID": "posts/qdraw-new-features.html#shapes-not-just-freehand-lines",
+    "href": "posts/qdraw-new-features.html#shapes-not-just-freehand-lines",
+    "title": "What’s New in qdraw: Shapes, Pages, and a Smarter Eraser",
+    "section": "Shapes, not just freehand lines",
+    "text": "Shapes, not just freehand lines\nNext to the pen tool there’s now a shape tool with its own popover:\n\nLine, rectangle, triangle, ellipse, and circle\nA fill toggle, for solid shapes instead of just outlines\nCircle drags from the center outward (so the radius stays equal in every direction), while the other shapes drag corner-to-corner\n\nThe shape preview redraws live as you drag, so you see exactly what you’ll get before releasing."
+  },
+  {
+    "objectID": "posts/qdraw-new-features.html#multi-page-canvas",
+    "href": "posts/qdraw-new-features.html#multi-page-canvas",
+    "title": "What’s New in qdraw: Shapes, Pages, and a Smarter Eraser",
+    "section": "Multi-page canvas",
+    "text": "Multi-page canvas\nAnnotations used to live on a single canvas for the whole deck. Now there’s a Pages tool that lets you add new blank pages and flip between them with previous/next buttons — useful if you want a fresh canvas for each slide, or a scratch page, without erasing earlier work. Each page keeps its own undo history, so switching pages doesn’t interfere with undoing on another."
+  },
+  {
+    "objectID": "posts/qdraw-new-features.html#a-proper-eraser-menu",
+    "href": "posts/qdraw-new-features.html#a-proper-eraser-menu",
+    "title": "What’s New in qdraw: Shapes, Pages, and a Smarter Eraser",
+    "section": "A proper eraser menu",
+    "text": "A proper eraser menu\nThe eraser used to just be “on” or “off.” It now opens a small menu with three modes:\n\nEraser — the classic drag-to-erase, with an adjustable brush size\nSelect area to erase — drag a rectangle and release to erase everything inside it\nClear all — wipe the current page’s drawing in one click"
+  },
+  {
+    "objectID": "posts/qdraw-new-features.html#background-color",
+    "href": "posts/qdraw-new-features.html#background-color",
+    "title": "What’s New in qdraw: Shapes, Pages, and a Smarter Eraser",
+    "section": "Background color",
+    "text": "Background color\nA Canvas Background tool lets you tint the drawing surface with a color picker, and reset it back to transparent with one click — useful for highlighting a region behind your annotations."
+  },
+  {
+    "objectID": "posts/qdraw-new-features.html#toolbar-that-moves-out-of-your-way",
+    "href": "posts/qdraw-new-features.html#toolbar-that-moves-out-of-your-way",
+    "title": "What’s New in qdraw: Shapes, Pages, and a Smarter Eraser",
+    "section": "Toolbar that moves out of your way",
+    "text": "Toolbar that moves out of your way\nIf the toolbar is covering something you need to point at, click the move icon to flip it to the opposite edge of the screen."
+  },
+  {
+    "objectID": "posts/qdraw-new-features.html#under-the-hood-more-accurate-on-touch",
+    "href": "posts/qdraw-new-features.html#under-the-hood-more-accurate-on-touch",
+    "title": "What’s New in qdraw: Shapes, Pages, and a Smarter Eraser",
+    "section": "Under the hood: more accurate on touch",
+    "text": "Under the hood: more accurate on touch\nPointer coordinates are now mapped through the canvas’s actual rendered size instead of assumed to match the window size. On mobile, where the browser’s address bar can show or hide and shift the canvas’s rendered box, this fixes drawings landing away from where you actually touched."
+  },
+  {
+    "objectID": "posts/qdraw-new-features.html#where-to-find-it",
+    "href": "posts/qdraw-new-features.html#where-to-find-it",
+    "title": "What’s New in qdraw: Shapes, Pages, and a Smarter Eraser",
+    "section": "Where to find it",
+    "text": "Where to find it\nqdraw ships as a standard Quarto extension (_extensions/mahmudstat/qdraw) and is enabled on this site’s lecture decks via revealjs-plugins: [qdraw] in slide/_quarto.yml. Open any lecture slide, click the pen icon in the corner, and try it out — the About button in the toolbar links back to the qdraw homepage for the full docs."
+  },
+  {
+    "objectID": "posts/r-package-workflow.html",
+    "href": "posts/r-package-workflow.html",
+    "title": "R Package Development Workflow",
     "section": "",
-    "text": "In the AI age, the strategy isn’t “either/or”—it’s a strategic hybrid workflow. Here is the breakdown of why, along with a practical system for how to read in the AI age.\n\n\n\n1. The Case for AI Summaries (NotebookLM, ChatGPT, etc.)\nAI shines at the “80% level”: triage, context, and cross-pollination.\n\nMassive Triage: You cannot read 50 papers a week. AI can ingest an entire corpus, map out debates, and tell you which 2 or 3 papers are actually worth your time.\nContext Switching: If you are moving between fields (e.g., from NLP to computational biology), AI breaks down the jargon so you can understand the high-level problem immediately.\nCross-Referencing: Tools like NotebookLM are amazing at connecting disparate ideas across multiple PDFs that you wouldn’t have linked mentally.\n\n\n\n\n2. The Case for Reading the Full Paper (Human)\nThe AI summary is a “map”—but you need to walk the terrain.\n\nThe Methodology Trap: LLMs are notoriously bad at catching flawed experimental design. They summarize what the authors did, but they rarely flag why the methodology is wrong (e.g., data leakage, improper baselines). Only you, reading the methodology, will catch that the “state-of-the-art” result is actually cheating.\nThe “Why” is lost: Summaries tell you the finding (e.g., “Model X achieves 95% accuracy”). They often omit the assumptions (e.g., “This only works if your data is perfectly balanced”).\nFalse Hallucinations: NotebookLM is heavily grounded in your uploaded text, but it still invents connections. If you don’t read the original, you will cite false claims that don’t actually exist in the paper.\nMathematical Nuance: AI struggles with complex equations. If you skim over a loss function, you might miss the core architectural insight that makes the paper special.\n\n\n\n\n3. The Optimal Hybrid Workflow (The “3-Pass” Method)\nAdopt this pipeline to save time and retain depth:\n\nPass 1 (AI Screening):\n\nFeed the paper to NotebookLM/Claude.\nAsk: “What is the core problem, the proposed solution, and the key result in layman’s terms?”\nAsk: “What are the main limitations mentioned?”\nDecision: If it’s not relevant, delete it. If it is relevant, proceed.\n\nPass 2 (Human Abstract + Figures):\n\nOpen the PDF and read the Abstract, Conclusion, and look at every figure/table.\nDo not read the body yet. Ask yourself: “Does the data actually support their claim visually?” If the charts look shaky, you can stop here.\n\nPass 3 (Human Deep Dive):\n\nOnly read the Methodology and Results sections for the 2–3 papers that passed Pass 2.\nCrucial step: Use AI during this deep read. When you hit a confusing equation, copy it into ChatGPT and say: “Explain this equation step-by-step and translate it into plain English.” (This gives you the depth without getting bogged down by notation).\n\n\n\n\n\n4. The Golden Rule of AI Reading\n\n“AI for the forest; Human for the trees.”\n\nUse AI to understand the story of the paper (the narrative). Keep the human brain strictly for the skepticism and logic.\nWarning: If you only read summaries, you will eventually absorb a “hallucinated consensus” that doesn’t exist. Research is messy; papers often disagree. AI smooths over these disagreements to give you one neat answer. Reading the original lets you hear the actual argument.\nConclusion: Embrace NotebookLM as your Research Assistant, not your Research Replacement. Use it to generate questions about the paper, not to replace the paper itself."
+    "text": "Here are the key devtools functions important in the R package development cycle.\n\nProject Setup\n\nusethis::create_package(): Creates a new package with the correct directory structure.\nusethis::use_git(): Initializes a Git repository for version control.\nusethis::use_r(): Creates a new .R file in the R/ directory.\n\n\n\n\nDevelopment and Documentation\n\ndevtools::load_all(): Loads all functions in the R/ directory, allowing you to quickly test them without installing the package.\ndevtools::document(): Generates documentation (.Rd files in the man/ directory) and the NAMESPACE file from roxygen2 comments.\ndevtools::install(): Installs the package from the source directory, making it available for use on your system.\n\n\n\n\nTesting and Checking\n\nusethis::use_testthat(): Sets up the testthat framework for unit testing.\nusethis::use_test(): Creates a new test file in tests/testthat/.\ndevtools::test(): Runs all the tests in the tests/testthat/ directory.\ndevtools::check(): Runs the comprehensive suite of R CMD check tests to identify errors, warnings, and notes.\ndevtools::check_win_devel(): Submits the package to the win-builder service to check for platform-specific issues on Windows.\n\n\n\n\nPublishing\n\nusethis::use_vignette(): Creates a new vignette (.Rmd file) for package tutorials.\npkgdown::build_site(): Builds a complete website for your package.\ndevtools::submit_cran(): Helps with the final steps of submitting your package to CRAN."
   },
   {
-    "objectID": "posts/reset-usb.html",
-    "href": "posts/reset-usb.html",
-    "title": "How to Reset a Bootable USB Drive Using the Linux Command Line",
+    "objectID": "posts/regression-interaction.html",
+    "href": "posts/regression-interaction.html",
+    "title": "Interaction Effect in Regression Analysis",
     "section": "",
-    "text": "When you create a bootable Linux live USB, it alters the drive’s partition table and filesystem structure. This often makes the drive read-only or unrecognizable when plugged into standard file managers.\nTo restore your USB drive back to a normal storage device, you must wipe its hidden boot signatures and create a fresh filesystem using the terminal."
+    "text": "An interaction effect means:\n\nThe effect of one variable on the outcome depends on the level of another variable.\n\nSo, the relationship between \\(X_1\\) and \\(Y\\) changes depending on the value of \\(X_2\\)."
   },
   {
-    "objectID": "posts/reset-usb.html#critical-warning",
-    "href": "posts/reset-usb.html#critical-warning",
-    "title": "How to Reset a Bootable USB Drive Using the Linux Command Line",
-    "section": "Critical Warning",
-    "text": "Critical Warning\nEnsure you select the correct drive identifier (e.g., /dev/sdb). Specifying the wrong drive path will permanently destroy your computer’s main operating system or data."
-  },
-  {
-    "objectID": "posts/reset-usb.html#step-by-step-reset-procedure",
-    "href": "posts/reset-usb.html#step-by-step-reset-procedure",
-    "title": "How to Reset a Bootable USB Drive Using the Linux Command Line",
-    "section": "Step-by-Step Reset Procedure",
-    "text": "Step-by-Step Reset Procedure\n\nStep 1: Identify your USB drive\nPlug in your USB drive and list all connected storage disks to find its system path:\nsudo fdisk -l\n\nLook through the output to match your USB drive’s capacity (e.g., a 16GB drive might show up as 14.9 GiB).\nNote its device path, which usually looks like /dev/sdb or /dev/sdc.\n\n\n\nStep 2: Unmount the drive\nYou cannot modify a drive while the system actively mounts it. Unmount all partitions on the device (replace sdb with your actual drive letter):\nsudo umount /dev/sdb*\n\n\nStep 3: Wipe the bootable partition table\nOverwriting the first few megabytes deletes the hidden boot sector signatures and ISO filesystems:\nsudo dd if=/dev/zero of=/dev/sdb bs=1M count=10 status=progress\n\nif=/dev/zero: Sends a stream of zeros to overwrite data.\nof=/dev/sdb: The target drive path (do not include partition numbers like sdb1).\n\n\n\nStep 4: Create a fresh partition table\nCreate a standard Master Boot Record (msdos) partition layout so the drive works on all devices:\nsudo parted /dev/sdb mklabel msdos\n\n\nStep 5: Allocate a new primary partition\nInstruct the partition manager to allocate 100% of the available space to a single new partition:\nsudo parted -a optimal /dev/sdb mkpart primary fat32 0% 100%\n\n\nStep 6: Format the filesystem\nFormat the newly created partition to FAT32 for universal compatibility across Windows, macOS, and Linux:\nsudo mkfs.vfat -F 32 -n \"MY_USB\" /dev/sdb1\n\n-n \"MY_USB\": Sets the name/label for your drive.\nNote that you are formatting the partition (/dev/sdb1), not the raw disk (/dev/sdb)."
-  },
-  {
-    "objectID": "posts/reset-usb.html#conclusion",
-    "href": "posts/reset-usb.html#conclusion",
-    "title": "How to Reset a Bootable USB Drive Using the Linux Command Line",
-    "section": "Conclusion",
-    "text": "Conclusion\nYour USB drive is now completely wiped, restored to its full capacity, and ready for everyday file storage."
-  },
-  {
-    "objectID": "posts/save-git-credentials.html",
-    "href": "posts/save-git-credentials.html",
-    "title": "How to Save Git Credentials on Windows, macOS, and Linux",
+    "objectID": "posts/regression-interaction.html#what-an-interaction-means-intuitive-view",
+    "href": "posts/regression-interaction.html#what-an-interaction-means-intuitive-view",
+    "title": "Interaction Effect in Regression Analysis",
     "section": "",
-    "text": "To save your Git credentials and stop typing your password every time, configure Git to use a credential helper.\nOpen your terminal or command prompt and run one of the following commands based on your operating system and security preferences."
+    "text": "An interaction effect means:\n\nThe effect of one variable on the outcome depends on the level of another variable.\n\nSo, the relationship between \\(X_1\\) and \\(Y\\) changes depending on the value of \\(X_2\\)."
   },
   {
-    "objectID": "posts/save-git-credentials.html#secure-os-native-helpers-recommended",
-    "href": "posts/save-git-credentials.html#secure-os-native-helpers-recommended",
-    "title": "How to Save Git Credentials on Windows, macOS, and Linux",
-    "section": "Secure OS-Native Helpers (Recommended)",
-    "text": "Secure OS-Native Helpers (Recommended)\nThese helpers securely encrypt your credentials using your operating system’s native keychain management system.\n\nWindows\ngit config --global credential.helper manager\n\n\nmacOS\ngit config --global credential.helper osxkeychain\n\n\nLinux (Ubuntu/Debian)\ngit config --global credential.helper libsecret"
+    "objectID": "posts/regression-interaction.html#a-simple-regression-without-interaction",
+    "href": "posts/regression-interaction.html#a-simple-regression-without-interaction",
+    "title": "Interaction Effect in Regression Analysis",
+    "section": "2. A simple regression without interaction",
+    "text": "2. A simple regression without interaction\nSay we model income as a function of gender and education:\n\\(\\text{Income} = \\beta_0 + \\beta_1(\\text{Gender}) + \\beta_2(\\text{Education}) + \\epsilon\\)\nHere:\n\n\\(\\beta_1\\): average difference between males and females (assuming Gender is dummy coded, say Male=1, Female=0)\n\\(\\beta_2\\): effect of moving from one education level to another\nThe two effects are independent — the gender gap is the same across all education levels."
   },
   {
-    "objectID": "posts/save-git-credentials.html#permanent-hard-drive-storage-less-secure",
-    "href": "posts/save-git-credentials.html#permanent-hard-drive-storage-less-secure",
-    "title": "How to Save Git Credentials on Windows, macOS, and Linux",
-    "section": "Permanent Hard Drive Storage (Less Secure)",
-    "text": "Permanent Hard Drive Storage (Less Secure)\nThis saves your credentials indefinitely in a plaintext file (~/.git-credentials) on your disk. Only use this on trusted, private machines.\ngit config --global credential.helper store"
+    "objectID": "posts/regression-interaction.html#add-an-interaction-term",
+    "href": "posts/regression-interaction.html#add-an-interaction-term",
+    "title": "Interaction Effect in Regression Analysis",
+    "section": "3. Add an interaction term",
+    "text": "3. Add an interaction term\nNow we include a product term:\n\\(\\text{Income} = \\beta_0 + \\beta_1(\\text{Gender}) + \\beta_2(\\text{Education}) + \\beta_3(\\text{Gender} \\times \\text{Education}) + \\epsilon\\)\nThat last term — \\(\\beta_3(\\text{Gender} \\times \\text{Education})\\) — is the interaction.\n\nMeaning:\nIt tells us whether the effect of education differs by gender.\n\nIf \\(\\beta_3 = 0\\): no interaction — both genders gain equally from higher education.\nIf \\(\\beta_3 &gt; 0\\): the return to education (effect on income) is greater for males than females.\nIf \\(\\beta_3 &lt; 0\\): the return to education is greater for females than males."
   },
   {
-    "objectID": "posts/save-git-credentials.html#temporary-memory-cache",
-    "href": "posts/save-git-credentials.html#temporary-memory-cache",
-    "title": "How to Save Git Credentials on Windows, macOS, and Linux",
-    "section": "⏱️ Temporary Memory Cache",
-    "text": "⏱️ Temporary Memory Cache\nThis keeps your credentials safely in your computer’s RAM memory for a set period so they never touch your hard drive.\n# Caches your credentials for 1 hour (3600 seconds)\ngit config --global credential.helper 'cache --timeout=3600'"
+    "objectID": "posts/regression-interaction.html#example-with-numbers",
+    "href": "posts/regression-interaction.html#example-with-numbers",
+    "title": "Interaction Effect in Regression Analysis",
+    "section": "4. Example with numbers",
+    "text": "4. Example with numbers\nSuppose you fit this model (Gender=1 for Male, 0 for Female; Education=years of schooling):\n\\(\\text{Income} = 20{,}000 + 5{,}000(\\text{Education}) + 3{,}000(\\text{Gender}) + 1{,}000(\\text{Gender} \\times \\text{Education})\\)\nInterpretation:\n\n\n\n\n\n\n\nTerm\nMeaning\n\n\n\n\n20,000\nAverage income for a female with 0 years of education (baseline).\n\n\n5,000\nEach year of education increases income by $5,000 for females.\n\n\n3,000\nMales earn $3,000 more than females at 0 years of education.\n\n\n1,000\nFor males, the effect of each additional year of education is $1,000 higher.\n\n\n\nSo:\n\nFor females: effect of education = 5,000 per year\nFor males: effect of education = 5,000 + 1,000 = 6,000 per year\n\nThat difference (1,000) is the interaction effect."
   },
   {
-    "objectID": "posts/save-git-credentials.html#how-to-apply-the-changes",
-    "href": "posts/save-git-credentials.html#how-to-apply-the-changes",
-    "title": "How to Save Git Credentials on Windows, macOS, and Linux",
-    "section": "How to Apply the Changes",
-    "text": "How to Apply the Changes\nTo activate your new credential manager setting, follow these three steps:\n\nRun your chosen configuration command from the options above.\nPerform a remote operation like git pull or git push.\nEnter your username and password/token when prompted.\n\nGit will securely save them for all future actions.\n\n\n\n\n\n\nNoteGitHub Authentication\n\n\n\nIf you are pushing or pulling from GitHub, remember to use your Personal Access Token (PAT) instead of your account password when prompted by the terminal."
+    "objectID": "posts/regression-interaction.html#in-general",
+    "href": "posts/regression-interaction.html#in-general",
+    "title": "Interaction Effect in Regression Analysis",
+    "section": "5. In general",
+    "text": "5. In general\nInteractions can occur between:\n\nTwo categorical variables (e.g., gender × marital status)\nCategorical × continuous (e.g., gender × education years)\nTwo continuous (e.g., age × income in predicting health)\n\nEach type changes the interpretation slightly — but the core idea is always:\n\nthe slope (or effect) of one predictor depends on the value of another."
+  },
+  {
+    "objectID": "posts/sarimax-r.html",
+    "href": "posts/sarimax-r.html",
+    "title": "SARIMAX Time Series Models with R Code",
+    "section": "",
+    "text": "Here’s a comprehensive guide to SARIMAX in R with examples and interpretation:"
+  },
+  {
+    "objectID": "posts/sarimax-r.html#what-is-sarimax",
+    "href": "posts/sarimax-r.html#what-is-sarimax",
+    "title": "SARIMAX Time Series Models with R Code",
+    "section": "1. What is SARIMAX?",
+    "text": "1. What is SARIMAX?\nSARIMAX = Seasonal AutoRegressive Integrated Moving Average with eXogenous variables\n\nSARIMA: Handles seasonality and trends\nX: Includes external predictors (covariates)"
+  },
+  {
+    "objectID": "posts/sarimax-r.html#basic-syntax-in-r",
+    "href": "posts/sarimax-r.html#basic-syntax-in-r",
+    "title": "SARIMAX Time Series Models with R Code",
+    "section": "2. Basic Syntax in R",
+    "text": "2. Basic Syntax in R\nlibrary(forecast)\n\n# Fit SARIMAX model\nmodel &lt;- Arima(y,\n               order = c(p, d, q),           # non-seasonal ARIMA order\n               seasonal = c(P, D, Q, S),     # seasonal order (S = period)\n               xreg = xreg_data)             # exogenous variables"
+  },
+  {
+    "objectID": "posts/sarimax-r.html#example-1-simple-sarimax-with-one-external-variable",
+    "href": "posts/sarimax-r.html#example-1-simple-sarimax-with-one-external-variable",
+    "title": "SARIMAX Time Series Models with R Code",
+    "section": "3. Example 1: Simple SARIMAX with One External Variable",
+    "text": "3. Example 1: Simple SARIMAX with One External Variable\nlibrary(forecast)\nlibrary(ggplot2)\n\n# Create sample data\nset.seed(123)\nn &lt;- 120\ntime &lt;- 1:n\n\n# Main time series with trend + seasonality\ny &lt;- 50 + 0.3*time + 10*sin(2*pi*time/12) + rnorm(n, 0, 5)\n\n# External variable (e.g., marketing spend)\nx1 &lt;- 20 + 0.1*time + rnorm(n, 0, 3)\n\n# Convert to time series object\ny_ts &lt;- ts(y, frequency = 12)\nx1_ts &lt;- ts(x1, frequency = 12)\n\n# Fit SARIMAX model\nsarimax_model &lt;- Arima(y_ts,\n                       order = c(1, 1, 0),      # Remove MA term\n                       seasonal = c(1, 1, 0),   # Remove seasonal MA\n                       xreg = x1_ts)\n\nsummary(sarimax_model)"
+  },
+  {
+    "objectID": "posts/sarimax-r.html#example-2-multiple-external-variables",
+    "href": "posts/sarimax-r.html#example-2-multiple-external-variables",
+    "title": "SARIMAX Time Series Models with R Code",
+    "section": "4. Example 2: Multiple External Variables",
+    "text": "4. Example 2: Multiple External Variables\n# Add second external variable\nx2 &lt;- 15 + 0.05*time + rnorm(n, 0, 2)\nxreg_matrix &lt;- cbind(x1_ts, x2_ts)\n\n# Fit model with multiple external variables\nsarimax_model2 &lt;- Arima(y_ts,\n                       order = c(1, 1, 1),\n                       seasonal = c(1, 1, 1),\n                       xreg = xreg_matrix)\n\nsummary(sarimax_model2)"
+  },
+  {
+    "objectID": "posts/sarimax-r.html#model-diagnostics",
+    "href": "posts/sarimax-r.html#model-diagnostics",
+    "title": "SARIMAX Time Series Models with R Code",
+    "section": "5. Model Diagnostics",
+    "text": "5. Model Diagnostics\n# Residual diagnostics\ncheckresiduals(sarimax_model)\n\n# Coefficients and significance\ncoef(sarimax_model)\nsqrt(diag(sarimax_model$var.coef))  # standard errors\n\n# Confidence intervals\nconfint(sarimax_model)"
+  },
+  {
+    "objectID": "posts/sarimax-r.html#forecasting-with-external-variables",
+    "href": "posts/sarimax-r.html#forecasting-with-external-variables",
+    "title": "SARIMAX Time Series Models with R Code",
+    "section": "6. Forecasting with External Variables",
+    "text": "6. Forecasting with External Variables\n# Create future values of external variables\nfuture_periods &lt;- 12\nx1_future &lt;- ts(30 + 0.1*(121:132), frequency = 12)\nx2_future &lt;- ts(20 + 0.05*(121:132), frequency = 12)\nxreg_future &lt;- cbind(x1_future, x2_future)\n\n# Generate forecasts\nforecast_result &lt;- forecast(sarimax_model2,\n                           h = future_periods,\n                           xreg = xreg_future)\n\n# Plot results\nautoplot(forecast_result) +\n  ggtitle(\"SARIMAX Forecast with External Variables\")"
+  },
+  {
+    "objectID": "posts/sarimax-r.html#automated-model-selection",
+    "href": "posts/sarimax-r.html#automated-model-selection",
+    "title": "SARIMAX Time Series Models with R Code",
+    "section": "7. Automated Model Selection",
+    "text": "7. Automated Model Selection\n# Let auto.arima select best SARIMAX model\nauto_model &lt;- auto.arima(y_ts,\n                        seasonal = TRUE,\n                        stepwise = TRUE,\n                        approximation = FALSE,\n                        xreg = xreg_matrix)\n\nsummary(auto_model)"
+  },
+  {
+    "objectID": "posts/sarimax-r.html#real-dataset-example-airpassengers-with-exogenous-var",
+    "href": "posts/sarimax-r.html#real-dataset-example-airpassengers-with-exogenous-var",
+    "title": "SARIMAX Time Series Models with R Code",
+    "section": "8. Real Dataset Example (AirPassengers with exogenous var)",
+    "text": "8. Real Dataset Example (AirPassengers with exogenous var)\n# Using AirPassengers dataset\ndata(\"AirPassengers\")\n\n# Create dummy external variable (e.g., economic index)\nset.seed(123)\neconomic_index &lt;- 100 + 0.5*time(AirPassengers) + rnorm(length(AirPassengers), 0, 10)\n\n# Fit SARIMAX\nair_model &lt;- Arima(AirPassengers,\n                  order = c(0, 1, 1),\n                  seasonal = c(0, 1, 1),\n                  xreg = economic_index)\n\n# Forecast with assumed future economic index\nfuture_econ &lt;- 150 + 0.5*(1961 + (0:11)/12)  # 1961 values\nair_forecast &lt;- forecast(air_model,\n                        h = 12,\n                        xreg = future_econ)\n\nautoplot(air_forecast)"
+  },
+  {
+    "objectID": "posts/sarimax-r.html#interpretation-of-coefficients",
+    "href": "posts/sarimax-r.html#interpretation-of-coefficients",
+    "title": "SARIMAX Time Series Models with R Code",
+    "section": "9. Interpretation of Coefficients",
+    "text": "9. Interpretation of Coefficients\nFor the model:\n# If output shows:\n# ar1 = 0.85, ma1 = -0.32, sar1 = 0.72, sma1 = -0.45, xreg1 = 0.65\nInterpretation: - ar1 = 0.85: Strong positive autocorrelation (persistence) - ma1 = -0.32: Negative momentum effects - sar1 = 0.72: Strong seasonal autocorrelation - sma1 = -0.45: Negative seasonal momentum - xreg1 = 0.65: 1-unit increase in external variable increases y by 0.65 units"
+  },
+  {
+    "objectID": "posts/sarimax-r.html#important-notes",
+    "href": "posts/sarimax-r.html#important-notes",
+    "title": "SARIMAX Time Series Models with R Code",
+    "section": "10. Important Notes",
+    "text": "10. Important Notes\n\nStationarity: Ensure both y and xreg variables are stationary (use differencing if needed)\nCorrelation ≠ Causation: External variables should theoretically make sense\nModel Validation: Always check residuals for autocorrelation\nOverfitting: Avoid too many external variables relative to data length\n\nThis gives you a solid foundation for implementing SARIMAX models in R!"
+  },
+  {
+    "objectID": "posts/spatio-temporal.html",
+    "href": "posts/spatio-temporal.html",
+    "title": "Spatio-temporal Analysis Workflow",
+    "section": "",
+    "text": "Spatio-temporal analysis sits right at the intersection of statistics, data science, GIS, and environmental applications.\n📚 Step 1: Build Foundations\nSpatial Statistics"
+  },
+  {
+    "objectID": "posts/spatio-temporal.html#time-series-temporal-analysis",
+    "href": "posts/spatio-temporal.html#time-series-temporal-analysis",
+    "title": "Spatio-temporal Analysis Workflow",
+    "section": "Time Series / Temporal Analysis",
+    "text": "Time Series / Temporal Analysis\n\nRefresh time series models (ARIMA, state-space, spectral methods).\nAdd temporal clustering and forecasting methods."
+  },
+  {
+    "objectID": "posts/spatio-temporal.html#spatio-temporal-models",
+    "href": "posts/spatio-temporal.html#spatio-temporal-models",
+    "title": "Spatio-temporal Analysis Workflow",
+    "section": "Spatio-Temporal Models",
+    "text": "Spatio-Temporal Models\n\nCombine both: spatio-temporal kriging, Gaussian random fields, Bayesian hierarchical models.\nBook: Hierarchical Modelling of Spatial Data Using R-INLA (Blangiardo & Cameletti).\n\n🛠 Step 2: Learn the Tools"
+  },
+  {
+    "objectID": "posts/spatio-temporal.html#r-packages",
+    "href": "posts/spatio-temporal.html#r-packages",
+    "title": "Spatio-temporal Analysis Workflow",
+    "section": "R packages",
+    "text": "R packages\n\nsf (modern spatial objects)\nstars (spatio-temporal arrays)\nterra (raster/vector operations)\nspacetime (older but still used)\ngstat (variograms, kriging)\nspdep (spatial dependence)\nINLA (Bayesian spatio-temporal modeling)\nPython equivalents (optional, if you want dual skillset): geopandas, xarray, rasterio, pySTL, pysal, scikit-mobility\n\n🔬 Step 3: Practice with Data"
+  },
+  {
+    "objectID": "posts/spatio-temporal.html#sources-of-free-spatio-temporal-datasets",
+    "href": "posts/spatio-temporal.html#sources-of-free-spatio-temporal-datasets",
+    "title": "Spatio-temporal Analysis Workflow",
+    "section": "Sources of free spatio-temporal datasets:",
+    "text": "Sources of free spatio-temporal datasets:\n\nEarth observation: NASA EarthData, Copernicus (Sentinel satellites)\nClimate: ERA5 reanalysis (ECMWF)\nHealth: COVID-19 spatio-temporal data (Johns Hopkins)\nUrban/mobility: OpenStreetMap, Google Mobility Reports\nYou could start with simple projects:\nMapping air quality trends across time.\nSpatio-temporal spread of disease (e.g., dengue in Bangladesh).\nDetecting land cover change from satellite images.\n\n🤝 Step 4: Contribute"
+  },
+  {
+    "objectID": "posts/spatio-temporal.html#open-source-contributions",
+    "href": "posts/spatio-temporal.html#open-source-contributions",
+    "title": "Spatio-temporal Analysis Workflow",
+    "section": "Open-Source Contributions",
+    "text": "Open-Source Contributions\n\nHelp improve documentation or examples in sf, stars, or spacetime.\nBuild teaching vignettes for gstat or spdep."
+  },
+  {
+    "objectID": "posts/spatio-temporal.html#research-contributions",
+    "href": "posts/spatio-temporal.html#research-contributions",
+    "title": "Spatio-temporal Analysis Workflow",
+    "section": "Research Contributions",
+    "text": "Research Contributions\n\nApply spatio-temporal models to a new real-world problem (climate, urban growth, seismicity).\nPublish datasets + reproducible code (on GitHub + Zenodo)."
+  },
+  {
+    "objectID": "posts/spatio-temporal.html#community-involvement",
+    "href": "posts/spatio-temporal.html#community-involvement",
+    "title": "Spatio-temporal Analysis Workflow",
+    "section": "Community Involvement",
+    "text": "Community Involvement\n\nJoin R-Spatial community (https://r-spatial.org).\nFollow Edzer Pebesma, Roger Bivand, and Virgilio Gómez-Rubio.\nPresent small case studies in workshops/webinars.\n\n⚡ A good starting project for you could be:\n“Spatio-temporal visualization of earthquake aftershocks in Bangladesh/Asia using USGS data”"
+  },
+  {
+    "objectID": "posts/t-test-to-anova.html",
+    "href": "posts/t-test-to-anova.html",
+    "title": "From t-test to Anova",
+    "section": "",
+    "text": "Let’s build a t-test and then showing how it generalizes naturally into ANOVA (Analysis of Variance)."
+  },
+  {
+    "objectID": "posts/t-test-to-anova.html#step-1.-the-t-test-comparing-two-means",
+    "href": "posts/t-test-to-anova.html#step-1.-the-t-test-comparing-two-means",
+    "title": "From t-test to Anova",
+    "section": "Step 1. The t-test — comparing two means",
+    "text": "Step 1. The t-test — comparing two means\nLet’s imagine two groups of students and their test scores:\n\n\n\nGroup\nScores\n\n\n\n\nGroup A\n70, 75, 80\n\n\nGroup B\n85, 90, 95\n\n\n\nWe want to know:\n\nAre the mean scores of Group A and Group B significantly different?\n\n\nHypotheses\n\\(H_0: \\mu_A = \\mu_B \\quad \\text{(means are equal)}\\)\n\\(H_1: \\mu_A \\ne \\mu_B\\)\n\n\nLogic of the t-test\nWe calculate:\n\nThe difference between sample means \\(\\bar X_A - \\bar X_B\\)\nThe standard error of that difference (based on the variances and sample sizes)\nThe t-statistic\n\\(t = \\frac{(\\bar X_A - \\bar X_B)}{SE}\\)\n\nIf the difference is large relative to its expected variation, we reject \\(H_0\\).\n\n\n\nIntuition\n\nThe numerator measures how far apart the groups are.\nThe denominator measures how noisy the data are.\nA large t-value ⇒ groups differ more than we’d expect by chance.\n\nSo the two-sample t-test compares between-group difference to within-group variability."
+  },
+  {
+    "objectID": "posts/t-test-to-anova.html#step-2.-extending-to-more-than-two-groups",
+    "href": "posts/t-test-to-anova.html#step-2.-extending-to-more-than-two-groups",
+    "title": "From t-test to Anova",
+    "section": "Step 2. Extending to more than two groups",
+    "text": "Step 2. Extending to more than two groups\nNow add a third group:\n\n\n\nGroup\nScores\n\n\n\n\nGroup A\n70, 75, 80\n\n\nGroup B\n85, 90, 95\n\n\nGroup C\n60, 65, 70\n\n\n\nNow what if we ask:\n\nAre all group means equal?\n\nYou could do multiple t-tests (A vs B, A vs C, B vs C), but that inflates the chance of false positives. Instead, ANOVA does it all at once."
+  },
+  {
+    "objectID": "posts/t-test-to-anova.html#step-3.-anova-conceptually",
+    "href": "posts/t-test-to-anova.html#step-3.-anova-conceptually",
+    "title": "From t-test to Anova",
+    "section": "Step 3. ANOVA conceptually",
+    "text": "Step 3. ANOVA conceptually\n\nHypotheses\n\\(H_0: \\mu_A = \\mu_B = \\mu_C \\quad \\text{(all equal)}\\)\n\\(H_1: \\text{At least one mean differs}\\)\n\n\nHow ANOVA works\nANOVA decomposes total variability into two parts:\n\\(\\text{Total Variation} = \\text{Between-group Variation} + \\text{Within-group Variation}\\)\nIt then forms a ratio:\n\\(F = \\frac{\\text{Between-group Mean Square}}{\\text{Within-group Mean Square}}\\)\n\nIf \\(H_0\\) is true, both parts estimate the same thing → \\(F \\approx 1\\).\nIf group means differ more than expected, \\(F &gt; 1\\) → reject \\(H_0\\)."
+  },
+  {
+    "objectID": "posts/t-test-to-anova.html#step-4.-conceptual-link-between-t-and-f",
+    "href": "posts/t-test-to-anova.html#step-4.-conceptual-link-between-t-and-f",
+    "title": "From t-test to Anova",
+    "section": "Step 4. Conceptual link between t and F",
+    "text": "Step 4. Conceptual link between t and F\nFor two groups, ANOVA and t-test give the same result:\n\\(F = t^2\\)\nSo ANOVA is just a generalization of the t-test from 2 groups to many groups.\n\n\n\n\n\n\n\n\n\nTest\nGroups\nStatistic\nDistribution\n\n\n\n\nt-test\n2\n\\(t\\)\nt-distribution\n\n\nANOVA\n≥ 2\n\\(F = \\frac{\\text{Between}}{\\text{Within}}\\)\nF-distribution"
+  },
+  {
+    "objectID": "posts/t-test-to-anova.html#step-5.-interpretation",
+    "href": "posts/t-test-to-anova.html#step-5.-interpretation",
+    "title": "From t-test to Anova",
+    "section": "Step 5. Interpretation",
+    "text": "Step 5. Interpretation\n\nIf \\(F\\) (or \\(|t|\\)) is large and the p-value &lt; 0.05, we reject \\(H_0\\). → The means are not all equal.\nIf not, we conclude that differences among sample means could just be random noise."
+  },
+  {
+    "objectID": "posts/t-test-to-anova.html#summary-table",
+    "href": "posts/t-test-to-anova.html#summary-table",
+    "title": "From t-test to Anova",
+    "section": "Summary Table",
+    "text": "Summary Table\n\n\n\n\n\n\n\n\nAspect\nt-test\nANOVA\n\n\n\n\nPurpose\nCompare two means\nCompare two or more means\n\n\nHypothesis\n\\(H_0: \\mu_1 = \\mu_2\\)\n\\(H_0: \\mu_1 = \\mu_2 = \\mu_3 = \\dots\\)\n\n\nStatistic\nt\nF\n\n\nLogic\nDifference of means / error\nRatio of between-group / within-group variance\n\n\nLink\n\\(F = t^2\\) for 2 groups\n—"
+  },
+  {
+    "objectID": "posts/t-test-to-anova.html#why-not-many-t-tests",
+    "href": "posts/t-test-to-anova.html#why-not-many-t-tests",
+    "title": "From t-test to Anova",
+    "section": "Why not many t-tests?",
+    "text": "Why not many t-tests?\nDoing multiple t-tests increases the Type I error rate (false positive probability).\nLet us see how.\n\nSuppose you have \\(k = 3\\) groups:\n\n\\(G_1, G_2, G_3\\)\n\nTo compare them, you could do pairwise t-tests:\n\\(G_1 \\text{ vs } G_2,\\quad G_1 \\text{ vs } G_3,\\quad G_2 \\text{ vs } G_3\\)\nThat’s \\(C(k,2) = 3\\) tests.\nEach test has significance level \\(\\alpha = 0.05\\). So the chance of no false positive across all tests = \\((1-\\alpha)^m\\), where \\(m\\) = number of tests.\nHence, the overall false positive rate (familywise error rate) is:\n\\(\\text{FWER} = 1 - (1 - \\alpha)^m\\)\nFor \\(k=3\\) groups, \\(m=3\\):\n\\(\\text{FWER} = 1 - (1 - 0.05)^3 = 1 - 0.95^3 = 0.1426\\)\nSo even if all population means are equal, there’s ≈14% chance you’ll (wrongly) find at least one “significant difference”.\nThis is why ANOVA tests all means simultaneously with a single α = 0.05 — controlling the false positive rate."
+  },
+  {
+    "objectID": "posts/t-test-to-anova.html#minimal-empirical-example",
+    "href": "posts/t-test-to-anova.html#minimal-empirical-example",
+    "title": "From t-test to Anova",
+    "section": "Minimal empirical example",
+    "text": "Minimal empirical example\nLet’s make up a small dataset:\n\n\n\nGroup\nValues\n\n\n\n\nA\n5, 6, 7\n\n\nB\n6, 7, 8\n\n\nC\n5, 7, 9\n\n\n\nAll groups have similar means (~6.5–7). True means are equal (in population), but random variation exists.\nNow:\n\nStep 1. Pairwise t-tests\nWe do:\n\nA vs B → p = 0.08\nA vs C → p = 0.04\nB vs C → p = 0.06\n\nOne of them (A vs C) is &lt;0.05 → you’d claim a “significant” difference. But that’s a false positive, since groups were drawn from the same population.\nIf you repeated this experiment 1000 times, around 14% of runs would falsely detect something significant — matching our theoretical 0.1426."
+  },
+  {
+    "objectID": "posts/t-test-to-anova.html#key-takeaway",
+    "href": "posts/t-test-to-anova.html#key-takeaway",
+    "title": "From t-test to Anova",
+    "section": "Key takeaway",
+    "text": "Key takeaway\n\n\n\n\n\n\n\n\n\nMethod\nNumber of tests\nNominal α per test\nFamilywise α (true false positive rate)\n\n\n\n\nOne-way ANOVA\n1\n0.05\n0.05\n\n\nThree t-tests\n3\n0.05\n0.14\n\n\nTen t-tests\n10\n0.05\n0.40"
   }
 ]

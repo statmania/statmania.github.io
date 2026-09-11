@@ -1,0 +1,75 @@
+---
+title: "Batch-Converting PDFs to Markdown with MarkItDown"
+description: "Microsoft's MarkItDown CLI only converts one file at a time — here's how to batch an entire folder of PDFs with a shell loop or a short Python script."
+author: "Abdullah Al Mahmud"
+date: "2026-09-11"
+categories: [Tools, Python, CLI]
+tags: [markitdown, PDF, markdown, python]
+image: "../img/r-shell.jpeg"
+---
+
+[MarkItDown](https://github.com/microsoft/markitdown) is Microsoft's command-line tool for converting documents — PDFs, Office files, images, HTML, and more — into clean Markdown, which makes it handy for feeding documents into an LLM pipeline. Install it with PDF support first:
+
+```bash
+pip install "markitdown[pdf]"
+```
+
+![](../img/r-shell.jpeg)
+
+## Converting a Single PDF
+
+To convert one PDF and save the output, use the `-o` flag:
+
+```bash
+markitdown document.pdf -o output.md
+```
+
+Since MarkItDown prints to stdout by default, plain shell redirection works just as well:
+
+```bash
+markitdown document.pdf > output.md
+```
+
+## Converting All PDFs in a Folder
+
+The CLI only targets one file at a time, so batch-converting a directory means wrapping it in a loop.
+
+**Bash / Zsh (Linux & macOS):**
+
+```bash
+for file in *.pdf; do
+    markitdown "$file" -o "${file%.pdf}.md"
+done
+```
+
+**PowerShell (Windows):**
+
+```powershell
+Get-ChildItem *.pdf | ForEach-Object {
+    markitdown $_.FullName -o ($_.BaseName + ".md")
+}
+```
+
+## Batch Converting with the Python API
+
+For more control — say, catching per-file failures instead of letting one bad PDF kill the whole batch — call MarkItDown directly from Python:
+
+```python
+from pathlib import Path
+from markitdown import MarkItDown
+
+md = MarkItDown()
+
+input_dir = Path("./my_pdfs")
+output_dir = Path("./converted_markdown")
+output_dir.mkdir(parents=True, exist_ok=True)
+
+for pdf_path in input_dir.glob("*.pdf"):
+    try:
+        result = md.convert(str(pdf_path))
+        output_file = output_dir / f"{pdf_path.stem}.md"
+        output_file.write_text(result.text_content, encoding="utf-8")
+        print(f"Converted: {pdf_path.name} -> {output_file.name}")
+    except Exception as e:
+        print(f"Failed to convert {pdf_path.name}: {e}")
+```
