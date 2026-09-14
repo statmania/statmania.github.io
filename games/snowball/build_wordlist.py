@@ -69,34 +69,119 @@ def roman_numerals(max_value=200):
 EXCLUDE_WORDS |= roman_numerals()
 EXCLUDE_WORDS -= ONE_LETTER_WORDS  # "i" is both a pronoun and roman numeral 1 - keep it
 
-# No plurals (or other "+s" inflections, e.g. 3rd-person verbs like
-# "offs") allowed: if stripping a trailing s/es/ies leaves another word
-# already in the list, drop the longer one as derived. This mechanical
-# rule has false positives - words that only coincidentally end in a
-# shorter real word plus "s" (not actually derived from it) - found by
-# manually reviewing every match whose base was <=3 letters (the riskiest
-# case). Keep those exceptions explicitly.
-PLURAL_KEEP_EXCEPTIONS = {
+# No inflected/derived forms allowed - plurals ("offs"->off), past tense
+# ("scored"->score), -ing ("scoring"->score), comparative/superlative
+# ("faster"/"fastest"->fast), adverbs ("quickly"->quick). If stripping a
+# common suffix leaves another word already in the list, drop the longer
+# form as derived - keeping only what a text-mining pipeline would treat
+# as the distinct root vocabulary. This mechanical rule has false
+# positives - words that only coincidentally end in a shorter real word
+# plus a suffix (not actually derived from it) - found by manually
+# reviewing every match whose base was <=3 letters (the riskiest case,
+# most likely to collide by chance). Keep those exceptions explicitly.
+INFLECTION_KEEP_EXCEPTIONS = {
+    # -s/-es/-ies false positives
     "ass", "buss", "has", "his", "hiss", "mass", "mess", "moss", "pass",
     "piss", "puss", "yes",
+    # -ed/-ied false positives
+    "bed", "bled", "bred", "fed", "fled", "led", "red", "shed", "sled",
+    "sped", "ted", "wed",
+    # -ing false positives
+    "bring", "cling", "ding", "fling", "king", "ping", "ring", "sing",
+    "sling", "spring", "sting", "string", "swing", "thing", "wing",
+    # -er/-est false positives
+    "her", "over", "under", "water", "after", "amber", "anger", "answer",
+    "banner", "better", "bitter", "border", "butter", "center", "corner",
+    "danger", "dinner", "enter", "finger", "hammer", "hunger", "ladder",
+    "letter", "master", "matter", "member", "mother", "murder", "number",
+    "offer", "order", "other", "paper", "power", "proper", "rather",
+    "sister", "summer", "supper", "sweater", "timber", "tower", "wander",
+    "weather", "wonder", "alter", "ester", "digest", "forest", "modest",
+    "attest", "sheer", "sober", "super", "copper", "batter", "zipper",
+    "rubber", "manner", "meter", "peter", "inner", "cover", "hover",
+    "lever", "never", "river", "silver", "clover", "cancer", "corner",
+    "dinner", "singer", "finger", "wither", "bother", "archer", "twitter",
+    # -s false positives (word only coincidentally ends in a shorter word + s)
+    "brass",
+    # -ing false positives (not "verb + ing")
+    "herring", "earring", "morning", "evening", "nothing", "anything",
+    "everything", "something",
+    # -ly false positives (not "adjective + ly")
+    "ally", "belly", "bully", "chilly", "family", "fully", "gully",
+    "holly", "jelly", "jolly", "lily", "only", "rally", "silly", "sly",
+    "supply", "tally", "ugly", "apply", "imply", "reply", "early",
+    "curly", "burly", "wooly",
 }
 
 
-def strip_inflection(word, words):
-    """Returns the base word this is a plural/inflected form of, or None."""
-    if len(word) < 3 or not word.endswith("s") or word in PLURAL_KEEP_EXCEPTIONS:
-        return None
-    if word.endswith("ies") and len(word) > 3:
-        base = word[:-3] + "y"
-        if base in words:
-            return base
-    if word.endswith("es") and len(word) > 2:
+def _candidates_s(word):
+    if not word.endswith("s") or len(word) < 3:
+        return
+    if word.endswith("ies") and len(word) > 4:
+        yield word[:-3] + "y"
+    if word.endswith("es") and len(word) > 3:
         base = word[:-2]
-        if base in words and (base[-1] in "sxz" or base.endswith("ch") or base.endswith("sh")):
-            return base
-    base = word[:-1]
-    if base in words:
-        return base
+        if base[-1] in "sxz" or base.endswith("ch") or base.endswith("sh"):
+            yield base
+    yield word[:-1]
+
+
+def _candidates_ed(word):
+    if word.endswith("ied") and len(word) > 4:
+        yield word[:-3] + "y"
+        return
+    if not word.endswith("ed") or len(word) <= 4:
+        return
+    stem = word[:-2]
+    yield stem            # walked -> walk
+    yield stem + "e"       # scored -> score (stem "scor" + e)
+    if len(stem) > 2 and stem[-1] == stem[-2] and stem[-1] not in "aeiou":
+        yield stem[:-1]    # stopped -> stop
+
+
+def _candidates_ing(word):
+    if not word.endswith("ing") or len(word) <= 5:
+        return
+    stem = word[:-3]
+    yield stem              # walking -> walk
+    yield stem + "e"        # scoring -> score
+    if len(stem) > 2 and stem[-1] == stem[-2] and stem[-1] not in "aeiou":
+        yield stem[:-1]      # stopping -> stop
+
+
+def _candidates_er_est(word):
+    if word.endswith("est") and len(word) > 5:
+        stem = word[:-3]
+        yield stem            # fastest -> fast
+        yield stem + "e"       # latest -> late
+        if len(stem) > 2 and stem[-1] == stem[-2] and stem[-1] not in "aeiou":
+            yield stem[:-1]     # biggest -> big
+    if word.endswith("er") and len(word) > 4:
+        stem = word[:-2]
+        yield stem             # faster -> fast
+        yield stem + "e"        # later -> late
+        if len(stem) > 2 and stem[-1] == stem[-2] and stem[-1] not in "aeiou":
+            yield stem[:-1]      # bigger -> big
+
+
+def _candidates_ly(word):
+    if word.endswith("ily") and len(word) > 5:
+        yield word[:-3] + "y"   # happily -> happy
+    if word.endswith("ly") and len(word) > 4:
+        yield word[:-2]         # quickly -> quick, safely -> safe
+
+
+CANDIDATE_FUNCS = [_candidates_s, _candidates_ed, _candidates_ing, _candidates_er_est, _candidates_ly]
+
+
+def inflection_base(word, words):
+    """Returns the base word this is an inflected/derived form of, or None."""
+    if word in INFLECTION_KEEP_EXCEPTIONS:
+        return None
+    for fn in CANDIDATE_FUNCS:
+        for base in fn(word):
+            if base != word and base in words:
+                return base
     return None
 
 
@@ -111,9 +196,9 @@ if __name__ == "__main__":
     words |= ONE_LETTER_WORDS
     words -= EXCLUDE_WORDS
 
-    plurals = {w for w in words if strip_inflection(w, words)}
-    print(f"Dropping {len(plurals)} plural/inflected (+s) forms")
-    words -= plurals
+    derived = {w for w in words if inflection_base(w, words)}
+    print(f"Dropping {len(derived)} inflected/derived forms (plurals, -ed, -ing, -er/-est, -ly)")
+    words -= derived
 
     word_list = sorted(words)
     OUT_PATH.write_text(json.dumps(word_list, separators=(",", ":")))

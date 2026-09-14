@@ -40,11 +40,14 @@ plain JS search — no network calls, no model.
 
 System dictionary (`/usr/share/dict/american-english`), filtered to
 lowercase-only, 2–8 letters plus `a`/`i`/`o`, with abbreviations/units/
-Roman numerals stripped and no plurals or other "+s" inflections
-allowed (if removing a trailing s/es/ies leaves another word already
-in the list, the longer one is dropped as derived — with a manual
-exception list for coincidental matches like `pass`/`mass`/`yes` that
-aren't actually derived from `pas`/`mas`/`ye`). Embedded at build time
+Roman numerals stripped, keeping only root-form vocabulary (no
+plurals, past tense, `-ing`, comparative/superlative, or `-ly`
+adverbs): if removing a trailing s/es/ies/ed/ing/er/est/ly leaves
+another word already in the list, the longer one is dropped as
+derived — with a manual exception list for coincidental matches
+(`pass`/`mass`/`yes`, `sheer`/`sober`/`archer`, `apply`/`early`/
+`curly`, etc.) that only happen to end like a derived form without
+actually being one. ~17.3k words. Embedded at build time
 — same pipeline as `cross-word/build_puzzles.py`.
 
 ## Files
