@@ -69,6 +69,37 @@ def roman_numerals(max_value=200):
 EXCLUDE_WORDS |= roman_numerals()
 EXCLUDE_WORDS -= ONE_LETTER_WORDS  # "i" is both a pronoun and roman numeral 1 - keep it
 
+# No plurals (or other "+s" inflections, e.g. 3rd-person verbs like
+# "offs") allowed: if stripping a trailing s/es/ies leaves another word
+# already in the list, drop the longer one as derived. This mechanical
+# rule has false positives - words that only coincidentally end in a
+# shorter real word plus "s" (not actually derived from it) - found by
+# manually reviewing every match whose base was <=3 letters (the riskiest
+# case). Keep those exceptions explicitly.
+PLURAL_KEEP_EXCEPTIONS = {
+    "ass", "buss", "has", "his", "hiss", "mass", "mess", "moss", "pass",
+    "piss", "puss", "yes",
+}
+
+
+def strip_inflection(word, words):
+    """Returns the base word this is a plural/inflected form of, or None."""
+    if len(word) < 3 or not word.endswith("s") or word in PLURAL_KEEP_EXCEPTIONS:
+        return None
+    if word.endswith("ies") and len(word) > 3:
+        base = word[:-3] + "y"
+        if base in words:
+            return base
+    if word.endswith("es") and len(word) > 2:
+        base = word[:-2]
+        if base in words and (base[-1] in "sxz" or base.endswith("ch") or base.endswith("sh")):
+            return base
+    base = word[:-1]
+    if base in words:
+        return base
+    return None
+
+
 if __name__ == "__main__":
     words = set()
     for line in RAW_PATH.read_text().splitlines():
@@ -79,6 +110,10 @@ if __name__ == "__main__":
             words.add(w)
     words |= ONE_LETTER_WORDS
     words -= EXCLUDE_WORDS
+
+    plurals = {w for w in words if strip_inflection(w, words)}
+    print(f"Dropping {len(plurals)} plural/inflected (+s) forms")
+    words -= plurals
 
     word_list = sorted(words)
     OUT_PATH.write_text(json.dumps(word_list, separators=(",", ":")))

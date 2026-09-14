@@ -35,8 +35,13 @@ plain JS search — no network calls, no model.
 ## Word list
 
 System dictionary (`/usr/share/dict/american-english`), filtered to
-lowercase-only, 2–8 letters plus `a`/`i`/`o`, embedded at build time —
-same pipeline as `cross-word/build_puzzles.py`.
+lowercase-only, 2–8 letters plus `a`/`i`/`o`, with abbreviations/units/
+Roman numerals stripped and no plurals or other "+s" inflections
+allowed (if removing a trailing s/es/ies leaves another word already
+in the list, the longer one is dropped as derived — with a manual
+exception list for coincidental matches like `pass`/`mass`/`yes` that
+aren't actually derived from `pas`/`mas`/`ye`). Embedded at build time
+— same pipeline as `cross-word/build_puzzles.py`.
 
 ## Files
 
