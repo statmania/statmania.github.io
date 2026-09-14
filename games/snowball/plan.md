@@ -44,13 +44,24 @@ System dictionary (`/usr/share/dict/american-english`), filtered to
 lowercase-only, 2–8 letters plus `a`/`i`/`o`, with abbreviations/units/
 Roman numerals stripped, keeping only root-form vocabulary (no
 plurals, past tense, `-ing`, comparative/superlative, or `-ly`
-adverbs): if removing a trailing s/es/ies/ed/ing/er/est/ly leaves
-another word already in the list, the longer one is dropped as
-derived — with a manual exception list for coincidental matches
-(`pass`/`mass`/`yes`, `sheer`/`sober`/`archer`, `apply`/`early`/
-`curly`, etc.) that only happen to end like a derived form without
-actually being one. ~17.3k words. Embedded at build time
-— same pipeline as `cross-word/build_puzzles.py`.
+adverbs). For `-s/-ed/-ing/-er/-est`, a regex-derived candidate base
+(e.g. `scored` → `score`) only counts as derived if NLTK's WordNet
+lemmatizer *independently* agrees (build-only dependency, downloads
+the WordNet corpus on first run) — this uses real morphological
+exception data instead of blind regex and eliminates almost all
+false positives (`pass`/`archer`/`bother`/`sheer` etc. no longer need
+manual protection) at the cost of a handful of residual exceptions
+where WordNet itself agrees with the wrong regex guess (`pass`→`pas`
+under noun-POS, `buss`→`bus` under verb-POS). WordNet has no
+adverb-from-adjective data, so `-ly` still relies on the regex-only
+check with its own small exception list. ~19k words. Embedded at
+build time — same pipeline as `cross-word/build_puzzles.py`.
+
+Known residual gap: this only dedupes *inflected forms*, not
+abbreviations the source spellcheck-dictionary includes as if they
+were real words (e.g. `ed`, `ms` — informal abbreviations, not in the
+official Scrabble 2-letter list) that weren't in the manually-curated
+`EXCLUDE_WORDS` list. See "Word sources" below.
 
 ## Files
 
@@ -70,3 +81,9 @@ If we keep getting unwanted words, we'll use one these sources.
 - **SCOWL** (Spell Checking Oriented Word Lists) — what the current `/usr/share/dict/american-english` is derived from; SCOWL itself can be regenerated with different size/strictness levels and word-class filters (it has tags for abbreviations, proper nouns, etc.), so a more carefully-configured SCOWL export would already exclude most of what's being manually stripped now.
 
 Any of these would sidestep the whole "reconstruct which words are abbreviations/plurals/derived forms by hand" effort — the source list simply wouldn't contain them in the first place. The catch is they're not already sitting on disk the way `/usr/share/dict/american-english` was, so pulling one in requires fetching a file into the project rather than reusing something local.
+
+# Bugs
+
+- On mobile, the letters entry doesn't work.
+- ~~Typing on arbitrary cell isn't allowed. Should be.~~ Fixed — every
+  legal cell is now directly typable, not just the last-clicked one.
