@@ -42,28 +42,28 @@
   .grid-wrap { background: var(--card); padding: 16px; border-radius: 14px;
                border: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: center; }
   #grid { display: grid; gap: 2px; background: var(--line); padding: 2px; border-radius: 6px; }
-  .cell { width: 40px; height: 40px; background: rgba(255,255,255,0.06); position: relative; border-radius: 2px; }
-  .cell.blank { background: transparent; }
-  .cell input { width: 100%; height: 100%; border: none; background: transparent;
+  .cw-cell { width: 40px; height: 40px; background: rgba(255,255,255,0.06); position: relative; border-radius: 2px; }
+  .cw-cell.blank { background: #05070d; border-radius: 0; }
+  .cw-cell input { width: 100%; height: 100%; border: none; background: transparent;
                 text-align: center; font-size: 1.25rem; font-weight: 700;
                 text-transform: uppercase; color: var(--ink);
                 font-family: 'Courier New', monospace; outline: none; padding: 0;
                 caret-color: transparent; }
-  .cell .num { position: absolute; top: 1px; left: 3px; font-size: 0.6rem;
+  .cw-cell .num { position: absolute; top: 1px; left: 3px; font-size: 0.6rem;
                color: var(--muted); font-weight: 600; pointer-events: none; }
-  .cell.in-word { background: var(--active-word); }
-  .cell.active {
+  .cw-cell.in-word { background: var(--active-word); }
+  .cw-cell.active {
     background: var(--active-cell);
     outline: 2px solid var(--accent);
     outline-offset: -2px;
     box-shadow: 0 0 12px rgba(0,229,255,0.65);
     z-index: 1;
   }
-  .cell.active input { color: var(--accent); }
-  .cell.correct input { color: #4ade80; }
-  .cell.wrong input { color: #ff6b6b; }
-  .cell.wrong { background: var(--wrong); }
-  .cell.correct { background: var(--correct); }
+  .cw-cell.active input { color: var(--accent); }
+  .cw-cell.correct input { color: #4ade80; }
+  .cw-cell.wrong input { color: #ff6b6b; }
+  .cw-cell.wrong { background: var(--wrong); }
+  .cw-cell.correct { background: var(--correct); }
   #clues { background: var(--card); padding: 20px; border-radius: 14px;
            border: 1px solid rgba(255,255,255,0.08); }
   .clue-group { margin-bottom: 20px; }
@@ -549,7 +549,7 @@ function renderGrid() {
     for (let c = 0; c < state.cols; c++) {
       const cellData = state.grid[r][c];
       const cell = document.createElement("div");
-      cell.className = "cell";
+      cell.className = "cw-cell";
       cell.dataset.r = r; cell.dataset.c = c;
 
       if (!cellData) { cell.classList.add("blank"); gridEl.appendChild(cell); continue; }
@@ -643,14 +643,14 @@ function focusCurrent() {
 }
 
 function updateHighlights() {
-  document.querySelectorAll(".cell").forEach(el => el.classList.remove("active", "in-word"));
+  document.querySelectorAll(".cw-cell").forEach(el => el.classList.remove("active", "in-word"));
   document.querySelectorAll(".clue").forEach(el => el.classList.remove("active"));
   if (!state.current) return;
 
   const w = wordAt(state.current.r, state.current.c, state.dir);
   if (w) {
     w.cells.forEach(({ r, c }) => {
-      const el = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+      const el = document.querySelector(`.cw-cell[data-r="${r}"][data-c="${c}"]`);
       if (el) el.classList.add("in-word");
     });
     const clueEl = document.querySelector(`.clue[data-wid="${w.id}"]`);
@@ -658,7 +658,7 @@ function updateHighlights() {
     updateClueDone();
   }
   const activeEl = document.querySelector(
-    `.cell[data-r="${state.current.r}"][data-c="${state.current.c}"]`);
+    `.cw-cell[data-r="${state.current.r}"][data-c="${state.current.c}"]`);
   if (activeEl) activeEl.classList.add("active");
 }
 
