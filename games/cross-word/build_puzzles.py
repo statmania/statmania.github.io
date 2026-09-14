@@ -117,6 +117,12 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   .puzzle-name { font-size: 1.4rem; font-weight: 700; margin: 0;
                  background: linear-gradient(90deg, var(--sm-cyan, #00e5ff), var(--sm-purple, #a855f7), var(--sm-pink, #ff2fb4));
                  -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .difficulty-badge { display: inline-block; font-size: 0.7rem; font-weight: 700;
+           text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 10px;
+           border-radius: 999px; border: 1px solid; }
+  .difficulty-badge.easy { color: #4ade80; border-color: rgba(74,222,128,0.4); background: rgba(74,222,128,0.12); }
+  .difficulty-badge.medium { color: #fbbf24; border-color: rgba(251,191,36,0.4); background: rgba(251,191,36,0.12); }
+  .difficulty-badge.hard { color: #ff6b6b; border-color: rgba(255,107,107,0.4); background: rgba(255,107,107,0.12); }
   #puzzle-select { background: rgba(255,255,255,0.04); color: var(--ink);
            border: 1px solid rgba(255,255,255,0.18); border-radius: 999px;
            padding: 6px 14px; font-size: 0.85rem; font-weight: 600;
@@ -242,6 +248,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                     <div class="toolbar">
                         <div class="puzzle-picker">
                           <h2 class="puzzle-name" id="puzzle-name"></h2>
+                          <span class="difficulty-badge" id="puzzle-difficulty"></span>
                           <select id="puzzle-select" aria-label="Choose a puzzle"></select>
                         </div>
                         <div class="controls">
@@ -682,6 +689,9 @@ function loadPuzzle(puzzle) {
   state.current = null; state.dir = "across";
 
   document.getElementById("puzzle-name").textContent = puzzle.name;
+  const diffEl = document.getElementById("puzzle-difficulty");
+  diffEl.textContent = puzzle.difficulty;
+  diffEl.className = "difficulty-badge " + puzzle.difficulty;
   document.getElementById("puzzle-select").value = String(PUZZLES.indexOf(puzzle));
   hideWin(); renderGrid(); renderClues();
 

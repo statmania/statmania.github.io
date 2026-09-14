@@ -28,6 +28,12 @@
   .puzzle-name { font-size: 1.4rem; font-weight: 700; margin: 0;
                  background: linear-gradient(90deg, var(--sm-cyan, #00e5ff), var(--sm-purple, #a855f7), var(--sm-pink, #ff2fb4));
                  -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .difficulty-badge { display: inline-block; font-size: 0.7rem; font-weight: 700;
+           text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 10px;
+           border-radius: 999px; border: 1px solid; }
+  .difficulty-badge.easy { color: #4ade80; border-color: rgba(74,222,128,0.4); background: rgba(74,222,128,0.12); }
+  .difficulty-badge.medium { color: #fbbf24; border-color: rgba(251,191,36,0.4); background: rgba(251,191,36,0.12); }
+  .difficulty-badge.hard { color: #ff6b6b; border-color: rgba(255,107,107,0.4); background: rgba(255,107,107,0.12); }
   #puzzle-select { background: rgba(255,255,255,0.04); color: var(--ink);
            border: 1px solid rgba(255,255,255,0.18); border-radius: 999px;
            padding: 6px 14px; font-size: 0.85rem; font-weight: 600;
@@ -153,6 +159,7 @@
                     <div class="toolbar">
                         <div class="puzzle-picker">
                           <h2 class="puzzle-name" id="puzzle-name"></h2>
+                          <span class="difficulty-badge" id="puzzle-difficulty"></span>
                           <select id="puzzle-select" aria-label="Choose a puzzle"></select>
                         </div>
                         <div class="controls">
@@ -483,6 +490,826 @@ const PUZZLES = [
         "col": 0,
         "dir": "across",
         "clue": "The final frontier"
+      }
+    ]
+  },
+  {
+    "name": "Weather",
+    "difficulty": "easy",
+    "words": [
+      {
+        "answer": "CLOUD",
+        "row": 0,
+        "col": 0,
+        "dir": "across",
+        "clue": "White fluffy thing in the sky"
+      },
+      {
+        "answer": "CAT",
+        "row": 0,
+        "col": 0,
+        "dir": "down",
+        "clue": "Common house pet that meows"
+      },
+      {
+        "answer": "USE",
+        "row": 0,
+        "col": 3,
+        "dir": "down",
+        "clue": "To utilize something"
+      },
+      {
+        "answer": "DOG",
+        "row": 0,
+        "col": 4,
+        "dir": "down",
+        "clue": "Man's best friend"
+      },
+      {
+        "answer": "TEA",
+        "row": 2,
+        "col": 0,
+        "dir": "across",
+        "clue": "Hot drink made from leaves"
+      }
+    ]
+  },
+  {
+    "name": "Clothing",
+    "difficulty": "easy",
+    "words": [
+      {
+        "answer": "SHIRT",
+        "row": 0,
+        "col": 0,
+        "dir": "across",
+        "clue": "Piece of clothing worn on the upper body"
+      },
+      {
+        "answer": "SUN",
+        "row": 0,
+        "col": 0,
+        "dir": "down",
+        "clue": "Star at the center of our solar system"
+      },
+      {
+        "answer": "RUG",
+        "row": 0,
+        "col": 3,
+        "dir": "down",
+        "clue": "Floor covering"
+      },
+      {
+        "answer": "TOY",
+        "row": 0,
+        "col": 4,
+        "dir": "down",
+        "clue": "Plaything for children"
+      },
+      {
+        "answer": "NET",
+        "row": 2,
+        "col": 0,
+        "dir": "across",
+        "clue": "Mesh used to catch fish or in sports"
+      }
+    ]
+  },
+  {
+    "name": "School",
+    "difficulty": "easy",
+    "words": [
+      {
+        "answer": "CHALK",
+        "row": 0,
+        "col": 0,
+        "dir": "across",
+        "clue": "Used to write on a blackboard"
+      },
+      {
+        "answer": "CAR",
+        "row": 0,
+        "col": 0,
+        "dir": "down",
+        "clue": "Vehicle with four wheels"
+      },
+      {
+        "answer": "LEG",
+        "row": 0,
+        "col": 3,
+        "dir": "down",
+        "clue": "Body part used for walking"
+      },
+      {
+        "answer": "KEY",
+        "row": 0,
+        "col": 4,
+        "dir": "down",
+        "clue": "Used to unlock a door"
+      },
+      {
+        "answer": "RUN",
+        "row": 2,
+        "col": 0,
+        "dir": "across",
+        "clue": "To move quickly on foot"
+      }
+    ]
+  },
+  {
+    "name": "Board Games",
+    "difficulty": "medium",
+    "words": [
+      {
+        "answer": "CHESS",
+        "row": 0,
+        "col": 0,
+        "dir": "across",
+        "clue": "Strategy board game with a king and queen"
+      },
+      {
+        "answer": "COW",
+        "row": 0,
+        "col": 0,
+        "dir": "down",
+        "clue": "Farm animal that gives milk"
+      },
+      {
+        "answer": "SKY",
+        "row": 0,
+        "col": 3,
+        "dir": "down",
+        "clue": "Blue expanse above us"
+      },
+      {
+        "answer": "SEA",
+        "row": 0,
+        "col": 4,
+        "dir": "down",
+        "clue": "Large body of salt water"
+      },
+      {
+        "answer": "WEB",
+        "row": 2,
+        "col": 0,
+        "dir": "across",
+        "clue": "Structure spun by a spider"
+      }
+    ]
+  },
+  {
+    "name": "Body Parts",
+    "difficulty": "easy",
+    "words": [
+      {
+        "answer": "HEART",
+        "row": 0,
+        "col": 0,
+        "dir": "across",
+        "clue": "Organ that pumps blood"
+      },
+      {
+        "answer": "HAT",
+        "row": 0,
+        "col": 0,
+        "dir": "down",
+        "clue": "Worn on the head"
+      },
+      {
+        "answer": "RED",
+        "row": 0,
+        "col": 3,
+        "dir": "down",
+        "clue": "Color of a ripe tomato"
+      },
+      {
+        "answer": "TEN",
+        "row": 0,
+        "col": 4,
+        "dir": "down",
+        "clue": "Number after nine"
+      },
+      {
+        "answer": "TOP",
+        "row": 2,
+        "col": 0,
+        "dir": "across",
+        "clue": "Highest point"
+      }
+    ]
+  },
+  {
+    "name": "Colors",
+    "difficulty": "easy",
+    "words": [
+      {
+        "answer": "GREEN",
+        "row": 0,
+        "col": 0,
+        "dir": "across",
+        "clue": "Color of grass"
+      },
+      {
+        "answer": "GYM",
+        "row": 0,
+        "col": 0,
+        "dir": "down",
+        "clue": "Place to exercise"
+      },
+      {
+        "answer": "EAR",
+        "row": 0,
+        "col": 3,
+        "dir": "down",
+        "clue": "Body part used for hearing"
+      },
+      {
+        "answer": "NUT",
+        "row": 0,
+        "col": 4,
+        "dir": "down",
+        "clue": "Hard-shelled seed you can eat"
+      },
+      {
+        "answer": "MAP",
+        "row": 2,
+        "col": 0,
+        "dir": "across",
+        "clue": "Shows roads and places"
+      }
+    ]
+  },
+  {
+    "name": "Farm Animals",
+    "difficulty": "easy",
+    "words": [
+      {
+        "answer": "HORSE",
+        "row": 0,
+        "col": 0,
+        "dir": "across",
+        "clue": "Animal you can ride"
+      },
+      {
+        "answer": "HEN",
+        "row": 0,
+        "col": 0,
+        "dir": "down",
+        "clue": "Female chicken"
+      },
+      {
+        "answer": "SIT",
+        "row": 0,
+        "col": 3,
+        "dir": "down",
+        "clue": "To rest on a chair"
+      },
+      {
+        "answer": "EGG",
+        "row": 0,
+        "col": 4,
+        "dir": "down",
+        "clue": "Laid by a hen"
+      },
+      {
+        "answer": "NOW",
+        "row": 2,
+        "col": 0,
+        "dir": "across",
+        "clue": "The present moment"
+      }
+    ]
+  },
+  {
+    "name": "Beach",
+    "difficulty": "medium",
+    "words": [
+      {
+        "answer": "OCEAN",
+        "row": 0,
+        "col": 0,
+        "dir": "across",
+        "clue": "Vast body of salt water"
+      },
+      {
+        "answer": "OWL",
+        "row": 0,
+        "col": 0,
+        "dir": "down",
+        "clue": "Nocturnal bird known for hooting"
+      },
+      {
+        "answer": "ANT",
+        "row": 0,
+        "col": 3,
+        "dir": "down",
+        "clue": "Small hardworking insect"
+      },
+      {
+        "answer": "NAP",
+        "row": 0,
+        "col": 4,
+        "dir": "down",
+        "clue": "Short daytime sleep"
+      },
+      {
+        "answer": "LOG",
+        "row": 2,
+        "col": 0,
+        "dir": "across",
+        "clue": "Piece of a cut tree trunk"
+      }
+    ]
+  },
+  {
+    "name": "Transportation",
+    "difficulty": "easy",
+    "words": [
+      {
+        "answer": "TRAIN",
+        "row": 0,
+        "col": 0,
+        "dir": "across",
+        "clue": "Rides on railway tracks"
+      },
+      {
+        "answer": "TOY",
+        "row": 0,
+        "col": 0,
+        "dir": "down",
+        "clue": "Plaything for children"
+      },
+      {
+        "answer": "ICE",
+        "row": 0,
+        "col": 3,
+        "dir": "down",
+        "clue": "Frozen water"
+      },
+      {
+        "answer": "NOD",
+        "row": 0,
+        "col": 4,
+        "dir": "down",
+        "clue": "To move your head up and down in agreement"
+      },
+      {
+        "answer": "YES",
+        "row": 2,
+        "col": 0,
+        "dir": "across",
+        "clue": "Word of agreement"
+      }
+    ]
+  },
+  {
+    "name": "Emotions",
+    "difficulty": "easy",
+    "words": [
+      {
+        "answer": "HAPPY",
+        "row": 0,
+        "col": 0,
+        "dir": "across",
+        "clue": "Feeling of joy"
+      },
+      {
+        "answer": "HOT",
+        "row": 0,
+        "col": 0,
+        "dir": "down",
+        "clue": "Very warm temperature"
+      },
+      {
+        "answer": "PEN",
+        "row": 0,
+        "col": 3,
+        "dir": "down",
+        "clue": "Used for writing"
+      },
+      {
+        "answer": "YAM",
+        "row": 0,
+        "col": 4,
+        "dir": "down",
+        "clue": "Starchy root vegetable"
+      },
+      {
+        "answer": "TWO",
+        "row": 2,
+        "col": 0,
+        "dir": "across",
+        "clue": "Number after one"
+      }
+    ]
+  },
+  {
+    "name": "Family",
+    "difficulty": "easy",
+    "words": [
+      {
+        "answer": "UNCLE",
+        "row": 0,
+        "col": 0,
+        "dir": "across",
+        "clue": "Your parent's brother"
+      },
+      {
+        "answer": "USE",
+        "row": 0,
+        "col": 0,
+        "dir": "down",
+        "clue": "To make use of something"
+      },
+      {
+        "answer": "LIP",
+        "row": 0,
+        "col": 3,
+        "dir": "down",
+        "clue": "Part of your mouth"
+      },
+      {
+        "answer": "EYE",
+        "row": 0,
+        "col": 4,
+        "dir": "down",
+        "clue": "Used for seeing"
+      },
+      {
+        "answer": "EAT",
+        "row": 2,
+        "col": 0,
+        "dir": "across",
+        "clue": "To consume food"
+      }
+    ]
+  },
+  {
+    "name": "Numbers",
+    "difficulty": "easy",
+    "words": [
+      {
+        "answer": "SEVEN",
+        "row": 0,
+        "col": 0,
+        "dir": "across",
+        "clue": "Number after six"
+      },
+      {
+        "answer": "SAD",
+        "row": 0,
+        "col": 0,
+        "dir": "down",
+        "clue": "Feeling unhappy"
+      },
+      {
+        "answer": "EEL",
+        "row": 0,
+        "col": 3,
+        "dir": "down",
+        "clue": "Long slippery fish"
+      },
+      {
+        "answer": "NUT",
+        "row": 0,
+        "col": 4,
+        "dir": "down",
+        "clue": "Hard-shelled seed"
+      },
+      {
+        "answer": "DAY",
+        "row": 2,
+        "col": 0,
+        "dir": "across",
+        "clue": "24-hour period"
+      }
+    ]
+  },
+  {
+    "name": "Time",
+    "difficulty": "medium",
+    "words": [
+      {
+        "answer": "CLOCK",
+        "row": 0,
+        "col": 0,
+        "dir": "across",
+        "clue": "Shows the time"
+      },
+      {
+        "answer": "CUP",
+        "row": 0,
+        "col": 0,
+        "dir": "down",
+        "clue": "Used for drinking"
+      },
+      {
+        "answer": "COT",
+        "row": 0,
+        "col": 3,
+        "dir": "down",
+        "clue": "Small bed, often for a baby"
+      },
+      {
+        "answer": "KID",
+        "row": 0,
+        "col": 4,
+        "dir": "down",
+        "clue": "Informal word for child"
+      },
+      {
+        "answer": "PIG",
+        "row": 2,
+        "col": 0,
+        "dir": "across",
+        "clue": "Farm animal that oinks"
+      }
+    ]
+  },
+  {
+    "name": "Furniture",
+    "difficulty": "easy",
+    "words": [
+      {
+        "answer": "CHAIR",
+        "row": 0,
+        "col": 0,
+        "dir": "across",
+        "clue": "Furniture you sit on"
+      },
+      {
+        "answer": "CAP",
+        "row": 0,
+        "col": 0,
+        "dir": "down",
+        "clue": "Worn on the head, often with a brim"
+      },
+      {
+        "answer": "ICE",
+        "row": 0,
+        "col": 3,
+        "dir": "down",
+        "clue": "Frozen water"
+      },
+      {
+        "answer": "RUG",
+        "row": 0,
+        "col": 4,
+        "dir": "down",
+        "clue": "Floor covering"
+      },
+      {
+        "answer": "PAY",
+        "row": 2,
+        "col": 0,
+        "dir": "across",
+        "clue": "To give money for something"
+      }
+    ]
+  },
+  {
+    "name": "Fruits",
+    "difficulty": "easy",
+    "words": [
+      {
+        "answer": "APPLE",
+        "row": 0,
+        "col": 0,
+        "dir": "across",
+        "clue": "Round fruit, often red or green"
+      },
+      {
+        "answer": "ARM",
+        "row": 0,
+        "col": 0,
+        "dir": "down",
+        "clue": "Body part with a hand at the end"
+      },
+      {
+        "answer": "LOG",
+        "row": 0,
+        "col": 3,
+        "dir": "down",
+        "clue": "Piece of a cut tree trunk"
+      },
+      {
+        "answer": "EAR",
+        "row": 0,
+        "col": 4,
+        "dir": "down",
+        "clue": "Used for hearing"
+      },
+      {
+        "answer": "MOM",
+        "row": 2,
+        "col": 0,
+        "dir": "across",
+        "clue": "Informal word for mother"
+      }
+    ]
+  },
+  {
+    "name": "Vegetables",
+    "difficulty": "medium",
+    "words": [
+      {
+        "answer": "ONION",
+        "row": 0,
+        "col": 0,
+        "dir": "across",
+        "clue": "Vegetable that makes you cry when cut"
+      },
+      {
+        "answer": "OAR",
+        "row": 0,
+        "col": 0,
+        "dir": "down",
+        "clue": "Used to row a boat"
+      },
+      {
+        "answer": "OWL",
+        "row": 0,
+        "col": 3,
+        "dir": "down",
+        "clue": "Nocturnal bird"
+      },
+      {
+        "answer": "NOD",
+        "row": 0,
+        "col": 4,
+        "dir": "down",
+        "clue": "To agree by moving your head"
+      },
+      {
+        "answer": "RIB",
+        "row": 2,
+        "col": 0,
+        "dir": "across",
+        "clue": "Curved bone in your chest"
+      }
+    ]
+  },
+  {
+    "name": "Jobs",
+    "difficulty": "medium",
+    "words": [
+      {
+        "answer": "NURSE",
+        "row": 0,
+        "col": 0,
+        "dir": "across",
+        "clue": "Cares for patients in a hospital"
+      },
+      {
+        "answer": "NET",
+        "row": 0,
+        "col": 0,
+        "dir": "down",
+        "clue": "Mesh used to catch fish"
+      },
+      {
+        "answer": "SUN",
+        "row": 0,
+        "col": 3,
+        "dir": "down",
+        "clue": "Star that lights our days"
+      },
+      {
+        "answer": "EGG",
+        "row": 0,
+        "col": 4,
+        "dir": "down",
+        "clue": "Laid by a hen"
+      },
+      {
+        "answer": "TIP",
+        "row": 2,
+        "col": 0,
+        "dir": "across",
+        "clue": "Small extra payment for service"
+      }
+    ]
+  },
+  {
+    "name": "Travel",
+    "difficulty": "medium",
+    "words": [
+      {
+        "answer": "HOTEL",
+        "row": 0,
+        "col": 0,
+        "dir": "across",
+        "clue": "Place travelers stay overnight"
+      },
+      {
+        "answer": "HAM",
+        "row": 0,
+        "col": 0,
+        "dir": "down",
+        "clue": "Type of cured pork"
+      },
+      {
+        "answer": "EYE",
+        "row": 0,
+        "col": 3,
+        "dir": "down",
+        "clue": "Used for seeing"
+      },
+      {
+        "answer": "LEG",
+        "row": 0,
+        "col": 4,
+        "dir": "down",
+        "clue": "Used for walking"
+      },
+      {
+        "answer": "MUD",
+        "row": 2,
+        "col": 0,
+        "dir": "across",
+        "clue": "Wet, sticky earth"
+      }
+    ]
+  },
+  {
+    "name": "Technology",
+    "difficulty": "medium",
+    "words": [
+      {
+        "answer": "PHONE",
+        "row": 0,
+        "col": 0,
+        "dir": "across",
+        "clue": "Used to make calls"
+      },
+      {
+        "answer": "PAN",
+        "row": 0,
+        "col": 0,
+        "dir": "down",
+        "clue": "Used for cooking"
+      },
+      {
+        "answer": "NUT",
+        "row": 0,
+        "col": 3,
+        "dir": "down",
+        "clue": "Hard-shelled seed"
+      },
+      {
+        "answer": "EAR",
+        "row": 0,
+        "col": 4,
+        "dir": "down",
+        "clue": "Used for hearing"
+      },
+      {
+        "answer": "NEW",
+        "row": 2,
+        "col": 0,
+        "dir": "across",
+        "clue": "Not old"
+      }
+    ]
+  },
+  {
+    "name": "Directions",
+    "difficulty": "hard",
+    "words": [
+      {
+        "answer": "NORTH",
+        "row": 0,
+        "col": 0,
+        "dir": "across",
+        "clue": "Compass direction, opposite of south"
+      },
+      {
+        "answer": "NOW",
+        "row": 0,
+        "col": 0,
+        "dir": "down",
+        "clue": "The present moment"
+      },
+      {
+        "answer": "TOY",
+        "row": 0,
+        "col": 3,
+        "dir": "down",
+        "clue": "Plaything for children"
+      },
+      {
+        "answer": "HEN",
+        "row": 0,
+        "col": 4,
+        "dir": "down",
+        "clue": "Female chicken"
+      },
+      {
+        "answer": "WIN",
+        "row": 2,
+        "col": 0,
+        "dir": "across",
+        "clue": "To succeed in a game or contest"
       }
     ]
   }
@@ -862,6 +1689,9 @@ function loadPuzzle(puzzle) {
   state.current = null; state.dir = "across";
 
   document.getElementById("puzzle-name").textContent = puzzle.name;
+  const diffEl = document.getElementById("puzzle-difficulty");
+  diffEl.textContent = puzzle.difficulty;
+  diffEl.className = "difficulty-badge " + puzzle.difficulty;
   document.getElementById("puzzle-select").value = String(PUZZLES.indexOf(puzzle));
   hideWin(); renderGrid(); renderClues();
 
