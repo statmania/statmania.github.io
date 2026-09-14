@@ -70,7 +70,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   button.action.ghost:hover { border-color: var(--accent); box-shadow: 0 0 20px rgba(0,229,255,0.25); }
   button.action:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
 
-  .scoreboard { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .scoreboard { display: grid; grid-template-columns: 1fr 1fr auto; gap: 16px; margin-bottom: 24px; align-items: stretch; }
   .score-tile { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
                 border-radius: 14px; padding: 16px 20px; text-align: center;
                 transition: border-color 0.2s, box-shadow 0.2s; }
@@ -80,6 +80,19 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   .score-tile .num { font-size: 2.2rem; font-weight: 800; color: var(--ink); }
   .score-tile.you .num { color: var(--accent); }
   .score-tile.cpu .num { color: #a855f7; }
+  .winner-tile { min-width: 120px; display: flex; flex-direction: column; align-items: center;
+                 justify-content: center; gap: 4px; padding: 16px 18px; border-radius: 14px;
+                 border: 1px solid rgba(255,255,255,0.08); background: var(--card); }
+  .winner-tile .label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em;
+                         color: var(--muted); }
+  .winner-tile .value { font-size: 1rem; font-weight: 800; color: var(--muted); text-align: center; }
+  .winner-tile.win { border-color: var(--good); box-shadow: 0 0 20px rgba(74,222,128,0.3); }
+  .winner-tile.win .value { color: var(--good); }
+  .winner-tile.lose { border-color: var(--bad); box-shadow: 0 0 20px rgba(255,107,107,0.25); }
+  .winner-tile.lose .value { color: var(--bad); }
+  .winner-tile.tie { border-color: #a855f7; box-shadow: 0 0 20px rgba(168,85,247,0.25); }
+  .winner-tile.tie .value { color: #c084fc; }
+  @media (max-width: 640px) { .scoreboard { grid-template-columns: 1fr 1fr; } .winner-tile { grid-column: span 2; } }
 
   .board-wrap { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
                 border-radius: 14px; padding: 16px; margin-bottom: 20px; overflow: auto; }
@@ -197,7 +210,12 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                             </select>
                             <label class="num-field">Rows <input type="number" id="rows-input" min="5" max="40" value="20"></label>
                             <label class="num-field">Cols <input type="number" id="cols-input" min="5" max="40" value="20"></label>
-                            <label class="num-field">Turns <input type="number" id="turns-input" min="4" max="200" value="40"></label>
+                            <select id="end-mode-select" aria-label="How the game ends">
+                                <option value="turns" selected>End: fixed turns</option>
+                                <option value="points">End: first to points</option>
+                            </select>
+                            <label class="num-field" id="turns-field">Turns <input type="number" id="turns-input" min="4" max="200" value="40"></label>
+                            <label class="num-field" id="target-field" hidden>Target <input type="number" id="target-input" min="1" max="500" value="30"></label>
                         </div>
                         <div class="toolbar-right">
                             <button id="new-game-btn" class="action">🔄 New Game</button>
@@ -213,6 +231,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                         <div class="score-tile cpu" id="score-tile-cpu">
                             <div class="label">Computer</div>
                             <div class="num" id="score-cpu">0</div>
+                        </div>
+                        <div class="winner-tile" id="winner-tile">
+                            <div class="label">Winner</div>
+                            <div class="value" id="winner-value">—</div>
                         </div>
                     </div>
 
@@ -399,13 +421,15 @@ function newGame() {
   const rows = clampInt("rows-input", 5, 40);
   const cols = clampInt("cols-input", 5, 40);
   const maxTurns = clampInt("turns-input", 4, 200);
+  const targetPoints = clampInt("target-input", 1, 500);
+  const endMode = document.getElementById("end-mode-select").value;
   const starterChoice = document.getElementById("starter-select").value;
   const starter = starterChoice === "toss"
     ? (Math.random() < 0.5 ? "you" : "cpu")
     : starterChoice;
 
   state = {
-    rows, cols, maxTurns,
+    rows, cols, maxTurns, endMode, targetPoints,
     grid: Array.from({ length: rows }, () => Array.from({ length: cols }, () => null)),
     turn: starter,
     scores: { you: 0, cpu: 0 },
@@ -415,6 +439,9 @@ function newGame() {
     over: false,
   };
   document.getElementById("end-banner").style.display = "none";
+  const winnerTile = document.getElementById("winner-tile");
+  winnerTile.classList.remove("win", "lose", "tie");
+  document.getElementById("winner-value").textContent = "—";
   render();
 
   const tossEl = document.getElementById("turn-indicator");
@@ -453,7 +480,9 @@ function playMove(r, c, letter) {
   state.selected = null;
   state.history.push({ player, r, c, letter, hits, points });
 
-  if (state.history.length >= state.maxTurns) {
+  const reachedTarget = state.endMode === "points" &&
+    (state.scores.you >= state.targetPoints || state.scores.cpu >= state.targetPoints);
+  if (reachedTarget || state.history.length >= state.maxTurns) {
     endGame();
     return;
   }
@@ -485,17 +514,26 @@ function endGame() {
   state.over = true;
   render();
   const banner = document.getElementById("end-banner");
+  const winnerTile = document.getElementById("winner-tile");
+  const winnerValue = document.getElementById("winner-value");
   const { you, cpu } = state.scores;
   banner.style.display = "block";
+  winnerTile.classList.remove("win", "lose", "tie");
   if (you > cpu) {
     banner.className = "win";
     banner.textContent = `🎉 You win! ${you} - ${cpu}`;
+    winnerTile.classList.add("win");
+    winnerValue.textContent = "🏆 You";
   } else if (cpu > you) {
     banner.className = "lose";
     banner.textContent = `🤖 Computer wins. ${cpu} - ${you}`;
+    winnerTile.classList.add("lose");
+    winnerValue.textContent = "🏆 Computer";
   } else {
     banner.className = "tie";
     banner.textContent = `🤝 It's a tie! ${you} - ${cpu}`;
+    winnerTile.classList.add("tie");
+    winnerValue.textContent = "🤝 Tie";
   }
 }
 
@@ -509,12 +547,15 @@ function render() {
   document.getElementById("score-tile-cpu").classList.toggle("active", state.turn === "cpu" && !state.over);
 
   const turnEl = document.getElementById("turn-indicator");
+  const progress = state.endMode === "points"
+    ? `first to ${state.targetPoints} pts`
+    : `${state.history.length}/${state.maxTurns} turns`;
   if (state.over) {
-    turnEl.innerHTML = `Game over — ${state.history.length}/${state.maxTurns} turns played`;
+    turnEl.innerHTML = `Game over — ${progress}`;
   } else {
     const who = state.turn === "you" ? "you" : "cpu";
     const label = state.turn === "you" ? "Your turn" : "Computer's turn";
-    turnEl.innerHTML = `<span class="pill ${who}">${label}</span> &middot; ${state.history.length}/${state.maxTurns} turns`;
+    turnEl.innerHTML = `<span class="pill ${who}">${label}</span> &middot; ${progress}`;
   }
 
   renderBoard();
@@ -615,6 +656,11 @@ document.getElementById("difficulty-select").addEventListener("change", () => { 
 // mid-game would leave a stale board (already showing the old starter's
 // move) sitting under the new choice, so just start over.
 document.getElementById("starter-select").addEventListener("change", newGame);
+document.getElementById("end-mode-select").addEventListener("change", () => {
+  const points = document.getElementById("end-mode-select").value === "points";
+  document.getElementById("turns-field").hidden = points;
+  document.getElementById("target-field").hidden = !points;
+});
 
 newGame();
 </script>

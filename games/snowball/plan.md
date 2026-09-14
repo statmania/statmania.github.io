@@ -29,8 +29,10 @@ plain JS search — no network calls, no model.
   list (no model): Easy (random legal cell + letter), Medium (greedy —
   picks the cell/letter scoring the most right now), Hard (shallow
   lookahead that also avoids setting up a big score for the opponent).
-- **Game end.** Fixed number of turns (configurable) or manual "End
-  Game."
+- **Game end.** Chosen before "New Game": a fixed number of turns, or
+  first player to reach a target score (both configurable), plus a
+  manual "End Game" button always available. A "Winner" tile sits to
+  the right of the score tiles and fills in once the game ends.
 - **Who starts.** Chosen before "New Game": You, Computer, or Coin
   Toss. Note the first move of any game always scores 0 (no run can be
   ≥2 letters yet), so whoever goes first is at a small structural
