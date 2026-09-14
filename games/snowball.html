@@ -167,6 +167,11 @@
                                 <option value="medium" selected>Medium</option>
                                 <option value="hard">Hard</option>
                             </select>
+                            <select id="starter-select" aria-label="Who starts">
+                                <option value="you">You start</option>
+                                <option value="cpu">Computer starts</option>
+                                <option value="toss" selected>Coin toss</option>
+                            </select>
                             <label class="num-field">Rows <input type="number" id="rows-input" min="5" max="40" value="20"></label>
                             <label class="num-field">Cols <input type="number" id="cols-input" min="5" max="40" value="20"></label>
                             <label class="num-field">Turns <input type="number" id="turns-input" min="4" max="200" value="40"></label>
@@ -371,10 +376,15 @@ function newGame() {
   const rows = clampInt("rows-input", 5, 40);
   const cols = clampInt("cols-input", 5, 40);
   const maxTurns = clampInt("turns-input", 4, 200);
+  const starterChoice = document.getElementById("starter-select").value;
+  const starter = starterChoice === "toss"
+    ? (Math.random() < 0.5 ? "you" : "cpu")
+    : starterChoice;
+
   state = {
     rows, cols, maxTurns,
     grid: Array.from({ length: rows }, () => Array.from({ length: cols }, () => null)),
-    turn: "you",
+    turn: starter,
     scores: { you: 0, cpu: 0 },
     history: [],
     selected: null,
@@ -383,6 +393,20 @@ function newGame() {
   };
   document.getElementById("end-banner").style.display = "none";
   render();
+
+  const tossEl = document.getElementById("turn-indicator");
+  if (starterChoice === "toss") {
+    tossEl.innerHTML = `🪙 Coin toss: <span class="pill ${starter === "you" ? "you" : "cpu"}">${starter === "you" ? "you" : "computer"} go${starter === "you" ? "" : "es"} first</span>`;
+    setTimeout(() => { if (state && state.history.length === 0) render(); }, 1400);
+  }
+
+  if (state.turn === "cpu" && !state.over) {
+    setTimeout(() => {
+      if (!state || state.over || state.history.length > 0) return;
+      const move = aiPickMove(state, state.difficulty);
+      if (move) playMove(move.r, move.c, move.letter);
+    }, starterChoice === "toss" ? 1500 : 550);
+  }
 }
 
 function clampInt(id, min, max) {

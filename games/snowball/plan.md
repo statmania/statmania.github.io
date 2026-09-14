@@ -31,6 +31,10 @@ plain JS search — no network calls, no model.
   lookahead that also avoids setting up a big score for the opponent).
 - **Game end.** Fixed number of turns (configurable) or manual "End
   Game."
+- **Who starts.** Chosen before "New Game": You, Computer, or Coin
+  Toss. Note the first move of any game always scores 0 (no run can be
+  ≥2 letters yet), so whoever goes first is at a small structural
+  disadvantage — the second mover gets the first real shot at scoring.
 
 ## Word list
 
