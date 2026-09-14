@@ -24,9 +24,18 @@
 
   .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
              justify-content: space-between; margin-bottom: 24px; }
+  .puzzle-picker { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
   .puzzle-name { font-size: 1.4rem; font-weight: 700; margin: 0;
                  background: linear-gradient(90deg, var(--sm-cyan, #00e5ff), var(--sm-purple, #a855f7), var(--sm-pink, #ff2fb4));
                  -webkit-background-clip: text; background-clip: text; color: transparent; }
+  #puzzle-select { background: rgba(255,255,255,0.04); color: var(--ink);
+           border: 1px solid rgba(255,255,255,0.18); border-radius: 999px;
+           padding: 6px 14px; font-size: 0.85rem; font-weight: 600;
+           font-family: inherit; cursor: pointer; }
+  #puzzle-select:hover { border-color: var(--accent); }
+  #puzzle-select:focus { outline: none; border-color: var(--accent);
+           box-shadow: 0 0 0 3px rgba(0,229,255,0.25); }
+  #puzzle-select option { background: #0a0f1e; color: var(--ink); }
   .controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
   .controls button { border: none; background: linear-gradient(90deg, var(--accent), #38bdf8);
            color: #04101c; padding: 8px 14px; border-radius: 999px; font-size: 0.85rem;
@@ -140,7 +149,10 @@
             <div class="container mx-auto max-w-5xl">
                 <div class="sm-card p-8">
                     <div class="toolbar">
-                        <h2 class="puzzle-name" id="puzzle-name"></h2>
+                        <div class="puzzle-picker">
+                          <h2 class="puzzle-name" id="puzzle-name"></h2>
+                          <select id="puzzle-select" aria-label="Choose a puzzle"></select>
+                        </div>
                         <div class="controls">
                             <button id="new-btn">🎲 New Puzzle</button>
                             <button id="check-btn" class="ghost">✓ Check</button>
@@ -848,6 +860,7 @@ function loadPuzzle(puzzle) {
   state.current = null; state.dir = "across";
 
   document.getElementById("puzzle-name").textContent = puzzle.name;
+  document.getElementById("puzzle-select").value = String(PUZZLES.indexOf(puzzle));
   hideWin(); renderGrid(); renderClues();
 
   const first = state.words.filter(w => w.dir === "across")
@@ -863,12 +876,22 @@ function loadRandomPuzzle() {
   loadPuzzle(PUZZLES[Math.floor(Math.random() * PUZZLES.length)]);
 }
 
+function populatePuzzleSelect() {
+  const select = document.getElementById("puzzle-select");
+  select.innerHTML = PUZZLES.map((p, i) =>
+    `<option value="${i}">${p.name}</option>`).join("");
+}
+
 document.getElementById("new-btn").addEventListener("click", loadRandomPuzzle);
 document.getElementById("check-btn").addEventListener("click", checkAnswers);
 document.getElementById("reveal-letter-btn").addEventListener("click", revealLetter);
 document.getElementById("reveal-word-btn").addEventListener("click", revealWord);
 document.getElementById("clear-btn").addEventListener("click", clearAll);
+document.getElementById("puzzle-select").addEventListener("change", e => {
+  loadPuzzle(PUZZLES[parseInt(e.target.value)]);
+});
 
+populatePuzzleSelect();
 loadRandomPuzzle();
 </script>
 </body>
