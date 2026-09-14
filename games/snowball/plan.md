@@ -59,3 +59,12 @@ games/snowball/
   build_game.py         # embeds wordlist.json -> ../snowball.html
 games/snowball.html     # generated, self-contained
 ```
+## Word sources
+
+If we keep getting unwanted words, we'll use one these sources. 
+
+- **ENABLE1** (Enhanced North American Benchmark Lexicon) — a public-domain word list built specifically for word games, ~173k words, no plurals/proper-nouns/abbreviations mixed in the way a spellcheck dictionary has.
+- **TWL06 / OWL (Tournament Word List)** or **SOWPODS/Collins Scrabble Words** — the actual word lists used in competitive Scrabble. These are curated precisely to answer "is this a valid word," which is exactly the game's need, and they already exclude proper nouns and abbreviations by design.
+- **SCOWL** (Spell Checking Oriented Word Lists) — what the current `/usr/share/dict/american-english` is derived from; SCOWL itself can be regenerated with different size/strictness levels and word-class filters (it has tags for abbreviations, proper nouns, etc.), so a more carefully-configured SCOWL export would already exclude most of what's being manually stripped now.
+
+Any of these would sidestep the whole "reconstruct which words are abbreviations/plurals/derived forms by hand" effort — the source list simply wouldn't contain them in the first place. The catch is they're not already sitting on disk the way `/usr/share/dict/american-english` was, so pulling one in requires fetching a file into the project rather than reusing something local.

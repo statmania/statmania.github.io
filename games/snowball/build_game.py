@@ -217,7 +217,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                     </div>
 
                     <div class="turn-indicator" id="turn-indicator"></div>
-                    <p class="board-hint">Click a highlighted cell, then type a letter</p>
+                    <p class="board-hint">Type a letter into any highlighted cell</p>
 
                     <div class="board-wrap">
                         <div class="board-grid" id="board-grid"></div>
@@ -568,9 +568,9 @@ function renderBoard() {
         if (legal) {
           div.classList.add("legal");
           div.addEventListener("click", () => selectCell(r, c));
-        }
-        if (state.selected && state.selected[0] === r && state.selected[1] === c) {
-          div.classList.add("selected");
+          // Every legal cell is directly typable, not just the last-clicked
+          // one - clicking (selectCell) is just a focus convenience.
+          input.addEventListener("focus", () => { state.selected = [r, c]; div.classList.add("selected"); });
           input.addEventListener("keydown", (e) => {
             const k = e.key.toLowerCase();
             if (LETTERS.includes(k)) { e.preventDefault(); playMove(r, c, k); }
@@ -578,6 +578,9 @@ function renderBoard() {
         } else {
           input.readOnly = true;
           input.tabIndex = -1;
+        }
+        if (state.selected && state.selected[0] === r && state.selected[1] === c) {
+          div.classList.add("selected");
         }
       }
 
@@ -608,6 +611,10 @@ function renderHistory() {
 document.getElementById("new-game-btn").addEventListener("click", newGame);
 document.getElementById("end-game-btn").addEventListener("click", () => { if (state && !state.over) endGame(); });
 document.getElementById("difficulty-select").addEventListener("change", () => { if (state) state.difficulty = document.getElementById("difficulty-select").value; });
+// Who-starts only makes sense at the start of a game - changing it
+// mid-game would leave a stale board (already showing the old starter's
+// move) sitting under the new choice, so just start over.
+document.getElementById("starter-select").addEventListener("change", newGame);
 
 newGame();
 </script>
