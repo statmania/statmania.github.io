@@ -29,6 +29,46 @@ ONE_LETTER_WORDS = {"a", "i", "o"}
 
 LOWER_ALPHA = re.compile(r"^[a-z]+$")
 
+# The system dictionary this is built from is a spellcheck word list, not a
+# word-game dictionary - it includes lowercase unit/organization
+# abbreviations ("kg", "hp", "cs", "rpm") that spellcheckers accept but
+# aren't real words for a word-building game. Strip the ones spotted by
+# manual review of the short (most-frequently-hit) words, plus every
+# Roman numeral string, which the same dictionary also includes verbatim.
+EXCLUDE_WORDS = {
+    # 2-letter abbreviations / units / initialisms
+    "ca", "cc", "cf", "ch", "cm", "cs", "ct", "cu", "dd", "dz", "ea", "es",
+    "fl", "fr", "ft", "gm", "gr", "gs", "hp", "hr", "ht", "kc", "kg", "km",
+    "ks", "lb", "ls", "mg", "ml", "pd", "pg", "pl", "pp", "pt", "qt", "rm",
+    "rs", "sq", "ts", "vi", "wk", "wt", "yd", "yr",
+    # 3-letter abbreviations / units / initialisms
+    "adj", "adv", "amt", "avg", "bpm", "dds", "doz", "dpi", "fwd", "ftp",
+    "gov", "hgt", "hrs", "hwy", "inc", "ind", "int", "lbs", "mfg", "mfr",
+    "obj", "pct", "pkg", "rpm", "rps", "rte", "tbs", "tel", "tsp", "var",
+    "yrs",
+}
+
+
+def roman_numerals(max_value=200):
+    vals = [
+        (1000, "m"), (900, "cm"), (500, "d"), (400, "cd"),
+        (100, "c"), (90, "xc"), (50, "l"), (40, "xl"),
+        (10, "x"), (9, "ix"), (5, "v"), (4, "iv"), (1, "i"),
+    ]
+    out = set()
+    for n in range(1, max_value + 1):
+        s, rem = "", n
+        for v, sym in vals:
+            while rem >= v:
+                s += sym
+                rem -= v
+        out.add(s)
+    return out
+
+
+EXCLUDE_WORDS |= roman_numerals()
+EXCLUDE_WORDS -= ONE_LETTER_WORDS  # "i" is both a pronoun and roman numeral 1 - keep it
+
 if __name__ == "__main__":
     words = set()
     for line in RAW_PATH.read_text().splitlines():
@@ -38,6 +78,7 @@ if __name__ == "__main__":
         if LOWER_ALPHA.match(w) and MIN_LEN <= len(w) <= MAX_LEN:
             words.add(w)
     words |= ONE_LETTER_WORDS
+    words -= EXCLUDE_WORDS
 
     word_list = sorted(words)
     OUT_PATH.write_text(json.dumps(word_list, separators=(",", ":")))

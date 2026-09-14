@@ -46,14 +46,19 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
   .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
              justify-content: space-between; margin-bottom: 20px; }
-  .toolbar-left { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .toolbar-left { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
   .toolbar-right { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-  select { background: rgba(255,255,255,0.04); color: var(--ink);
+  select, .num-input { background: rgba(255,255,255,0.04); color: var(--ink);
            border: 1px solid rgba(255,255,255,0.18); border-radius: 999px;
            padding: 6px 14px; font-size: 0.85rem; font-weight: 600;
            font-family: inherit; cursor: pointer; }
-  select:hover { border-color: var(--accent); }
+  select:hover, .num-input:hover { border-color: var(--accent); }
   select option { background: #0a0f1e; color: var(--ink); }
+  .num-field { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--muted); }
+  .num-field input { width: 56px; background: rgba(255,255,255,0.04); color: var(--ink);
+           border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; padding: 5px 8px;
+           font-size: 0.85rem; font-weight: 600; font-family: inherit; cursor: text; }
+  .num-field input:hover, .num-field input:focus { border-color: var(--accent); outline: none; }
   button.action { border: none; background: linear-gradient(90deg, var(--accent), #38bdf8);
            color: #04101c; padding: 8px 14px; border-radius: 999px; font-size: 0.85rem;
            font-weight: 700; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
@@ -77,31 +82,28 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   .score-tile.cpu .num { color: #a855f7; }
 
   .board-wrap { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
-                border-radius: 14px; padding: 28px 20px; text-align: center; margin-bottom: 20px;
-                min-height: 90px; display: flex; align-items: center; justify-content: center; }
-  .board-string { font-family: 'Courier New', monospace; font-size: 2.2rem; font-weight: 700;
-                   letter-spacing: 0.15em; color: var(--muted); word-break: break-all; }
-  .board-string .placed { color: var(--ink); }
-  .board-string .scored { color: var(--good); text-shadow: 0 0 14px rgba(74,222,128,0.6); }
-  .board-string .empty-hint { color: var(--muted); font-size: 1.1rem; letter-spacing: normal;
-                               font-family: 'Inter', sans-serif; font-weight: 500; }
+                border-radius: 14px; padding: 16px; margin-bottom: 20px; overflow: auto; }
+  .board-grid { display: grid; gap: 2px; background: var(--line); padding: 2px;
+                border-radius: 6px; width: max-content; margin: 0 auto; }
+  .gcell { width: 26px; height: 26px; background: rgba(255,255,255,0.04); position: relative;
+           border-radius: 2px; }
+  .gcell input { width: 100%; height: 100%; border: none; background: transparent;
+                 text-align: center; font-size: 0.85rem; font-weight: 700; text-transform: uppercase;
+                 color: var(--ink); font-family: 'Courier New', monospace; outline: none;
+                 padding: 0; caret-color: transparent; cursor: default; }
+  .gcell.legal { background: rgba(0,229,255,0.14); cursor: pointer; }
+  .gcell.legal:hover { background: rgba(0,229,255,0.26); }
+  .gcell.selected { background: rgba(0,229,255,0.35); box-shadow: 0 0 10px rgba(0,229,255,0.6); z-index: 1; }
+  .gcell.filled.you input { color: var(--accent); }
+  .gcell.filled.cpu input { color: #c084fc; }
+  .gcell.scored input { color: var(--good); text-shadow: 0 0 8px rgba(74,222,128,0.6); }
 
   .turn-indicator { text-align: center; margin-bottom: 16px; font-size: 0.9rem; color: var(--muted); }
   .turn-indicator .pill { display: inline-block; padding: 4px 14px; border-radius: 999px;
                            font-weight: 700; border: 1px solid rgba(255,255,255,0.18); }
   .turn-indicator .pill.you { color: var(--accent); border-color: rgba(0,229,255,0.4); }
   .turn-indicator .pill.cpu { color: #a855f7; border-color: rgba(168,85,247,0.4); }
-
-  .keyboard { display: grid; grid-template-columns: repeat(9, 1fr); gap: 6px; max-width: 560px;
-              margin: 0 auto 24px; }
-  .keyboard button { border: none; background: rgba(255,255,255,0.05); color: var(--ink);
-              border: 1px solid rgba(255,255,255,0.14); border-radius: 8px; padding: 10px 0;
-              font-size: 1rem; font-weight: 700; cursor: pointer; font-family: inherit;
-              transition: background 0.12s, border-color 0.12s, transform 0.1s; }
-  .keyboard button:hover:not(:disabled) { border-color: var(--accent); background: rgba(0,229,255,0.1); }
-  .keyboard button:active:not(:disabled) { transform: scale(0.93); }
-  .keyboard button:disabled { opacity: 0.3; cursor: not-allowed; }
-  @media (max-width: 560px) { .keyboard { grid-template-columns: repeat(7, 1fr); } }
+  .board-hint { text-align: center; font-size: 0.8rem; color: var(--muted); margin: -10px 0 16px; }
 
   #history { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
              border-radius: 14px; padding: 16px 20px; max-height: 260px; overflow-y: auto; }
@@ -173,13 +175,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                     </svg>
                     Snowball
                 </h1>
-                <p class="text-lg sm:text-xl sm-subtitle-sm">Add one letter at a time and outscore the computer at making words</p>
+                <p class="text-lg sm:text-xl sm-subtitle-sm">Build a crossword one letter at a time and outscore the computer</p>
             </div>
         </section>
 
         <!-- Game Section -->
         <section class="py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
-            <div class="container mx-auto max-w-3xl">
+            <div class="container mx-auto max-w-5xl">
                 <div class="sm-card p-8">
                     <div class="toolbar">
                         <div class="toolbar-left">
@@ -188,11 +190,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                                 <option value="medium" selected>Medium</option>
                                 <option value="hard">Hard</option>
                             </select>
-                            <select id="length-select" aria-label="Round length">
-                                <option value="12">Short (12)</option>
-                                <option value="20" selected>Medium (20)</option>
-                                <option value="30">Long (30)</option>
-                            </select>
+                            <label class="num-field">Rows <input type="number" id="rows-input" min="5" max="40" value="20"></label>
+                            <label class="num-field">Cols <input type="number" id="cols-input" min="5" max="40" value="20"></label>
+                            <label class="num-field">Turns <input type="number" id="turns-input" min="4" max="200" value="40"></label>
                         </div>
                         <div class="toolbar-right">
                             <button id="new-game-btn" class="action">🔄 New Game</button>
@@ -212,12 +212,11 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                     </div>
 
                     <div class="turn-indicator" id="turn-indicator"></div>
+                    <p class="board-hint">Click a highlighted cell, then type a letter</p>
 
                     <div class="board-wrap">
-                        <div class="board-string" id="board-string"></div>
+                        <div class="board-grid" id="board-grid"></div>
                     </div>
-
-                    <div class="keyboard" id="keyboard"></div>
 
                     <div id="history">
                         <h3>Move History</h3>
@@ -271,60 +270,117 @@ const WORD_SET = new Set(WORDS);
 const LETTERS = "abcdefghijklmnopqrstuvwxyz".split("");
 
 /* ============================================================
-   CORE RULES
-   Longest suffix of the current string that is a real word scores
-   (points = word length) for whoever just moved. Append-only.
+   CORE RULES (2D grid)
+   Each turn, place one letter in one legal cell (first move: any
+   cell; after that: orthogonally adjacent to a filled cell). Check
+   the maximal contiguous run through that cell across (row) and down
+   (column); each run of length >= 2 that is a valid word scores
+   points = its length, for whoever just placed the letter. A move
+   can score twice (once across, once down).
    ============================================================ */
-function bestSuffix(str) {
-  for (let i = 0; i < str.length; i++) {
-    const sub = str.slice(i);
-    if (WORD_SET.has(sub)) return { word: sub, len: sub.length };
-  }
-  return null;
+function isLegalCell(grid, rows, cols, r, c, hasAnyMove) {
+  if (grid[r][c]) return false;
+  if (!hasAnyMove) return true;
+  return (
+    (r > 0 && grid[r - 1][c]) ||
+    (r < rows - 1 && grid[r + 1][c]) ||
+    (c > 0 && grid[r][c - 1]) ||
+    (c < cols - 1 && grid[r][c + 1])
+  );
 }
 
-function scoreLetter(str, letter) {
-  const next = str + letter;
-  const hit = bestSuffix(next);
-  return { next, hit, points: hit ? hit.len : 0 };
+function legalMoves(grid, rows, cols, hasAnyMove) {
+  const moves = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (isLegalCell(grid, rows, cols, r, c, hasAnyMove)) moves.push([r, c]);
+    }
+  }
+  return moves;
+}
+
+function runBounds(grid, rows, cols, r, c, letter, dir) {
+  // dir: "across" walks columns, "down" walks rows. Treats (r,c) as if
+  // it already holds `letter` without mutating the real grid.
+  const get = (rr, cc) => (rr === r && cc === c) ? letter : (grid[rr][cc] ? grid[rr][cc].letter : null);
+  if (dir === "across") {
+    let start = c, end = c;
+    while (start > 0 && get(r, start - 1)) start--;
+    while (end < cols - 1 && get(r, end + 1)) end++;
+    let word = "";
+    for (let cc = start; cc <= end; cc++) word += get(r, cc);
+    return { word, start: [r, start], end: [r, end] };
+  } else {
+    let start = r, end = r;
+    while (start > 0 && get(start - 1, c)) start--;
+    while (end < rows - 1 && get(end + 1, c)) end++;
+    let word = "";
+    for (let rr = start; rr <= end; rr++) word += get(rr, c);
+    return { word, start: [start, c], end: [end, c] };
+  }
+}
+
+function scoreMove(grid, rows, cols, r, c, letter) {
+  const across = runBounds(grid, rows, cols, r, c, letter, "across");
+  const down = runBounds(grid, rows, cols, r, c, letter, "down");
+  const hits = [];
+  if (across.word.length >= 2 && WORD_SET.has(across.word)) hits.push({ ...across, dir: "across", points: across.word.length });
+  if (down.word.length >= 2 && WORD_SET.has(down.word)) hits.push({ ...down, dir: "down", points: down.word.length });
+  return { hits, points: hits.reduce((s, h) => s + h.points, 0) };
 }
 
 /* ============================================================
    COMPUTER AI
-   Easy: uniform random letter.
-   Medium: greedy - picks the letter that scores the most right now.
-   Hard: 2-ply - also minimizes the best reply the opponent could
-   score next turn (str + myLetter + theirLetter).
+   Easy: random legal cell + random letter.
+   Medium: greedy - picks the (cell, letter) scoring the most now.
+   Hard: also looks at the best reply the opponent could score next
+   turn from the resulting board, and avoids handing them a big one.
    ============================================================ */
-function aiPickLetter(str, difficulty) {
+function aiPickMove(state, difficulty) {
+  const { grid, rows, cols } = state;
+  const moves = legalMoves(grid, rows, cols, state.history.length > 0);
+  if (moves.length === 0) return null;
+
   if (difficulty === "easy") {
-    return LETTERS[Math.floor(Math.random() * LETTERS.length)];
+    const [r, c] = moves[Math.floor(Math.random() * moves.length)];
+    const letter = LETTERS[Math.floor(Math.random() * LETTERS.length)];
+    return { r, c, letter };
+  }
+
+  // Score every (cell, letter) candidate once - reused by medium & hard.
+  const candidates = [];
+  for (const [r, c] of moves) {
+    for (const letter of LETTERS) {
+      const { points } = scoreMove(grid, rows, cols, r, c, letter);
+      candidates.push({ r, c, letter, points });
+    }
   }
 
   if (difficulty === "medium") {
-    let best = [];
-    let bestPts = -1;
-    for (const l of LETTERS) {
-      const { points } = scoreLetter(str, l);
-      if (points > bestPts) { bestPts = points; best = [l]; }
-      else if (points === bestPts) { best.push(l); }
-    }
+    const bestPts = Math.max(...candidates.map(m => m.points));
+    const best = candidates.filter(m => m.points === bestPts);
     return best[Math.floor(Math.random() * best.length)];
   }
 
-  // hard: 2-ply
+  // hard: 2-ply over the top-scoring candidates only, for speed.
+  candidates.sort((a, b) => b.points - a.points);
+  const topN = candidates.slice(0, 20);
   let best = [];
   let bestValue = -Infinity;
-  for (const l of LETTERS) {
-    const { next, points } = scoreLetter(str, l);
+  for (const cand of topN) {
+    const trialGrid = grid.map(row => row.slice());
+    trialGrid[cand.r][cand.c] = { letter: cand.letter, player: "cpu" };
+    const oppMoves = legalMoves(trialGrid, rows, cols, true);
     let oppBest = 0;
-    for (const l2 of LETTERS) {
-      const { points: p2 } = scoreLetter(next, l2);
-      if (p2 > oppBest) oppBest = p2;
+    for (const [r2, c2] of oppMoves) {
+      for (const letter2 of LETTERS) {
+        const { points } = scoreMove(trialGrid, rows, cols, r2, c2, letter2);
+        if (points > oppBest) oppBest = points;
+      }
     }
-    const value = points - oppBest;
-    if (value > bestValue) { bestValue = value; best = [l]; }
-    else if (value === bestValue) { best.push(l); }
+    const value = cand.points - oppBest;
+    if (value > bestValue) { bestValue = value; best = [cand]; }
+    else if (value === bestValue) { best.push(cand); }
   }
   return best[Math.floor(Math.random() * best.length)];
 }
@@ -335,12 +391,16 @@ function aiPickLetter(str, difficulty) {
 let state = null;
 
 function newGame() {
+  const rows = clampInt("rows-input", 5, 40);
+  const cols = clampInt("cols-input", 5, 40);
+  const maxTurns = clampInt("turns-input", 4, 200);
   state = {
-    str: "",
+    rows, cols, maxTurns,
+    grid: Array.from({ length: rows }, () => Array.from({ length: cols }, () => null)),
     turn: "you",
     scores: { you: 0, cpu: 0 },
     history: [],
-    roundLength: parseInt(document.getElementById("length-select").value, 10),
+    selected: null,
     difficulty: document.getElementById("difficulty-select").value,
     over: false,
   };
@@ -348,18 +408,28 @@ function newGame() {
   render();
 }
 
+function clampInt(id, min, max) {
+  const el = document.getElementById(id);
+  let v = parseInt(el.value, 10);
+  if (isNaN(v)) v = min;
+  v = Math.max(min, Math.min(max, v));
+  el.value = v;
+  return v;
+}
+
 /* ============================================================
    MOVES
    ============================================================ */
-function playLetter(letter) {
+function playMove(r, c, letter) {
   if (!state || state.over) return;
   const player = state.turn;
-  const { next, hit, points } = scoreLetter(state.str, letter);
-  state.str = next;
+  const { hits, points } = scoreMove(state.grid, state.rows, state.cols, r, c, letter);
+  state.grid[r][c] = { letter, player };
   state.scores[player] += points;
-  state.history.push({ player, letter, str: next, word: hit ? hit.word : null, points });
+  state.selected = null;
+  state.history.push({ player, r, c, letter, hits, points });
 
-  if (state.str.length >= state.roundLength) {
+  if (state.history.length >= state.maxTurns) {
     endGame();
     return;
   }
@@ -368,13 +438,22 @@ function playLetter(letter) {
   render();
 
   if (state.turn === "cpu" && !state.over) {
-    document.getElementById("keyboard").querySelectorAll("button").forEach(b => b.disabled = true);
     setTimeout(() => {
       if (!state || state.over) return;
-      const cpuLetter = aiPickLetter(state.str, state.difficulty);
-      playLetter(cpuLetter);
+      const move = aiPickMove(state, state.difficulty);
+      if (!move) { endGame(); return; }
+      playMove(move.r, move.c, move.letter);
     }, 550);
   }
+}
+
+function selectCell(r, c) {
+  if (!state || state.over || state.turn !== "you") return;
+  if (!isLegalCell(state.grid, state.rows, state.cols, r, c, state.history.length > 0)) return;
+  state.selected = [r, c];
+  render();
+  const input = document.querySelector(`.gcell[data-r="${r}"][data-c="${c}"] input`);
+  if (input) input.focus();
 }
 
 function endGame() {
@@ -407,32 +486,81 @@ function render() {
 
   const turnEl = document.getElementById("turn-indicator");
   if (state.over) {
-    turnEl.innerHTML = `Game over — ${state.str.length}/${state.roundLength} letters played`;
+    turnEl.innerHTML = `Game over — ${state.history.length}/${state.maxTurns} turns played`;
   } else {
     const who = state.turn === "you" ? "you" : "cpu";
     const label = state.turn === "you" ? "Your turn" : "Computer's turn";
-    turnEl.innerHTML = `<span class="pill ${who}">${label}</span> &middot; ${state.str.length}/${state.roundLength} letters`;
+    turnEl.innerHTML = `<span class="pill ${who}">${label}</span> &middot; ${state.history.length}/${state.maxTurns} turns`;
   }
 
   renderBoard();
   renderHistory();
-  renderKeyboard();
+}
+
+function scoredCellSet() {
+  const set = new Set();
+  const last = state.history[state.history.length - 1];
+  if (!last) return set;
+  for (const hit of last.hits) {
+    const [r1, c1] = hit.start;
+    const [r2, c2] = hit.end;
+    if (hit.dir === "across") {
+      for (let c = c1; c <= c2; c++) set.add(`${r1},${c}`);
+    } else {
+      for (let r = r1; r <= r2; r++) set.add(`${r},${c1}`);
+    }
+  }
+  return set;
 }
 
 function renderBoard() {
-  const el = document.getElementById("board-string");
-  if (!state.str) {
-    el.innerHTML = `<span class="empty-hint">Pick a letter to begin</span>`;
-    return;
+  const el = document.getElementById("board-grid");
+  el.style.gridTemplateColumns = `repeat(${state.cols}, 26px)`;
+  el.innerHTML = "";
+  const scored = scoredCellSet();
+  const hasAnyMove = state.history.length > 0;
+  const canSelect = !state.over && state.turn === "you";
+
+  for (let r = 0; r < state.rows; r++) {
+    for (let c = 0; c < state.cols; c++) {
+      const cellData = state.grid[r][c];
+      const div = document.createElement("div");
+      div.className = "gcell";
+      div.dataset.r = r;
+      div.dataset.c = c;
+
+      const input = document.createElement("input");
+      input.maxLength = 1;
+      input.autocomplete = "off";
+      input.spellcheck = false;
+
+      if (cellData) {
+        div.classList.add("filled", cellData.player);
+        if (scored.has(`${r},${c}`)) div.classList.add("scored");
+        input.value = cellData.letter.toUpperCase();
+        input.readOnly = true;
+      } else {
+        const legal = canSelect && isLegalCell(state.grid, state.rows, state.cols, r, c, hasAnyMove);
+        if (legal) {
+          div.classList.add("legal");
+          div.addEventListener("click", () => selectCell(r, c));
+        }
+        if (state.selected && state.selected[0] === r && state.selected[1] === c) {
+          div.classList.add("selected");
+          input.addEventListener("keydown", (e) => {
+            const k = e.key.toLowerCase();
+            if (LETTERS.includes(k)) { e.preventDefault(); playMove(r, c, k); }
+          });
+        } else {
+          input.readOnly = true;
+          input.tabIndex = -1;
+        }
+      }
+
+      div.appendChild(input);
+      el.appendChild(div);
+    }
   }
-  const lastMove = state.history[state.history.length - 1];
-  let html = "";
-  for (let i = 0; i < state.str.length; i++) {
-    const inLastWord = lastMove && lastMove.word && i >= state.str.length - lastMove.word.length;
-    const cls = inLastWord ? "scored" : "placed";
-    html += `<span class="${cls}">${state.str[i].toUpperCase()}</span>`;
-  }
-  el.innerHTML = html;
 }
 
 function renderHistory() {
@@ -444,23 +572,10 @@ function renderHistory() {
   el.innerHTML = state.history.slice().reverse().map(h => {
     const who = h.player === "you" ? "You" : "CPU";
     const whoCls = h.player === "you" ? "you" : "cpu";
-    const desc = h.word ? `+${h.player === "you" ? "you" : "cpu"} played '${h.letter}' → ${h.str} (${h.word})` : `played '${h.letter}' → ${h.str}`;
+    const words = h.hits.map(x => `${x.word} (${x.dir})`).join(", ");
     const pts = h.points > 0 ? `<span class="pts">+${h.points}</span>` : `<span class="pts zero">0</span>`;
-    return `<div class="hist-row"><span class="who ${whoCls}">${who}</span><span>${h.str}${h.word ? ` — <em>${h.word}</em>` : ""}</span>${pts}</div>`;
+    return `<div class="hist-row"><span class="who ${whoCls}">${who}</span><span>'${h.letter.toUpperCase()}' at (${h.r + 1},${h.c + 1})${words ? ` — <em>${words}</em>` : ""}</span>${pts}</div>`;
   }).join("");
-}
-
-function renderKeyboard() {
-  const el = document.getElementById("keyboard");
-  el.innerHTML = "";
-  const disabled = state.over || state.turn !== "you";
-  LETTERS.forEach(l => {
-    const btn = document.createElement("button");
-    btn.textContent = l.toUpperCase();
-    btn.disabled = disabled;
-    btn.addEventListener("click", () => playLetter(l));
-    el.appendChild(btn);
-  });
 }
 
 /* ============================================================
@@ -469,12 +584,6 @@ function renderKeyboard() {
 document.getElementById("new-game-btn").addEventListener("click", newGame);
 document.getElementById("end-game-btn").addEventListener("click", () => { if (state && !state.over) endGame(); });
 document.getElementById("difficulty-select").addEventListener("change", () => { if (state) state.difficulty = document.getElementById("difficulty-select").value; });
-
-document.addEventListener("keydown", (e) => {
-  if (!state || state.over || state.turn !== "you") return;
-  const k = e.key.toLowerCase();
-  if (LETTERS.includes(k)) playLetter(k);
-});
 
 newGame();
 </script>
