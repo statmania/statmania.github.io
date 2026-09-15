@@ -103,14 +103,17 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   .scell.box-right { border-right: 2px solid rgba(255,255,255,0.5); }
   .scell.box-bottom { border-bottom: 2px solid rgba(255,255,255,0.5); }
 
-  #win-banner { max-width: 1100px; margin: 0 auto 20px; padding: 14px 24px; border-radius: 12px;
-                text-align: center; font-weight: 700; font-size: 1.05rem; display: none;
-                background: linear-gradient(135deg, #22c55e, #16a34a); color: white;
-                box-shadow: 0 6px 20px rgba(34,197,94,0.35); animation: pop 0.4s ease; }
+  #win-banner { display: none; flex-wrap: wrap; gap: 12px; justify-content: center;
+                align-items: stretch; margin: 0 0 20px; animation: pop 0.4s ease; }
   @keyframes pop { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-  .win-time { display: inline-block; margin-left: 12px; padding: 2px 10px; border-radius: 999px;
-              font-size: 0.85rem; font-weight: 600; background: rgba(255,255,255,0.18);
-              font-family: 'Courier New', monospace; }
+  .win-box { padding: 14px 24px; border-radius: 12px; font-weight: 700; font-size: 1.05rem;
+             display: flex; align-items: center; color: white;
+             box-shadow: 0 6px 20px rgba(34,197,94,0.35); }
+  .win-box.message { background: linear-gradient(135deg, #22c55e, #16a34a); }
+  .win-box.time { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
+                   color: var(--ink); box-shadow: none; }
+  .win-box.time #win-time-value { font-family: 'Courier New', monospace; margin-left: 6px; color: var(--accent); }
+  #new-game-btn { display: none; }
 
   .rules-panel { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
                  border-radius: 14px; padding: 20px 22px; }
@@ -181,6 +184,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                             <button id="check-btn" class="action ghost">✓ Check</button>
                             <button id="reveal-btn" class="action ghost">💡 Reveal</button>
                             <button id="clear-btn" class="action ghost">↺ Clear</button>
+                            <button id="new-game-btn" class="action">🎲 New Game</button>
                         </div>
                     </div>
 
@@ -191,7 +195,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                         <span id="timer">0:00</span>
                     </div>
 
-                    <div id="win-banner">🎉 Solved! Nice work.</div>
+                    <div id="win-banner">
+                        <div class="win-box message">🎉 Solved! Nice work.</div>
+                        <div class="win-box time">Time Required: <span id="win-time-value">0:00</span></div>
+                    </div>
 
                     <div class="game-layout">
                         <div class="board-wrap">
@@ -273,6 +280,7 @@ function loadPuzzle(p) {
   diffBadge.textContent = p.difficulty;
   diffBadge.className = "badge " + p.difficulty;
   document.getElementById("win-banner").style.display = "none";
+  document.getElementById("new-game-btn").style.display = "none";
   renderBoard();
   timerInterval = setInterval(updateTimer, 1000);
   updateTimer();
@@ -418,10 +426,9 @@ function showWin() {
   if (state.solved) return;
   state.solved = true;
   clearInterval(timerInterval);
-  const duration = formatDuration(Date.now() - state.startedAt);
-  const banner = document.getElementById("win-banner");
-  banner.innerHTML = `🎉 Solved! Nice work. <span class="win-time">Time Required: ${duration}</span>`;
-  banner.style.display = "block";
+  document.getElementById("win-time-value").textContent = formatDuration(Date.now() - state.startedAt);
+  document.getElementById("win-banner").style.display = "flex";
+  document.getElementById("new-game-btn").style.display = "inline-block";
 }
 
 function revealSolution() {
@@ -442,6 +449,13 @@ function clearBoard() {
     }
   }
   document.getElementById("win-banner").style.display = "none";
+  document.getElementById("new-game-btn").style.display = "none";
+  if (state.solved) {
+    state.solved = false;
+    state.startedAt = Date.now();
+    timerInterval = setInterval(updateTimer, 1000);
+    updateTimer();
+  }
 }
 
 /* ============================================================
@@ -459,6 +473,11 @@ document.getElementById("puzzle-select").addEventListener("change", (e) => {
 document.getElementById("check-btn").addEventListener("click", checkAnswers);
 document.getElementById("reveal-btn").addEventListener("click", revealSolution);
 document.getElementById("clear-btn").addEventListener("click", clearBoard);
+document.getElementById("new-game-btn").addEventListener("click", () => {
+  const others = PUZZLES.filter(p => p !== state.puzzle);
+  const pool = others.length ? others : PUZZLES;
+  loadPuzzle(pool[Math.floor(Math.random() * pool.length)]);
+});
 
 populatePuzzleSelect();
 loadPuzzle(PUZZLES[0]);
