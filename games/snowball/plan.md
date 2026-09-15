@@ -84,6 +84,9 @@ Any of these would sidestep the whole "reconstruct which words are abbreviations
 
 # Bugs
 
-- On mobile, the letters entry doesn't work.
+- ~~On mobile, the letters entry doesn't work.~~ Fixed — cells only
+  listened for `keydown`, which most mobile virtual keyboards don't
+  fire reliably; now also listen for the `input` event (same pattern
+  `cross-word/build_puzzles.py` already uses), which does fire.
 - ~~Typing on arbitrary cell isn't allowed. Should be.~~ Fixed — every
   legal cell is now directly typable, not just the last-clicked one.

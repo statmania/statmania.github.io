@@ -589,9 +589,24 @@ function renderBoard() {
           // Every legal cell is directly typable, not just the last-clicked
           // one - clicking (selectCell) is just a focus convenience.
           input.addEventListener("focus", () => { state.selected = [r, c]; div.classList.add("selected"); });
+          // Desktop keyboards fire a usable keydown; most mobile virtual
+          // keyboards don't (or give key:"Unidentified"), but do fire a
+          // normal `input` event with the typed character in the value -
+          // listen for both. The grid[r][c] check makes this idempotent
+          // if a single keystroke somehow triggers both (playMove fills
+          // the cell, so a second callback for the same keystroke no-ops).
+          const tryPlay = (letter) => {
+            if (!state || state.over || state.turn !== "you" || state.grid[r][c]) return;
+            const k = (letter || "").toLowerCase();
+            if (LETTERS.includes(k)) playMove(r, c, k);
+          };
           input.addEventListener("keydown", (e) => {
-            const k = e.key.toLowerCase();
-            if (LETTERS.includes(k)) { e.preventDefault(); playMove(r, c, k); }
+            if (LETTERS.includes(e.key.toLowerCase())) { e.preventDefault(); tryPlay(e.key); }
+          });
+          input.addEventListener("input", (e) => {
+            const typed = e.target.value.slice(-1);
+            e.target.value = "";
+            tryPlay(typed);
           });
         } else {
           input.readOnly = true;
