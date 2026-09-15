@@ -54,8 +54,12 @@
                  -webkit-background-clip: text; background-clip: text; color: transparent; }
   #timer { font-family: 'Courier New', monospace; color: var(--muted); font-size: 0.9rem; }
 
+  .game-layout { display: grid; grid-template-columns: auto 1fr; gap: 24px;
+                 align-items: start; margin-bottom: 20px; }
+  @media (max-width: 800px) { .game-layout { grid-template-columns: 1fr; } }
+
   .board-wrap { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
-                border-radius: 14px; padding: 16px; margin-bottom: 20px; display: flex;
+                border-radius: 14px; padding: 16px; display: flex;
                 justify-content: center; overflow: auto; }
   .sboard { display: grid; gap: 1px; background: rgba(255,255,255,0.14); border-radius: 6px;
             padding: 1px; width: max-content; }
@@ -78,7 +82,13 @@
                 box-shadow: 0 6px 20px rgba(34,197,94,0.35); animation: pop 0.4s ease; }
   @keyframes pop { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-  .rules-hint { text-align: center; font-size: 0.8rem; color: var(--muted); margin: -8px 0 20px; }
+  .rules-panel { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
+                 border-radius: 14px; padding: 20px 22px; }
+  .rules-panel h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.06em;
+                     color: var(--accent); margin: 0 0 14px; }
+  .rules-panel ul { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 12px; }
+  .rules-panel li { font-size: 1.05rem; line-height: 1.5; color: var(--ink); }
+  .rules-panel em { color: var(--accent); font-style: normal; font-weight: 700; }
 </style>
 </head>
 <body class="antialiased flex flex-col min-h-screen">
@@ -153,11 +163,20 @@
 
                     <div id="win-banner">🎉 Solved! Nice work.</div>
 
-                    <div class="board-wrap">
-                        <div class="sboard" id="board"></div>
+                    <div class="game-layout">
+                        <div class="board-wrap">
+                            <div class="sboard" id="board"></div>
+                        </div>
+                        <div class="rules-panel">
+                            <h3>Rules</h3>
+                            <ul>
+                                <li>Every <em>row</em> uses each number exactly once.</li>
+                                <li>Every <em>box</em> uses each number exactly once.</li>
+                                <li>A <em>column</em> never repeats a number either.</li>
+                                <li>On rectangular boards, a column just won't contain <em>every</em> number &mdash; it's shorter than the digit range.</li>
+                            </ul>
+                        </div>
                     </div>
-
-                    <p class="rules-hint">Every row and every box uses each number once. Columns never repeat a number either &mdash; on rectangular boards a column just won't contain <em>every</em> number, since it's shorter than the digit range.</p>
                 </div>
             </div>
         </section>
