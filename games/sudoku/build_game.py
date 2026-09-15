@@ -90,8 +90,12 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   .scell input { width: 100%; height: 100%; border: none; background: transparent;
                  text-align: center; font-size: 1.2rem; font-weight: 700;
                  color: var(--ink); font-family: 'Courier New', monospace; outline: none;
-                 padding: 0; caret-color: transparent; }
+                 padding: 0; caret-color: var(--accent); cursor: text; }
+  .scell:has(input:focus), .scell.active { background: rgba(0,229,255,0.18);
+                             box-shadow: 0 0 0 2px var(--accent) inset,
+                             0 0 12px rgba(0,229,255,0.5); z-index: 1; }
   .scell.given { background: rgba(255,255,255,0.09); }
+  .scell.given input { cursor: default; }
   .scell.given input { color: var(--accent); font-weight: 800; }
   .scell.correct input { color: var(--good); }
   .scell.wrong input { color: var(--bad); }
@@ -309,7 +313,8 @@ function renderBoard() {
         // won't insert a new keystroke unless the existing text is
         // selected first - select on focus so typing always overwrites
         // instead of silently doing nothing.
-        input.addEventListener("focus", () => input.select());
+        input.addEventListener("focus", () => { input.select(); div.classList.add("active"); });
+        input.addEventListener("blur", () => div.classList.remove("active"));
         input.addEventListener("keydown", (e) => onKeyDown(e, r, c));
         input.addEventListener("input", (e) => onInput(e, r, c));
       }
