@@ -305,6 +305,11 @@ function renderBoard() {
       } else {
         const v = state.grid[r][c];
         input.value = v ? v : "";
+        // With maxLength=1, once a cell already holds a digit the browser
+        // won't insert a new keystroke unless the existing text is
+        // selected first - select on focus so typing always overwrites
+        // instead of silently doing nothing.
+        input.addEventListener("focus", () => input.select());
         input.addEventListener("keydown", (e) => onKeyDown(e, r, c));
         input.addEventListener("input", (e) => onInput(e, r, c));
       }
