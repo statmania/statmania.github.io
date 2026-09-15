@@ -108,6 +108,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 background: linear-gradient(135deg, #22c55e, #16a34a); color: white;
                 box-shadow: 0 6px 20px rgba(34,197,94,0.35); animation: pop 0.4s ease; }
   @keyframes pop { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  .win-time { display: inline-block; margin-left: 12px; padding: 2px 10px; border-radius: 999px;
+              font-size: 0.85rem; font-weight: 600; background: rgba(255,255,255,0.18);
+              font-family: 'Courier New', monospace; }
 
   .rules-panel { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
                  border-radius: 14px; padding: 20px 22px; }
@@ -275,11 +278,15 @@ function loadPuzzle(p) {
   updateTimer();
 }
 
+function formatDuration(ms) {
+  const secs = Math.floor(ms / 1000);
+  const m = Math.floor(secs / 60), s = secs % 60;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
 function updateTimer() {
   if (!state || state.solved) return;
-  const secs = Math.floor((Date.now() - state.startedAt) / 1000);
-  const m = Math.floor(secs / 60), s = secs % 60;
-  document.getElementById("timer").textContent = `${m}:${String(s).padStart(2, "0")}`;
+  document.getElementById("timer").textContent = formatDuration(Date.now() - state.startedAt);
 }
 
 function renderBoard() {
@@ -411,7 +418,10 @@ function showWin() {
   if (state.solved) return;
   state.solved = true;
   clearInterval(timerInterval);
-  document.getElementById("win-banner").style.display = "block";
+  const duration = formatDuration(Date.now() - state.startedAt);
+  const banner = document.getElementById("win-banner");
+  banner.innerHTML = `🎉 Solved! Nice work. <span class="win-time">Time Required: ${duration}</span>`;
+  banner.style.display = "block";
 }
 
 function revealSolution() {
