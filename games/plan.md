@@ -52,10 +52,14 @@ tic-tac-toe minimax bot and WordWeave's AI tiers.
 
 ## Logic / puzzle (single-player, no opponent needed)
 
-- **Sudoku** — generate + validate puzzles at a chosen difficulty,
-  highlight conflicts live. Popular, no AI opponent required, purely a
-  generator/validator problem (backtracking solver used at build/generate
-  time only).
+- ~~**Sudoku**~~ **Built (mini sizes)** — `games/sudoku.html`. 10 puzzles
+  across three sizes: 4×4 and 6×6 (classic square variants) plus 6×4
+  (4 rows × 6 cols — rows/boxes are full 1-6 permutations same as any
+  sudoku; columns are just too short to contain every digit, so they're
+  only checked for "no repeat"). Backtracking generator + uniqueness
+  checker at build time (`games/sudoku/build_sudoku.py`), all 10
+  verified to have exactly one solution. Full 9×9 not attempted yet -
+  same pipeline should scale, just slower to generate/verify.
 - **Minesweeper** — classic grid-reveal puzzle, no opponent at all,
   just a good first-click-is-always-safe generator and flood-fill reveal.
 - **2048** — sliding-tile merge puzzle, single-player, satisfying to
