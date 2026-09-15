@@ -1,4 +1,4 @@
-# Snowball
+# WordWeave
 
 A crossword/Scrabble-style word-building duel against a local (no
 LLM/API) computer opponent, built entirely from a static dictionary and
@@ -66,11 +66,11 @@ official Scrabble 2-letter list) that weren't in the manually-curated
 ## Files
 
 ```
-games/snowball/
+games/wordweave/
   wordlist_raw.txt     # source dictionary
   build_wordlist.py    # filters -> wordlist.json
-  build_game.py         # embeds wordlist.json -> ../snowball.html
-games/snowball.html     # generated, self-contained
+  build_game.py         # embeds wordlist.json -> ../wordweave.html
+games/wordweave.html     # generated, self-contained
 ```
 ## Word sources
 

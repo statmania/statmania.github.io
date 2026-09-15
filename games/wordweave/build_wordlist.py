@@ -2,7 +2,7 @@
 """
 Filters wordlist_raw.txt (a raw system dictionary dump, one word per line,
 mixed case, includes possessives/acronyms/proper nouns) down to a clean
-lowercase word list suitable for the Snowball game, and writes it as a
+lowercase word list suitable for the WordWeave game, and writes it as a
 JSON array to wordlist.json next to this script.
 
 Build-only dependency: nltk (`pip install nltk`), used for its WordNet

@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """
 Reads wordlist.json (built by build_wordlist.py) from this folder and
-writes a single self-contained games/snowball.html to the parent folder.
+writes a single self-contained games/wordweave.html to the parent folder.
 """
 import json
 from pathlib import Path
 
-SCRIPT_DIR = Path(__file__).resolve().parent      # snowball/
+SCRIPT_DIR = Path(__file__).resolve().parent      # wordweave/
 PARENT_DIR = SCRIPT_DIR.parent                    # games/
 WORDLIST_PATH = SCRIPT_DIR / "wordlist.json"
-HTML_PATH = PARENT_DIR / "snowball.html"
+HTML_PATH = PARENT_DIR / "wordweave.html"
 
 print(f"📖 Reading : {WORDLIST_PATH}")
 print(f"📤 Writing : {HTML_PATH}")
@@ -26,7 +26,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stat Mania - Snowball</title>
+<title>Stat Mania - WordWeave</title>
 <!-- Tailwind CSS CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
 <!-- Google Fonts - Inter -->
@@ -186,7 +186,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-12 h-12 sm-hero-icon">
                         <path d="M12 2.25a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.894 6.166a.75.75 0 0 0-1.06-1.06l-1.06 1.06a.75.75 0 0 0 1.06 1.06l1.06-1.06ZM21.75 12a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5H21a.75.75 0 0 1 .75.75ZM17.834 18.894a.75.75 0 0 0 1.06-1.06l-1.06-1.06a.75.75 0 1 0-1.06 1.06l1.06 1.06ZM12 18.75a.75.75 0 0 1 .75.75V21a.75.75 0 0 1-1.5 0v-1.5a.75.75 0 0 1 .75-.75ZM7.758 17.834a.75.75 0 0 0-1.061-1.06l-1.06 1.06a.75.75 0 0 0 1.06 1.06l1.06-1.06ZM6 12a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5h1.5A.75.75 0 0 1 6 12ZM6.697 7.757a.75.75 0 0 0 1.06-1.06l-1.06-1.061a.75.75 0 0 0-1.06 1.06l1.06 1.06Z" />
                     </svg>
-                    Snowball
+                    WordWeave
                 </h1>
                 <p class="text-lg sm:text-xl sm-subtitle-sm">Build a crossword one letter at a time and outscore the computer</p>
             </div>
