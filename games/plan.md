@@ -66,11 +66,11 @@ tic-tac-toe minimax bot and WordWeave's AI tiers.
 
 ## Probability / stats-flavored (fits the site's "Stat Mania" identity)
 
-- **Monty Hall Simulator** — let the user play the classic three-door
-  problem repeatedly (stick vs. switch), tally win rates live against
-  the theoretical 1/3 vs 2/3 — turns a stats teaching moment into a
-  game, matches the site's educational angle better than a generic game
-  would.
+- ~~**Monty Hall Simulator**~~ **Built** — `games/monty-hall.html`. Play
+  the classic three-door problem repeatedly (stick vs. switch), tally
+  win rates live against the theoretical 1/3 vs 2/3, plus an
+  auto-simulate mode (instant N trials) to watch the law of large
+  numbers converge on the theoretical odds.
 - **Dice/Coin Streak Prediction** — guess how long a streak will run
   before it breaks; scores against the actual geometric-distribution
   odds. Similar spirit to Guess the Number but framed around a

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stat Mania - Monty Hall Simulator</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Google Fonts - Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/dark-theme.css">
+<style>
+  :root {
+    --card: rgba(255,255,255,0.045); --ink: #e8ecf7; --muted: #9aa4c2;
+    --accent: #00e5ff; --good: #4ade80; --bad: #ff6b6b; --purple: #a855f7;
+  }
+  body { font-family: 'Inter', sans-serif; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #0a0f1e; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb { background: #3a4a6b; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: #54688f; }
+
+  .status { text-align: center; font-size: 1.05rem; color: var(--ink); min-height: 1.6em;
+             margin-bottom: 20px; }
+  .status .hl { color: var(--accent); font-weight: 700; }
+
+  .doors { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 24px; }
+  .door { width: 120px; height: 160px; border-radius: 10px; position: relative;
+          background: linear-gradient(160deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+          border: 2px solid rgba(255,255,255,0.14); cursor: pointer;
+          display: flex; align-items: center; justify-content: center; flex-direction: column;
+          transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s; font-size: 3rem; }
+  .door:hover:not(.disabled) { transform: translateY(-4px); border-color: var(--accent);
+          box-shadow: 0 0 25px rgba(0,229,255,0.25); }
+  .door.disabled { cursor: default; opacity: 0.55; }
+  .door.picked { border-color: var(--accent); box-shadow: 0 0 20px rgba(0,229,255,0.35); }
+  .door.host-open { border-color: var(--bad); opacity: 0.6; }
+  .door.final-pick { border-color: var(--good); box-shadow: 0 0 30px rgba(74,222,128,0.45); }
+  .door .num { position: absolute; top: 8px; left: 10px; font-size: 0.75rem; color: var(--muted);
+               font-family: 'Inter', sans-serif; font-weight: 700; }
+  .door .tag { position: absolute; bottom: 8px; font-size: 0.7rem; font-weight: 700;
+               text-transform: uppercase; letter-spacing: 0.04em; }
+  .door .tag.you { color: var(--accent); }
+  .door .tag.final { color: var(--good); }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 28px; }
+  button.action { border: none; background: linear-gradient(90deg, var(--accent), #38bdf8);
+           color: #04101c; padding: 10px 20px; border-radius: 999px; font-size: 0.9rem;
+           font-weight: 700; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+           font-family: inherit; box-shadow: 0 0 20px rgba(0,229,255,0.3); }
+  button.action:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(0,229,255,0.5); }
+  button.action:active { transform: scale(0.97); }
+  button.action.ghost { background: rgba(255,255,255,0.04); color: var(--ink);
+           border: 1px solid rgba(255,255,255,0.18); box-shadow: none; }
+  button.action.ghost:hover { border-color: var(--accent); box-shadow: 0 0 20px rgba(0,229,255,0.25); }
+  button.action.switch { background: linear-gradient(90deg, var(--purple), #ec4899); }
+  button.action:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  @media (max-width: 560px) { .stats-grid { grid-template-columns: 1fr; } }
+  .strategy-card { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
+                    border-radius: 14px; padding: 18px 20px; }
+  .strategy-card h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em;
+                       margin: 0 0 10px; }
+  .strategy-card.stick h3 { color: var(--accent); }
+  .strategy-card.switch h3 { color: var(--purple); }
+  .strategy-card .rate { font-size: 1.8rem; font-weight: 800; color: var(--ink); }
+  .strategy-card .sub { font-size: 0.8rem; color: var(--muted); margin-bottom: 10px; }
+  .bar-track { position: relative; height: 10px; border-radius: 6px; background: rgba(255,255,255,0.08);
+               overflow: visible; margin-bottom: 6px; }
+  .bar-fill { height: 100%; border-radius: 6px; transition: width 0.3s ease; }
+  .strategy-card.stick .bar-fill { background: linear-gradient(90deg, var(--accent), #38bdf8); }
+  .strategy-card.switch .bar-fill { background: linear-gradient(90deg, var(--purple), #ec4899); }
+  .theory-marker { position: absolute; top: -4px; width: 2px; height: 18px; background: #fff;
+                    opacity: 0.8; }
+  .theory-marker::after { content: attr(data-label); position: absolute; top: -18px; left: 50%;
+                    transform: translateX(-50%); font-size: 0.65rem; color: var(--muted);
+                    white-space: nowrap; }
+
+  .sim-controls { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+                   margin: 4px 0 24px; }
+  .sim-controls .num-field { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--muted); }
+  .sim-controls input { width: 72px; background: rgba(255,255,255,0.04); color: var(--ink);
+           border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; padding: 6px 10px;
+           font-size: 0.85rem; font-weight: 600; font-family: inherit; }
+
+  #reset-stats { display: block; margin: 0 auto; }
+</style>
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+    <!-- Header/Navbar -->
+    <header class="bg-white shadow-sm py-4">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center space-x-3 no-underline hover:opacity-80 transition-opacity">
+                <img src="../img/statmania_logo.png" alt="Stat Mania Logo" class="w-10 h-10 rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/40x40/4f46e5/ffffff?text=Logo';">
+                <div>
+                    <div class="text-2xl font-bold text-indigo-600">Stat Mania</div>
+                    <p class="text-sm text-slate-500">Making sense of statistics</p>
+                </div>
+            </a>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="../index.html" class="text-slate-600 hover:text-indigo-600 transition duration-300">Home</a></li>
+                    <li><a href="index.html" class="text-slate-600 hover:text-indigo-600 transition duration-300">All Games</a></li>
+                    <li><a href="#cta" class="text-slate-600 hover:text-indigo-600 transition duration-300">Contact</a></li>
+                </ul>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="../index.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Home</a>
+            <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">All Games</a>
+            <a href="#cta" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Contact</a>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section class="sm-hero-wrap">
+            <canvas class="sm-canvas" aria-hidden="true"></canvas>
+            <div class="sm-hero-inner">
+                <span class="sm-eyebrow">Stat Mania &middot; Games</span>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-4 flex items-center justify-center gap-4 sm-gradient-text">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-12 h-12 sm-hero-icon">
+                        <path fill-rule="evenodd" d="M11.622 1.602a.75.75 0 0 1 .756 0l2.25 1.3a.75.75 0 0 1-.756 1.299l-.622-.36v.847a5.25 5.25 0 0 1 2.75.716l.622-.36a.75.75 0 1 1 .75 1.3l-.622.359a5.24 5.24 0 0 1 0 3l.622.36a.75.75 0 1 1-.75 1.3l-.622-.36a5.25 5.25 0 0 1-2.75.716v.847l.622-.36a.75.75 0 1 1 .756 1.3l-2.25 1.298a.75.75 0 0 1-.756 0l-2.25-1.298a.75.75 0 0 1 .756-1.3l.622.36v-.847a5.25 5.25 0 0 1-2.75-.716l-.622.36a.75.75 0 1 1-.75-1.3l.622-.36a5.24 5.24 0 0 1 0-3l-.622-.36a.75.75 0 1 1 .75-1.3l.622.36a5.25 5.25 0 0 1 2.75-.716v-.847l-.622.36a.75.75 0 1 1-.756-1.3l2.25-1.3ZM12 6.5a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" clip-rule="evenodd" />
+                        <path d="M3 17.25c0-1.106 1.19-2.25 3-2.25s3 1.144 3 2.25S7.81 19.5 6 19.5s-3-1.144-3-2.25ZM15 17.25c0-1.106 1.19-2.25 3-2.25s3 1.144 3 2.25-1.19 2.25-3 2.25-3-1.144-3-2.25Z" />
+                    </svg>
+                    Monty Hall
+                </h1>
+                <p class="text-lg sm:text-xl sm-subtitle-sm">Stick or switch? Play the classic probability puzzle and watch the odds prove themselves</p>
+            </div>
+        </section>
+
+        <!-- Game Section -->
+        <section class="py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
+            <div class="container mx-auto max-w-3xl">
+                <div class="sm-card p-8">
+                    <div class="status" id="status">Pick a door — one hides a car, two hide goats.</div>
+
+                    <div class="doors" id="doors"></div>
+
+                    <div class="controls" id="controls"></div>
+
+                    <div class="stats-grid">
+                        <div class="strategy-card stick">
+                            <h3>Stick</h3>
+                            <div class="rate" id="stick-rate">—</div>
+                            <div class="sub" id="stick-sub">0 games</div>
+                            <div class="bar-track"><div class="bar-fill" id="stick-bar" style="width:0%"></div>
+                                <div class="theory-marker" style="left:33.33%" data-label="1/3"></div>
+                            </div>
+                        </div>
+                        <div class="strategy-card switch">
+                            <h3>Switch</h3>
+                            <div class="rate" id="switch-rate">—</div>
+                            <div class="sub" id="switch-sub">0 games</div>
+                            <div class="bar-track"><div class="bar-fill" id="switch-bar" style="width:0%"></div>
+                                <div class="theory-marker" style="left:66.67%" data-label="2/3"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sim-controls">
+                        <button id="sim-stick" class="action ghost">🧮 Auto-simulate Stick</button>
+                        <button id="sim-switch" class="action ghost">🧮 Auto-simulate Switch</button>
+                        <label class="num-field">Trials <input type="number" id="sim-count" min="10" max="20000" value="1000"></label>
+                    </div>
+
+                    <button id="reset-stats" class="action ghost">↺ Reset Stats</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action Section -->
+        <section id="cta" class="sm-section-dark py-16 px-4 sm:px-6 lg:px-8 text-center">
+            <div class="container mx-auto max-w-3xl">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-6" style="color:#fff">Explore Other Games</h2>
+                <p class="text-lg sm:text-xl mb-8 sm-subtitle-sm">Check out all available games</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="index.html" class="sm-btn sm-btn-primary">All Games</a>
+                    <a href="#" class="sm-btn sm-btn-ghost">Back to Top</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-white py-8 px-4 sm:px-6 lg:px-8 text-center mt-auto" style="border-top:1px solid rgba(255,255,255,0.08)">
+        <div class="container mx-auto">
+            <p class="mb-4">&copy; <span id="copyright-year">2026</span> Stat Mania. All rights reserved.</p>
+            <div class="flex justify-center space-x-6">
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Privacy Policy</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Terms of Service</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Sitemap</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>document.getElementById("copyright-year").textContent = new Date().getFullYear();</script>
+
+    <script>
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+    </script>
+    <script src="js/starfield.js"></script>
+
+<script>
+/* ============================================================
+   STATE
+   ============================================================ */
+let round = null; // { prize, picked, hostOpen, phase }
+const stats = { stick: { wins: 0, total: 0 }, switch: { wins: 0, total: 0 } };
+
+function newRound() {
+  round = {
+    prize: Math.floor(Math.random() * 3),
+    picked: null,
+    hostOpen: null,
+    phase: "pick", // pick -> decide -> done
+  };
+  setStatus("Pick a door — one hides a car, two hide goats.");
+  renderDoors();
+  renderControls();
+}
+
+function pickDoor(i) {
+  if (round.phase !== "pick") return;
+  round.picked = i;
+  const remaining = [0, 1, 2].filter(d => d !== i && d !== round.prize);
+  round.hostOpen = remaining[Math.floor(Math.random() * remaining.length)];
+  round.phase = "decide";
+  setStatus(`You picked <span class="hl">Door ${i + 1}</span>. Monty opens <span class="hl">Door ${round.hostOpen + 1}</span> — a goat. Stick or switch?`);
+  renderDoors();
+  renderControls();
+}
+
+function decide(strategy) {
+  if (round.phase !== "decide") return;
+  const other = [0, 1, 2].find(d => d !== round.picked && d !== round.hostOpen);
+  const final = strategy === "stick" ? round.picked : other;
+  const won = final === round.prize;
+  round.final = final;
+  round.phase = "done";
+
+  stats[strategy].total++;
+  if (won) stats[strategy].wins++;
+  updateStatsUI();
+
+  setStatus(
+    (won ? "🎉 You won the car! " : "🐐 You got a goat. ")
+    + `You chose to <span class="hl">${strategy}</span> and ended on Door ${final + 1}.`
+  );
+  renderDoors();
+  renderControls();
+}
+
+/* ============================================================
+   BULK SIMULATION (instant, no animation - shows law of large numbers)
+   ============================================================ */
+function simulate(strategy, trials) {
+  let wins = 0;
+  for (let i = 0; i < trials; i++) {
+    const prize = Math.floor(Math.random() * 3);
+    const picked = Math.floor(Math.random() * 3);
+    const remaining = [0, 1, 2].filter(d => d !== picked && d !== prize);
+    const hostOpen = remaining[Math.floor(Math.random() * remaining.length)];
+    const other = [0, 1, 2].find(d => d !== picked && d !== hostOpen);
+    const final = strategy === "stick" ? picked : other;
+    if (final === prize) wins++;
+  }
+  stats[strategy].total += trials;
+  stats[strategy].wins += wins;
+  updateStatsUI();
+  setStatus(`Simulated ${trials.toLocaleString()} games always choosing <span class="hl">${strategy}</span>: ${wins.toLocaleString()} wins (${(100 * wins / trials).toFixed(1)}%).`);
+}
+
+/* ============================================================
+   RENDERING
+   ============================================================ */
+function setStatus(html) {
+  document.getElementById("status").innerHTML = html;
+}
+
+function renderDoors() {
+  const el = document.getElementById("doors");
+  el.innerHTML = "";
+  for (let i = 0; i < 3; i++) {
+    const div = document.createElement("div");
+    div.className = "door";
+    const isOpenable = round.phase === "pick";
+    if (!isOpenable) div.classList.add("disabled");
+    if (round.picked === i) div.classList.add("picked");
+    if (round.hostOpen === i) div.classList.add("host-open");
+    if (round.phase === "done" && round.final === i) div.classList.add("final-pick");
+
+    let face = "🚪";
+    if (round.hostOpen === i) face = "🐐";
+    else if (round.phase === "done" && (i === round.picked || i === round.final || round.prize === i)) {
+      // reveal everything at the end
+      face = i === round.prize ? "🚗" : "🐐";
+    }
+
+    div.innerHTML = `<span class="num">Door ${i + 1}</span><span>${face}</span>`;
+    if (round.picked === i && round.phase !== "done") {
+      div.innerHTML += `<span class="tag you">Your pick</span>`;
+    }
+    if (round.phase === "done" && round.final === i) {
+      div.innerHTML += `<span class="tag final">Final</span>`;
+    }
+    if (isOpenable) div.addEventListener("click", () => pickDoor(i));
+    el.appendChild(div);
+  }
+}
+
+function renderControls() {
+  const el = document.getElementById("controls");
+  el.innerHTML = "";
+  if (round.phase === "decide") {
+    const stick = document.createElement("button");
+    stick.className = "action ghost";
+    stick.textContent = `🔒 Stick with Door ${round.picked + 1}`;
+    stick.addEventListener("click", () => decide("stick"));
+    const other = [0, 1, 2].find(d => d !== round.picked && d !== round.hostOpen);
+    const sw = document.createElement("button");
+    sw.className = "action switch";
+    sw.textContent = `🔀 Switch to Door ${other + 1}`;
+    sw.addEventListener("click", () => decide("switch"));
+    el.appendChild(stick);
+    el.appendChild(sw);
+  } else if (round.phase === "done") {
+    const again = document.createElement("button");
+    again.className = "action";
+    again.textContent = "🎲 Play Again";
+    again.addEventListener("click", newRound);
+    el.appendChild(again);
+  }
+}
+
+function pct(strategy) {
+  const s = stats[strategy];
+  return s.total === 0 ? null : (100 * s.wins / s.total);
+}
+
+function updateStatsUI() {
+  for (const strategy of ["stick", "switch"]) {
+    const s = stats[strategy];
+    const p = pct(strategy);
+    document.getElementById(`${strategy}-rate`).textContent = p === null ? "—" : p.toFixed(1) + "%";
+    document.getElementById(`${strategy}-sub`).textContent =
+      `${s.wins} wins / ${s.total} game${s.total === 1 ? "" : "s"}`;
+    document.getElementById(`${strategy}-bar`).style.width = (p || 0) + "%";
+  }
+}
+
+/* ============================================================
+   WIRE UP
+   ============================================================ */
+document.getElementById("sim-stick").addEventListener("click", () => {
+  const n = Math.max(10, Math.min(20000, parseInt(document.getElementById("sim-count").value, 10) || 1000));
+  simulate("stick", n);
+});
+document.getElementById("sim-switch").addEventListener("click", () => {
+  const n = Math.max(10, Math.min(20000, parseInt(document.getElementById("sim-count").value, 10) || 1000));
+  simulate("switch", n);
+});
+document.getElementById("reset-stats").addEventListener("click", () => {
+  stats.stick = { wins: 0, total: 0 };
+  stats.switch = { wins: 0, total: 0 };
+  updateStatsUI();
+  setStatus("Stats reset. Pick a door to play, or auto-simulate a strategy.");
+});
+
+updateStatsUI();
+newRound();
+</script>
+</body>
+</html>
