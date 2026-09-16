@@ -1,0 +1,2041 @@
+\documentclass{exam}
+%\documentclass[11pt,a4paper]{exam}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,dsfont}
+\usepackage{ifthen}
+\usepackage{enumerate}% http://ctan.org/pkg/enumerate
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{lipsum}
+\usepackage{hyperref}
+
+% Accumulate the answers. Unmodified from Phil Hirschorn's answer
+% https://tex.stackexchange.com/questions/15350/showing-solutions-of-the-questions-separately/15353
+\newbox\allanswers
+\setbox\allanswers=\vbox{}
+
+\newenvironment{answer}
+{%
+    \global\setbox\allanswers=\vbox\bgroup
+    \unvbox\allanswers
+}%
+{%
+    \bigbreak
+    \egroup
+}
+
+\newcommand{\showallanswers}{\par\unvbox\allanswers}
+% End Phil's answer
+
+% Is there a better way?
+\newcommand*{\getanswer}[5]{%
+    \ifthenelse{\equal{#5}{a}}
+    {\begin{answer}\thequestion. (a)~#1\end{answer}}
+    {\ifthenelse{\equal{#5}{b}}
+        {\begin{answer}\thequestion. (b)~#2\end{answer}}
+        {\ifthenelse{\equal{#5}{c}}
+            {\begin{answer}\thequestion. (c)~#3\end{answer}}
+            {\ifthenelse{\equal{#5}{d}}
+                {\begin{answer}\thequestion. (d)~#4\end{answer}}
+                {\begin{answer}\textbf{\thequestion. (#5)~Invalid answer choice.}\end{answer}}}}}
+}
+
+\setlength\parindent{0pt}
+%usage \choice{ }{ }{ }{ }
+%(A)(B)(C)(D)
+\newcommand{\fourch}[5]{
+    \par
+    \begin{tabular}{*{4}{@{}p{0.23\textwidth}}}
+        (a)~#1 & (b)~#2 & (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)(B)
+%(C)(D)
+\newcommand{\twoch}[5]{
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (a)~#1 & (b)~#2
+    \end{tabular}
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)
+%(B)
+%(C)
+%(D)
+\newcommand{\onech}[5]{
+    \par
+    (a)~#1 \par (b)~#2 \par (c)~#3 \par (d)~#4
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+\newlength\widthcha
+\newlength\widthchb
+\newlength\widthchc
+\newlength\widthchd
+\newlength\widthch
+\newlength\tabmaxwidth
+
+\setlength\tabmaxwidth{0.96\textwidth}
+\newlength\fourthtabwidth
+\setlength\fourthtabwidth{0.25\textwidth}
+\newlength\halftabwidth
+\setlength\halftabwidth{0.5\textwidth}
+
+\newcommand{\choice}[5]{%
+\settowidth\widthcha{AM.#1}\setlength{\widthch}{\widthcha}%
+\settowidth\widthchb{BM.#2}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{CM.#3}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{DM.#4}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+
+% These if statements were bypassing the \onech option.
+% \ifdim\widthch<\fourthtabwidth
+%     \fourch{#1}{#2}{#3}{#4}{#5}
+% \else\ifdim\widthch<\halftabwidth
+% \ifdim\widthch>\fourthtabwidth
+%     \twoch{#1}{#2}{#3}{#4}{#5}
+% \else
+%      \onech{#1}{#2}{#3}{#4}{#5}
+%  \fi\fi\fi}
+
+% Allows for the \onech option.
+\ifdim\widthch>\halftabwidth
+    \onech{#1}{#2}{#3}{#4}{#5}
+\else\ifdim\widthch<\halftabwidth
+\ifdim\widthch>\fourthtabwidth
+    \twoch{#1}{#2}{#3}{#4}{#5}
+\else
+    \fourch{#1}{#2}{#3}{#4}{#5}
+\fi\fi\fi}
+
+\begin{document}
+\begin{titlepage}
+    \begin{center}
+        \vspace*{1cm}
+            
+        \Huge
+        \textbf{Statistics MCQ Question Bank}
+            
+        \vspace{0.5cm}
+        \LARGE
+        Second Paper \\
+
+        \vspace{1.5cm}
+            
+        \vfill
+            
+        \vspace{0.8cm}
+            
+                    \textbf{Abdullah Al Mahmud} \\
+        \Large
+        www.statmania.info\\
+            
+    \end{center}
+\end{titlepage}
+
+\tableofcontents
+
+\newpage
+
+ \section{Introduction to Probability}
+
+\begin{questions}
+
+\subsection {Permutation-Combination}
+
+\question \textbf{Three objects can be placed in 2 positions in -- ways.}
+\choice{3}{4}{6}{8}{c}
+
+\question \textbf{In how many ways can a team of 2 be formed from 4 people?}
+\choice{4}{6}{8}{12}{b}
+
+\question \textbf{$\displaystyle ^np_r=$}
+\choice{$\displaystyle \frac {n!}{(n-r)!}$}{$\displaystyle \frac {n!}{(n+r)!}$}{$\displaystyle \frac {n!}{r!}$}{$\displaystyle \frac {n!}{(r-n)!}$}{a}
+
+\question \textbf{$\displaystyle ^nC_r=$}
+\choice{$\displaystyle \frac {n!}{(n-1)!(n+r)!}$}{$\displaystyle \frac {r!}{n!(n-r)!}$}{$\displaystyle \frac {n!(n-1)!}{r!}$}{$\displaystyle \frac {n!}{(r-n)!}$}{a}
+
+%-----------------------------------------------------------------
+\subsection {Conceptual Questions}
+%-----------------------------------------------------------------
+
+\question \textbf{What is the probability that at least one item in a sample space will occurr?}
+\choice{0}{0.5}{1}{Undefined}{c}
+
+\question \textbf{The probability of two disjoint sets happening together is:}
+\choice{0.5}{0}{1}{$0  \leq x < 1$}{b}
+
+\question \textbf{How many additive laws of probability are there?}
+\choice{1}{2}{3}{4}{b}
+
+\question \textbf{$P(A\cup B) = P(A) + P(B)$ implies A \& B are --}
+\choice{Disjoint}{Independent}{Joint}{Independent}{a}
+
+\question \textbf{$P(A\cap B) = P(A) \times P(B)$ implies A \& B are --}
+\choice{Disjoint}{Independent}{Joint}{Independent}{b}
+
+\question \textbf{Which is the formula of classical approach of probability?}
+\choice{$P=\frac{\text{No. of favorable outcomes}}{\text{Total no. of possible outcomes}}$}{$P=\frac{\text{No. of total outcomes}}{\text{No. of favorable outcomes}}$}{$P = \lim_{n(S)\to\infty} \frac{n(A)}{n(S)}$}{$P = \lim_{n(A)\to\infty} \frac{n(A)}{n(S)}$}{a}
+
+\question \textbf{Which is the formula of empirical/relative frequency approach of probability?}
+\choice{$P=\frac{\text{No. of favorable outcomes}}{\text{Total no. of possible outcomes}}$}{$P=\frac{\text{No. of total outcomes}}{\text{No. of favorable outcomes}}$}{$\displaystyle P = \lim_{n(S)\to\infty} \frac{n(A)}{n(S)}$}{$\displaystyle P = \lim_{n(A)\to\infty} \frac{n(A)}{n(S)}$}{a}
+
+\question \textbf{What is the correct formula for conditional probability?}
+\choice{$P(A|B) = \frac{P(A \cap B)}{P(B|A)}$}{$P(A|B) = \frac{P(A \cap B)}{P(A)}$}{$P(A|B) = \frac{P(A \cap B)}{P(B)}$}{$P(A|B) = \frac{P(B|A)}{P(B|A)}$}{a}
+
+\question \textbf{The third axiom of probability is --}
+\choice{$0 \le P(A) \le 1$}{$P(S) = 1$}{$\displaystyle P(A_1 U A_2 U \cdots U
+A_n) = \sum_{i=1}^{\infty}P(A_i)$}{$P(A) = 1 - P(A)$}{c}
+
+% Multiple Completion Starts
+\question \textbf{Possible value of probability}
+
+i. -1 \quad
+ii. 0.5 \quad
+iii. 0
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{c}
+% Multiple Completion Ends
+
+\question \textbf{An act repeated under some specific conditions is called --}
+\choice{Event}{Experiment}{Sample}{Sample space}{b}
+
+\question \textbf{$P(0)$ implies -- }
+\choice{A certain event}{An uncertain event}{An impossible event}{A probable event}{c}
+
+\question \textbf{Events having some common elements are called --}
+\choice{Complementary events}{Mutually exclusive events}{Exhaustive events}{Non-Mutually exclusive events events}{a}
+
+\question \textbf{The minimum value of probability is}
+\choice{$-\alpha$}{1}{0}{-1}{c}
+
+\question \textbf{Each element of sample space is called--}
+\choice{Trial}{Experiment}{Variable}{Sample Point}{d}
+
+\question \textbf{Two events not ocurring together are called--}
+\choice{dependent Events}{Independent Events}{Mutually Exclusive Events}{Marginal Events}{c}
+
+\question \textbf{If A and B are independent, which formula is correct?}
+\choice{$P(A \cap B) = P(A) \cdot P(B)$}{$P(A \cap B) = P(\bar A) \cdot P(B)$}{$P(A \cap B) = P(A) \cdot P(\bar B)$}{$P(A \cap \bar B) = P(A) \cdot P(B)$}{a}
+
+\question \textbf{Which of the following are disjoint events?}
+\choice{$A = \{1, 2, 3\}, B = \{4, 5\}$}{$A = \{a, b\}, B = \{b, c\}$}{$A = \{0\}, B = \{0, 1\}$}{$A = \{x, y\}, B = \{x, y\}$}{a}
+
+\question \textbf{Which of the following are disjoint events?}
+\choice{$P = \{1, 2\}, Q = \{2, 3\}$}{$P = \{x\}, Q = \{x, y\}$}{$P = \{1, 3\}, Q = \{3, 5\}$}{$P = \{m, n\}, Q = \{p, q\}$}{d}
+
+% Multiple Completion Starts
+\question \textbf{Let the sample space be $S = \{1, 2, 3, \dots, 10\}$. Which of the following pairs of events are disjoint?}
+
+i. $A$: Number is prime, \quad $B$: Number is greater than 3 \\
+ii. $A$: Number is even, \quad $B$: Number is divisible by 3 \\
+iii. $A$: Number is less than 5, \quad $B$: Number is greater than 6
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{c}
+% Multiple Completion Ends
+
+% Multiple Completion Starts
+\question \textbf{Let $S = \{1, 2, \dots, 10\}$. Which of the following event pairs are disjoint?}
+
+i. $A$: Number is divisible by 2, \quad $B$: Number is divisible by 5 \\
+ii. $A$: Number is less than 7, \quad $B$: Number is odd \\
+iii. $A$: Number is a prime, \quad $B$: Number is a multiple of 4
+
+\textbf{Which one is correct?}
+
+\choice{i and iii}{i and ii}{ii and iii}{i, ii and iii}{a}
+% Multiple Completion Ends
+
+% Multiple Completion Starts
+\question \textbf{Let the sample space be $S = \{1, 2, 3, \dots, 10\}$. Which of the following pairs of events are disjoint?}
+
+i. $A$: Number is a multiple of 4, \quad $B$: Number is odd \\
+ii. $A$: Number is less than 4, \quad $B$: Number is greater than 8 \\
+iii. $A$: Number is a square, \quad $B$: Number is even
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{a}
+% Multiple Completion Ends
+
+\question \textbf{Let $S = \{1, 2, 3, \dots, 10\}$. Which of the following pairs of events are disjoint?}
+
+\choice{$A$: Multiples of 3, $B$: Multiples of 5}{%
+$A$: Prime numbers, $B$: Even numbers greater than 2}{%
+$A$: Numbers less than 4, $B$: Numbers greater than 6}{%
+All of the above}{d}
+
+\subsection{Numbers}
+
+\question \textbf{A number is randomly chosen from a list of 10 consecutive positive
+integers. What is the probability that the number selected is greater than the
+average (arithmetic mean) of all 10 integers?}
+\choice{$\frac 13$}{$\frac 34$}{$\frac 4{10}$}{$\frac 12$}{d}
+
+\question \textbf{10 out of each 100 people in a city walk to the office. If one is picked randomly, what is the probability s/he does not walk to the office?}
+\choice{0.95}{0.10}{0.90}{0.01}{c}
+
+\question \textbf{In a school, 15 out of 100 students prefer online classes over in-person classes. If a student is selected randomly, what is the probability that they prefer in-person classes?}  
+\choice{0.15}{0.85}{0.75}{0.25}{b}  
+
+\question \textbf{A factory reports that 8 out of every 100 manufactured items are defective. If an item is chosen at random, what is the probability that it is not defective?}  
+\choice{0.08}{0.92}{0.80}{0.12}{b}  
+
+\question \textbf{A hospital study finds that 12\% of patients do not prefer evening appointments. If a patient is selected at random, what is the probability that they prefer evening appointments?}  
+\choice{0.12}{0.78}{0.88}{0.18}{c}  
+
+\question \textbf{A survey shows that 5 out of every 200 customers in a store pay with cash. If a customer is picked randomly, what is the probability that they pay using another method?}  
+\choice{0.050}{0.500}{0.975}{0.025}{c}  
+
+%-----------------------------------------------------------------
+\subsection {Coin-Die}
+%-----------------------------------------------------------------
+
+\question \textbf{Tossing a die r times generates how many outcomes?}
+\choice{$6\times r$}{$r^6$}{$6^r$}{$2^r$}{c}
+
+\question \textbf{Tossing a coin r times generates how many outcomes?}
+\choice{$2\times r$}{$r^2$}{$2^r$}{$6^r$}{c}
+
+\question \textbf{A coin is thrown thrice. How many outcomes are generated?}
+\choice{3}{4}{8}{9}{c}
+
+\question \textbf{A coin is thrown twice. What is the probability of getting 2 heads?}
+\choice{$\frac14$}{$\frac13$}{$\frac12$}{$\frac24$}{a}
+
+\question \textbf{A fair coin is tossed twice. What is the probability of getting at least one tail?}  
+\choice{$\frac14$}{$\frac12$}{$\frac34$}{$\frac13$}{c}  
+
+\question \textbf{Two fair coins are tossed simultaneously. What is the probability of getting exactly one head?}  
+\choice{$\frac14$}{$\frac12$}{$\frac34$}{$\frac13$}{b}  
+
+\question \textbf{A coin is flipped twice. What is the probability of getting heads first and tails second?}  
+\choice{$\frac14$}{$\frac13$}{$\frac12$}{$\frac24$}{a}  
+
+\question \textbf{If two fair coins are tossed together, what is the probability of getting at least one head?}  
+\choice{$\frac12$}{$\frac13$}{$\frac34$}{$\frac14$}{c}  
+
+\question \textbf{A fair coin is tossed twice. What is the probability of getting two tails?}  
+\choice{$\frac12$}{$\frac13$}{$\frac14$}{$\frac24$}{c}  
+
+\question \textbf{Two fair coins are tossed. What is the probability that at least one of them lands on tails?}  
+\choice{$\frac34$}{$\frac12$}{$\frac14$}{$\frac13$}{a}  
+
+\question \textbf{A die is thrown twice. This is called --}
+\choice{An experiment}{sample space}{A random experiment}{A trial}{a}
+
+\question \textbf{If a neutral die is thrown, the probability of having a digit greater than 6 is}
+\choice{$\frac 1 6$}{$\frac 0 6$}{$\frac 2 3$}{$\frac 3 6$}{b}
+
+\question \textbf{Tossing a coin twice generates how many outcomes?}
+\choice{4}{16}{8}{2}{a}
+
+\question \textbf{A die is rolled twice. How many possible outcomes are there?}
+\choice{6}{12}{36}{18}{c}
+
+%-----------------------------------------------------------------
+\subsection {Balls-Cards}
+%-----------------------------------------------------------------
+
+\question \textbf{There are 3 red, 4 black, and 5 white balls in an urn. If two balls are randomly taken, what is the probability that both are red?}
+\choice{$\frac{1}{66}$}{$\frac{1}{22}$}{$\frac{2}{22}$}{$\frac{3}{11}$}{b}
+
+\question \textbf{There are 3 red, 4 black, and 5 white balls in an urn. If two balls are randomly taken, what is the probability that neither is red?}  
+\choice{$\frac{5}{11}$}{$\frac{6}{11}$}{$\frac{3}{11}$}{$\frac{5}{22}$}{b}  
+
+\question \textbf{A jar contains 6 blue and 4 green marbles. If two marbles are drawn at random, what is the probability that both are blue?}  
+\choice{$\frac{5}{18}$}{$\frac{1}{3}$}{$\frac{1}{2}$}{$\frac{1}{4}$}{b}  
+
+\question \textbf{A box has 7 black and 5 white balls. If one ball is drawn at random, what is the probability that it is not black?}  
+\choice{$\frac{7}{12}$}{$\frac{5}{12}$}{$\frac{1}{2}$}{$\frac{1}{3}$}{b}  
+
+\question \textbf{A bag contains 8 red and 6 white balls. If two balls are drawn at random, what is the probability that they are of different colors?}  
+\choice{$\frac{24}{91}$}{$\frac{58}{91}$}{$\frac{48}{91}$}{$\frac{72}{91}$}{c}  
+
+\question \textbf{A box contains 9 blue and 3 red balls. If two balls are randomly picked, what is the probability that at least one is red?}  
+\choice{$\frac{3}{11}$}{$\frac{1}{3}$}{$\frac{18}{33}$}{$\frac{5}{11}$}{d}  
+
+% Situation Set Starts
+\textbf{Answer the next THREE questions based on the following information.}
+
+A card is drawn from of pack of playing cards.
+
+\question \textbf{What is the probability that the card is a King?}
+\choice{0.0192}{0.25}{0.5}{0.0769}{d}
+
+\question \textbf{P(The card is not from Diamonds)--}
+\choice{$\frac12$}{$0$}{$\frac34$}{$\frac14$}{c}
+
+\question \textbf{P(The card is red or Clubs)}
+\choice{$\frac14$}{$\frac12$}{$\frac23$}{$\frac34$}{d}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next THREE questions based on the following information.}
+
+A card is drawn at random from a standard deck of 52 playing cards.
+
+\question \textbf{What is the probability that the card is a Queen?}
+\choice{0.0192}{0.0769}{0.25}{0.5}{b}
+
+\question \textbf{P(The card is not a Spade)}  
+\choice{$\frac14$}{$\frac12$}{$\frac34$}{$\frac13$}{c}
+
+\question \textbf{P(The card is black or a Heart)}  
+\choice{$\frac12$}{$\frac34$}{$\frac13$}{$\frac14$}{a}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next TWO questions based on the following information.}
+
+An urn contains 5 red, 7 blue, and 8 green balls.
+
+\question \textbf{What is the probability that the ball drawn is red?}
+\choice{0.26}{0.25}{0.2}{0.4}{a}
+
+\question \textbf{P(The ball drawn is not blue)--}
+\choice{$\frac{13}{20}$}{$0.5$}{$\frac{7}{20}$}{$\frac{8}{20}$}{a}
+% Situation Set Ends
+
+%-----------------------------------------------------------------
+\subsection {Set-Problems}
+%-----------------------------------------------------------------
+
+\question \textbf{In a class of 40 students, 23 passed in Mathematics, 25 passed in English, and 10 failed in both the subjects. A student is randomly selected. What is the probability that the student passed in at least one subject}
+\choice{$\frac13$}{$\frac14$}{$\frac34$}{$\frac45$}{c}
+
+\question \textbf{In a survey of 60 people, 35 liked coffee, 28 liked tea, and 12 liked neither. If a person is selected at random, what is the probability that they like at least one of the two beverages?}
+\choice{$\frac{3}{5}$}{$\frac{4}{5}$}{$\frac{2}{3}$}{$\frac{5}{6}$}{b}
+
+% Situation Set Starts
+\textbf{Answer the next two questions based on the following information}
+
+\textbf{In a class of 40 students, 23 passed in Mathematics, 25 passed in English, and 10 failed in both the subjects. A student is randomly selected.}
+
+\question What is the probability that the student passed in at least one subject?
+\choice{$\frac13$}{$\frac14$}{$\frac34$}{$\frac45$}{c}
+
+\question What is the probability that the student passed in passed in both the subjects?
+\choice{$\frac{11}{20}$}{$\frac{9}{20}$}{$\frac{4}{5}$}{$\frac{19}{20}$}{b}
+% Situation Set Ends
+
+\question What is the probability that the student passed in passed in passed in Mathematics alone?
+\choice{$\frac{1}{8}$}{$\frac{9}{20}$}{$\frac{3}{10}$}{$\frac{6}{13}$}{a}
+
+\question \textbf{For two independent events $A$ and $B$, which one is correct?}
+\choice{$P(A\cap B) = P(A) \times P(B)$}{$P(A\cup B) = P(A) + P(B)$}{$P(A\cap B) = P(A) - P(B)$}{$P(A\cup B) = P(A) \times P(B)$}{a}
+
+\question \textbf{For two mutually exclusive events $A$ and $B$, which one is correct?}
+\choice{$P(A\cap B) = P(A) \times P(B)$}{$P(A\cup B) = P(A) + P(B)$}{$P(A\cap B) = P(A) - P(B)$}{$P(A\cup B) = P(A) \times P(B)$}{b}
+
+\question \textbf{Which of the following correct?}
+\choice{$\displaystyle \frac{P(A)}{P(B)}= \frac{P(B|A)}{P(A|B)}$}{$\displaystyle \frac{P(A)}{P(A|B)}= \frac{P(B|A)}{P(B)}$}{$\displaystyle \frac{P(A)}{P(B)}= \frac{P(B|A)}{P(B)}$}{$\displaystyle \frac{P(A)}{P(B)}= \frac{P(A|B)}{P(B|A)}$}{d}
+
+\question \textbf{The probability of rain is $\frac 16$ for any given day next week. What is the probability that it will rain on both Monday and Tuesday?}
+\choice{$\frac 16$}{$\frac 1{36}$}{$\frac 56$}{$\frac 1{17}$}{b}
+
+\question \textbf{Given \( P(A \cup B) = 0.7 \), \( P(A \cap B) = 0.2 \), what are \( P(A) \) and \( P(B) \)?}  
+\choice{$P(A) = 0.5 \text{ and } P(B) = 0.4
+$}{$P(A) = 0.4 \text{ and } P(B) = 0.6$}{$P(A) = 0.4 \text{ and } P(B) = 0.3$}{$P(A) = 0.7 \text{ and } P(B) = 0.3$}{a}
+
+\question \textbf{If \( P(A) = 0.4 \), \( P(B) = 0.5 \), and \( P(A \cup B) = 0.7 \), what is \( P(A \cap B) \)?}  
+\choice{$0.2$}{$0.1$}{$0.3$}{$0.4$}{a}
+
+\question \textbf{Given \( P(A) = 0.3 \), \( P(A \cup B) = 0.6 \), and \( P(A \cap B) = 0.1 \), what is \( P(B) \)?}  
+\choice{$0.6$}{$0.4$}{$0.3$}{$0.2$}{b}
+
+\question \textbf{If \( P(A) = 0.5 \), \( P(B) = 0.6 \), and \( P(A \cap B) = 0.3 \), what is \( P(A \cup B) \)?}  
+\choice{$0.8$}{$0.9$}{$0.7$}{$1$}{c}
+
+\question \textbf{If \( P(A) = 0.2 \), \( P(B) = 0.3 \), and \( P(A \cup B) = 0.4 \), what is \( P(A \cap B) \)?}  
+\choice{$0.9$}{$0.2$}{$0.3$}{$0.1$}{d}
+
+\question \textbf{Given \( P(A) = 0.7 \), \( P(A \cup B) = 0.9 \), and \( P(A \cap B) = 0.5 \), what is \( P(B) \)?}  
+\choice{$0.8$}{$0.6$}{$0.7$}{$0.5$}{c}
+
+% Situation Set Starts
+\textbf{Answer the next two questions based on the following information}
+
+\begin{center}
+For two exhaustive evenst A \& B, P(A) = 0.7 and P(B) = 0.4
+\end{center}
+
+\question \textbf{$P(A\cap B) = ?$}
+\choice{0.1}{0.3}{0.6}{1}{a}
+
+% Multiple Completion Starts
+\question \textbf{The events A \& B are --}
+
+i. independent \\
+ii. dependent \\
+iii. not mutually exclusive
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{c}
+% Multiple Completion Ends
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next three questions using the following information}
+
+$P(A) = \frac 1 3, P(B) = \frac 1 2 \space \& \space P(A\cup B) = \frac 7 {12}$
+
+\question \textbf{$P(A \cap B) = ?$}
+\choice{$\frac {5}{12}$}{$\frac12$}{$\frac{1}{4}$}{$\frac{15}{16}$}{c}
+
+\question \textbf{$P(A \cap \bar B)=?$}
+\choice{$\frac{1}{4}$}{$\frac{3}{4}$}{$\frac{5}{6}$}{$\frac{1}{12}$}{a}
+
+\question \textbf{What is the probability that B occurs or A does not occur?}
+\choice{$\frac{3}{4}$}{$\frac{7}{12}$}{$\frac{5}{12}$}{$\frac{11}{12}$}{d}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next three questions using the following information}
+
+$P(C) = \frac 2 5, P(D) = \frac 3 4 \space \& \space P(C \cup D) = \frac{9}{10}$
+
+\question \textbf{$P(C \cap D) = ?$}
+\choice{$\frac{1}{10}$}{$\frac{1}{4}$}{$\frac{7}{20}$}{$\frac{4}{5}$}{b}
+
+\question \textbf{$P(C \cap \bar D)=?$}
+\choice{$\frac{1}{10}$}{$\frac{2}{5}$}{$\frac{3}{20}$}{$\frac{3}{10}$}{c}
+
+\question \textbf{What is the probability that D occurs or C does not occur?}
+\choice{$\frac{17}{20}$}{$\frac{7}{10}$}{$\frac{3}{4}$}{$\frac{11}{20}$}{a}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next three questions using the following information:}
+
+$P(E) = \frac 1 3, P(F) = \frac 1 4 \space \& \space P(E \cap F) = \frac{1}{10}$
+
+\question \textbf{$P(E \cup F) = ?$}
+\choice{$\frac{1}{58}$}{$\frac{3}{10}$}{$\frac{58}{60}$}{$\frac{58}{120}$}{c}
+
+\question \textbf{$P(E \cap \bar F)=?$}
+\choice{$\frac{7}{40}$}{$\frac{7}{30}$}{$\frac{3}{10}$}{$\frac{1}{30}$}{b}
+
+\question \textbf{What is the probability that F occurs or E does not occur?}
+\choice{$\frac{11}{30}$}{$\frac{19}{30}$}{$\frac{13}{40}$}{$\frac{23}{30}$}{d}
+% Situation Set Ends
+
+\question \textbf{An un contains 10 red and 5 black balls. Two balls are drawn; what is the probability of getting two red balls?}
+\choice{$\frac 37$}{$\frac 47$}{$\frac {20}{21}$}{$\frac 2{21}$}{a}
+
+\subsection{Situation Set}
+
+% Situation Set Starts
+\textbf{Answer the next two questions based on the following information}
+
+\begin{center}
+For two comprehensive events $A$ and $B, P(A) = 0.8, \text{ and } P(B) = 0.6$; 
+\end{center}
+\question \textbf{What is the value of $P(A \cap B)?$}
+\choice{0.1}{0.2}{0.3}{0.4}{d}
+
+% Multiple Completion Starts
+\question \textbf{The events $A$ and $B$ are --}
+
+i. independent \\
+ii. dependent \\
+iii. non-disjoint
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{c}
+% Multiple Completion Ends
+% Situation Set Ends
+
+\subsection{Multiple Completion}
+
+% Multiple Completion Starts
+\question \textbf{$P(A) = \frac23, P(B) = \frac15, \text{and} P(A \cap B) = \frac16$}
+
+i. $A$ and $B$ are independent \\
+ii. $P(A \cup B) = \frac{7}{10}$ \\
+iii. $P(\bar A) = \frac 13$
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{c}
+% Multiple Completion Ends
+
+% Multiple Completion Starts
+\question \textbf{$P(A) = 0$ implies}
+
+i. $A$ is an impossible event \\
+ii. $A$ would ocurr in extreme cases \\
+iii. $P(\bar A)$ is a certain event
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{b}
+% Multiple Completion Ends
+
+% Multiple Completion Starts
+\question \textbf{If $A$ is an uncertain event, which one is possible?}
+
+i. $0 < P(A) < 1$ \\
+ii. $P(A) = 0.1$ \\
+iii. $P(A) = 0$
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{a}
+% Multiple Completion Ends
+
+% Multiple Completion Starts
+\question \textbf{If a die is thrown once, the probability of getting even numbers is --}
+
+i. A certain event \\
+ii. A composite event  \\
+iii. An uncertain event
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{b}
+% Multiple Completion Ends
+
+%---------------------------------------------------------------------------
+\section{Random Variables}
+%---------------------------------------------------------------------------
+
+\subsection{Concept of Random Variable}
+
+\question \textbf{Which is a discrete random variable?}
+\choice{Age of students}{Amount of Production in a factory}{Height of workers}{Page size in word processing softwares}{d}
+
+\question \textbf{A set of sample points tabulated along with their respective probabilities is an example of -- }
+\choice{Probability distribution}{Probability function}{Frequency distribution}{Marginal probability distribution}{a}
+
+\question \textbf{How many conditions does a probability density function have?}
+\choice{2}{3}{4}{5}{b}
+
+\question \textbf{A coin is tossed twice and no. of heads appeared is denoted by X. How many possible values of X are there?}
+\choice{1}{2}{0}{3}{d}
+
+\question \textbf{A die is thrown thrice and the number of times a 6 appears is denoted by $X$. How many possible values can $X$ take?}
+\choice{1}{2}{3}{4}{d}
+
+\question \textbf{Which one is a property of marginal probability density function?}
+\choice{$\displaystyle \int_{x} f(x^2) \,dx=1$}{$\displaystyle  \int_{x} f(x^2) \,dx=0.5$}{$\displaystyle  \int_{x} f(x) \,dx=1$}{$P(x \ge 1)$}{c}
+
+\question \textbf{Which one is NOT an example of a continuous random variable -- }
+\choice{Weight}{Height}{Time}{Size of television}{d}
+
+\question \textbf{Integrated value of $\frac 14 x^4$ --}
+\choice{$\frac 1{20} x^5$}{$\frac 1{20} x^5+c$}{$\frac 1{5} x^4$}{$\frac 5{4} x^5$}{b}
+
+% Multiple Completion Starts
+\question \textbf{The conditions of a probability distribution are--}
+
+i. $\sum P(X) = 1$
+
+ii. $\sum P(X) = 0$
+
+iii. $0 \le P(X) \le 1$
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{b}
+% Multiple Completion Ends
+
+% Multiple Completion Starts
+\question \textbf{The conditions for a cumulative distribution function (CDF) are--}
+
+i. $F(x)$ is non-decreasing.
+
+ii. $0 \le F(x) \le 1$
+
+iii. $\displaystyle \lim_{x \to \infty} F(x) = 1$
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{ii and iii}{i and iii}{i, ii, and iii}{d}
+% Multiple Completion Ends
+
+% Multiple Completion Starts
+\question \textbf{The properties of a discrete probability distribution table are--}
+
+i. $\sum P(X) = 1$
+
+ii. $P(X) \ge 0$ for all $X$
+
+iii. Each probability corresponds to a discrete value.
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{ii and iii}{i and iii}{i, ii, and iii}{d}
+% Multiple Completion Ends
+
+\question \textbf{What is $F(\infty)$ for a distribution function $F(x)$?}
+\choice{$-\infty$}{-1}{0}{1}{d}
+
+\question \textbf{What is $F(-\infty)$ for a distribution function $F(x)$?}
+\choice{$-\infty$}{-1}{0}{1}{c}
+
+\question \textbf{How many types of random variables are there?}
+\choice{2}{3}{4}{5}{a}
+
+\question \textbf{Which of the following is not a discrete random variable?}
+\choice{umber of students}{Weight}{Number of heads in coin toss}{Population}{b}
+
+\question \textbf{Which one is a property of a probability distribution?}
+\choice{$P(x_i) = 0$}{$P(x_i \ne 1)$}{$\Sigma P(x_i) = 1$}{$\int_x P(X) dx \le 1$}{c}
+
+\question \textbf{Which one is not a discrete random variable?}
+\choice{Summation two die throw outcome}{Weight}{Number of heads in five coin tosses}{Released version number of a software}{d}
+
+\question \textbf{Which one is not a discrete random variable?}
+\choice{Number of students in a class}{Weight of a package}{Shoe size}{Total goals scored in a match}{b}
+
+\question \textbf{Which variable type can skip certain whole numbers?}
+\choice{Number of chapters read in a day}{Weight of a person}{Number of floors in a building}{Number of people boarding a train}{c}
+
+\question \textbf{Which one is an example of a discrete random variable?}
+\choice{The amount of liquid in a glass}{Temperature readings at noon}{Number of defective items in a batch}{Exact age in years}{c}
+
+\question \textbf{Identify which one is not a discrete variable.}
+\choice{Number of cookies eaten}{Height of students}{Total cars in a parking lot}{Number of siblings}{b}
+
+\question \textbf{Which one is a property of joint probability distribution?}
+\choice{$P(X_i,Y_j)<1$}{$P(X_i,Y_j)=0$}{$P(X_i,Y_j)<0$}{$0 \leq P(X_i,Y_j)\leq 1$}{d}
+
+%-----------------------------------------------------------------------------
+\subsection{Situation Set} % Random variable
+%-----------------------------------------------------------------------------
+
+% Situation Set Starts
+\textbf{Answer the next two questions based on the following information}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{cccc}
+X & 0 & 1 & 2 \\ \hline
+P(x) & $\frac 12$ & $\frac14$ & $\frac14$
+\end{tabular}
+\end{table}
+
+\question \textbf{What is F(1)}
+\choice{$0.65$}{$0.75$}{$0.5$}{$1$}{b}
+
+\question \textbf{$P(X \le 1 \le 3) =$--}
+\choice{0.75}{0.70}{0.95}{1}{a}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next three questions based on the following information}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{cccc}
+X & 1 & 2 & 3 \\ \hline
+P(x) & $\frac13$ & $\frac16$ & $\frac12$
+\end{tabular}
+\end{table}
+
+\question \textbf{What is $P(X \geq 2)$?}
+\choice{$\frac13$}{$\frac12$}{$\frac23$}{$\frac56$}{c}
+
+\question \textbf{Find the cumulative probability $F(2)$.}
+\choice{$\frac13$}{$\frac12$}{$\frac16$}{$\frac23$}{b}
+
+\question \textbf{$P(X = 1 \text{ or } X = 3)$ equals}
+\choice{$\frac13$}{$\frac12$}{$\frac56$}{$\frac23$}{c}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next three questions based on the following information}
+
+A fair six-sided die is rolled once. Let $X$ be the number on the uppermost face.
+
+\question \textbf{What is $P(X > 4)$?}
+\choice{$\frac13$}{$\frac16$}{$\frac12$}{$\frac23$}{a}
+
+\question \textbf{Find $P(X \text{ is even})$.}
+\choice{$\frac13$}{$\frac12$}{$\frac23$}{$\frac56$}{b}
+
+\question \textbf{$P(X \leq 2 \text{ or } X \geq 5)$ equals}
+\choice{$\frac13$}{$\frac12$}{$\frac23$}{$\frac56$}{b}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next three questions based on the following information}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c|c|c}
+X & 0 & 1 & 2 & 3 \\ \hline
+P(X) & $\frac 14$ & m & $\frac 13$ & $\frac 16$
+\end{tabular}
+\end{table}
+
+\question \textbf{What is the value of m?}
+\choice{$\frac 1 3$}{$\frac 5 {12}$}{$\frac 1 4$}{$\frac 1 6$}{c}
+
+\question \textbf{Find $F(2)$.}
+\choice{$\frac 1 2$}{$\frac 3 4$}{$\frac 5 6$}{$\frac 2 3$}{c}
+
+\question \textbf{What is $P(X > 1)$?}
+\choice{$\frac 1 2$}{$\frac 5 {12}$}{$\frac 1 3$}{$\frac 7 {12}$}{a}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next three questions based on the following information}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c|c|c|c}
+X & 1 & 2 & 3 & 4 & 5 \\ \hline
+P(X) & $\frac 1 5$ & c & $\frac 1 4$ & $\frac 1 6$ & $\frac 1 3$
+\end{tabular}
+\end{table}
+
+\question \textbf{What is the value of c?}
+\choice{$\frac 1 3$}{$\frac 1 4$}{$\frac 1 {20}$}{$\frac 1 6$}{c}
+
+\question \textbf{Find $P(2 < X \leq 4)$.}
+\choice{$\frac 5 {12}$}{$\frac 1 2$}{$\frac 5 6$}{$\frac 2 3$}{a}
+
+\question \textbf{What is $P(X \leq 3)$?}
+\choice{$\frac 9 {20}$}{$\frac 7 {10}$}{$\frac 1 2$}{$\frac 3 4$}{c}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next three questions based on the following information}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c|c}
+x & 1 & 2 & 3 \\ \hline
+P(x) & $\frac 13$ & a & $\frac16$
+\end{tabular}
+\end{table}
+
+\question \textbf{What is the value of a?}
+\choice{$\frac 23$}{$\frac 56$}{$\frac 12$}{$1$}{c}
+
+\question \textbf{Find $P(2 < X \leq 3)$}
+\choice{$\frac 56$}{$\frac 23$}{$\frac 12$}{$\frac 16$}{d}
+
+\question \textbf{What is P(X<3)?}
+\choice{$\frac 56$}{$\frac 25$}{$\frac 19$}{$\frac 17$}{a}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next two questions based on the following information}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c|c}
+x & 1 & 2 & 3 \\ \hline
+P(x) & $\frac 13$ & $\frac12$ & $\frac16$
+\end{tabular}
+\end{table}
+
+\question \textbf{What is $F(2)$?}
+\choice{$\frac 23$}{$\frac 56$}{$\frac 12$}{$1$}{b}
+
+\question \textbf{$P(1 < X \leq 2)$}
+\choice{$\frac 56$}{$\frac 23$}{$\frac 12$}{$\frac 16$}{c}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next two questions based on the following information}
+
+\begin{center}
+$f(x) = kx; 0 < x < 5$
+\end{center}
+
+\question \textbf{What is the value of $P(2 <x<3)$}
+\choice{$\frac45$}{$\frac35$}{$\frac25$}{$\frac15$}{d}
+
+\question \textbf{$P(X>0)$}
+\choice{0.99}{0.5}{1}{0}{c}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next two questions using the following information}
+
+\begin{table}[h]
+	    \centering
+\begin{tabular}{ccccccl}
+x    & 1 & 2  & 3  & 4  & 5  & 6  \\ \hline
+P(x) & k & 2k & 3k & 4k & 5k & 6k
+\end{tabular}
+\end{table}
+
+\question \textbf{What is the value of k?}
+\choice{$\frac{7}{21}$}{$\frac{5}{21}$}{$\frac{1}{21}$}{$1$}{c}
+
+\question \textbf{What is the type of variable X?}
+\choice{Discrete}{Discrete random}{Continuous}{Continuous random}{b}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next THREE questions using the following information}
+
+\begin{center}
+$\displaystyle P(x) = \frac{x+1}{k}; x = 1,2,3,4$
+\end{center}
+
+\question \textbf{What is the value of k?}
+\choice{10}{11}{14}{15}{c}
+
+\question \textbf{$F(2)=-$}
+\choice{$\frac{2}{14}$}{$\frac{3}{11}$}{$\frac{5}{14}$}{$\frac{5}{11}$}{c}
+
+\question \textbf{$P(x)$ is a --}
+\choice{Joint probability distribution}{Cumulative probability distribution}{Probability mass function}{Probability Density function}{c}
+% Situation Set Ends
+
+\question \textbf{$f(x) = 2x; 0 <X<3$; What is F(3)?}
+\choice{3}{0}{1}{0}{c}
+
+ \question \textbf{$f(x) = 3x; 0 < X < 2$; What is $F(2)$?}  
+\choice{6}{3}{1}{0}{c}
+
+\question \textbf{$f(x) = x^2; 0 < X < 4$; What is $F(4)$?}  
+\choice{16}{0}{4}{1}{d}
+
+\question \textbf{$f(x) = 4 - x; 1 < X < 5$; What is $F(5)$?}  
+\choice{3}{0}{1}{4}{c}
+
+% Situation Set Starts
+\textbf{Answer the next two questions based on the following information:}
+
+$P(x,y) = \frac 1{21}(x+y); x = 1,2,3$ and $y=1,2$
+
+\question \textbf{P(x)=?}
+\choice{$P(x) = \frac{2x+3}{21}$}{$P(x) = \frac{x+3}{27}$}{$P(x) = \frac{4x+3}{21}$}{$P(x) = \frac{2x+5}{21}$}{a}
+
+\question \textbf{P(y)=?}
+\choice{$\frac{y+2}{7}$}{$\frac{y+3}{7}$}{$\frac{3y+2}{7}$}{$\frac{y+2}{9}$}{c}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next two questions based on the following information.}
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{|l|l|l|l|l|l|l|}
+\hline
+x    & 4         & 5         & 6         & 3         & 2         & 1         \\ \hline
+P(X) & $\frac16$ & $\frac16$ & $\frac16$ & $\frac16$ & $\frac16$ & $\frac16$ \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\question \textbf{The value of $P(3<X<5)$ is:}
+\choice{$\frac12$}{$\frac16$}{$\frac13$}{0}{b}
+
+\question \textbf{$P(x \neq 2) is:$}
+\choice{$\frac56$}{$0$}{1}{Can't be found from this information}{a}
+% Situation Set Ends
+
+\subsection{Multiple Completion}
+
+\question \textbf{If $f(x) = kx^3; -1 \leq x \leq 1$, then k is}
+
+i) positive \\
+ii) negative  \\
+iii) lies from -1 to 1
+
+\choice{i}{ii}{iii}{i and ii}{a}
+
+% Multiple Completion Starts
+\question \textbf{The example of a discrete random variable is--}
+
+i. Binomial variate 
+
+ii. Poisson variate
+
+iii. Normal variate 
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{a} 
+% Multiple Completion Ends
+
+% Multiple Completion Starts
+\question \textbf{For a discrete random variable $X$ with probability mass function $p(x)$:}
+
+i. $\displaystyle P(a \leq X \leq b) = \sum_{x=a}^{b} p(x)$ \\
+ii. $\displaystyle \sum_{x} p(x) = 1$ \\
+iii. $\displaystyle p(x) \geq 0$ for all $x$
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{d}
+% Multiple Completion Ends
+
+% Multiple Completion Starts
+\question \textbf{For any random variable $X$ with cumulative distribution function $F(x)$:}
+
+i. $F(x)$ is a non-decreasing function \\
+ii. $\lim_{x \to -\infty} F(x) = 0$ and $\lim_{x \to +\infty} F(x) = 1$ \\
+iii. $P(X > a) = 1 - F(a)$
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{d}
+% Multiple Completion Ends
+
+% Multiple Completion Starts
+\question \textbf{For the probability density function $f(x)$ of a continuous random variable $X$:}
+
+i. $P(a \leq X \leq b) = \int_a^b f(x) \, dx$ \\
+ii. $f(x) \geq 0$ for all $x$ \\
+iii. $\int_{-\infty}^{\infty} f(x) \, dx = 1$
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{d}
+% Multiple Completion Ends
+
+% Multiple Completion Starts
+\question \textbf{For a continuous random variable \( X \) with PDF \( f(x) = 2x \), defined on \( [0, 1] \):}
+
+i. \( f(x) \geq 0 \) for all \( x \in [0,1] \) \\
+ii. \( \int_0^1 f(x) \, dx = 1 \) \\
+iii. \( P(X > 1) = 0 \)
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{d}
+% Multiple Completion Ends
+
+% Multiple Completion Starts
+\question \textbf{For a continuous random variable \( X \) with PDF \( f(x) = k(2 - x) \) defined on \( 0 \leq x \leq 2 \):}
+
+i. The value of \( k \) is 1. \\
+ii. The cumulative distribution function \( F(x) = x - \frac{x^2}{4} \) for \( 0 \leq x \leq 2 \). \\
+iii. \( P(1 < X < 2) = \frac{3}{8} \)
+
+\textbf{Which one is correct?}
+
+\choice{i}{i and ii}{ii}{i, ii and iii}{c}
+% Multiple Completion Ends
+
+\newpage
+
+%--------------------------------------------------------------------------
+\section{Mathematical Expectation}
+%--------------------------------------------------------------------------
+
+\question \textbf{E(X+Y) = ?}
+\choice{E(X) - E(Y)}{E(X) + E(Y)}{2E(X) - E(Y)}{$E(X) \times E(Y)$}{b}
+
+\question \textbf{E(4x+2Y) = ?}
+\choice{E(X) - E(Y)}{4E(X) + 2E(Y)}{2E(X) + 4E(Y)}{$E(X) \times E(Y)$}{b}
+
+\question \textbf{If $V(X) = 2$, what is the variance of $(X + 2m)$, where $m$ is a constant?}
+\choice{0}{2}{4}{2 + 4m}{b}
+
+\question \textbf{If $V(X) = 2$, what is the variance of $(2X + m)$, where $m$ is a constant?}
+\choice{0}{2}{4}{8}{d}
+
+\question \textbf{What is the expected value of of the squared deviation of 
+the value of the random variable from their mean?}
+\choice{Arithmetic Mean}{Expectation}{Variance}{Co-variance}{c}
+
+\question \textbf{What is the minimum value of variance a random variable?}
+\choice{$-\infty$}{1}{0}{-1}{c}
+
+\question \textbf{If $y=ax+b$, what is the value of $V(y)?$}
+\choice{$aV(X)$}{$a^2V(X)$}{$V(X)$}{$a^2$}{b}
+
+\question \textbf{If $y=ax+b$, what is the value of $E(y)?$}
+\choice{$aE(X) + b$}{$a^2E(X)$}{$E(X)$}{$b$}{a}
+
+\question \textbf{What is the value of $V(5)$?}
+\choice{0}{25}{5}{1}{a}
+
+\question \textbf{If $P(x) = \frac 1n; x = 1,2,3,\cdots ,n$, what is the value of $E(X)?$}
+\choice{$\frac n2$}{$\frac{n-1}{2}$}{$\frac{n+1}{2}$}{$n+1$}{c}
+
+\question \textbf{If $\displaystyle P(x)= \frac{4-|5-x|}{k}; x=2,3,4, \cdots 8$, what is the value of k?}
+\choice{5}{8}{16}{24}{c}
+
+\question \textbf{Expected value of a constant a is --}
+\choice{1}{Variance}{a}{a+1}{c}
+
+\question \textbf{The variance of a constant m is --}
+\choice{0}{1}{m}{$m^2$}{a}
+
+\question \textbf{What is $V(X-Y)$  equal to?}
+\choice{$V(X)+V(Y)$}{$V(X)+V(Y)-2 Cov(X,Y)$}{$V(X)-V(Y)$}{$V(X)+V(Y)+2Cov(X,Y)$}{c}
+
+\question \textbf{What is the value of V(2X+5)?}
+\choice{$4V(X)-5$}{20}{$4V(X)$}{0}{c}
+
+\question \textbf{If $P(x) = \frac 1{20}; x=1,2,3, \cdots,20,$ what is the 
+standard deviation?}
+\choice{1}{5.77}{7.75}{12.57}{a}
+
+\question \textbf{Expectation measures --}
+\choice{Dispersion}{Skewness}{Kurtosis}{Central tendency}{d}
+
+\question \textbf{If $E(X) = -0.5$, then $E(1-2X) = $?}
+\choice{0}{-1}{2}{1}{c}
+
+\question \textbf{If $P(X) = \frac{1}{10}; x = 1,2,\cdots 10$, then $E(X) =$?}
+\choice{10}{5.5}{0}{11}{b}
+
+\question \textbf{Which formula of variance is correct?}
+\choice{$V(X+Y) = V(X)+V(Y)-2Cov(X,Y)$}{$V(X+Y) = V(X)+V(Y)+2Cov(X,Y)$}{$V(X+Y) = V(X)+V(Y)-2Cov(X,Y)$}{$V(X+Y) = V(X)-V(Y)+2Cov(X,Y)$}{b}
+
+\question \textbf{X is a constant; what is the value of $V(\frac X2)$?}
+
+i) 0 \\
+ii) $\frac12$ \\
+iii) $\frac14$
+
+\choice{ii}{i}{iii}{i and iii}{b}
+
+\question \textbf{If $E(X)=2, E(X^2) = 8, V(X)= --$}
+\choice{0}{2}{4}{8}{c}
+
+\question \textbf{If $E(X)=3, E(X^2) = 11, V(X) = --$}
+\choice{2}{5}{6}{4}{a}
+
+\question \textbf{If $E(X) = 4$, what is $E(3X-2)$?}
+\choice{10}{8}{7}{6}{a}
+
+\question \textbf{If $E(X)=5, E(X^2) = 30, V(X) = --$}
+\choice{3}{5}{4}{6}{b}
+
+\question \textbf{If $E(X)=6$, what is $E(\frac{X}{2} + 1)$?}
+\choice{4}{3}{2}{5}{a}
+
+\question \textbf{If $E(X)=2, E(X^2) = 10, V(X) = --$}
+\choice{5}{6}{7}{4}{b}
+
+\question \textbf{If $E(X) = 7$, what is $E(4X+3)$?}
+\choice{28}{30}{31}{29}{c}
+
+\question \textbf{If $E(X) = 3$, what is $E(5 - X)$?}
+\choice{2}{3}{4}{5}{a}
+
+\question \textbf{If $E(X) = 4$ and $V(X) = 5$, what is $E(X^2)$?}  
+\choice{9}{16}{21}{25}{c}
+
+\question \textbf{If $E(X) = 3$ and $V(X) = 7$, what is $E(X^2)$?}  
+\choice{9}{10}{16}{18}{c}
+
+\question \textbf{If $E(X) = 5$ and $E(X^2) = 34$, what is $V(X)$?}  
+\choice{6}{9}{10}{7}{b}
+
+\question \textbf{If $E(X) = 2$ and $E(X^2) = 14$, what is $V(X)$?}  
+\choice{10}{9}{8}{7}{a}
+
+\question \textbf{If $E(X) = 6$ and $V(X) = 12$, what is $E(X^2)$?}  
+\choice{36}{40}{48}{50}{c}
+
+\question \textbf{If $P(x)= \frac{4-|5-x|}{k}; x=2,3,4, \cdots 8$, what is the value of $E(X)$?}
+\choice{3}{8}{16}{5}{d}
+
+\question \textbf{If $P(x)= \frac{6-|7-x|}{k}; x=2,3,4, \cdots 12$, what is the value of $E(X)$?}
+\choice{6}{9}{13}{36}{d}
+
+\question \textbf{If $P(x)= \frac{3-|4-x|}{k}; x=2,3,4, \cdots 6$, what is the value of k?}
+\choice{6}{9}{10}{40}{b}
+
+\question \textbf{If the variance of X is 3, what is the variance of V(3)?}
+\choice{1}{2}{3}{0}{d}
+
+\question \textbf{If $V(X) = 5,$, what is $V(X+5)?$}
+\choice{0}{5}{10}{25}{b}
+
+\question \textbf{If $V(X) = 5,$, what is $V(2X+5)?$}
+\choice{20}{5}{10}{25}{a}
+
+\question \textbf{If $E(X) = 2$ and $E(X^2)=8$, then the value of the $V(X) = ?$}
+\choice{0}{2}{4}{8}{c}
+
+\question \textbf{If $E(X^2) = 20$ and $V(X) = 11$, what is $E(X)$?}  
+\choice{3}{4}{5}{6}{a}
+
+\question \textbf{If $E(X^2) = 50$ and $V(X) = 14$, what is $E(X)$?}  
+\choice{5}{6}{7}{8}{b}
+
+\question \textbf{If $E(X^2) = 25$ and $V(X) = 9$, what is $E(X)$?}  
+\choice{2}{3}{4}{5}{c}
+
+\question \textbf{If $E(X^2) = 45$ and $V(X) = 21$, what is $E(X)$?}  
+\choice{$4 \sqrt{3}$}{$2 \sqrt{6}$}{$6 \sqrt{2}$}{$7 \sqrt{2}$}{b}
+
+\question \textbf{If $E(X^2) = 13$ and $V(X) = 4$, what is $E(X)$?}  
+\choice{2}{3}{4}{5}{c}
+
+\question \textbf{If $E(X) = 3$, what is $E(2X - 5)$?}  
+\choice{1}{3}{5}{7}{a}  
+
+\question \textbf{If $E(X) = 4$, what is $E(\frac{X}{2} + 3)$?}  
+\choice{4}{5}{6}{7}{b}  
+
+\question \textbf{If $E(X) = -2$, what is $E(3X + 7)$?}  
+\choice{1}{-1}{-2}{4}{a}  
+
+\question \textbf{If $E(X) = 6$, what is $E(5 - X)$?}  
+\choice{1}{0}{-1}{2}{c}  
+
+\question \textbf{If $E(X) = 10$, what is $E(4X - 8)$?}  
+\choice{12}{40}{28}{32}{d}  
+
+\question \textbf{If $\displaystyle  P(x) = \frac 1{15}; x = 1,2,3, \cdots 15$, what is the value of the expectation?}
+\choice{8.5}{7.5}{7}{8}{d}
+
+\subsection{Situation Set}
+
+% Situation Set Starts
+\textbf{Answer the next THREE questions based on the following information}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{cccc}
+X & 0 & 1 & 2 \\ \hline
+P(x) & $\frac 13$ & $\frac14$ & $\frac5{12}$
+\end{tabular}
+\end{table}
+
+\question \textbf{What is the value of $E(X)$}
+\choice{$\frac{15}{12}$}{$\frac{13}{12}$}{$\frac{1}{12}$}{$\frac{11}{13}$}{b}
+
+\question \textbf{What is the value of $E(X^2)$}
+\choice{$\frac{25}{12}$}{$\frac{13}{12}$}{$\frac{23}{12}$}{$\frac{25}{13}$}{b}
+
+\question \textbf{What is $V(2X)$?}
+\choice{2.93}{2.91}{1.97}{2.97}{d}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next TWO questions based on the following information}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{cccc}
+X & 1 & 2 & 4 \\ \hline
+P(x) & 0.5 & 0.3 & 0.2
+\end{tabular}
+\end{table}
+
+\question \textbf{What is $E(X)$?}
+\choice{1.5}{1.9}{2.0}{2.1}{b}
+
+\question \textbf{What is $V(X)$?}
+\choice{1.09}{1.29}{1.49}{1.69}{b}
+% Situation Set Ends
+
+% Situation Set 3 (Corrected)
+% Situation Set Starts
+\textbf{Answer the next TWO questions based on the following information}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{cccc}
+X & 1 & 2 & 3 \\ \hline
+P(x) & 0.5 & 0.3 & 0.2
+\end{tabular}
+\end{table}
+
+\question \textbf{What is $E(X^2)$?}
+\choice{3.6}{4.2}{5.0}{5.6}{a}
+
+\question \textbf{What is $V(2X)$?}
+\choice{2.24}{3.36}{4.48}{5.60}{b}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next TWO questions based on the following information}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{cccc}
+X & 2 & 4 & 6 \\ \hline
+P(x) & 0.5 & 0.3 & 0.2
+\end{tabular}
+\end{table}
+
+\question \textbf{What is $E(X)$?}
+\choice{2.5}{3.4}{4.0}{4.6}{b}
+
+\question \textbf{What is $V(X)$?}
+\choice{2.04}{2.44}{2.84}{3.24}{b}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next TWO questions based on the following information}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{cccc}
+X & 0 & 1 & 4 \\ \hline
+P(x) & 0.4 & 0.4 & 0.2
+\end{tabular}
+\end{table}
+
+\question \textbf{What is $E(X^2)$?}
+\choice{1.2}{2.0}{3.6}{4.8}{c}
+
+\question \textbf{What is $V(X)$?}
+\choice{2.24}{2.64}{3.04}{3.44}{a}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next TWO questions based on the following information}
+
+The probability mass function of a discrete random variable $X$ is given by
+\[
+P(X = x) = \frac{x}{10}, \quad x = 1, 2, 3, 4.
+\]
+
+\question \textbf{What is $E(X)$?}
+\choice{2.0}{2.5}{3.0}{3.5}{c}
+
+\question \textbf{What is $V(X)$?}
+\choice{0.50}{0.75}{1.00}{1.25}{c}
+% Situation Set Ends
+
+% Situation Set 2 (Clean)
+% Situation Set Starts
+\textbf{Answer the next TWO questions based on the following information}
+
+The probability mass function of a discrete random variable $X$ is given by
+\[
+P(X = x) = \frac{x}{6}, \quad x = 1, 2, 3.
+\]
+
+\question \textbf{What is $E(X)$?}
+\choice{1.33}{2.00}{2.33}{3.00}{c}
+
+\question \textbf{What is $V(X)$?}
+\choice{0.33}{0.56}{0.89}{1.11}{b}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next THREE questions based on the following information}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{c|c|c|c}
+X     & 1           & 2           & 3           \\ \hline
+P(x)  & $\frac{1}{6}$ & $\frac{1}{2}$ & $\frac{1}{3}$
+\end{tabular}
+\end{table}
+
+\question \textbf{What is the value of $E(X)$?}
+\choice{$2.00$}{$2.17$}{$2.33$}{$2.50$}{b}
+
+\question \textbf{What is the value of $E(X^2)$?}
+\choice{$5.17$}{$4.83$}{$5.00$}{$5.33$}{a}
+
+\question \textbf{What is $V(3X)$?}
+\choice{$9.67$}{$11.33$}{$12.67$}{$4.25$}{d}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next two questions based on the following information}
+
+\begin{center}
+The probability function of random variable $x$ is given below:
+
+\( P(x) = \frac{x}{k}; x = 1, 2, 3, 4 \)
+\end{center}
+
+\question \textbf{What is the value of $k$?}
+\choice{6}{10}{15}{20}{b}
+
+\question \textbf{What is $E(X)$?}
+\choice{2.25}{3.5}{2.5}{3.0}{d}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next three questions based on the following information}
+
+\begin{center}
+The probability function of random variable $x$ is given below:
+
+\( P(x) = \frac{2x + 1}{k}; x = 1, 2, 3, 4 \)
+\end{center}
+
+\question \textbf{What is the value of $k$?}
+\choice{18}{25}{12}{24}{d}
+
+\question \textbf{What is $E(X)$?}
+\choice{1.75}{2.92}{3.25}{2.25}{b}
+
+\question \textbf{What is $V(X)$?}
+\choice{1.05}{3.0}{1.5}{1.25}{a}
+% Situation Set Ends
+
+% Situation Set Starts
+\textbf{Answer the next two questions based on the following information}
+
+\begin{center}
+The probability function of random variable x is given below
+
+\( P(x) = \frac{x-1}{k}; x = 2, 3, 4, 5 \)
+\end{center}
+
+\question \textbf{What is the value of k?}
+\choice{2}{5}{10}{25}{c}
+
+\question \textbf{What is $E(X)$?}
+\choice{0.425}{0.525}{0.725}{0.625}{c}
+% Situation Set Ends
+
+\subsection{Multiple Completion}
+
+% Multiple Completion Starts
+\question \textbf{The possible relationship between $E(X) and E(X^2)$}
+
+i. $E(X) \ge E(X^2)$ \\
+ii. $E(X) \le E(X^2)$ \\
+iii. $E(X) = E(X^2)$
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{d}
+% Multiple Completion Ends
+
+%--------------------------------------------------------------------------
+\section{Binomial Distribution}
+%--------------------------------------------------------------------------
+
+\question \textbf{How many parameters are there in a binomial distribution?}
+\choice{1}{2}{3}{4}{b}
+
+\question \textbf{What is the Mean of Binomial Distribution?}
+\choice{np}{npq}{nq}{$\sqrt{npq}$}{a}
+
+\question \textbf{What is the Variance of Binomial Distribution?}
+\choice{np}{npq}{nq}{$\sqrt{npq}$}{b}
+
+\question \textbf{What is the Standard Deviation of Binomial Distribution?}
+\choice{np}{npq}{nq}{$\sqrt{npq}$}{d}
+
+\question \textbf{What is the Coefficient of Variation of Binomial Distribution?}
+\choice{np}{npq}{$\frac{q}{np}$}{$\sqrt{npq}$}{c}
+
+\question \textbf{Which is true of mean (np) of Binomial Distribution?}
+\choice{$np=0$}{$np<0$}{$np>0$}{$np\ne0$}{c}
+
+\question \textbf{In a Binomial distribution, how are mean and variance related?}
+\choice{$Mean > Variance$}{$Mean < Variance$}{$Mean = Variance$}{$Mean =2 \times Variance$}{a}
+
+\question \textbf{When does Binomial distribution tend to Poisson distribution?}
+\choice{$n \rightarrow \infty$ and $p \rightarrow \infty$}{$n \rightarrow 0$ and $p \rightarrow 0$}{$n \rightarrow \infty$ and $p \rightarrow 0$}{$n \rightarrow 0$ and $p \rightarrow \infty$}{c}
+
+% Situation Set Starts
+\textbf{Answer the next two questions based on the following information.}
+
+X is a binomial variate with expectation 4 and standard deviation $\sqrt 3$.
+
+\question \textbf{What are the values of the parameters (mean and probability)?}
+\choice{$16, \frac 14$}{$16, \frac 34$}{$15, \frac 14$}{$10, \frac 14$}{a}
+
+\question \textbf{What is $P(X \neq 0)?$}
+\choice{0}{0.01}{0.99}{1}{c}
+% Situation Set Ends
+
+% Multiple Completion Starts
+\question \textbf{The characteristics of binomial distribution--}
+
+i. $E(X) > V(X)$ \\
+ii. $E(X) = V(X)$ \\
+iii. $E(X) = np$
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{b}
+% Multiple Completion Ends
+
+\question \textbf{What is true of binomial distribution?}
+\choice{There is one parameter}{Number of trial is fixed}{Mean is greater than variance}{Skewness is negative}{c}
+
+\question \textbf{What is the skewness of binomial distribution?}
+\choice{$\displaystyle \frac{(q-p)^2}{np}$}{$\displaystyle \frac{(q-p)^2}{np}$}{$\displaystyle \frac{(p+1)^2}{npq}$}{$\displaystyle \frac{(q+p)^2}{npq}$}{a}
+
+\question \textbf{When is a binomial distribution positively skewed?}
+\choice{p > q}{p = q}{p < q}{p+q < 1}{c}
+
+% Situation Set Starts
+\textbf{Answer the next two questions based on the following information}
+
+\begin{center}
+In a binomial distribution, $P(x=4) = \frac12 P(x=5); n  = 10$
+\end{center}
+
+\question \textbf{What is the mean?}
+\choice{6.25}{5.15}{8.52}{5.22}{a}
+
+\question \textbf{$P(x=2) =$ ---}
+\choice{0.0053}{0.0069}{0.0085}{0.94}{b}
+% Situation Set Ends
+
+\question \textbf{In a binomial distribution with $p = 0.3$ and $n = 10$, what is $P(2)$?}  
+\choice{0.2335}{0.2668}{0.3828}{0.1211}{c}  
+
+\question \textbf{In a binomial distribution with $p = 0.4$ and $n = 12$, what is $P(3)$?}  
+\choice{0.0896}{0.2131}{0.1419}{0.2942}{c}  
+
+\question \textbf{In a binomial distribution with $p = 0.5$ and $n = 8$, what is $P(4)$?}  
+\choice{0.2734}{0.3125}{0.2070}{0.0898}{a}  
+
+\question \textbf{In a binomial distribution with $p = 0.2$ and $n = 15$, what is $P(5)$?}  
+\choice{0.1789}{0.1887}{0.1032}{0.2413}{c}  
+
+\question \textbf{In a binomial distribution with $p = 0.6$ and $n = 9$, what is $P(6)$?}  
+\choice{0.2007}{0.2508}{0.2311}{0.7682}{b}  
+
+\question \textbf{In a binomial distribution with $p = 0.3$ and $P(x) = 0.2508, n=9, x=?$}  
+\choice{18}{10}{13}{6}{b}  
+
+\question \textbf{In a binomial distribution with $p = 0.4$ and $P(x) = 0.1419$, what is $n$?}  
+\choice{5}{6}{12}{15}{c}  
+
+\question \textbf{In a binomial distribution with $p = 0.5$ and $P(2) = 0.1093$, what is $n$?}  
+\choice{15}{1}{8}{12}{c}
+ 
+\question \textbf{In a binomial distribution with $p = 0.2$ and $P(x) = 0.9389$, $n=?$}  
+\choice{7}{12}{11}{15}{d}  
+
+\question \textbf{In a binomial distribution with $p = 0.6$ and $P(5) = 0.02449$, $n=?$}  
+\choice{3}{9}{10}{15}{b}  
+
+\subsection{Situation Set}
+
+% Situation Set Starts
+\textbf{Answer the next THREE questions based on the following information}
+
+\begin{center}
+The mean of a Binomial distribution is 40 and standard deviation 6. 
+\end{center}
+
+\question \textbf{What is the value of $n$?}
+\choice{200}{300}{400}{500}{c}
+
+\question \textbf{What is the value of $1-q$?}
+\choice{0.5}{0.2}{0.3}{0.1}{d}
+
+\question \textbf{What is the value of $P(X\le 40)$?}
+\choice{0.52}{0.54}{0.45}{0.91}{b}
+% Situation Set Ends
+
+\subsection{Multiple Completion}
+
+% Multiple Completion Starts
+\question \textbf{In a binomial distribution with parameters \( n \) and \( p \):}
+
+i. The expected value is given by \( E(X) = np \). \\
+ii. The variance is given by \( V(X) = np(1 - p) \). \\
+iii. The standard deviation is given by \( \sqrt{np} \).
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{a}
+% Multiple Completion Ends
+
+% Multiple Completion Starts
+\question \textbf{Which of the following statements about a binomial distribution are true?}
+
+i. The probability of success remains constant for each trial. \\
+ii. The trials are dependent on each other. \\
+iii. The number of trials is fixed in advance.
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{b}
+% Multiple Completion Ends
+
+% Multiple Completion Starts
+\question \textbf{Consider a binomial experiment. Which of the following statements is/are true?}  
+
+i. Each trial results in exactly one of two possible outcomes. \\  
+ii. The expected value is always greater than the variance. \\  
+iii. The probability mass function of a binomial distribution can be computed using the binomial formula.  
+
+\textbf{Which one is correct?}  
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{d}  
+% Multiple Completion Ends
+
+% Multiple Completion Starts
+\question \textbf{Which of the following is/are correct about the binomial distribution?}  
+
+i. The variance is maximized when \( p = 0.5 \). \\  
+ii. If \( p = 1 \), the distribution becomes degenerate. \\  
+iii. The standard deviation is given by \( \sqrt{np(1-p)} \).  
+
+\textbf{Which one is correct?}  
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{d}  
+% Multiple Completion Ends
+
+%--------------------------------------------------------------------------
+\section{Poisson Distribution}
+%--------------------------------------------------------------------------
+
+\question \textbf{The no. of parameters in a Poisson distribution is ---}
+\choice{1}{2}{3}{4}{a}
+
+\question \textbf{What is the mean of Poisson distribution}
+\choice{$\frac 1{\sqrt m}$}{$m$}{$\frac 1m$}{$1+\frac 1m$}{b}
+
+\question \textbf{Which relationship between mean and variance of Poisson Distribution is correct?}
+\choice{$Mean > Variance$}{$Mean < Variance$}{$Mean = Variance$}{$Mean \ne Variance$}{c}
+
+\question \textbf{What is the Variance of Poisson Distribution(with parameter m)?}
+\choice{$\frac1{\sqrt{m}}$}{$\frac1m$}{$m$}{$\frac1{m+1}$}{c}
+
+\question \textbf{What is the Standard Deviation of Poisson Distribution(with parameter m)?}
+\choice{$\frac1{\sqrt{m}}$}{$\frac1m$}{$\sqrt{m}$}{$\frac1{m+1}$}{c}
+
+\question \textbf{Which one is true of the parameter (m) of Poisson Distribution?}
+\choice{$m=0$}{$m<0$}{$m>0$}{$m=1$}{c}
+
+\question \textbf{The parameter of a Poisson Distribution is 5. What is its mean?}
+\choice{2}{5}{2.24}{25}{b}
+
+\question \textbf{When does Binomial Distribution tend to Poisson Distribution?}
+\choice{$n \rightarrow \infty, p \rightarrow 0$ \& $np$ is finite}{$n \rightarrow \infty, p \rightarrow 0$ \& $np$ is infinite}{$n \rightarrow \infty, p \rightarrow  \infty$ \& $np$ is finite}{$n \rightarrow 0, p \rightarrow \infty$ \& $np$ is infinite}{a}
+
+\question \textbf{The parameter of a Poisson variate is 2. What is its variance?}
+\choice{0}{4}{$\sqrt 2$}{2}{d}
+
+\question \textbf{The parameter of a Poisson variate is 5. What is its variance?}
+\choice{10}{5}{$\sqrt{5}$}{25}{b}
+
+\question \textbf{A Poisson distribution has a mean of 3. What is the variance?}
+\choice{9}{3}{$\sqrt{3}$}{0}{b}
+
+\question \textbf{X is a Poisson variate. P(2) = P(4). What is the value of the parameter?}
+\choice{12}{3.46}{3.6}{4}{b}
+
+\question \textbf{X is a Poisson variate. P(3) = P(5). What is the value of the parameter?}
+\choice{4.5}{5}{2.3}{4.1}{a}
+
+\question \textbf{For a Poisson variate X, if P(1) = P(3), what is the variance?}
+\choice{2.5}{3.2}{2.45}{4.5}{c}
+
+\question \textbf{For a Poisson variate $X$, if $P(2) = P(3)$, what is the variance?}  
+\choice{3}{4}{5}{6}{a}
+
+% Situation Set Starts
+\textbf{Answer the next two questions based on the following information}
+
+For a Poisson variate X, if P(2) = P(5).
+
+\question \textbf{What is standard deviation?}
+\choice{1.978}{1.998}{1.989}{1.889}{a}
+
+\question \textbf{What is the value of P(2)?}
+\choice{0.25}{0.14}{0.15}{0.02}{c}
+% Situation Set Ends
+
+\question \textbf{The standard deviation of a poisson distribution is 2. 
+What is the parameter?}
+\choice{2}{3}{4}{5}{c}
+
+\question \textbf{Mean of a Poisson variate is a. What is its standard deviation?}
+\choice{0}{a}{$a^{\frac 12}$}{$a^2$}{c}
+
+\question \textbf{The standard deviation of a Poisson distribution is 3. What is the parameter?}
+\choice{6}{9}{3}{4}{b}
+
+\question \textbf{For a Poisson distribution with a mean of 5, what is the variance?}
+\choice{5}{10}{25}{15}{a}
+
+\question \textbf{If the variance of a Poisson distribution is 4, what is \( P(2) \)?}
+\choice{0.1465}{0.1954}{0.1839}{0.2184}{a}
+
+\question \textbf{If the variance of a Poisson distribution is 3.5, what is \( P(1) \)?}
+\choice{0.1465}{0.1057}{0.1839}{0.2184}{b}
+
+\question \textbf{A Poisson distribution has a mean of 7. What is the standard deviation?}
+\choice{3.2}{4.1}{2.65}{1.78}{c}
+
+\question \textbf{If \( P(2) \) in a Poisson distribution with parameter 
+\(\lambda\) equals 0.2240, what is the parameter \(\lambda\)?}
+\choice{2.4551}{1.2515}{1.2115}{2.5112}{b}
+
+\question \textbf{A Poisson distribution has a mean of 4. What is \( P(3) \)?}
+\choice{0.1465}{0.1954}{0.1839}{0.2381}{b}
+
+\question \textbf{If the variance of a Poisson distribution is 3, what is the 
+mean?}
+\choice{3}{\(\sqrt{3}\)}{2}{6}{a}
+
+\question \textbf{For a Poisson distribution with mean 6, what is the
+probability of \( P(0) \)?}
+\choice{0.0895}{0.012}{0.0454}{0.0024}{d}
+
+\question \textbf{The mean of a Poisson distribution is 10. What is its 
+standard deviation?}
+\choice{5}{\(\sqrt{10}\)}{10}{\(\sqrt{20}\)}{b}
+
+\question \textbf{Given that the parameter of a Poisson distribution is 8, 
+what is the variance?}
+\choice{4}{8}{\(\sqrt{8}\)}{16}{b}
+
+\subsection{Multiple Completion}
+
+% Multiple Completion Starts
+\question \textbf{For a Poisson-distributed variable with mean $\lambda = 4$, which of the following is true?}
+
+i. $E(X) = 4$ \\  
+ii. $V(X) = 2$ \\  
+iii. $E(X^2) = 18$
+
+\textbf{Which one is correct?}  
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{b}  
+% Multiple Completion Ends
+
+% Multiple Completion Starts
+\question \textbf{If $X \sim \text{Poisson}(m = 3)$, which of the following holds?}
+
+i. $E(X) = 3$ \\  
+ii. $V(X) = 3$ \\  
+iii. $E(X^2) = 12$  
+
+\textbf{Which one is correct?}  
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{d}  
+% Multiple Completion Ends
+
+% Multiple Completion Starts
+\question \textbf{For a Poisson distribution, which of the following statements are true?}
+
+i. The mean and variance are always equal. \\  
+ii. The distribution is always symmetric. \\  
+iii. The probability of zero occurrences is given by $e^{-m}$.  
+
+\textbf{Which one is correct?}  
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{b}  
+% Multiple Completion Ends
+
+% Multiple Completion Starts
+\question \textbf{A Poisson-distributed random variable has mean $\lambda = 6$. Among the following properties ---}
+
+i. $E(X) = 6$ \\  
+ii. $V(X) = 6$ \\  
+iii. $P(X = 0) = e^{-6}$  
+
+\textbf{Which one is correct?}  
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{d}  
+% Multiple Completion Ends
+
+% Multiple Completion Starts
+\question \textbf{For a Poisson process with $\lambda = 5$, which of the following is true?}
+
+i. The standard deviation is $\sqrt{5}$. \\  
+ii. $P(X \geq 1) = 1 - e^{-5}$. \\  
+iii. $E(X^2) = 30$  
+
+\textbf{Which one is correct?}  
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{d}  
+% Multiple Completion Ends
+
+%--------------------------------------------------------------------------
+\subsection{Problems}
+%--------------------------------------------------------------------------
+
+\question \textbf{On average, 1 in 1000 houses in a city gets a fire-burn in a year.If there are 2000 houses, what is the probability that, in a certain year, exactly 5 house will be burnt?}
+\choice{0.036}{0.040}{0.027}{0.091}{a}
+
+%--------------------------------------------------------------------------
+\section{Normal Distribution}
+%--------------------------------------------------------------------------
+
+\question \textbf{What is the range of the Normal distribution?}
+\choice{$-1 \text{to} 1$}{$0 \text{to} 1$}{$0 \text{to} \infty$}{$-\infty \text{to} \infty$}{d}
+
+\question \textbf{What is the probability of a certain value of the Normal distribution?}
+\choice{0}{1}{0.5}{0.1}{a}
+
+\question \textbf{What is the range of the mean of the Normal distribution?}
+\choice{$(-\infty, \infty)$}{$(0, \infty)$}{$(0,1)$}{$(-\infty, 0$}{a}
+
+\question \textbf{What is the relationship between the normal and standard normal distribution?}
+\choice{$Z = \frac{X+\mu}{\sigma}$}{$Z = \frac{X-\mu}{\sigma}$}{$Z = \frac{X-\sigma}{\mu}$}{$Z = \frac{X-\mu}{\sigma^2}$}{b}
+
+\question \textbf{What is the mean of standard normal distribution?}
+\choice{-1}{1}{0}{$\infty$}{c}
+
+\question \textbf{In the standard normal distribution, how many parameters are there?}
+\choice{1}{2}{0}{3}{c}
+
+\question \textbf{What is the maximum value of the probability density function of a normal distribution?}
+\choice{$\mu$}{$\frac{1}{\sigma \sqrt{2\pi}}$}{$\sigma$}{$\sigma^2$}{b}
+
+\question \textbf{What is the skewness of the Normal distribution?}
+\choice{0}{1}{2}{3}{a}
+
+\question \textbf{How many parameters does the Normal distribution have?}
+\choice{0}{1}{2}{3}{c}
+
+\subsection{Mathematical Problems}
+
+% Situation Set Starts
+\textbf{Answer the next two questions based on the following information}
+
+\begin{center}
+A Normal distribution has mean 12 and standard deviation 2.
+\end{center}
+
+\question \textbf{$P(10 < X < 13.5) = --$}
+\choice{0.50}{0.56}{0.64}{0.45}{b}
+
+\question \textbf{P(X is between 6 and 18) = --}
+\choice{0.002}{0.976}{0.997}{0.590}{c}
+% Situation Set Ends
+
+%--------------------------------------------------------------------------
+\section{Index Number}
+%--------------------------------------------------------------------------
+
+\question \textbf{If Laspeyres' index is 80 and and Fisher's index is 120, what is the value of Paasche's index?}
+\choice{97.97}{100}{180}{200}{c}
+
+\question \textbf{The year for which an index number is calculated is called --}
+\choice{Base year}{Index year}{Quantity year}{Current year}{d}
+
+\question \textbf{Which Index Number satisfies the time and factor reversal test?}
+\choice{Laspeyres' index number}{Paasche's index number}{Fisher's index number}{Marshal-Edgeworth index number}{d}
+
+\question \textbf{Which index number shows an upward trend?}
+\choice{Laspeyres' index number}{Bowley's index number}{Fisher's index number}{Marshal-Edgeworth index number}{a}
+
+\section{Sampling}
+
+\question \textbf{A sample characteristic is known as a --}
+\choice{Quantity}{Statistic}{Parameter}{Unit}{b}
+
+\question \textbf{The complete enumeration of all items in a target population is --}
+\choice{Pilot survery}{Sample survey}{Census}{Sampling frame}{c}
+
+\question \textbf{An unknown constant of the population is called --}
+\choice{Quantity}{Statistic}{Parameter}{Unit}{c}
+
+\question \textbf{In which sampling method are all items equally likely}
+\choice{Simple random sampling}{Quota sampling}{Stratified sampling}{Cluster sampling}{a}
+
+\question \textbf{How many samples of size 4 can be drawn with replacement from a population of size 10?}
+\choice{200}{220}{210}{10000}{d}
+
+\question \textbf{How many samples of size 4 can be drawn without replacement from a population of size 10?}
+\choice{200}{220}{210}{550}{c}
+
+\question \textbf{In sampling with replacement, the probability of each selected sample is --}
+\choice{$\frac{1}{N^n}$}{$\frac{1}{^NC_n}$}{$\frac{1}{N \times n}$}{$\frac{n}{N}$}{a}
+
+% Multiple Completion Starts
+\question \textbf{Which of the following are true about stratified sampling?}
+
+i. The population is divided into homogeneous subgroups called strata \\
+ii. Samples are drawn independently from each stratum \\
+iii. The strata are heterogenous
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{a}
+% Multiple Completion Ends
+
+%--------------------------------------------------------------------------
+
+%--------------------------------------------------------------------------
+\section{Vital Statistics}
+%--------------------------------------------------------------------------
+
+\question \textbf{What is the called the ratio of the dependent population to the earning population?}
+\choice{Dependency ratio}{Sex ration}{Population density}{Growth rate}{a}
+
+\question \textbf{Which of the following best describes the dependency ratio?}
+\choice{The ratio of the elderly population to the working-age population}
+{The ratio of the combined non-working (0-14 and 65+) population to the working-age (15-64) population}
+{The proportion of young dependents (0-14) in the population}
+{The total population divided by the number of children (0-14)}
+{b}
+
+\question \textbf{City A has 12,000 individuals aged 0-14, 35,000 aged 15-64, and 5,000 aged 65+. What is the dependency ratio?}
+\choice{0.31}{0.48}{0.60}{0.25}{b}
+
+\question \textbf{A City has a dependency ratio of 0.52. If its working-age population (15-64) is 50,000, what is the total number of dependents (0-14 and 65+)?}
+\choice{15,600}{20,000}{26,000}{30,000}{c}
+
+\textbf{Answer the following 2 questions based on the information given below.}  
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{City} & \textbf{Population (in thousands)} & \textbf{Area (in km\(^2\)} \\ \hline
+Gamma         & 1200                              & 400                        \\ \hline
+Delta         & 800                               & 320                        \\ \hline
+\end{tabular}
+\end{table}  
+
+\question \textbf{What is the population density of City Delta?}  
+\choice{2 people/km\(^2\)}{4 people/km\(^2\)}{2.5 people/km\(^2\)}{2.2 people/km\(^2\)}{b}  
+
+\question \textbf{Which city is less densely populated?}  
+\choice{Gamma}{Delta}{Both are equal}{Cannot be determined}{b}  
+
+\textbf{Answer the following two questions based on the information given below.}  
+
+In a city, the total number of live births in a year was 2,400. The number of women aged 15-49 years in the population was 48,000.  
+
+\question \textbf{Calculate the General Fertility Rate (GFR) for the city.}  
+\choice{40 per 1,000 women}{50 per 1,000 women}{60 per 1,000 women}{30 per 1,000 women}{b}  
+
+\question \textbf{If live births increase to 3,000 while the number of women aged 15-49 remains the same, what is the new GFR?}  
+\choice{55 per 1,000 women}{65 per 1,000 women}{50 per 1,000 women}{62.5 per 1,000 women}{d}  
+
+\question \textbf{The population of a city is 500,000, and the number of 
+live births recorded in a year is 8,000. What is the Crude Birth Rate (CBR)?}
+\choice{12 per 1,000}{16 per 1,000}{20 per 1,000}{22 per 1,000}{b}
+
+\question \textbf{What is the formula of population density?}
+\choice{$\frac{M}{F}\times 100$}{$\frac{F}{M}\times 100$}{$\frac{B}{P}\times 100$}{$\frac{P}{A}$}{d}
+
+\question \textbf{In the following data, what is the dependency ratio?}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{c|ccccccc}
+Age          & 0-14   & 15-24  & 25-34  & 35-44  & 45-54  & 55-64  & 65+    \\ \hline
+Populatation & 31,500 & 40,000 & 48,000 & 41,000 & 32,000 & 25,000 & 16,000
+\end{tabular}
+\end{table}
+
+\choice{35.54\%}{25.54\%}{23.24\%}{31.25\%}{b}
+
+\question \textbf{Crude Birth Rate (CBR) is:}
+\choice{$\frac BP \times 100$}{$\frac BP \times 1000$}{$\frac PB \times 100$}{$\frac FP \times 100$}{b}
+
+\question \textbf{Which one is a measure of reproduction?}
+
+i) CBR \\
+ii) CDR \\
+iii) NRR
+
+\choice{i}{ii}{iii}{i and ii}{c}
+
+\question \textbf{The number of people living per unit area is called--}
+\choice{Population Index}{Population Density}{Human Development Index}{Dependency Ratio}{b}
+
+\question \textbf{Which formula of GFR is accurate?}
+\choice{$GFR = \frac{B}{P}\times 1000$}{$GFR = \frac{B}{F_{15-49}}\times 1000$}{$GFR = \frac{B_i}{F_i}\times 1000$}{$GFR = \frac{G_i}{F{15-49}}\times 1000$}{b}
+
+\question \textbf{Total number of children born to each 1000 people in any country or region is called --}
+\choice{TFR}{GFR}{CBR}{GRR}{c}
+
+\question \textbf{A city has a dependency ratio of 0.48. If the working-age population (15–64) is 62,500, what is the number of dependents (ages 0–14 and 65+)?}  
+\choice{30,000}{25,000}{22,000}{20,000}{a}
+
+\question \textbf{The dependency ratio of a town is 0.60. If there are 40,000 people aged 15–64, how many individuals are considered dependents?}  
+\choice{22,000}{26,500}{24,000}{25,000}{c}
+
+\question \textbf{Which one is correct?}
+\choice{TFR>GRR>NRR}{TFR=GRR=NRR}{TFR<GRR<NRR}{NRR>GRR>TFR}{a}
+
+\question \textbf{Which reflectes an unchanging population?}
+\choice{GRR=1}{NRR>1}{GRR<1}{GRR=NRR}{a}
+
+\subsection{Growth Rates}
+
+\question 
+\textbf{If $n$ in $P_n = P_o(1+r)^n$ is split into infinite parts and $r$ adjusted accordingly, what type of growth do we have?}
+
+\choice{Simple growth}{Arithmetic growth}{Exponential growth}{Geometric growth}{c}
+
+% Situation Set Starts
+\textbf{Answer the next two questions based on the following information}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{c|c|c|c|c}
+Year & 1 & 2 & 3 & 4 \\ \hline
+Population & 100 & 110 & 120 & 130
+\end{tabular}
+\end{table}
+
+\question \textbf{Which type of growth is seen here?}
+\choice{Arithmetic growth}{Geometric growth}{Exponential growth}{None}{a}
+
+\question \textbf{What is the rate of increase?}
+\choice{1}{0.1}{10}{1\%}{b}
+% Situation Set Ends
+
+\question \textbf{In exponential growth, when is a population doubled?}
+\choice{$\frac{\log_{10} 2}{r}$}{$\frac{\log_e 2}{r}$}{$\frac{\log_e 2}{r^2}$}{$\frac{\log_e 3}{r}$}{b}
+
+\question \textbf{If a population exponentially declines, when is it reduced to half?}  
+\choice{$\frac{\log_{10} 2}{r}$}{$\frac{\log_e 2}{r}$}{$\frac{\log_e 2}{r^2}$}{$\frac{\log_e 3}{r}$}{b}  
+
+\question \textbf{How long does it take for a population to triple in exponential growth?}  
+\choice{$\frac{\log_{10} 3}{r}$}{$\frac{\log_e 3}{r}$}{$\frac{\log_e 3}{r^2}$}{$\frac{\log_e 2}{r}$}{b}  
+
+% Situation Set Starts
+\textbf{Answer the next two questions based on the following information}
+
+\begin{center}
+Statement
+\end{center}
+
+% Multiple Completion Starts
+\question \textbf{Vital statistics records --}
+
+i. marriage \\
+ii. birth \\
+iii. sickness and death
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{d}
+% Multiple Completion Ends
+
+\question \textbf{A population of 5000 grows at a geometric rate of 3\% per annum. What will be the population after 6 years?}
+\choice{$5000 \times (1.03)^5$}{$5000 \times (1.03)^6$}{$5000 \times 6 \times 1.03$}{$5000 + 5000 \times 0.03 \times 6$}{b}
+% Situation Set Ends
+
+\question \textbf{A population grows arithmetically from 10,000 to 12,000 in 5 years. What is the annual absolute increase?}
+\choice{200}{400}{600}{800}{b}
+
+\question \textbf{A bacterial culture grows exponentially with a growth rate constant of $r = 0.2$ per hour. How many hours will it take to triple?}
+\choice{$\frac{\ln 3}{0.2}$}{$\frac{\ln 2}{0.2}$}{$0.2 \times \ln 3$}{$0.2 \times \ln 2$}{a}
+
+\end{questions}
+
+\newpage  %Uncomment to put on new age
+%\bigskip
+
+\begin{multicols}{3}
+[
+\textbf{Answer Key:}
+]
+\showallanswers % Phil Hirschorn
+  \end{multicols}
+
+\end{document}
