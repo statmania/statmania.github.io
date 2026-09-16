@@ -176,8 +176,9 @@ format:
   .sm-section-head p{ color: #8b96b8; }
 
   .sm-grid{
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 1.5rem;
     max-width: 1200px;
     margin: 0 auto;
@@ -189,6 +190,7 @@ format:
     flex-direction: column;
     align-items: flex-start;
     gap: 0.6rem;
+    flex: 0 1 calc(25% - 1.125rem);
     padding: 1.9rem 1.7rem;
     border-radius: 1.1rem;
     text-decoration: none !important;
@@ -198,6 +200,14 @@ format:
     backdrop-filter: blur(6px);
     overflow: hidden;
     transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  @media (max-width: 900px){
+    .sm-card{ flex-basis: calc(50% - 0.75rem); }
+  }
+
+  @media (max-width: 560px){
+    .sm-card{ flex-basis: 100%; }
   }
 
   .sm-card::before{
@@ -253,6 +263,50 @@ format:
   }
   .sm-card .sm-link i{ transition: transform 0.2s ease; margin-left: 0.25rem; }
   .sm-card:hover .sm-link i{ transform: translateX(4px); }
+
+  .sm-featured-badge{
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #1a1406;
+    background: linear-gradient(90deg, #ffd166, #ffb703);
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    box-shadow: 0 0 15px rgba(255,183,3,0.5);
+  }
+  .sm-card-featured{ border-color: rgba(255,183,3,0.35); }
+  .sm-card-featured::before{ background: linear-gradient(135deg, #ffd166, transparent 40%, #ff8906); }
+  .sm-card-featured:hover{ box-shadow: 0 20px 45px rgba(0,0,0,0.45), 0 0 30px rgba(255,183,3,0.25); }
+
+  .sm-category{ max-width: 1200px; margin: 0 auto 3.5rem auto; }
+  .sm-category:last-child{ margin-bottom: 0; }
+  .sm-category-head{
+    text-align: center;
+    margin-bottom: 1.75rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .sm-category-head h3{
+    font-size: clamp(1.3rem, 3vw, 1.7rem);
+    font-weight: 800;
+    color: #f2f5ff;
+    margin: 0 0 0.4rem 0;
+    letter-spacing: 0.02em;
+  }
+  .sm-category-head h3 i{ color: var(--sm-cyan); margin-right: 0.6rem; }
+  .sm-category-head a{
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--sm-cyan);
+    text-decoration: none !important;
+  }
+  .sm-category-head a i{ margin-left: 0.2rem; }
+  .sm-category-head a:hover{ text-decoration: underline !important; }
+  .sm-category .sm-grid{ margin-bottom: 0; }
 </style>
 
 <div class="sm-hero-wrap">
@@ -269,11 +323,53 @@ format:
     </div>
   </div>
   <div class="sm-stats">
-    <div class="sm-stat"><div class="sm-num" data-count="30">0</div><div class="sm-label">Lecture Decks</div></div>
-    <div class="sm-stat"><div class="sm-num" data-count="27">0</div><div class="sm-label">Blog Posts</div></div>
-    <div class="sm-stat"><div class="sm-num" data-count="9">0</div><div class="sm-label">Data Viz Tools</div></div>
-    <div class="sm-stat"><div class="sm-num" data-count="5">0</div><div class="sm-label">Games</div></div>
-    <div class="sm-stat"><div class="sm-num" data-count="100">0</div><div class="sm-label">% Free</div></div>
+    <div class="sm-stat"><div class="sm-num"><span class="sm-num-value" data-count="24">0</span>+</div><div class="sm-label">Lecture Decks</div></div>
+    <div class="sm-stat"><div class="sm-num"><span class="sm-num-value" data-count="33">0</span>+</div><div class="sm-label">Blog Posts</div></div>
+    <div class="sm-stat"><div class="sm-num"><span class="sm-num-value" data-count="8">0</span>+</div><div class="sm-label">Data Viz Tools</div></div>
+    <div class="sm-stat"><div class="sm-num"><span class="sm-num-value" data-count="8">0</span>+</div><div class="sm-label">Games</div></div>
+    <div class="sm-stat"><div class="sm-num"><span class="sm-num-value" data-count="100">0</span></div><div class="sm-label">% Free</div></div>
+  </div>
+</div>
+
+<div class="sm-section" id="featured">
+  <div class="sm-section-head">
+    <h2><i class="fa-solid fa-star"></i>Featured</h2>
+    <p>A few favorites to get you started.</p>
+  </div>
+  <div class="sm-grid">
+
+  <a class="sm-card sm-card-featured" href="lectures.html">
+    <span class="sm-featured-badge">Featured</span>
+    <div class="sm-card-icon"><i class="fa-solid fa-arrow-up-right-dots"></i></div>
+    <h3>Explore Lecture Slides</h3>
+    <p>Learn statistical and mathematical concepts</p>
+    <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
+  </a>
+
+  <a class="sm-card sm-card-featured" href="games/monty-hall.html">
+    <span class="sm-featured-badge">Featured</span>
+    <div class="sm-card-icon"><i class="fa-solid fa-door-open"></i></div>
+    <h3>Monty Hall Simulator</h3>
+    <p>Test the famous probability puzzle</p>
+    <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
+  </a>
+
+  <a class="sm-card sm-card-featured" href="games/sudoku.html">
+    <span class="sm-featured-badge">Featured</span>
+    <div class="sm-card-icon"><i class="fa-solid fa-table-cells"></i></div>
+    <h3>Sudoku</h3>
+    <p>Classic number puzzle, three levels</p>
+    <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
+  </a>
+
+  <a class="sm-card sm-card-featured" href="ds/viz/scatter.html">
+    <span class="sm-featured-badge">Featured</span>
+    <div class="sm-card-icon"><i class="fa-solid fa-braille"></i></div>
+    <h3>Scatter Plot Maker</h3>
+    <p>Use regression or trees</p>
+    <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
+  </a>
+
   </div>
 </div>
 
@@ -282,79 +378,143 @@ format:
     <h2><i class="fa-solid fa-bolt"></i>Tools &amp; Resources</h2>
     <p>Everything you need to learn, practice, and visualize statistics in one place.</p>
   </div>
-  <div class="sm-grid">
 
-  <a class="sm-card" href="lectures.html">
-    <div class="sm-card-icon"><i class="fa-solid fa-arrow-up-right-dots"></i></div>
-    <h3>Explore Lecture Slides</h3>
-    <p>Learn statistical and mathematical concepts</p>
-    <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
-  </a>
+  <div class="sm-category">
+    <div class="sm-category-head">
+      <h3><i class="fa-solid fa-graduation-cap"></i>Learn</h3>
+    </div>
+    <div class="sm-grid">
 
-  <a class="sm-card" href="blog/">
-    <div class="sm-card-icon"><i class="fa-solid fa-newspaper"></i></div>
-    <h3>Explore the Blog</h3>
-    <p>Posts on statistics theory, R &amp; Python, and dev tips</p>
-    <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
-  </a>
+    <a class="sm-card" href="lectures.html">
+      <div class="sm-card-icon"><i class="fa-solid fa-arrow-up-right-dots"></i></div>
+      <h3>Explore Lecture Slides</h3>
+      <p>Learn statistical and mathematical concepts</p>
+      <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
 
-  <a class="sm-card" href="games/index.html">
-    <div class="sm-card-icon"><i class="fa-solid fa-gamepad"></i></div>
-    <h3>Play Games</h3>
-    <p>Play fun math and stats games</p>
-    <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
-  </a>
+    <a class="sm-card" href="blog/">
+      <div class="sm-card-icon"><i class="fa-solid fa-newspaper"></i></div>
+      <h3>Explore the Blog</h3>
+      <p>Posts on statistics theory, R &amp; Python, and dev tips</p>
+      <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
 
-  <a class="sm-card" href="../utility/index.html">
-    <div class="sm-card-icon"><i class="fa-solid fa-calculator"></i></div>
-    <h3>Utilities</h3>
-    <p>BMI, Age, Timer, Password &amp; more</p>
-    <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
-  </a>
-
-  <a class="sm-card" href="ds/viz/bar.html">
-    <div class="sm-card-icon"><i class="fa-solid fa-chart-column"></i></div>
-    <h3>Make a Bar Chart</h3>
-    <p>Visualize categorical data</p>
-    <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
-  </a>
-
-  <a class="sm-card" href="ds/viz/gen-data.html">
-    <div class="sm-card-icon"><i class="fa-solid fa-database"></i></div>
-    <h3>Generate Data</h3>
-    <p>Track trends over time</p>
-    <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
-  </a>
-
-  <a class="sm-card" href="ds/viz/hist.html">
-    <div class="sm-card-icon"><i class="fa-solid fa-chart-pie"></i></div>
-    <h3>Histogram Maker</h3>
-    <p>Show proportions clearly</p>
-    <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
-  </a>
-
-  <a class="sm-card" href="ds/viz/pie.html">
-    <div class="sm-card-icon"><i class="fa-solid fa-chart-pie"></i></div>
-    <h3>Pie Chart Maker</h3>
-    <p>Upload your own CSV</p>
-    <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
-  </a>
-
-  <a class="sm-card" href="ds/viz/scatter.html">
-    <div class="sm-card-icon"><i class="fa-solid fa-chart-scatter"></i></div>
-    <h3>Scatter Plot Maker</h3>
-    <p>Use regression or trees</p>
-    <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
-  </a>
-
-  <a class="sm-card" href="ds/viz/aes.html">
-    <div class="sm-card-icon"><i class="fa-solid fa-hexagon-nodes"></i></div>
-    <h3>Aesthetic Equations</h3>
-    <p>Embed code with output</p>
-    <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
-  </a>
-
+    </div>
   </div>
+
+  <div class="sm-category">
+    <div class="sm-category-head">
+      <h3><i class="fa-solid fa-chart-column"></i>Data Visualization</h3>
+    </div>
+    <div class="sm-grid">
+
+    <a class="sm-card" href="ds/viz/bar.html">
+      <div class="sm-card-icon"><i class="fa-solid fa-chart-column"></i></div>
+      <h3>Make a Bar Chart</h3>
+      <p>Visualize categorical data</p>
+      <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
+
+    <a class="sm-card" href="ds/viz/gen-data.html">
+      <div class="sm-card-icon"><i class="fa-solid fa-database"></i></div>
+      <h3>Generate Data</h3>
+      <p>Track trends over time</p>
+      <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
+
+    <a class="sm-card" href="ds/viz/hist.html">
+      <div class="sm-card-icon"><i class="fa-solid fa-chart-pie"></i></div>
+      <h3>Histogram Maker</h3>
+      <p>Show proportions clearly</p>
+      <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
+
+    <a class="sm-card" href="ds/viz/pie.html">
+      <div class="sm-card-icon"><i class="fa-solid fa-chart-pie"></i></div>
+      <h3>Pie Chart Maker</h3>
+      <p>Upload your own CSV</p>
+      <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
+
+    <a class="sm-card" href="ds/viz/scatter.html">
+      <div class="sm-card-icon"><i class="fa-solid fa-braille"></i></div>
+      <h3>Scatter Plot Maker</h3>
+      <p>Use regression or trees</p>
+      <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
+
+    <a class="sm-card" href="ds/viz/aes.html">
+      <div class="sm-card-icon"><i class="fa-solid fa-code"></i></div>
+      <h3>Aesthetic Equations</h3>
+      <p>Embed code with output</p>
+      <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
+
+    </div>
+  </div>
+
+  <div class="sm-category">
+    <div class="sm-category-head">
+      <h3><i class="fa-solid fa-gamepad"></i>Games</h3>
+      <a href="games/index.html">View all <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="sm-grid">
+
+    <a class="sm-card" href="games/sudoku.html">
+      <div class="sm-card-icon"><i class="fa-solid fa-table-cells"></i></div>
+      <h3>Sudoku</h3>
+      <p>Classic number puzzle, three levels</p>
+      <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
+
+    <a class="sm-card" href="games/monty-hall.html">
+      <div class="sm-card-icon"><i class="fa-solid fa-door-open"></i></div>
+      <h3>Monty Hall Simulator</h3>
+      <p>Test the famous probability puzzle</p>
+      <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
+
+    <a class="sm-card" href="games/wordweave.html">
+      <div class="sm-card-icon"><i class="fa-solid fa-spell-check"></i></div>
+      <h3>WordWeave</h3>
+      <p>A daily word-connection challenge</p>
+      <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
+
+    </div>
+  </div>
+
+  <div class="sm-category">
+    <div class="sm-category-head">
+      <h3><i class="fa-solid fa-wrench"></i>Utilities</h3>
+      <a href="utility/index.html">View all <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="sm-grid">
+
+    <a class="sm-card" href="utility/bmi.html">
+      <div class="sm-card-icon"><i class="fa-solid fa-weight-scale"></i></div>
+      <h3>BMI Calculator</h3>
+      <p>Check your Body Mass Index</p>
+      <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
+
+    <a class="sm-card" href="utility/timer.html">
+      <div class="sm-card-icon"><i class="fa-solid fa-stopwatch"></i></div>
+      <h3>Timer</h3>
+      <p>A simple countdown timer</p>
+      <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
+
+    <a class="sm-card" href="utility/password.html">
+      <div class="sm-card-icon"><i class="fa-solid fa-key"></i></div>
+      <h3>Password Generator</h3>
+      <p>Create strong, random passwords</p>
+      <span class="sm-link">Learn More <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
+
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -467,7 +627,7 @@ format:
   }
 
   // ---- Stat counters (animate when visible) ----
-  var nums = document.querySelectorAll('.sm-num[data-count]');
+  var nums = document.querySelectorAll('.sm-num-value[data-count]');
   function animateCount(el){
     var target = parseInt(el.getAttribute('data-count'), 10) || 0;
     var start = 0;
