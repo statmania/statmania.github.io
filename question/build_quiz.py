@@ -185,9 +185,25 @@ def latexify_block(text):
         return " @@TABLE%d@@ " % (len(table_htmls) - 1)
 
     text = re.sub(r"\\begin\{tabular\}\{[^}]*\}(.*?)\\end\{tabular\}", _stash, text, flags=re.S)
+
+    image_htmls = []
+
+    def _stash_img(m):
+        # Paths in the .tex are relative to question/bank/; stat-prob.html
+        # lives one directory up, in question/, so drop exactly one leading
+        # "../" to re-base them (e.g. "../img/x.png" -> "img/x.png",
+        # "../../slide/img/x.jpg" -> "../slide/img/x.jpg").
+        path = re.sub(r"^\.\./", "", m.group(1).strip(), count=1)
+        image_htmls.append('<img src="%s" alt="" class="q-image">' % _esc(path))
+        return " @@IMG%d@@ " % (len(image_htmls) - 1)
+
+    text = re.sub(r"\\includegraphics(?:\[[^\]]*\])?\{([^{}]*)\}", _stash_img, text)
+
     html = latexify_inline(text)
     for idx, th in enumerate(table_htmls):
         html = html.replace("@@TABLE%d@@" % idx, th)
+    for idx, ih in enumerate(image_htmls):
+        html = html.replace("@@IMG%d@@" % idx, ih)
     return html
 
 
@@ -369,6 +385,7 @@ HTML_TEMPLATE = r"""<!doctype html>
   body { font-family: 'Inter', sans-serif; }
   .q-table { border-collapse: collapse; margin: 0.75rem 0; font-size: 0.9rem; }
   .q-table td { border: 1px solid rgba(255,255,255,0.15); padding: 4px 10px; }
+  .q-image { max-width: 100%; border-radius: 0.6rem; margin: 0.75rem 0; display: block; }
   select.sm-select {
     background-color: #0a0f1e;
     border: 1px solid rgba(0,229,255,0.3);
