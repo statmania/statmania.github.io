@@ -17,7 +17,7 @@ window.RevealQdraw = function () {
           </label>
           <input type="range" id="penSize" min="1" max="20" value="4" />
           <label style="font-weight: bold; color: #408000;" id="undo" title="Undo drawing"><i class="fas fa-undo"></i></label>
-          <label style="font-weight: bold; color: red;" id="eraserTool" title="Eraser Tool"><i class="fas fa-eraser"></i></label>
+          <label style="font-weight: bold; color: red;" id="eraserTool" title="Eraser Tool (tip: right-click-drag, or a resting palm on touchscreens, quick-erases with any tool selected)"><i class="fas fa-eraser"></i></label>
           <input type="range" id="eraserSize" min="20" max="250" value="60" />
           <label style="font-weight: bold;" class="colorSynced" id="shapeTool" title="Shape Tool"><i class="fas fa-shapes"></i></label>
           <label style="font-weight: bold; color: green;" id="bgTool" title="Canvas Background"><i class="fas fa-fill-drip"></i></label>
@@ -30,7 +30,7 @@ window.RevealQdraw = function () {
           </label>
         </div>
         <div id="aboutPopover">
-          Developed by Abdullah Al Mahmud<br>
+          Tip: right-click-drag, or a resting palm on touchscreens, quick-erases with any tool selected.<br />
           <a href="https://www.thinkermahmud.com/qdraw" target="_blank" rel="noopener">Learn more</a>
         </div>
         <div id="eraserOptions">
@@ -115,11 +115,20 @@ window.RevealQdraw = function () {
       // Variables for drawing state
       let drawing = false;
       let mode = 'pen'; // 'pen' | 'eraser' | 'shape' | 'select-erase'
+      // The mode actually driving the in-progress gesture, resolved once in start()
+      // from `mode` unless a quick-erase override (palm touch / right-click drag)
+      // kicks in, in which case it's forced to 'eraser' without touching `mode` -
+      // the selected tool stays selected once the gesture ends.
+      let activeMode = 'pen';
       let shapeType = 'line'; // 'line' | 'rect' | 'triangle' | 'circle'
       let shapeFilled = false;
       let shapeBase = null;
       let controlsEnabled = false;
       let lastX = 0, lastY = 0;
+      // A touch contact wider/taller than this (CSS px) is treated as a resting
+      // palm rather than a fingertip - roughly double a typical thumb's contact
+      // width - and quick-erases wherever it touches.
+      const PALM_CONTACT_THRESHOLD = 40;
       const defaultBgColor = "";
 
       // Each page keeps its own saved snapshot (as a data URL, restored via drawImage
@@ -182,15 +191,30 @@ window.RevealQdraw = function () {
         eraserCursor.style.top = y - size / 2 + 'px';
       }
 
+      // A touch this wide/tall (CSS px) is a resting palm, not a fingertip.
+      function isPalmTouch(e) {
+        return e.pointerType === 'touch' &&
+          Math.max(e.width || 0, e.height || 0) >= PALM_CONTACT_THRESHOLD;
+      }
+
       function start(e) {
         if (!controlsEnabled) return;
+        // Quick-erase override: a touchscreen palm or a right-button mouse
+        // drag erases with whatever tool is currently selected, without
+        // changing that selection - so drawing/shaping resumes normally
+        // once the gesture ends.
+        const quickErase = isPalmTouch(e) || (e.pointerType === 'mouse' && e.button === 2);
+        activeMode = quickErase ? 'eraser' : mode;
         drawing = true;
         // Store a snapshot before starting to draw for undo functionality
         history.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
         const p = pos(e);
         lastX = p.x;
         lastY = p.y;
-        if (mode === 'shape' || mode === 'select-erase') {
+        if (quickErase) {
+          eraserCursor.style.display = 'block';
+        }
+        if (activeMode === 'shape' || activeMode === 'select-erase') {
           // Reuse the undo snapshot as the base to redraw the live preview on
           // top of while dragging, without committing intermediate frames.
           shapeBase = history[history.length - 1];
@@ -200,7 +224,7 @@ window.RevealQdraw = function () {
       }
 
       function end(e) {
-        if (mode === 'select-erase' && drawing && shapeBase) {
+        if (activeMode === 'select-erase' && drawing && shapeBase) {
           // Restore the pre-drag snapshot (removes the dashed preview), then
           // commit the erase only on a real pointerup - a cancelled gesture
           // just discards the preview.
@@ -211,6 +235,11 @@ window.RevealQdraw = function () {
             const w = Math.abs(p.x - lastX), h = Math.abs(p.y - lastY);
             ctx.clearRect(x0, y0, w, h);
           }
+        }
+        // The quick-erase override showed the cursor for this gesture only;
+        // hide it again unless the eraser tool itself is actually selected.
+        if (activeMode === 'eraser' && mode !== 'eraser') {
+          eraserCursor.style.display = 'none';
         }
         drawing = false;
         ctx.globalCompositeOperation = 'source-over';
@@ -255,7 +284,7 @@ window.RevealQdraw = function () {
         if (!drawing) return;
         const p = pos(e);
 
-        if (mode === 'shape') {
+        if (activeMode === 'shape') {
           // Redraw from the pre-shape snapshot each move so the preview
           // doesn't smear as the pointer moves.
           ctx.putImageData(shapeBase, 0, 0);
@@ -263,7 +292,7 @@ window.RevealQdraw = function () {
           return;
         }
 
-        if (mode === 'select-erase') {
+        if (activeMode === 'select-erase') {
           // Preview the selection rectangle only; the erase itself is
           // committed in end() once the drag is released.
           ctx.putImageData(shapeBase, 0, 0);
@@ -276,7 +305,7 @@ window.RevealQdraw = function () {
           return;
         }
 
-        const erasing = mode === 'eraser';
+        const erasing = activeMode === 'eraser';
         const size = erasing ? Number(eraserSize.value) : Number(penSize.value);
         ctx.lineWidth = size;
         ctx.lineCap = 'round';
@@ -305,6 +334,12 @@ window.RevealQdraw = function () {
       });
       canvas.addEventListener('pointerup', function(e) {
         this.releasePointerCapture(e.pointerId);
+      });
+
+      // Right-click drives the quick-erase override, so swallow the browser's
+      // context menu on the canvas instead of letting it interrupt the drag.
+      canvas.addEventListener('contextmenu', function(e) {
+        if (controlsEnabled) e.preventDefault();
       });
 
       penColorInput.addEventListener('input', () => {
@@ -449,7 +484,6 @@ window.RevealQdraw = function () {
         } else {
           eraserCursor.style.display = 'none';
         }
-        moveControls.style.display = controlsEnabled ? 'block' : 'none';
         aboutPopover.classList.remove('show');
         shapeOptions.classList.remove('show');
         eraserOptions.classList.remove('show');
