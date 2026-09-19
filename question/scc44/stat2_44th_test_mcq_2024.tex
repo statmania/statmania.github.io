@@ -1,0 +1,298 @@
+\documentclass[12pt]{exam}
+%\documentclass[11pt,a4paper]{exam}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,dsfont}
+\usepackage{float}
+\usepackage{ifthen}
+\usepackage{array}
+\usepackage{geometry}
+\geometry{
+legalpaper, total={177.8mm, 290mm},left=20mm,
+top=7mm, bottom=27mm,
+}
+\usepackage{enumerate}% http://ctan.org/pkg/enumerate
+\usepackage{multicol}
+\usepackage{hhline}
+\usepackage[table]{xcolor}
+
+
+% Accumulate the answers. Unmodified from Phil Hirschorn's answer
+% https://tex.stackexchange.com/questions/15350/showing-solutions-of-the-questions-separately/15353
+\newbox\allanswers
+\setbox\allanswers=\vbox{}
+
+\newenvironment{answer}
+{%
+    \global\setbox\allanswers=\vbox\bgroup
+    \unvbox\allanswers
+}%
+{%
+    \bigbreak
+    \egroup
+}
+
+\newcommand{\showallanswers}{\par\unvbox\allanswers}
+% End Phil's answer
+
+
+% Is there a better way?
+\newcommand*{\getanswer}[5]{%
+    \ifthenelse{\equal{#5}{a}}
+    {\begin{answer}\thequestion. (a)~#1\end{answer}}
+    {\ifthenelse{\equal{#5}{b}}
+        {\begin{answer}\thequestion. (b)~#2\end{answer}}
+        {\ifthenelse{\equal{#5}{c}}
+            {\begin{answer}\thequestion. (c)~#3\end{answer}}
+            {\ifthenelse{\equal{#5}{d}}
+                {\begin{answer}\thequestion. (d)~#4\end{answer}}
+                {\begin{answer}\textbf{\thequestion. (#5)~Invalid answer choice.}\end{answer}}}}}
+}
+
+\setlength\parindent{0pt}
+%usage \choice{ }{ }{ }{ }
+%(A)(B)(C)(D)
+\newcommand{\fourch}[5]{
+    \par
+    \begin{tabular}{*{4}{@{}p{0.23\textwidth}}}
+        (a)~#1 & (b)~#2 & (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)(B)
+%(C)(D)
+\newcommand{\twoch}[5]{
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (a)~#1 & (b)~#2
+    \end{tabular}
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)
+%(B)
+%(C)
+%(D)
+\newcommand{\onech}[5]{
+    \par
+    (a)~#1 \par (b)~#2 \par (c)~#3 \par (d)~#4
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+\newlength\widthcha
+\newlength\widthchb
+\newlength\widthchc
+\newlength\widthchd
+\newlength\widthch
+\newlength\tabmaxwidth
+
+\setlength\tabmaxwidth{0.96\textwidth}
+\newlength\fourthtabwidth
+\setlength\fourthtabwidth{0.25\textwidth}
+\newlength\halftabwidth
+\setlength\halftabwidth{0.5\textwidth}
+
+\newcommand{\choice}[5]{%
+\settowidth\widthcha{AM.#1}\setlength{\widthch}{\widthcha}%
+\settowidth\widthchb{BM.#2}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{CM.#3}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{DM.#4}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+
+% These if statements were bypassing the \onech option.
+% \ifdim\widthch<\fourthtabwidth
+%     \fourch{#1}{#2}{#3}{#4}{#5}
+% \else\ifdim\widthch<\halftabwidth
+% \ifdim\widthch>\fourthtabwidth
+%     \twoch{#1}{#2}{#3}{#4}{#5}
+% \else
+%      \onech{#1}{#2}{#3}{#4}{#5}
+%  \fi\fi\fi}
+
+% Allows for the \onech option.
+\ifdim\widthch>\halftabwidth
+    \onech{#1}{#2}{#3}{#4}{#5}
+\else\ifdim\widthch<\halftabwidth
+\ifdim\widthch>\fourthtabwidth
+    \twoch{#1}{#2}{#3}{#4}{#5}
+\else
+    \fourch{#1}{#2}{#3}{#4}{#5}
+\fi\fi\fi}
+
+
+\begin{document}
+
+\begin{table}[]
+\begin{tabular}{lllllllllrlll}
+Falcon &  &  &  &  &  & \textbf{SYLHET CADET COLLEGE}       &  &                       & \multicolumn{1}{l}{}                        &                        &                        &                        \\ \cline{10-13} 
+       &  &  &  &  &  & TEST EXAMINATION - 2025             &  & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{Ques Setter}            & \multicolumn{3}{l|}{}                                                    \\ \cline{10-13} 
+       &  &  &  &  &  & CLASS: XII                          &  & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{Moderator}              & \multicolumn{3}{l|}{}                                                    \\ \cline{10-13} 
+       &  &  &  &  &  & MULTIPLE CHOICE QUESTIONS           &  & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{VP}                     & \multicolumn{3}{l|}{}                                                    \\ \cline{10-13} 
+       &  &  &  &  &  & STATISTICS                          &  &                       &                                             &                        &                        &                        \\ \cline{11-13} 
+       &  &  &  &  &  & SECOND PAPER                        &  &                       & \multicolumn{1}{r|}{\textbf{Subject Code:}} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{3} & \multicolumn{1}{l|}{0} \\ \cline{11-13} 
+       &  &  &  &  &  & [According to the Syllabus of 2023] &  &                       &                                             &                        &                        &                        \\ \cline{12-12}
+       &  &  &  &  &  & TIME – 25 minutes                   &  &                       & \textbf{Set:}                               & \multicolumn{1}{l|}{}  & \multicolumn{1}{l|}{C} &                        \\ \cline{12-12}
+       &  &  &  &  &  & FULL MARKS – 25                     &  &                       & \multicolumn{1}{l}{}                        &                        &                        &                       
+\end{tabular}
+\end{table}
+
+
+
+%  \normalfont\normalsize
+ % 11.45a.m.~--~1.45p.m.
+\hrule
+
+\begin{center}
+[N.B. – Answer all the questions. Each question carries ONE mark. Block fully, with a black ball- point pen, the circle of the letter that stands for the correct/best answer in the “Answer sheet” for the Multiple Choice Questions Examination.]\\
+
+  
+  \textbf{Candidates are asked not to leave any mark or spot on the question paper.}
+\end{center} 
+
+\begin{questions}
+
+\question \textbf{If a population exponentially declines, when is it reduced to half?}  
+\choice{$\frac{\log_{10} 2}{r}$}{$\frac{\log_e 2}{r}$}{$\frac{\log_e 2}{r^2}$}{$\frac{\log_e 3}{r}$}{b} 
+
+
+\question \textbf{Vital statistics records --}
+
+i. marriage \\
+ii. birth \\
+iii. sickness and death
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{d}
+
+\question \textbf{Total number of children born to each 1000 people in any country or region is called --}
+\choice{TFR}{GFR}{CBR}{GRR}{c}
+
+ \question \textbf{$f(x) = 3x; 0 < X < 2$; What is $F(2)$?}  
+\choice{6}{3}{1}{0}{c}
+
+\question \textbf{A coin is flipped twice. What is the probability of getting heads first and tails second?}  
+\choice{$\frac14$}{$\frac13$}{$\frac12$}{$\frac24$}{a}
+
+\question \textbf{Tossing a die r times generates how many outcomes?}
+\choice{$6\times r$}{$r^6$}{$6^r$}{$2^r$}{c}
+
+\question \textbf{A survey shows that 5 out of every 200 customers in a store pay with cash. If a customer is picked randomly, what is the probability that they pay using another method?}  
+\choice{0.050}{0.500}{0.975}{0.025}{c}  
+
+\question \textbf{If $E(X^2) = 45$ and $V(X) = 21$, what is $E(X)$?}  
+\choice{$4 \sqrt{3}$}{$5 \sqrt{2}$}{$6 \sqrt{2}$}{$7 \sqrt{2}$}{b}
+
+\question \textbf{In a binomial distribution with $p = 0.6$ and $P(x) = 0.7682$, $n=?$}  
+\choice{3}{9}{10}{14}{b}
+
+\question \textbf{For a Poisson-distributed variable with mean $m = 4$, which of the following is true?}
+
+i. $E(X) = 4$ \\  
+ii. $V(X) = 2$ \\  
+iii. $E(X^2) = 18$  
+
+\textbf{Which one is correct?}  
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{b} 
+
+\textbf{Answer the questions 11-13 based on the following information}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c|c|c}
+X & 0 & 1 & 2 & 3 \\ \hline
+P(X) & $\frac 14$ & m & $\frac 13$ & $\frac 16$
+\end{tabular}
+\end{table}
+
+\question \textbf{What is the value of m?}
+\choice{$\frac 1 3$}{$\frac 5 {12}$}{$\frac 1 4$}{$\frac 1 6$}{c}
+
+\question \textbf{Find $F(2)$.}
+\choice{$\frac 1 2$}{$\frac 3 4$}{$\frac 5 6$}{$\frac 2 3$}{c}
+
+\question \textbf{What is $P(X > 1)$?}
+\choice{$\frac 1 2$}{$\frac 5 {12}$}{$\frac 1 3$}{$\frac 7 {12}$}{a}
+
+\question \textbf{Given \( P(A) = 0.7 \), \( P(A \cup B) = 0.9 \), and \( P(A \cap B) = 0.5 \), what is \( P(B) \)?}  
+\choice{$0.8$}{$0.6$}{$0.7$}{$0.5$}{c}
+
+\question \textbf{If $E(X) = 2$ and $E(X^2)=8$, then the value of the $V(X) = ?$}
+\choice{0}{2}{4}{8}{c}
+
+\question \textbf{A box contains 9 blue and 3 red balls. If two balls are randomly picked, what is the probability that at least one is red?}  
+\choice{$\frac{3}{11}$}{$\frac{1}{3}$}{$\frac{18}{33}$}{$\frac{5}{11}$}{d} 
+
+\question \textbf{Given \( P(A \cup B) = 0.7 \), \( P(A \cap B) = 0.2 \), what are \( P(A) \) and \( P(B) \)?}  
+\choice{$P(A) = 0.5 \text{ and } P(B) = 0.4
+$}{$P(A) = 0.4 \text{ and } P(B) = 0.6$}{$P(A) = 0.4 \text{ and } P(B) = 0.3$}{$P(A) = 0.7 \text{ and } P(B) = 0.3$}{a}
+
+\question \textbf{If $E(X) = 6$, what is $E(5 - X)$?}  
+\choice{1}{0}{-1}{2}{c}  
+
+\textbf{Answer the questions 19-21 based on the following information}
+
+\begin{center}
+The probability function of random variable $x$ is given below:
+
+\( P(x) = \frac{2x + 1}{k}; x = 1, 2, 3, 4 \)
+\end{center}
+
+\question \textbf{What is the value of $k$?}
+\choice{18}{25}{12}{24}{d}
+
+\question \textbf{What is $E(X)$?}
+\choice{1.75}{2.92}{3.25}{2.25}{b}
+
+\question \textbf{What is $V(X)$?}
+\choice{1.05}{3.0}{1.5}{1.25}{a}
+
+\question \textbf{What is the probability that at least one item in a sample space will occurr?}
+\choice{0}{0.5}{1}{Undefined}{c}
+
+
+\question \textbf{In a binomial distribution with $p = 0.6$ and $n = 9$, what is $P(6)$?}  
+\choice{0.2007}{0.2508}{0.2311}{0.7682}{d} 
+
+\question \textbf{Which of the following statements about a binomial distribution are true?}
+
+i. The probability of success remains constant for each trial. \\
+ii. The trials are dependent on each other. \\
+iii. The number of trials is fixed in advance.
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{b}
+
+\question \textbf{If the variance of a Poisson distribution is 3.5, what is \( P(1) \)?}
+\choice{0.1465}{0.1358}{0.1839}{0.2184}{b}
+
+
+
+\end{questions}
+
+ \vspace{2.5cm}
+
+\begin{center}
+“Why speculate when you can calculate?” - John C. Baez
+\end{center}
+
+\pagebreak
+%\newpage  %Uncomment to put on new age
+\bigskip
+
+\begin{multicols}{3}
+[
+Answer Key
+]
+\showallanswers % Phil Hirschorn
+\end{multicols}
+
+
+\end{document}

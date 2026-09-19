@@ -1,0 +1,301 @@
+\documentclass{exam}
+%\documentclass[11pt,a4paper]{exam}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,dsfont}
+\usepackage{ifthen}
+\usepackage{geometry}
+\geometry{
+legalpaper, total={177.8mm, 290mm},left=20mm,
+top=7mm, bottom=27mm,
+}
+\usepackage{enumerate}% http://ctan.org/pkg/enumerate
+\usepackage{multicol}
+\usepackage{hhline}
+\usepackage[table]{xcolor}
+
+
+% Accumulate the answers. Unmodified from Phil Hirschorn's answer
+% https://tex.stackexchange.com/questions/15350/showing-solutions-of-the-questions-separately/15353
+\newbox\allanswers
+\setbox\allanswers=\vbox{}
+
+\newenvironment{answer}
+{%
+    \global\setbox\allanswers=\vbox\bgroup
+    \unvbox\allanswers
+}%
+{%
+    \bigbreak
+    \egroup
+}
+
+\newcommand{\showallanswers}{\par\unvbox\allanswers}
+% End Phil's answer
+
+
+% Is there a better way?
+\newcommand*{\getanswer}[5]{%
+    \ifthenelse{\equal{#5}{a}}
+    {\begin{answer}\thequestion. (a)~#1\end{answer}}
+    {\ifthenelse{\equal{#5}{b}}
+        {\begin{answer}\thequestion. (b)~#2\end{answer}}
+        {\ifthenelse{\equal{#5}{c}}
+            {\begin{answer}\thequestion. (c)~#3\end{answer}}
+            {\ifthenelse{\equal{#5}{d}}
+                {\begin{answer}\thequestion. (d)~#4\end{answer}}
+                {\begin{answer}\textbf{\thequestion. (#5)~Invalid answer choice.}\end{answer}}}}}
+}
+
+\setlength\parindent{0pt}
+%usage \choice{ }{ }{ }{ }
+%(A)(B)(C)(D)
+\newcommand{\fourch}[5]{
+    \par
+    \begin{tabular}{*{4}{@{}p{0.23\textwidth}}}
+        (a)~#1 & (b)~#2 & (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)(B)
+%(C)(D)
+\newcommand{\twoch}[5]{
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (a)~#1 & (b)~#2
+    \end{tabular}
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)
+%(B)
+%(C)
+%(D)
+\newcommand{\onech}[5]{
+    \par
+    (a)~#1 \par (b)~#2 \par (c)~#3 \par (d)~#4
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+\newlength\widthcha
+\newlength\widthchb
+\newlength\widthchc
+\newlength\widthchd
+\newlength\widthch
+\newlength\tabmaxwidth
+
+\setlength\tabmaxwidth{0.96\textwidth}
+\newlength\fourthtabwidth
+\setlength\fourthtabwidth{0.25\textwidth}
+\newlength\halftabwidth
+\setlength\halftabwidth{0.5\textwidth}
+
+\newcommand{\choice}[5]{%
+\settowidth\widthcha{AM.#1}\setlength{\widthch}{\widthcha}%
+\settowidth\widthchb{BM.#2}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{CM.#3}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{DM.#4}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+
+% These if statements were bypassing the \onech option.
+% \ifdim\widthch<\fourthtabwidth
+%     \fourch{#1}{#2}{#3}{#4}{#5}
+% \else\ifdim\widthch<\halftabwidth
+% \ifdim\widthch>\fourthtabwidth
+%     \twoch{#1}{#2}{#3}{#4}{#5}
+% \else
+%      \onech{#1}{#2}{#3}{#4}{#5}
+%  \fi\fi\fi}
+
+% Allows for the \onech option.
+\ifdim\widthch>\halftabwidth
+    \onech{#1}{#2}{#3}{#4}{#5}
+\else\ifdim\widthch<\halftabwidth
+\ifdim\widthch>\fourthtabwidth
+    \twoch{#1}{#2}{#3}{#4}{#5}
+\else
+    \fourch{#1}{#2}{#3}{#4}{#5}
+\fi\fi\fi}
+
+
+\begin{document}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lllll}
+\textbf{\large SYLHET CADET COLLEGE} &  &  &  &  \\ \cline{4-5} 
+PRETEST EXAMINATION - 2024 &  & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{Set} & \multicolumn{1}{l|}{A} \\ \cline{4-5} 
+CLASS: XII &  &  &  &  \\ \cline{3-5} 
+MULTIPLE CHOICE QUESTIONS & \multicolumn{1}{l|}{\textbf{Subject Code:}} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{3} & \multicolumn{1}{l|}{0} \\ \cline{3-5} 
+STATISTICS SECOND PAPER &  &  &  &  \\
+TIME – 25 minutes &  &  &  &  \\
+FULL MARKS – 25 &  &  &  & 
+\end{tabular}
+\end{table}
+%  \normalfont\normalsize
+ % 11.45a.m.~--~1.45p.m.
+\hrule
+
+\begin{center}
+[N.B. – Answer all the questions. Each question carries ONE mark. Block fully, 
+with a black ball- point pen, the circle of the letter that stands for 
+the correct/best answer in the “Answer sheet” for the Multiple Choice 
+Questions.]\\
+
+  
+  \textbf{Candidates are asked not to leave any mark or spot on the question paper.}
+\end{center}
+\begin{questions}
+
+
+\question \textbf{A die is rolled twice. How many possible outcomes are there?}
+\choice{6}{12}{36}{18}{c}
+
+\textbf{Answer the next TWO questions based on the following information.}
+
+An urn contains 5 red, 7 blue, and 8 green balls.
+
+\question \textbf{What is the probability that the ball drawn is red?}
+\choice{0.26}{0.25}{0.2}{0.4}{a}
+
+\question \textbf{P(The ball drawn is not blue)--}
+\choice{$\frac{13}{20}$}{$0.5$}{$\frac{7}{20}$}{$\frac{8}{20}$}{a}
+
+\question \textbf{The conditions for a cumulative distribution function (CDF) are--}
+
+i. $F(x)$ is non-decreasing.
+
+ii. $0 \le F(x) \le 1$
+
+iii. $\displaystyle \lim_{x \to \infty} F(x) = 1$
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{ii and iii}{i and iii}{i, ii, and iii}{d}
+
+\question \textbf{Which one is not a discrete random variable?}
+\choice{Summation two die throw outcome}{Weight}{Number of heads in five coin tosses}{Released version number of a software}{d}
+
+\question \textbf{$f(x) = x^2; 0 < X < 4$; What is $F(4)$?}  
+\choice{16}{0}{4}{1}{d}
+
+\textbf{Answer the next three questions based on the following information}
+
+\begin{center}
+The probability function of random variable $x$ is given below:
+
+\( P(x) = \frac{2x + 1}{k}; x = 1, 2, 3, 4 \)
+\end{center}
+
+\question \textbf{What is the value of $k$?}
+\choice{18}{25}{12}{24}{d}
+
+\question \textbf{What is $E(X)$?}
+\choice{1.75}{2.92}{3.25}{2.25}{b}
+
+\question \textbf{What is $V(X)$?}
+\choice{1.05}{3.0}{1.5}{1.25}{a}
+
+\question \textbf{The characteristics of binomial distribution--}
+
+i. $E(X) > V(X)$ \\
+ii. $E(X) = V(X)$ \\
+iii. $E(X) = np$
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{b}
+
+\question \textbf{The parameter of a Poisson Distribution is 5. What is its mean?}
+\choice{2}{5}{2.24}{25}{b}
+
+\question \textbf{When does Binomial Distribution tend to Poisson Distribution?}
+\choice{$n \rightarrow \infty, p \rightarrow 0$ \& $np$ is finite}{$n \rightarrow \infty, p \rightarrow 0$ \& $np$ is infinite}{$n \rightarrow \infty, p \rightarrow \infty$ \& $np$ is finite}{$n \rightarrow 0, p \rightarrow \infty$ \& $np$ is infinite}{a}
+
+\question \textbf{A City has a dependency ratio of 0.52. If its working-age population (15-64) is 50,000, what is the total number of dependents (0-14 and 65+)?}
+\choice{15,600}{20,000}{26,000}{30,000}{c}
+
+\textbf{Answer the next TWO questions using the following information}
+
+$P(C) = \frac 2 5, P(D) = \frac 3 4 \space \& \space P(C \cup D) = \frac{9}{10}$
+
+\question \textbf{$P(C \cap D) = ?$}
+\choice{$\frac{1}{10}$}{$\frac{1}{4}$}{$\frac{7}{20}$}{$\frac{4}{5}$}{b}
+
+\question \textbf{$P(C \cap \bar D)=?$}
+\choice{$\frac{1}{10}$}{$\frac{2}{5}$}{$\frac{2}{20}$}{$\frac{3}{10}$}{c}
+
+\question \textbf{What is the minimum value of variance a random variable?}
+\choice{$-\infty$}{1}{0}{-1}{c}
+
+\question \textbf{If $E(X) = -0.5$, then $E(1-2X) = $?}
+\choice{0}{-1}{2}{1}{c}
+
+\question \textbf{What is the Standard Deviation of Binomial Distribution?}
+\choice{np}{npq}{nq}{$\sqrt{npq}$}{d}
+
+\question \textbf{The population of a city is 500,000, and the number of 
+live births recorded in a year is 8,000. What is the Crude Birth Rate (CBR)?}
+\choice{12 per 1,000}{16 per 1,000}{20 per 1,000}{22 per 1,000}{b}
+
+\question \textbf{In a Binomial distribution, how are mean and variance related?}
+\choice{$Mean > Variance$}{$Mean < Variance$}{$Mean = Variance$}{$Mean =2 \times Variance$}{a}
+
+\textbf{Answer the next two questions based on the following information}
+
+For a Poisson variate X, P(2) = P(5).
+
+\question \textbf{What is standard deviation?}
+\choice{1.978}{1.998}{1.989}{1.889}{a}
+
+\question \textbf{What is the value of P(2)?}
+\choice{0.25}{0.14}{0.15}{0.02}{c}
+
+\question \textbf{If \( P(2) \) in a Poisson distribution with parameter 
+\(\lambda\) equals 0.2240, what is the parameter \(\lambda\)?}
+\choice{2.4551}{1.2515}{1.2115}{2.5112}{b}
+
+\textbf{Answer the following 2 questions based on the information given below.}  
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{City} & \textbf{Population (in thousands)} & \textbf{Area (in km\(^2\)} \\ \hline
+Gamma         & 1200                              & 400                        \\ \hline
+Delta         & 800                               & 320                        \\ \hline
+\end{tabular}
+\end{table}  
+
+\question \textbf{What is the population density of City Delta?}  
+\choice{2 people/km\(^2\)}{4 people/km\(^2\)}{2.5 people/km\(^2\)}{2.2 people/km\(^2\)}{b}  
+
+\question \textbf{Which city is less densely populated?}  
+\choice{Gamma}{Delta}{Both are equal}{Cannot be determined}{b}  
+
+\end{questions}
+
+ \vspace{2.5cm}
+
+\begin{center}
+"It is a capital mistake to theorize before one has data." -- Sir Arthur Conan Doyle
+\end{center}
+
+\pagebreak
+%\newpage  %Uncomment to put on new age
+\bigskip
+
+\begin{multicols}{3}
+[
+Answer Key
+]
+\showallanswers % Phil Hirschorn
+\end{multicols}
+
+
+\end{document}

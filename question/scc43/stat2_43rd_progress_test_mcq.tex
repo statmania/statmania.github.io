@@ -1,0 +1,289 @@
+\documentclass{exam}
+%\documentclass[11pt,a4paper]{exam}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,dsfont}
+\usepackage{ifthen}
+\usepackage[legalpaper, total={177.8mm, 290mm}]{geometry}
+\usepackage{enumerate}% http://ctan.org/pkg/enumerate
+\usepackage{multicol}
+\usepackage{hhline}
+\usepackage[table]{xcolor}
+
+
+% Accumulate the answers. Unmodified from Phil Hirschorn's answer
+% https://tex.stackexchange.com/questions/15350/showing-solutions-of-the-questions-separately/15353
+\newbox\allanswers
+\setbox\allanswers=\vbox{}
+
+\newenvironment{answer}
+{%
+    \global\setbox\allanswers=\vbox\bgroup
+    \unvbox\allanswers
+}%
+{%
+    \bigbreak
+    \egroup
+}
+
+\newcommand{\showallanswers}{\par\unvbox\allanswers}
+% End Phil's answer
+
+
+% Is there a better way?
+\newcommand*{\getanswer}[5]{%
+    \ifthenelse{\equal{#5}{a}}
+    {\begin{answer}\thequestion. (a)~#1\end{answer}}
+    {\ifthenelse{\equal{#5}{b}}
+        {\begin{answer}\thequestion. (b)~#2\end{answer}}
+        {\ifthenelse{\equal{#5}{c}}
+            {\begin{answer}\thequestion. (c)~#3\end{answer}}
+            {\ifthenelse{\equal{#5}{d}}
+                {\begin{answer}\thequestion. (d)~#4\end{answer}}
+                {\begin{answer}\textbf{\thequestion. (#5)~Invalid answer choice.}\end{answer}}}}}
+}
+
+\setlength\parindent{0pt}
+%usage \choice{ }{ }{ }{ }
+%(A)(B)(C)(D)
+\newcommand{\fourch}[5]{
+    \par
+    \begin{tabular}{*{4}{@{}p{0.23\textwidth}}}
+        (a)~#1 & (b)~#2 & (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)(B)
+%(C)(D)
+\newcommand{\twoch}[5]{
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (a)~#1 & (b)~#2
+    \end{tabular}
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)
+%(B)
+%(C)
+%(D)
+\newcommand{\onech}[5]{
+    \par
+    (a)~#1 \par (b)~#2 \par (c)~#3 \par (d)~#4
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+\newlength\widthcha
+\newlength\widthchb
+\newlength\widthchc
+\newlength\widthchd
+\newlength\widthch
+\newlength\tabmaxwidth
+
+\setlength\tabmaxwidth{0.96\textwidth}
+\newlength\fourthtabwidth
+\setlength\fourthtabwidth{0.25\textwidth}
+\newlength\halftabwidth
+\setlength\halftabwidth{0.5\textwidth}
+
+\newcommand{\choice}[5]{%
+\settowidth\widthcha{AM.#1}\setlength{\widthch}{\widthcha}%
+\settowidth\widthchb{BM.#2}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{CM.#3}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{DM.#4}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+
+% These if statements were bypassing the \onech option.
+% \ifdim\widthch<\fourthtabwidth
+%     \fourch{#1}{#2}{#3}{#4}{#5}
+% \else\ifdim\widthch<\halftabwidth
+% \ifdim\widthch>\fourthtabwidth
+%     \twoch{#1}{#2}{#3}{#4}{#5}
+% \else
+%      \onech{#1}{#2}{#3}{#4}{#5}
+%  \fi\fi\fi}
+
+% Allows for the \onech option.
+\ifdim\widthch>\halftabwidth
+    \onech{#1}{#2}{#3}{#4}{#5}
+\else\ifdim\widthch<\halftabwidth
+\ifdim\widthch>\fourthtabwidth
+    \twoch{#1}{#2}{#3}{#4}{#5}
+\else
+    \fourch{#1}{#2}{#3}{#4}{#5}
+\fi\fi\fi}
+
+
+\begin{document}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lllll}
+\textbf{\large SYLHET CADET COLLEGE} &  &  &  &  \\ \cline{4-5} 
+PROGRESS TEST EXAMINATION - 2023 &  & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{Set} & \multicolumn{1}{l|}{D} \\ \cline{4-5} 
+CLASS: XII &  &  &  &  \\ \cline{3-5} 
+MULTIPLE CHOICE QUESTIONS & \multicolumn{1}{l|}{\textbf{Subject Code:}} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{2} & \multicolumn{1}{l|}{9} \\ \cline{3-5} 
+STATISTICS SECOND PAPER &  &  &  &  \\
+TIME – 25 minutes &  &  &  &  \\
+FULL MARKS – 25 &  &  &  & 
+\end{tabular}
+\end{table}
+%  \normalfont\normalsize
+ % 11.45a.m.~--~1.45p.m.
+\hrule
+
+\begin{center}
+[N.B. – Answer all the questions. Each question carries ONE mark. Block fully, with a black ball- point pen, the circle of the letter that stands for the correct/best answer in the “Answer sheet” for the Multiple Choice Questions Examination.]\\
+
+  
+  \textbf{Candidates are asked not to leave any mark or spot on the question paper.}
+\end{center}
+\begin{questions}
+
+\question \textbf{$P(A\cup B) = P(A) + P(B)$ implies A \& B are --}
+\choice{Disjoint}{Independent}{Joint}{Independent}{a}
+
+\question \textbf{The characteristics of binomial distribution--}
+
+i. $E(X) > V(X)$ \\
+ii. $E(X) = V(X)$ \\
+iii. $E(X) = np$
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{b}
+
+\question \textbf{How many additive laws of probability are there?}
+\choice{1}{2}{3}{4}{b}
+
+\question \textbf{If A and B are independent, which formula is correct?}
+\choice{$P(A \cap B) = P(A) \cdot P(B)$}{$P(A \cap B) = P(\bar A) \cdot P(B)$}{$P(A \cap B) = P(A) \cdot P(\bar B)$}{$P(A \cap \bar B) = P(A) \cdot P(B)$}{a}
+
+\question \textbf{There are 3 red, 4 black, and 5 white balls in an urn. If two balls are randomly taken, what is the probability that both are red?}
+\choice{$\displaystyle  \frac{1}{66}$}{$\displaystyle  \frac{1}{22}$}{$\displaystyle  \frac{2}{22}$}{$\displaystyle  \frac{3}{11}$}{b}
+
+\textbf{Answer the next two questions based on the following information}
+
+\begin{center}
+$\displaystyle  f(x) = kx; 0 < x < 5$
+\end{center}
+
+\question \textbf{What is the value of $P(2 <x<3)$}
+\choice{$\displaystyle  \frac45$}{$\displaystyle  \frac35$}{$\displaystyle  \frac25$}{$\displaystyle  \frac15$}{d}
+
+\question \textbf{$P(X>0)$}
+\choice{0.99}{0.5}{1}{0}{c}
+
+\question \textbf{Which is a discrete random variable?}
+\choice{Age of students}{Amount of Production in a factory}{Height of workers}{Page size in word processing softwares}{d}
+
+\question \textbf{What is $F(-\infty)$ for a distribution function $F(x)$?}
+\choice{$-\infty$}{-1}{0}{1}{c}
+
+\textbf{Answer the next two questions based on the following information}
+
+\begin{center}
+For two exhaustive evenst A \& B, P(A) = 0.7 and P(B) = 0.4
+\end{center}
+
+\question \textbf{$P(A\cap B) = ?$}
+\choice{0.1}{0.3}{0.6}{1}{a}
+
+\question \textbf{The events A \& B are --}
+
+i. independent \\
+ii. dependent \\
+iii. not mutually exclusive
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{c}
+
+\question \textbf{If $\displaystyle  P(x) = \frac 1{15}; x = 1,2,3, \cdots 15$, what is the value of the expectation?}
+\choice{8.5}{7.5}{7}{8}{d}
+
+\question \textbf{If $\displaystyle  P(x)= \frac{3-|4-x|}{k}; x=2,3,4, \cdots 6$, what is the value of k?}
+\choice{6}{9}{10}{40}{b}
+
+\question \textbf{If the variance of X is 3, what is the variance of V(3)?}
+\choice{1}{2}{3}{0}{d}
+
+\question \textbf{If $V(X) = 5,$, what is $V(X+5)?$}
+\choice{0}{5}{10}{25}{b}
+
+\question \textbf{E(X) + E(Y) = ?}
+\choice{E(X) - E(Y)}{E(X) + E(Y)}{2E(X) - E(Y)}{$E(X) \times E(Y)$}{b}
+
+\question \textbf{What is true of binomial distribution?}
+\choice{There is one parameter}{Number of trial is fixed}{Mean is greater than variance}{Skewness is negative}{c}
+
+\question \textbf{What is the skewness of binomial distribution?}
+\choice{$\displaystyle \frac{(q-p)^2}{np}$}{$\displaystyle \frac{(q-p)^2}{np}$}{$\displaystyle \frac{(p+1)^2}{npq}$}{$\displaystyle \frac{(q+p)^2}{npq}$}{a}
+
+\question \textbf{When is a binomial distribution positively skewed?}
+\choice{p > q}{p = q}{p < q}{p+q < 1}{b}
+
+\textbf{Answer the next two questions based on the following information}
+
+\begin{center}
+In a binomial distribution, $\displaystyle  P(x=4) = \frac12 P(x=5); n  = 10$
+\end{center}
+
+\question \textbf{What is the mean?}
+\choice{6.25}{5.15}{8.52}{5.22}{a}
+
+\question \textbf{$P(x=2) =$ ---}
+\choice{0.0053}{0.0069}{0.0085}{0.94}{b}
+
+\question \textbf{The no. of parameters in a Poisson distribution is ---}
+\choice{1}{2}{3}{4}{a}
+
+\question \textbf{On average, 1 in 1000 houses in a city gets a fire-burn in a year.If there are 2000 houses, what is the probability that, in a certain year, exactly 5 house will be burnt?}
+\choice{0.036}{0.040}{0.027}{0.091}{a}
+
+\textbf{Answer the next two questions based on the following information}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{c|c|c|c|c}
+Year & 1 & 2 & 3 & 4 \\ \hline
+Population & 100 & 110 & 120 & 130
+\end{tabular}
+\end{table}
+
+\question \textbf{Which type of growth is seen here?}
+\choice{Arithmetic growth}{Geometric growth}{Exponential growth}{None}{a}
+
+\question \textbf{What is the rate of increase?}
+\choice{1}{0.1}{10}{1\%}{b}
+
+
+%\question \textbf{To complete the song, the last answer should be
+%\choice{a}{b}{c}{d}{e} % Invalid answer choice
+
+\end{questions}
+
+ \vspace{2.5cm}
+
+\begin{center}
+Why speculate when you can calculate? - John C. Baez
+\end{center}
+
+\pagebreak
+%\newpage  %Uncomment to put on new age
+\bigskip
+
+\begin{multicols}{3}
+[
+Answer Key
+]
+\showallanswers % Phil Hirschorn
+\end{multicols}
+
+
+\end{document}

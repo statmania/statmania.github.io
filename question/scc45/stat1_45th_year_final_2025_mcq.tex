@@ -1,0 +1,313 @@
+\documentclass[12pt]{exam}
+%\documentclass[11pt,a4paper]{exam}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,dsfont}
+\usepackage{float}
+\usepackage{ifthen}
+\usepackage{array}
+\usepackage{geometry}
+\geometry{
+legalpaper, total={177.8mm, 290mm},left=10mm, right=10mm,
+top=7mm, bottom=27mm,
+}
+\usepackage{enumerate}% http://ctan.org/pkg/enumerate
+\usepackage{multicol}
+\usepackage{hhline}
+\usepackage[table]{xcolor}
+
+
+% Accumulate the answers. Unmodified from Phil Hirschorn's answer
+% https://tex.stackexchange.com/questions/15350/showing-solutions-of-the-questions-separately/15353
+\newbox\allanswers
+\setbox\allanswers=\vbox{}
+
+\newenvironment{answer}
+{%
+    \global\setbox\allanswers=\vbox\bgroup
+    \unvbox\allanswers
+}%
+{%
+    \bigbreak
+    \egroup
+}
+
+\newcommand{\showallanswers}{\par\unvbox\allanswers}
+% End Phil's answer
+
+
+% Is there a better way?
+\newcommand*{\getanswer}[5]{%
+    \ifthenelse{\equal{#5}{a}}
+    {\begin{answer}\thequestion. (a)~#1\end{answer}}
+    {\ifthenelse{\equal{#5}{b}}
+        {\begin{answer}\thequestion. (b)~#2\end{answer}}
+        {\ifthenelse{\equal{#5}{c}}
+            {\begin{answer}\thequestion. (c)~#3\end{answer}}
+            {\ifthenelse{\equal{#5}{d}}
+                {\begin{answer}\thequestion. (d)~#4\end{answer}}
+                {\begin{answer}\textbf{\thequestion. (#5)~Invalid answer choice.}\end{answer}}}}}
+}
+
+\setlength\parindent{0pt}
+%usage \choice{ }{ }{ }{ }
+%(A)(B)(C)(D)
+\newcommand{\fourch}[5]{
+    \par
+    \begin{tabular}{*{4}{@{}p{0.23\textwidth}}}
+        (a)~#1 & (b)~#2 & (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)(B)
+%(C)(D)
+\newcommand{\twoch}[5]{
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (a)~#1 & (b)~#2
+    \end{tabular}
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)
+%(B)
+%(C)
+%(D)
+\newcommand{\onech}[5]{
+    \par
+    (a)~#1 \par (b)~#2 \par (c)~#3 \par (d)~#4
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+\newlength\widthcha
+\newlength\widthchb
+\newlength\widthchc
+\newlength\widthchd
+\newlength\widthch
+\newlength\tabmaxwidth
+
+\setlength\tabmaxwidth{0.96\textwidth}
+\newlength\fourthtabwidth
+\setlength\fourthtabwidth{0.25\textwidth}
+\newlength\halftabwidth
+\setlength\halftabwidth{0.5\textwidth}
+
+\newcommand{\choice}[5]{%
+\settowidth\widthcha{AM.#1}\setlength{\widthch}{\widthcha}%
+\settowidth\widthchb{BM.#2}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{CM.#3}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{DM.#4}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+
+% These if statements were bypassing the \onech option.
+% \ifdim\widthch<\fourthtabwidth
+%     \fourch{#1}{#2}{#3}{#4}{#5}
+% \else\ifdim\widthch<\halftabwidth
+% \ifdim\widthch>\fourthtabwidth
+%     \twoch{#1}{#2}{#3}{#4}{#5}
+% \else
+%      \onech{#1}{#2}{#3}{#4}{#5}
+%  \fi\fi\fi}
+
+% Allows for the \onech option.
+\ifdim\widthch>\halftabwidth
+    \onech{#1}{#2}{#3}{#4}{#5}
+\else\ifdim\widthch<\halftabwidth
+\ifdim\widthch>\fourthtabwidth
+    \twoch{#1}{#2}{#3}{#4}{#5}
+\else
+    \fourch{#1}{#2}{#3}{#4}{#5}
+\fi\fi\fi}
+
+
+\begin{document}
+
+\begin{table}[]
+\begin{tabular}{lllllllllrlll}
+\textit{Corr} &  &  &  &  &  & \textbf{SYLHET CADET COLLEGE}       &  &                       & \multicolumn{1}{l}{}                        &                        &                        &                        \\ \cline{10-13} 
+       &  &  &  &  &  & Year Final EXAMINATION - 2025             &  & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{Ques Setter}            & \multicolumn{3}{l|}{}                                                    \\ \cline{10-13} 
+       &  &  &  &  &  & CLASS: XI                          &  & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{Moderator}              & \multicolumn{3}{l|}{}                                                    \\ \cline{10-13} 
+       &  &  &  &  &  & MCQ and SAQ           &  & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{VP}                     & \multicolumn{3}{l|}{}                                                    \\ \cline{10-13} 
+       &  &  &  &  &  & STATISTICS                          &  &                       &                                             &                        &                        &                        \\ \cline{11-13} 
+       &  &  &  &  &  & FIRST PAPER                        &  &                       & \multicolumn{1}{r|}{\textbf{Subject Code:}} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{2} & \multicolumn{1}{l|}{9} \\ \cline{11-13} 
+       &  &  &  &  &  & [According to the Syllabus of 2026] &  &                       &                                             &                        &                        &                        \\ \cline{12-12}
+       &  &  &  &  &  & TIME – 25 minutes                   &  &                       & \textbf{Set:}                               & \multicolumn{1}{l|}{}  & \multicolumn{1}{l|}{GHA} &                        \\ \cline{12-12}
+       &  &  &  &  &  & FULL MARKS – 25                     &  &                       & \multicolumn{1}{l}{}                        &                        &                        &                       
+\end{tabular}
+\end{table}
+
+
+
+%  \normalfont\normalsize
+ % 11.45a.m.~--~1.45p.m.
+\hrule
+
+\begin{center}
+[N.B. – Answer all the questions. Each question carries ONE mark. Block fully, with a black ball- point pen, the circle of the letter that stands for the correct/best answer in the “Answer sheet” for the Multiple Choice Questions Examination.]\\
+
+  
+  \textbf{Candidates are asked not to leave any mark or spot on the question paper.}
+\end{center}
+
+
+
+\textbf{Multiple Choice Questions}
+
+\begin{questions}
+
+\question \textbf{If $\sum (x_i-k)=0$, what is the value of k?}
+\choice{$n$}{$\bar x$}{$x$}{$n \bar x$}{b}
+
+\question \textbf{Median is --}  
+
+i. Affected by extreme values \\  
+ii. Rigidly defined \\  
+iii. Suitable for open-ended distributions  
+
+\textbf{Which one is correct?}  
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{b}  
+
+\question \textbf{Which of the following may be used to determine mode?}
+\choice{Histogram}{Frequency Curve}{Ogive}{Frequency Polygon}{a}
+
+\question \textbf{Which is not an example of shift of scale?}
+\choice{$y_i = \frac{x_i}{a}$}{$y_i = cx_i$}{$y_i = x_i-2$}
+{$y_i = \frac{cx_i}{d}$}{a}
+
+\question \textbf{Given $\displaystyle \sum_{i=1}^{10} a_i^2=40$ and $\displaystyle \sum_{i=1}^{10} a_i=20$, find the value of $\displaystyle 2\sum_{i=1}^{10} a_i^2 - 3\sum_{i=1}^{10} a_i + 60$.}  
+\choice{70}{100}{80}{50}{c} 
+
+
+\question \textbf{A researcher collected data on age and income of the 
+people in a city. The variables are --}
+
+i. bi-variate \\
+ii. quantitative \\
+iii. qualitative
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{a}
+
+
+
+
+% Situation Set Starts
+\textbf{Answer the next two questions based on the following plot}
+
+\begin{center}
+\noindent\textbf{Data:} 18, 21, 22, 23, 24, 26, 31, 33, 33, 35, 37, 42
+
+\bigskip
+
+\begin{tabular}{r|l}
+\textbf{Stem} & \textbf{Leaf} \\
+\hline
+1 & 8 \\
+2 & 1 2 3 4 6 \\
+3 & 1 3 3 5 7 \\
+4 & 2 \\
+\end{tabular}
+
+\bigskip
+
+\noindent\textbf{Key:} 2~|~1 means \textbf{21}
+\end{center}
+
+\question \textbf{How many data values are greater than 30 in the stem-and-leaf plot?}  
+\choice{3}{4}{5}{6}{d}
+
+\question \textbf{What is the median of the data shown in the stem-and-leaf plot?}  
+\choice{26}{31}{30}{29}{b}
+% Situation Set Ends
+
+\question \textbf{What is the minimum possible value of standard deviation?}
+\choice{$\infty$}{-1}{0}{1}{c}
+
+\question \textbf{The mean and coefficient of variation of a distribution are 5 and 30\%, respectively. What is the value of standard deviation?}
+\choice{1.5}{6.5}{7.6}{10.2}{a}
+
+% Situation Set Starts
+\textbf{Answer the next two questions based on the following information}
+
+\begin{center}
+\textbf{The temperatures (in $^oC$ of two cities in a country are 30 and 35.} 
+\end{center}
+
+\question \textbf{What is their Mean deviation?}
+\choice{1.2}{2.5}{3.0}{5.5}{b}
+
+\question \textbf{What is the coefficient of variation?}
+\choice{2.7\%}{8.3\%}{5.8\%}{7.7\%}{d}
+% Situation Set Ends
+
+\question \textbf{In multiplicative time series model, in the long run, $\sum R_t =$ ---}
+\choice{0}{1}{Undefined}{Infinity}{b}
+
+% Situation Set Starts
+\textbf{Answer the next two questions based on the following information}
+
+\begin{center}
+A study was conducted to find the impact of study hour on students' GPA and the following was found:
+
+$\displaystyle \sum (x_i- \bar x)(y_i - \bar y) = 30, \sum(x_i-\bar x)^2 = 45, \text{ and } \sum(y_i-\bar y)^2 = 55$
+\end{center}
+
+\question \textbf{What is the value of correlation coefficient?}
+\choice{0.50}{0.60}{-0.60}{-0.50}{b}
+
+\question \textbf{What is the value of $b_{yx}?$}
+\choice{0.58}{-0.67}{0.67}{-1.75}{c}
+
+% Situation Set Ends
+
+
+\end{questions}
+
+
+\textbf{Short Answer Questions} \hfill $10 \times 1 =10$
+
+\begin{enumerate}
+  \item If the scores of five students in a test are 78, 85, 92, 88, 95, 
+find $\displaystyle \sum_{i=1}^5 (x_i^2 - 2x_i + 3)$  \underline{\hspace{3cm}}
+  \item What is an open-ended distribution?  \underline{\hspace{3cm}}
+  \item Does Median always lie in the data set from which it is calculated?  \underline{\hspace{3cm}}
+  \item If $\bar X = 25, CV = 50\%, \sigma^2=?$  \underline{\hspace{3cm}}
+  \item Which Percentile is equal to 3rd Quartile?  \underline{\hspace{3cm}}
+  \item What does $\gamma_2>0$ imply?  \underline{\hspace{3cm}}
+  \item Which measure of dispersion is suitable for an open-ended distribution?       \underline{\hspace{3cm}}
+   \item Two sets of variables have correlation $r_1 = 0.75$ and $r_2 = -0.82$. Which set has stonger linear association?  \underline{\hspace{3cm}}
+   \item What is the additive model of time series?   \underline{\hspace{3cm}}
+   \item What is the relationship between the regression coefficient and the correlation coefficient?  \underline{\hspace{3cm}}
+\end{enumerate}
+
+
+\vspace{2.5cm}
+
+\begin{center}
+\textit{ “Absence of evidence is not evidence of absence.”} ---  Carl Sagan
+\end{center}
+
+\pagebreak
+%\newpage  %Uncomment to put on new age
+\bigskip
+
+\iffalse
+\begin{multicols}{3}
+[
+Answer Key
+]
+\showallanswers % Phil Hirschorn
+\end{multicols}
+
+\fi
+
+
+
+\end{document}

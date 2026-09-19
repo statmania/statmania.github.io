@@ -1,0 +1,296 @@
+\documentclass{exam}
+%\documentclass[11pt,a4paper]{exam}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,dsfont}
+\usepackage{ifthen}
+\usepackage{geometry}
+\usepackage{float}
+\geometry{
+legalpaper, total={177.8mm, 290mm},left=20mm,
+top=7mm, bottom=27mm,
+}
+\usepackage{enumerate}% http://ctan.org/pkg/enumerate
+\usepackage{multicol}
+\usepackage{hhline}
+\usepackage[table]{xcolor}
+
+
+% Accumulate the answers. Unmodified from Phil Hirschorn's answer
+% https://tex.stackexchange.com/questions/15350/showing-solutions-of-the-questions-separately/15353
+\newbox\allanswers
+\setbox\allanswers=\vbox{}
+
+\newenvironment{answer}
+{%
+    \global\setbox\allanswers=\vbox\bgroup
+    \unvbox\allanswers
+}%
+{%
+    \bigbreak
+    \egroup
+}
+
+\newcommand{\showallanswers}{\par\unvbox\allanswers}
+% End Phil's answer
+
+
+% Is there a better way?
+\newcommand*{\getanswer}[5]{%
+    \ifthenelse{\equal{#5}{a}}
+    {\begin{answer}\thequestion. (a)~#1\end{answer}}
+    {\ifthenelse{\equal{#5}{b}}
+        {\begin{answer}\thequestion. (b)~#2\end{answer}}
+        {\ifthenelse{\equal{#5}{c}}
+            {\begin{answer}\thequestion. (c)~#3\end{answer}}
+            {\ifthenelse{\equal{#5}{d}}
+                {\begin{answer}\thequestion. (d)~#4\end{answer}}
+                {\begin{answer}\textbf{\thequestion. (#5)~Invalid answer choice.}\end{answer}}}}}
+}
+
+\setlength\parindent{0pt}
+%usage \choice{ }{ }{ }{ }
+%(A)(B)(C)(D)
+\newcommand{\fourch}[5]{
+    \par
+    \begin{tabular}{*{4}{@{}p{0.23\textwidth}}}
+        (a)~#1 & (b)~#2 & (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)(B)
+%(C)(D)
+\newcommand{\twoch}[5]{
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (a)~#1 & (b)~#2
+    \end{tabular}
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)
+%(B)
+%(C)
+%(D)
+\newcommand{\onech}[5]{
+    \par
+    (a)~#1 \par (b)~#2 \par (c)~#3 \par (d)~#4
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+\newlength\widthcha
+\newlength\widthchb
+\newlength\widthchc
+\newlength\widthchd
+\newlength\widthch
+\newlength\tabmaxwidth
+
+\setlength\tabmaxwidth{0.96\textwidth}
+\newlength\fourthtabwidth
+\setlength\fourthtabwidth{0.25\textwidth}
+\newlength\halftabwidth
+\setlength\halftabwidth{0.5\textwidth}
+
+\newcommand{\choice}[5]{%
+\settowidth\widthcha{AM.#1}\setlength{\widthch}{\widthcha}%
+\settowidth\widthchb{BM.#2}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{CM.#3}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{DM.#4}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+
+% These if statements were bypassing the \onech option.
+% \ifdim\widthch<\fourthtabwidth
+%     \fourch{#1}{#2}{#3}{#4}{#5}
+% \else\ifdim\widthch<\halftabwidth
+% \ifdim\widthch>\fourthtabwidth
+%     \twoch{#1}{#2}{#3}{#4}{#5}
+% \else
+%      \onech{#1}{#2}{#3}{#4}{#5}
+%  \fi\fi\fi}
+
+% Allows for the \onech option.
+\ifdim\widthch>\halftabwidth
+    \onech{#1}{#2}{#3}{#4}{#5}
+\else\ifdim\widthch<\halftabwidth
+\ifdim\widthch>\fourthtabwidth
+    \twoch{#1}{#2}{#3}{#4}{#5}
+\else
+    \fourch{#1}{#2}{#3}{#4}{#5}
+\fi\fi\fi}
+
+
+\begin{document}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lllll}
+\textbf{\large SYLHET CADET COLLEGE} &  &  &  &  \\ \cline{4-5} 
+TEST EXAMINATION - 2023 &  & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{Set} & \multicolumn{1}{l|}{D} \\ \cline{4-5} 
+CLASS: XII &  &  &  &  \\ \cline{3-5} 
+MULTIPLE CHOICE QUESTIONS & \multicolumn{1}{l|}{\textbf{Subject Code:}} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{2} & \multicolumn{1}{l|}{9} \\ \cline{3-5} 
+STATISTICS FIRST PAPER &  &  &  &  \\
+TIME – 25 minutes &  &  &  &  \\
+FULL MARKS – 25 &  &  &  & 
+\end{tabular}
+\end{table}
+%  \normalfont\normalsize
+ % 11.45a.m.~--~1.45p.m.
+\hrule
+
+\begin{center}
+[N.B. – Answer all the questions. Each question carries ONE mark. Block fully, with a black ball- point pen, the circle of the letter that stands for the correct/best answer in the “Answer sheet” for the Multiple Choice Questions Examination.]\\
+
+  
+  \textbf{Candidates are asked not to leave any mark or spot on the question paper.}
+\end{center}
+\begin{questions}
+
+
+\question \textbf{For a symmetrical distribution, what is the value of $\beta_1?$}
+\choice{0}{1}{-1}{$\infty$}{a}
+
+\question \textbf{What is the formula of IQR?}
+\choice{$IQR = Q_3 + Q_1$}{$IQR = Q_3 - Q_1$}{$IQR = 2Q_3 - Q_1$}{$IQR = \frac{Q_3 - Q_1}{2}$}{b}
+
+\question \textbf{A survey categorizing people by their favorite color is an example of which measurement scale?}  
+\choice{Nominal}{Ordinal}{Interval}{Ratio}{a}  
+
+\question \textbf{If $\displaystyle \sum_{i=1}^{25} z_i^2=75$ and $\displaystyle \sum_{i=1}^{25} z_i=50$, compute $\displaystyle \sum_{i=1}^{25} z_i^2 + 2\sum_{i=1}^{25} z_i - 125$.}  
+\choice{50}{75}{100}{25}{a} 
+
+\question \textbf{If $y_1=5$, $y_2=2$, $y_3=-1$, and $y_4=4$, compute $\displaystyle \sum_{i=1}^4 (y_i^2 + 2)$.}  
+\choice{50}{40}{44}{60}{c}  
+
+\question \textbf{A good measure of central tendency -}  
+
+i. is stable for different samples \\  
+ii. provides a single representative value \\  
+iii. ignores extreme values completely  
+
+\textbf{Which one is correct?}  
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{a} 
+
+\question \textbf{Which measure is suitable for open-ended distribution?}
+\choice{Median}{Mode}{Geometric Mean}{Arithmetic mean}{b}
+
+\question \textbf{Which is not a measure of central tendency?}
+\choice{Arithmetic mean}{Mode}{Range}{Quadratic mean}{c}
+
+\question \textbf{Which time series component represents fluctuations occurring at regular intervals within a year?}  
+\choice{Trend}{Seasonal Variation}{Irregular Variation}{Cyclic Variation}{b}
+
+\textbf{Answer the next three questions based on the following table:}
+
+\textbf{The following table shows the monthly sales revenue (in thousand dollars) of a store over seven months.}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c|c|c|c|c|c}
+Month  & Jan & Feb & Mar & Apr & May & Jun & Jul \\ \hline
+Revenue (000\$) & 50  & 55  & 60  & 70  & 75  & 80  & 85  
+\end{tabular}
+\end{table}
+
+\question \textbf{Which month had the highest sales revenue?}
+\choice{May}{Jun}{Jul}{Apr}{c}
+
+\question \textbf{What is the first value of the 2-monthly moving average?}
+\choice{52.5}{55}{57.5}{60}{a}
+
+\question \textbf{Using the semi-average method, what is the first average revenue?}
+\choice{57.5}{60}{62.5}{65}{b}
+
+\question \textbf{Which business is most likely to experience strong seasonal variation in its sales?}  
+\choice{A supermarket}{A toy store}{A furniture store}{A gas station}{b} 
+
+
+\textbf{Answer the next three questions based on the following information}
+
+\textbf{The following table shows weekly production of milk (in liters) by different varieties of cows.}
+
+\begin{center}
+\begin{table}[h]
+\centering
+\begin{tabular}{c|c|c|c|c|c|c}
+Interval     & 10-20 & 20-30 & 30-40 & 40-50 & 50-60 & 60-70 \\ \hline
+Frequency    & 5     & 12    & 18    & 25    & 20    & 10    
+\end{tabular}
+\end{table} 
+\end{center}
+
+\question \textbf{What is the median?}
+\choice{43}{44}{45}{50}{b}
+
+\question \textbf{What is the lower limit of class interval for first quartile?}
+\choice{10}{20}{30}{40}{c}
+
+\question \textbf{What is the 3rd quartile?}
+\choice{55.75}{43.75}{53.15}{53.75}{d}
+
+\question 
+\textbf{For two non-zero positive numbers, the harmonic mean is 10 and the arithmetic mean is 25. What is the geometric mean?}
+
+\choice{15}{20}{25}{30}{a}
+
+\question \textbf{In Bangladesh, which ministry present the budget?}
+\choice{Planning}{Education}{Finance}{Agriculture}{c}
+
+\question \textbf{Which one represents an infinite population?}
+\choice{Books in a library}{Fish in the Pacific Ocean}
+{Members of a sports club}{Mobile phones in a city}{b}
+
+\question \textbf{Which statistical method requires bivariate or multivariate data?}  
+\choice{Standard deviation}{Histogram}{Regression analysis}{Median}{c} 
+
+\question \textbf{Population census is --}
+\choice{Official statistics}{Non-official statistics}
+{Semi-official statistics}{None of the above}{c}
+
+\question \textbf{Mode is --}  
+
+i. The most frequently occurring value \\  
+ii. Unaffected by extreme values \\  
+iii. Always unique in a dataset  
+
+\textbf{Which one is correct?}  
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{a}  
+
+\question \textbf{The arithmetic mean of a variable is 10. What is the 
+first raw moment around 0?}
+\choice{10}{-2}{0}{8}{a}
+
+\question \textbf{The standard deviation of a mesokurtik distribution is 2. What is the value of the 4th central moment?}
+\choice{4}{8}{16}{48}{d}
+
+\question \textbf{If $f_i = 3, 5, 7$ and $x_i = 2, 4, 6$, find $\displaystyle \sum_{i=1}^3 f_ix_i^2$.}  
+\choice{260}{280}{344}{320}{c}  
+
+
+\end{questions}
+
+ \vspace{2.5cm}
+
+\begin{center}
+“Information is the oil of the 21st century, and analytics is the combustion engine.” - Peter Sondergaard
+\end{center}
+
+\pagebreak
+%\newpage  %Uncomment to put on new age
+\bigskip
+
+\begin{multicols}{3}
+[
+Answer Key
+]
+\showallanswers % Phil Hirschorn
+\end{multicols}
+
+
+\end{document}

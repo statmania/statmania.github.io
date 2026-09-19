@@ -1,0 +1,307 @@
+\documentclass[12pt]{exam}
+%\documentclass[11pt,a4paper]{exam}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,dsfont}
+\usepackage{float}
+\usepackage{ifthen}
+\usepackage{array}
+\usepackage{geometry}
+\geometry{
+legalpaper, total={177.8mm, 290mm},left=10mm, right=10mm,
+top=7mm, bottom=10mm,
+}
+\usepackage{enumerate}% http://ctan.org/pkg/enumerate
+\usepackage{multicol}
+\usepackage{hhline}
+\usepackage[table]{xcolor}
+
+
+% Accumulate the answers. Unmodified from Phil Hirschorn's answer
+% https://tex.stackexchange.com/questions/15350/showing-solutions-of-the-questions-separately/15353
+\newbox\allanswers
+\setbox\allanswers=\vbox{}
+
+\newenvironment{answer}
+{%
+    \global\setbox\allanswers=\vbox\bgroup
+    \unvbox\allanswers
+}%
+{%
+    \bigbreak
+    \egroup
+}
+
+\newcommand{\showallanswers}{\par\unvbox\allanswers}
+% End Phil's answer
+
+
+% Is there a better way?
+\newcommand*{\getanswer}[5]{%
+    \ifthenelse{\equal{#5}{a}}
+    {\begin{answer}\thequestion. (a)~#1\end{answer}}
+    {\ifthenelse{\equal{#5}{b}}
+        {\begin{answer}\thequestion. (b)~#2\end{answer}}
+        {\ifthenelse{\equal{#5}{c}}
+            {\begin{answer}\thequestion. (c)~#3\end{answer}}
+            {\ifthenelse{\equal{#5}{d}}
+                {\begin{answer}\thequestion. (d)~#4\end{answer}}
+                {\begin{answer}\textbf{\thequestion. (#5)~Invalid answer choice.}\end{answer}}}}}
+}
+
+\setlength\parindent{0pt}
+%usage \choice{ }{ }{ }{ }
+%(A)(B)(C)(D)
+\newcommand{\fourch}[5]{
+    \par
+    \begin{tabular}{*{4}{@{}p{0.23\textwidth}}}
+        (a)~#1 & (b)~#2 & (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)(B)
+%(C)(D)
+\newcommand{\twoch}[5]{
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (a)~#1 & (b)~#2
+    \end{tabular}
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)
+%(B)
+%(C)
+%(D)
+\newcommand{\onech}[5]{
+    \par
+    (a)~#1 \par (b)~#2 \par (c)~#3 \par (d)~#4
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+\newlength\widthcha
+\newlength\widthchb
+\newlength\widthchc
+\newlength\widthchd
+\newlength\widthch
+\newlength\tabmaxwidth
+
+\setlength\tabmaxwidth{0.96\textwidth}
+\newlength\fourthtabwidth
+\setlength\fourthtabwidth{0.25\textwidth}
+\newlength\halftabwidth
+\setlength\halftabwidth{0.5\textwidth}
+
+\newcommand{\choice}[5]{%
+\settowidth\widthcha{AM.#1}\setlength{\widthch}{\widthcha}%
+\settowidth\widthchb{BM.#2}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{CM.#3}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{DM.#4}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+
+% These if statements were bypassing the \onech option.
+% \ifdim\widthch<\fourthtabwidth
+%     \fourch{#1}{#2}{#3}{#4}{#5}
+% \else\ifdim\widthch<\halftabwidth
+% \ifdim\widthch>\fourthtabwidth
+%     \twoch{#1}{#2}{#3}{#4}{#5}
+% \else
+%      \onech{#1}{#2}{#3}{#4}{#5}
+%  \fi\fi\fi}
+
+% Allows for the \onech option.
+\ifdim\widthch>\halftabwidth
+    \onech{#1}{#2}{#3}{#4}{#5}
+\else\ifdim\widthch<\halftabwidth
+\ifdim\widthch>\fourthtabwidth
+    \twoch{#1}{#2}{#3}{#4}{#5}
+\else
+    \fourch{#1}{#2}{#3}{#4}{#5}
+\fi\fi\fi}
+
+
+\begin{document}
+
+
+
+\begin{table}[]
+\begin{tabular}{llllllllcllll}
+\textit{Deneb} &  &  &  &  &  &  &  & \multicolumn{1}{l}{\textbf{MYMENSINGH GIRLS' CADET COLLEGE}} &                                             &                        &                                 &                        \\
+                &  &  &  &  &  &  &  & \multicolumn{1}{c}{PROGRESS TEST EXAMINATION - 2025}       &                                             &                        & \multicolumn{1}{c}{}            &                        \\
+                &  &  &  &  &  &  &  & CLASS: HSC                                                   &                                             &                        & \multicolumn{1}{c}{}            &                        \\
+                &  &  &  &  &  &  &  & MULTIPLE CHOICE QUESTIONS                                    &                                             &                        & \multicolumn{1}{c}{}            &                        \\
+                &  &  &  &  &  &  &  & STATISTICS                                                   &                                             &                        & \multicolumn{1}{r}{}            &                        \\ \cline{11-13} 
+                &  &  &  &  &  &  &  & FIRST PAPER                                                 & \multicolumn{1}{r|}{\textbf{Subject Code:}} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{\textbf{2}} & \multicolumn{1}{l|}{9} \\ \cline{11-13} 
+                &  &  &  &  &  &  &  & [According to the Syllabus of 2026]                          & \multicolumn{1}{r}{}                        &                        &                                 &                        \\ \cline{12-12}
+                &  &  &  &  &  &  &  & TIME – 20 minutes                                            & \multicolumn{1}{r}{\textbf{Set:}}           & \multicolumn{1}{l|}{}  & \multicolumn{1}{l|}{\textbf{Gha}} &                        \\ \cline{12-12}
+                &  &  &  &  &  &  &  & FULL MARKS – 20                                              &                                             &                        &                                 &                       
+\end{tabular}
+\end{table}
+
+%  \normalfont\normalsize
+ % 11.45a.m.~--~1.45p.m.
+\hrule
+
+\begin{center}
+[N.B. – Answer all the questions. Each question carries ONE mark. Block fully, with a black ball- point pen, the circle of the letter that stands for the correct/best answer in the “Answer sheet” for the Multiple Choice Questions Examination.]\\
+
+  
+  \textbf{Candidates are asked not to leave any mark or spot on the question paper.}
+\end{center}
+\begin{questions}
+
+\question \textbf{For a mesokurtik distribution, $\beta_2 = - $}
+\choice{0}{-3}{3}{1}{c}
+
+% Situation Set 1 Starts
+\textbf{Answer the next TWO questions based on the following information}
+
+For a frequency distribution, the following central moments are given:
+\[
+\mu_2 = 4, \quad \mu_3 = -4, \quad \mu_4 = 48
+\]
+
+\question \textbf{What is the standard deviation of the distribution?}
+\choice{2}{4}{8}{16}{a}
+
+\question \textbf{What is Karl Pearson's coefficient of skewness based on moments ($\sqrt{\beta_1}$)?}
+\choice{$-1.0$}{$-0.5$}{$0.5$}{$1.0$}{b}
+
+
+
+
+\question \textbf{The correlation coefficient between two variables lies between:}
+\choice{0 and 1}{-1 and 0}{-1 and +1}{$-\infty$ and $+\infty$}{c}
+
+\question \textbf{If the correlation coefficient between X and Y is 0.6, the correlation between 2X and 3Y is:}
+\choice{0.6}{0.2}{1.8}{Cannot be determined}{a}
+
+\question \textbf{If the regression coefficients are 0.8 and 0.5, the correlation coefficient is:}
+\choice{0.40}{0.63}{0.80}{1.30}{b}
+
+\question \textbf{If $Y = 4X - 8$ and $\bar Y = 20$, find $\bar X$.}
+\choice{3}{5}{7}{9}{c}
+
+\question \textbf{The following are values of arithmetic, geometric, and harmonic mean, respectively}
+
+i. \{10, 12, 14\} \\
+ii. \{10, 10, 10\} \\
+iii. \{10, 8, 6\}
+
+\textbf{Which one is possible?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{c}
+
+\question \textbf{The values of mode and median of moderately skewed distribution are 60 and 65. What is value of the mean?}
+\choice{70}{67.5}{72}{55}{b}
+
+% Multiple Completion Starts
+\question \textbf{Which of the following are true about the median?}
+
+i. It is the middle value when data is ordered \\
+ii. It is unaffected by extreme outliers \\
+iii. It is always equal to the mean in a symmetrical distribution
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{d}
+% Multiple Completion Ends
+
+\question \textbf{A survey categorizing people by their favorite color is an example of which measurement scale?}  
+\choice{Nominal}{Ordinal}{Interval}{Ratio}{a} 
+
+\question \textbf{Which is a discrete variable?}
+\choice{Number of languages spoken by a person}
+{Time taken to complete a race}{Length of a road}{Volume of water in a tank}{a}
+
+\question \textbf{If $x_1=3$, $x_2=2$, $x_3=-6$, and $x_4=4$, what is
+$\displaystyle \sum_{i=1}^4 x_i^2$?}  
+\choice{45}{65}{85}{89}{b}
+
+% Situation Set 1 Starts
+\textbf{Answer the next TWO questions based on the following information}
+
+The table below shows monthly sales (in thousands of dollars) for two products in four regions.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{c|cccc}
+Product & North & South & East & West \\ \hline
+A & 12 & 15 & 10 & 8 \\
+B & 18 & 22 & 14 & 16
+\end{tabular}
+\end{table}
+
+\question \textbf{What is the total sales of Product A across all regions?}
+\choice{40}{42}{45}{48}{c}
+
+\question \textbf{What is the total sales of all products across all regions?}
+\choice{95}{100}{105}{115}{d}
+% Situation Set 1 Ends
+
+% Multiple Completion Starts
+\question \textbf{Which of the following are true about standard deviation?}
+
+i. It has the same unit as the original data \\
+ii. It is the square root of variance \\
+iii. A larger standard deviation indicates greater dispersion
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{d}
+% Multiple Completion Ends
+
+\question \textbf{If the standard deviation of a dataset is 4, what is its variance?}
+\choice{2}{4}{8}{16}{d}
+
+
+\question \textbf{If the mean of a dataset is 50 and standard deviation is 10, the coefficient of variation is:}
+\choice{10\%}{15\%}{20\%}{25\%}{c}
+
+\question \textbf{If $Q_1 = 25$ and $QD = 10$, what is the value of $Q_3?$}
+\choice{45}{70}{10}{25}{a}
+
+% Multiple Completion Starts
+\question \textbf{Which of the following does not depend on change of origin?}
+
+i. Median \\
+ii. Standard deviation \\
+iii. Regression coefficient
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{c}
+% Multiple Completion Ends
+
+
+
+
+
+
+\end{questions}
+
+\vspace{1cm}
+\vfill
+\begin{center}
+%“You can have data without information, but you cannot have information without data.” \\ %- Daniel Keys Moran
+--AAM-- 
+\end{center}
+
+\pagebreak
+%\newpage  %Uncomment to put on new age
+\bigskip
+
+%\begin{multicols}{3}
+%[
+%Answer Key
+%]
+%\showallanswers % Phil Hirschorn
+%\end{multicols}
+
+
+\end{document}

@@ -1,0 +1,295 @@
+\documentclass[12pt]{exam}
+%\documentclass[11pt,a4paper]{exam}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,dsfont}
+\usepackage{float}
+\usepackage{ifthen}
+\usepackage{array}
+\usepackage{geometry}
+\geometry{
+legalpaper, total={177.8mm, 290mm},left=20mm,
+top=5mm, bottom=20mm,
+}
+\usepackage{enumerate}% http://ctan.org/pkg/enumerate
+\usepackage{multicol}
+\usepackage{hhline}
+\usepackage[table]{xcolor}
+
+
+% Accumulate the answers. Unmodified from Phil Hirschorn's answer
+% https://tex.stackexchange.com/questions/15350/showing-solutions-of-the-questions-separately/15353
+\newbox\allanswers
+\setbox\allanswers=\vbox{}
+
+\newenvironment{answer}
+{%
+    \global\setbox\allanswers=\vbox\bgroup
+    \unvbox\allanswers
+}%
+{%
+    \bigbreak
+    \egroup
+}
+
+\newcommand{\showallanswers}{\par\unvbox\allanswers}
+% End Phil's answer
+
+
+% Is there a better way?
+\newcommand*{\getanswer}[5]{%
+    \ifthenelse{\equal{#5}{a}}
+    {\begin{answer}\thequestion. (a)~#1\end{answer}}
+    {\ifthenelse{\equal{#5}{b}}
+        {\begin{answer}\thequestion. (b)~#2\end{answer}}
+        {\ifthenelse{\equal{#5}{c}}
+            {\begin{answer}\thequestion. (c)~#3\end{answer}}
+            {\ifthenelse{\equal{#5}{d}}
+                {\begin{answer}\thequestion. (d)~#4\end{answer}}
+                {\begin{answer}\textbf{\thequestion. (#5)~Invalid answer choice.}\end{answer}}}}}
+}
+
+\setlength\parindent{0pt}
+%usage \choice{ }{ }{ }{ }
+%(A)(B)(C)(D)
+\newcommand{\fourch}[5]{
+    \par
+    \begin{tabular}{*{4}{@{}p{0.23\textwidth}}}
+        (a)~#1 & (b)~#2 & (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)(B)
+%(C)(D)
+\newcommand{\twoch}[5]{
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (a)~#1 & (b)~#2
+    \end{tabular}
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)
+%(B)
+%(C)
+%(D)
+\newcommand{\onech}[5]{
+    \par
+    (a)~#1 \par (b)~#2 \par (c)~#3 \par (d)~#4
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+\newlength\widthcha
+\newlength\widthchb
+\newlength\widthchc
+\newlength\widthchd
+\newlength\widthch
+\newlength\tabmaxwidth
+
+\setlength\tabmaxwidth{0.96\textwidth}
+\newlength\fourthtabwidth
+\setlength\fourthtabwidth{0.25\textwidth}
+\newlength\halftabwidth
+\setlength\halftabwidth{0.5\textwidth}
+
+\newcommand{\choice}[5]{%
+\settowidth\widthcha{AM.#1}\setlength{\widthch}{\widthcha}%
+\settowidth\widthchb{BM.#2}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{CM.#3}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{DM.#4}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+
+% These if statements were bypassing the \onech option.
+% \ifdim\widthch<\fourthtabwidth
+%     \fourch{#1}{#2}{#3}{#4}{#5}
+% \else\ifdim\widthch<\halftabwidth
+% \ifdim\widthch>\fourthtabwidth
+%     \twoch{#1}{#2}{#3}{#4}{#5}
+% \else
+%      \onech{#1}{#2}{#3}{#4}{#5}
+%  \fi\fi\fi}
+
+% Allows for the \onech option.
+\ifdim\widthch>\halftabwidth
+    \onech{#1}{#2}{#3}{#4}{#5}
+\else\ifdim\widthch<\halftabwidth
+\ifdim\widthch>\fourthtabwidth
+    \twoch{#1}{#2}{#3}{#4}{#5}
+\else
+    \fourch{#1}{#2}{#3}{#4}{#5}
+\fi\fi\fi}
+
+
+\begin{document}
+
+\begin{table}[]
+\begin{tabular}{lllllllllrlll}
+Vega &  &  &  &  &  & \textbf{SYLHET CADET COLLEGE}       &  &                       & \multicolumn{1}{l}{}                        &                        &                        &                        \\ \cline{10-13} 
+       &  &  &  &  &  & PROGRESS TEST EXAMINATION - 2025             &  & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{Ques Setter}            & \multicolumn{3}{l|}{}                                                    \\ \cline{10-13} 
+       &  &  &  &  &  & CLASS: XII                          &  & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{Moderator}              & \multicolumn{3}{l|}{}                                                    \\ \cline{10-13} 
+       &  &  &  &  &  & MULTIPLE CHOICE QUESTIONS           &  & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{VP}                     & \multicolumn{3}{l|}{}                                                    \\ \cline{10-13} 
+       &  &  &  &  &  & STATISTICS                          &  &                       &                                             &                        &                        &                        \\ \cline{11-13} 
+       &  &  &  &  &  & FIRST PAPER                        &  &                       & \multicolumn{1}{r|}{\textbf{Subject Code:}} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{2} & \multicolumn{1}{l|}{9} \\ \cline{11-13} 
+       &  &  &  &  &  & [According to the Syllabus of 2025] &  &                       &                                             &                        &                        &                        \\ \cline{12-12}
+       &  &  &  &  &  & TIME – 25 minutes                   &  &                       & \textbf{Set:}                               & \multicolumn{1}{l|}{}  & \multicolumn{1}{l|}{C} &                        \\ \cline{12-12}
+       &  &  &  &  &  & FULL MARKS – 25                     &  &                       & \multicolumn{1}{l}{}                        &                        &                        &                       
+\end{tabular}
+\end{table}
+
+
+
+%  \normalfont\normalsize
+ % 11.45a.m.~--~1.45p.m.
+\hrule
+
+\begin{center}
+[N.B. – Answer all the questions. Each question carries ONE mark. Block fully, with a black ball- point pen, the circle of the letter that stands for the correct/best answer in the “Answer sheet” for the Multiple Choice Questions Examination.]\\
+
+  
+  \textbf{Candidates are asked not to leave any mark or spot on the question paper.}
+\end{center} 
+
+\begin{questions}
+
+\question \textbf{Which measure is suitable for open-ended distribution?}
+\choice{Median}{Mode}{Geometric Mean}{Arithmetic mean}{b}
+
+\question \textbf{How many measure of central tendency are there?}
+\choice{2}{3}{4}{5}{d}
+
+\question \textbf{An equation is: $y = 5x + 9$. If $\bar{x} = 20$, what is $\bar{y}$?}  
+\choice{100}{209}{109}{29}{c}
+
+\question \textbf{For two non-zero positive numbers, the harmonic mean is 8 and the geometric mean is 12. What is the arithmetic mean?}
+\choice{16}{18}{20}{22}{b}
+
+\question \textbf{Find the mode of the following frequency distribution:}  
+\begin{center}
+\begin{tabular}{c|c|c|c|c|c}
+\textbf{Value} & 2 & 3 & 4 & 5 & 6 \\ \hline
+\textbf{Frequency} & 3 & 5 & 2 & 7 & 1
+\end{tabular}
+\end{center}
+
+\choice{3}{5}{6}{5}{d}
+
+\question \textbf{The arithmetic mean of a variable is 2.6. What is the first raw moment around 6?}  
+\choice{2.2}{-3.4}{0.1}{1.8}{b}  
+
+\question \textbf{In a symmetric distribution--}
+
+i. Frequencies of higher values are lower \\
+ii. Frequencies of low values are higher \\
+iii. Frequencies of low values are lower 
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{b}
+
+\question \textbf{$\beta_2 = 1$ implies data are--}
+\choice{Leptokurtic}{Platykurtic}{Mesokurtic}{Symmetric}{b}
+
+\question \textbf{In a box and whisker plot, the following statements hold true:}
+
+i. The length of the box represents the interquartile range (IQR). \\
+ii. The whiskers extend from the minimum to the maximum data values. \\
+iii. The median is represented by the top of the box.
+
+\textbf{Which one is correct?}
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{a}
+
+\question \textbf{The following values represent the quartiles of a data set:}
+  $Q_1 = 25,  Q_2 = 50,  Q_3 = 75$
+  
+  \textbf{What is the interquartile range (IQR)?}
+\choice{25}{50}{75}{100}{b}
+
+
+\question \textbf {The relationship between \( \beta_2 \) and \( \gamma_2 \) is --}
+\choice{\( \beta_2 = \gamma_2 - 3 \)}{\( \gamma_2 = \beta_2 - 3 \)}{\( \gamma_2 = 3 \beta_2 \)}{\( \gamma_2 = \frac{\beta_2}{3} \)}{b}
+
+\question \textbf{The first raw moment around 3 of a data set is 18. What is the arithmetic mean of the data?}  
+\choice{6}{17}{28}{21}{d}
+
+\question \textbf{Which of the following is an example of cyclic variation in a time series?}  
+\choice{Boom and recession phases in an economy}{Increase in electricity consumption during summer}{High demand for umbrellas during the rainy season}{Sudden decline in stock prices due to a pandemic}{a}  
+
+\textbf{Answer the next THREE questions based on the following information}
+
+\begin{table}[h]
+\begin{tabular}{c|cccccccc}
+Year & 2015 & 2016 & 2017 & 2018 & 2019 & 2020 & 2021 & 2022 \\ \hline
+Average Temperature (°C) & 22.5 & 23.0 & 24.2 & 24.5 & 25.0 & 25.5 & 26.0 & 27.0
+\end{tabular}
+\caption{\label{tempdata}Source--National Weather Service}
+\end{table}
+
+\question \textbf{What is the second value of the semi-average method?}
+\choice{25.75}{26.00}{25.88}{24.29}{c}
+
+\question \textbf{What kind of trend do the data show?}
+\choice{Upward}{Downward}{Both upward \& downward}{No trend}{a}
+
+\question \textbf{Which component of the time series is most prominent in the data?}
+\choice{Seasonal Variation}{General Trend}{Irregular Variation}{Cyclic Variation}{b}
+
+\question \textbf{In additive model, in the long run, $\sum R_t = --$}
+\choice{0}{1}{Undefine}{Infinity}{a}
+
+\question \textbf{If $\sum (x_i - a)^2$ is minimized, then the value of $a$ is:}  
+\choice{$\bar{x}$}{0}{Median}{Mode}{a}
+
+\question \textbf{Which is not a function of statistics?}
+\choice{Data collection}{Data organization}{Analysis}{Database creation}{d}
+
+\question \textbf{Which of the following is an example of a finite population?}  
+\choice{Books in a school library}{Stars in the universe}  
+{Grains of sand on a beach}{Atoms in the atmosphere}{a}  
+
+\question \textbf{Classifying students based on their grades (A, B, C, etc.) represents which measurement scale?}  
+\choice{Nominal}{Ordinal}{Interval}{Ratio}{b} 
+
+\question \textbf{Given $\displaystyle \sum_{i=1}^{10} a_i^2=40$ and $\displaystyle \sum_{i=1}^{10} a_i=20$, find the value of $\displaystyle 2\sum_{i=1}^{10} a_i^2 - 3\sum_{i=1}^{10} a_i + 60$.}  
+\choice{70}{100}{80}{50}{c}  
+
+\question \textbf{In Bangladesh, a census is usually done every -- years}
+\choice{20}{15}{10}{12}{c}
+
+\textbf{Answer the next two questions based on the following information}
+
+\begin{center}
+$X = 3, 5, 7, 10$
+\end{center}
+
+\question \textbf{Find $\sum (X_i + 3)$}
+\choice{28}{32}{37}{40}{c}
+
+\question \textbf{$\displaystyle \sum (X_i-5)^2$}
+\choice{16}{33}{12}{8}{b}
+
+\end{questions}
+
+ \vspace{2.5cm}
+
+\begin{center}
+“Why speculate when you can calculate?” - John C. Baez
+\end{center}
+
+\pagebreak
+%\newpage  %Uncomment to put on new age
+\bigskip
+
+\begin{multicols}{3}
+[
+Answer Key
+]
+\showallanswers % Phil Hirschorn
+\end{multicols}
+
+
+\end{document}

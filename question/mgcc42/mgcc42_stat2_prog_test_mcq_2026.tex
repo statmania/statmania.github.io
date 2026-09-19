@@ -1,0 +1,298 @@
+\documentclass[12pt]{exam}
+%\documentclass[11pt,a4paper]{exam}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,dsfont}
+\usepackage{float}
+\usepackage{ifthen}
+\usepackage{array}
+\usepackage{geometry}
+\geometry{
+legalpaper, total={177.8mm, 290mm},left=10mm, right=10mm,
+top=7mm, bottom=10mm,
+}
+\usepackage{enumerate}% http://ctan.org/pkg/enumerate
+\usepackage{multicol}
+\usepackage{hhline}
+\usepackage[table]{xcolor}
+
+
+% Accumulate the answers. Unmodified from Phil Hirschorn's answer
+% https://tex.stackexchange.com/questions/15350/showing-solutions-of-the-questions-separately/15353
+\newbox\allanswers
+\setbox\allanswers=\vbox{}
+
+\newenvironment{answer}
+{%
+    \global\setbox\allanswers=\vbox\bgroup
+    \unvbox\allanswers
+}%
+{%
+    \bigbreak
+    \egroup
+}
+
+\newcommand{\showallanswers}{\par\unvbox\allanswers}
+% End Phil's answer
+
+
+% Is there a better way?
+\newcommand*{\getanswer}[5]{%
+    \ifthenelse{\equal{#5}{a}}
+    {\begin{answer}\thequestion. (a)~#1\end{answer}}
+    {\ifthenelse{\equal{#5}{b}}
+        {\begin{answer}\thequestion. (b)~#2\end{answer}}
+        {\ifthenelse{\equal{#5}{c}}
+            {\begin{answer}\thequestion. (c)~#3\end{answer}}
+            {\ifthenelse{\equal{#5}{d}}
+                {\begin{answer}\thequestion. (d)~#4\end{answer}}
+                {\begin{answer}\textbf{\thequestion. (#5)~Invalid answer choice.}\end{answer}}}}}
+}
+
+\setlength\parindent{0pt}
+%usage \choice{ }{ }{ }{ }
+%(A)(B)(C)(D)
+\newcommand{\fourch}[5]{
+    \par
+    \begin{tabular}{*{4}{@{}p{0.23\textwidth}}}
+        (a)~#1 & (b)~#2 & (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)(B)
+%(C)(D)
+\newcommand{\twoch}[5]{
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (a)~#1 & (b)~#2
+    \end{tabular}
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)
+%(B)
+%(C)
+%(D)
+\newcommand{\onech}[5]{
+    \par
+    (a)~#1 \par (b)~#2 \par (c)~#3 \par (d)~#4
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+\newlength\widthcha
+\newlength\widthchb
+\newlength\widthchc
+\newlength\widthchd
+\newlength\widthch
+\newlength\tabmaxwidth
+
+\setlength\tabmaxwidth{0.96\textwidth}
+\newlength\fourthtabwidth
+\setlength\fourthtabwidth{0.25\textwidth}
+\newlength\halftabwidth
+\setlength\halftabwidth{0.5\textwidth}
+
+\newcommand{\choice}[5]{%
+\settowidth\widthcha{AM.#1}\setlength{\widthch}{\widthcha}%
+\settowidth\widthchb{BM.#2}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{CM.#3}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{DM.#4}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+
+% These if statements were bypassing the \onech option.
+% \ifdim\widthch<\fourthtabwidth
+%     \fourch{#1}{#2}{#3}{#4}{#5}
+% \else\ifdim\widthch<\halftabwidth
+% \ifdim\widthch>\fourthtabwidth
+%     \twoch{#1}{#2}{#3}{#4}{#5}
+% \else
+%      \onech{#1}{#2}{#3}{#4}{#5}
+%  \fi\fi\fi}
+
+% Allows for the \onech option.
+\ifdim\widthch>\halftabwidth
+    \onech{#1}{#2}{#3}{#4}{#5}
+\else\ifdim\widthch<\halftabwidth
+\ifdim\widthch>\fourthtabwidth
+    \twoch{#1}{#2}{#3}{#4}{#5}
+\else
+    \fourch{#1}{#2}{#3}{#4}{#5}
+\fi\fi\fi}
+
+
+\begin{document}
+
+
+
+\begin{table}[]
+\begin{tabular}{llllllllcllll}
+\textit{Deneb} &  &  &  &  &  &  &  & \multicolumn{1}{l}{\textbf{MYMENSINGH GIRLS' CADET COLLEGE}} &                                             &                        &                                 &                        \\
+                &  &  &  &  &  &  &  & \multicolumn{1}{c}{PROGRESS TEST EXAMINATION - 2025}       &                                             &                        & \multicolumn{1}{c}{}            &                        \\
+                &  &  &  &  &  &  &  & CLASS: HSC                                                   &                                             &                        & \multicolumn{1}{c}{}            &                        \\
+                &  &  &  &  &  &  &  & MULTIPLE CHOICE QUESTIONS                                    &                                             &                        & \multicolumn{1}{c}{}            &                        \\
+                &  &  &  &  &  &  &  & STATISTICS                                                   &                                             &                        & \multicolumn{1}{r}{}            &                        \\ \cline{11-13} 
+                &  &  &  &  &  &  &  & SECOND PAPER                                                 & \multicolumn{1}{r|}{\textbf{Subject Code:}} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{\textbf{3}} & \multicolumn{1}{l|}{0} \\ \cline{11-13} 
+                &  &  &  &  &  &  &  & [According to the Syllabus of 2026]                          & \multicolumn{1}{r}{}                        &                        &                                 &                        \\ \cline{12-12}
+                &  &  &  &  &  &  &  & TIME – 20 minutes                                            & \multicolumn{1}{r}{\textbf{Set:}}           & \multicolumn{1}{l|}{}  & \multicolumn{1}{l|}{\textbf{Ga}} &                        \\ \cline{12-12}
+                &  &  &  &  &  &  &  & FULL MARKS – 20                                              &                                             &                        &                                 &                       
+\end{tabular}
+\end{table}
+
+%  \normalfont\normalsize
+ % 11.45a.m.~--~1.45p.m.
+\hrule
+
+\begin{center}
+[N.B. – Answer all the questions. Each question carries ONE mark. Block fully, with a black ball- point pen, the circle of the letter that stands for the correct/best answer in the “Answer sheet” for the Multiple Choice Questions Examination.]\\
+
+  
+  \textbf{Candidates are asked not to leave any mark or spot on the question paper.}
+\end{center}
+\begin{questions}
+
+\question \textbf{How many samples of size 4 can be drawn without replacement from a population of size 10?}
+\choice{200}{220}{210}{550}{c}
+
+\question \textbf{In sampling with replacement, the probability of each selected sample is --}
+\choice{$\frac{1}{N^n}$}{$\frac{1}{^NC_n}$}{$\frac{1}{N \times n}$}{$\frac{n}{N}$}{a}
+
+% Multiple Completion Starts
+\question \textbf{Which of the following are true about stratified sampling?}
+
+i. The population is divided into homogeneous subgroups called strata \\
+ii. Samples are drawn independently from each stratum \\
+iii. The strata are heterogenous
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{a}
+% Multiple Completion Ends
+
+
+\question \textbf{In a survey of 60 people, 35 liked coffee, 28 liked tea, and 12 liked neither. If a person is selected at random, what is the probability that they like at least one of the two beverages?}
+\choice{$\frac{3}{5}$}{$\frac{4}{5}$}{$\frac{2}{3}$}{$\frac{5}{6}$}{b}
+
+% Situation Set Starts
+\textbf{Answer the next three questions based on the following information}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{cccc}
+X & 1 & 2 & 3 \\ \hline
+P(x) & $\frac13$ & $\frac16$ & $\frac12$
+\end{tabular}
+\end{table}
+
+\question \textbf{What is $P(X \geq 2)$?}
+\choice{$\frac13$}{$\frac12$}{$\frac23$}{$\frac56$}{c}
+
+\question \textbf{Find the cumulative probability $F(2)$.}
+\choice{$\frac13$}{$\frac12$}{$\frac16$}{$\frac23$}{b}
+
+\question \textbf{$P(X = 1 \text{ or } X = 3)$ equals}
+\choice{$\frac13$}{$\frac12$}{$\frac56$}{$\frac23$}{c}
+% Situation Set Ends
+
+\question \textbf{$P(A\cup B) = P(A) + P(B)$ implies A \& B are --}
+\choice{Disjoint}{Independent}{Joint}{Independent}{a}
+
+\textbf{Answer the next THREE questions based on the following information.}
+
+A card is drawn at random from a standard deck of 52 playing cards.
+
+\question \textbf{What is the probability that the card is a Queen?}
+\choice{0.0192}{0.0769}{0.25}{0.5}{b}
+
+\question \textbf{P(The card is not a Spade)}  
+\choice{$\frac14$}{$\frac12$}{$\frac34$}{$\frac13$}{c}
+
+\question \textbf{P(The card is black or a Heart)}  
+\choice{$\frac12$}{$\frac34$}{$\frac13$}{$\frac14$}{a}
+
+
+
+% Multiple Completion Starts
+\question \textbf{$P(A) = \frac23,\quad P(B) = \frac15,\quad \text{and}\quad P(A \cap B) = \frac16$}
+
+i. $A$ and $B$ are independent \\
+ii. $P(A \cup B) = \frac{7}{10}$ \\
+iii. $P(\bar A) = \frac 13$
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{c}
+% Multiple Completion Ends
+
+
+\question \textbf{Which reflectes an unchanging population?}
+\choice{GRR=1}{NRR>1}{GRR<1}{GRR=NRR}{a}
+
+\question \textbf{A bacterial culture grows exponentially with a growth rate constant of $r = 0.2$ per hour. How many hours will it take to triple?}
+\choice{$\frac{\ln 3}{0.2}$}{$\frac{\ln 2}{0.2}$}{$0.2 \times \ln 3$}{$0.2 \times \ln 2$}{a}
+
+\question \textbf{Which one is correct?}
+\choice{TFR>GRR>NRR}{TFR=GRR=NRR}{TFR<GRR<NRR}{NRR>GRR>TFR}{a}
+
+
+\question \textbf{If $V(X) = 2$, what is the variance of $(2X + m)$, where $m$ is a constant?}
+\choice{0}{2}{4}{8}{d}
+
+% Situation Set Starts
+\textbf{Answer the next three questions based on the following information}
+
+\begin{center}
+The probability function of random variable $x$ is given below:
+
+\( P(x) = \frac{2x + 1}{k}; x = 1, 2, 3, 4 \)
+\end{center}
+
+\question \textbf{What is the value of $k$?}
+\choice{18}{25}{12}{24}{d}
+
+\question \textbf{What is $E(X)$?}
+\choice{1.75}{2.92}{3.25}{2.25}{b}
+
+\question \textbf{What is $V(X)$?}
+\choice{1.05}{3.0}{1.5}{1.25}{a}
+% Situation Set Ends
+
+% Multiple Completion Starts
+\question \textbf{For a discrete random variable $X$ with probability mass function $p(x)$:}
+
+i. $\displaystyle P(a \leq X \leq b) = \sum_{x=a}^{b} p(x)$ \\
+ii. $\displaystyle \sum_{x} p(x) = 1$ \\
+iii. $\displaystyle p(x) \geq 0$ for all $x$
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{d}
+% Multiple Completion Ends
+
+
+\end{questions}
+
+\vspace{1cm}
+\vfill
+\begin{center}
+%“You can have data without information, but you cannot have information without data.” \\ %- Daniel Keys Moran
+--AAM-- 
+\end{center}
+
+\pagebreak
+%\newpage  %Uncomment to put on new age
+\bigskip
+
+%\begin{multicols}{3}
+%[
+%Answer Key
+%]
+%\showallanswers % Phil Hirschorn
+%\end{multicols}
+
+
+\end{document}

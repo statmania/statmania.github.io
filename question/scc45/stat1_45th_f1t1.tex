@@ -1,0 +1,280 @@
+\documentclass{exam}
+%\documentclass[11pt,a4paper]{exam}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,dsfont}
+\usepackage{ifthen}
+\usepackage{setspace}
+\usepackage{geometry}
+\geometry{
+legalpaper, total={177.8mm, 290mm},left=20mm,
+top=10mm, bottom=20mm,
+}
+\usepackage{enumerate}% http://ctan.org/pkg/enumerate
+\usepackage{multicol}
+\usepackage{hhline}
+\usepackage[table]{xcolor}
+
+
+% Accumulate the answers. Unmodified from Phil Hirschorn's answer
+% https://tex.stackexchange.com/questions/15350/showing-solutions-of-the-questions-separately/15353
+\newbox\allanswers
+\setbox\allanswers=\vbox{}
+
+\newenvironment{answer}
+{%
+    \global\setbox\allanswers=\vbox\bgroup
+    \unvbox\allanswers
+}%
+{%
+    \bigbreak
+    \egroup
+}
+
+\newcommand{\showallanswers}{\par\unvbox\allanswers}
+% End Phil's answer
+
+
+% Is there a better way?
+\newcommand*{\getanswer}[5]{%
+    \ifthenelse{\equal{#5}{a}}
+    {\begin{answer}\thequestion. (a)~#1\end{answer}}
+    {\ifthenelse{\equal{#5}{b}}
+        {\begin{answer}\thequestion. (b)~#2\end{answer}}
+        {\ifthenelse{\equal{#5}{c}}
+            {\begin{answer}\thequestion. (c)~#3\end{answer}}
+            {\ifthenelse{\equal{#5}{d}}
+                {\begin{answer}\thequestion. (d)~#4\end{answer}}
+                {\begin{answer}\textbf{\thequestion. (#5)~Invalid answer choice.}\end{answer}}}}}
+}
+
+\setlength\parindent{0pt}
+%usage \choice{ }{ }{ }{ }
+%(A)(B)(C)(D)
+\newcommand{\fourch}[5]{
+    \par
+    \begin{tabular}{*{4}{@{}p{0.23\textwidth}}}
+        (a)~#1 & (b)~#2 & (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)(B)
+%(C)(D)
+\newcommand{\twoch}[5]{
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (a)~#1 & (b)~#2
+    \end{tabular}
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)
+%(B)
+%(C)
+%(D)
+\newcommand{\onech}[5]{
+    \par
+    (a)~#1 \par (b)~#2 \par (c)~#3 \par (d)~#4
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+\newlength\widthcha
+\newlength\widthchb
+\newlength\widthchc
+\newlength\widthchd
+\newlength\widthch
+\newlength\tabmaxwidth
+
+\setlength\tabmaxwidth{0.96\textwidth}
+\newlength\fourthtabwidth
+\setlength\fourthtabwidth{0.25\textwidth}
+\newlength\halftabwidth
+\setlength\halftabwidth{0.5\textwidth}
+
+\newcommand{\choice}[5]{%
+\settowidth\widthcha{AM.#1}\setlength{\widthch}{\widthcha}%
+\settowidth\widthchb{BM.#2}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{CM.#3}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{DM.#4}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+
+% These if statements were bypassing the \onech option.
+% \ifdim\widthch<\fourthtabwidth
+%     \fourch{#1}{#2}{#3}{#4}{#5}
+% \else\ifdim\widthch<\halftabwidth
+% \ifdim\widthch>\fourthtabwidth
+%     \twoch{#1}{#2}{#3}{#4}{#5}
+% \else
+%      \onech{#1}{#2}{#3}{#4}{#5}
+%  \fi\fi\fi}
+
+% Allows for the \onech option.
+\ifdim\widthch>\halftabwidth
+    \onech{#1}{#2}{#3}{#4}{#5}
+\else\ifdim\widthch<\halftabwidth
+\ifdim\widthch>\fourthtabwidth
+    \twoch{#1}{#2}{#3}{#4}{#5}
+\else
+    \fourch{#1}{#2}{#3}{#4}{#5}
+\fi\fi\fi}
+
+
+\begin{document}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lllll}
+\textbf{\large SYLHET CADET COLLEGE} &  &  &  &  \\ \cline{4-5} 
+FORTNIGHTLY EXAMINATION - 2024 &  & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{Set} & \multicolumn{1}{l|}{A} \\ \cline{4-5} 
+CLASS: XI &  &  &  &  \\ \cline{3-5} 
+SAQ and Creative QUESTIONS & \multicolumn{1}{l|}{\textbf{Subject Code:}} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{2} & \multicolumn{1}{l|}{9} \\ \cline{3-5} 
+STATISTICS &  &  &  &  \\
+TIME – 40 Minutes &  &  &  &  \\
+FULL MARKS – 15 &  &  &  & 
+\end{tabular}
+\end{table}
+%  \normalfont\normalsize
+ % 11.45a.m.~--~1.45p.m.
+\hrule
+
+\begin{center}
+
+  \textbf{Candidates are asked not to leave any mark or spot on the question paper.}
+\end{center}
+
+\onehalfspacing % Set line spacing to 1.5
+
+\begin{enumerate}
+
+  \item
+	  \textbf{The favorite fruits recorded from 30 individuals are as follows:} 
+	  
+	   \begin{centering}
+    Apple, Banana, Cherry, Banana, Mango, Apple, Cherry, Grape, Banana, Mango, \\
+    Cherry, Apple, Grape, Banana, Mango, Apple, Grape, Cherry, Apple, Banana, \\
+    Cherry, Mango, Apple, Banana, Grape, Cherry, Mango, Apple, Banana, Grape \\
+    \end{centering}
+  
+  \begin{enumerate}
+    \item
+	What kind of data is this? \hfill 1
+    \item
+	How can you present the data in this dataset? List three methods. \hfill 2
+    \item  
+	Draw a Pie Chart from the above data and explain. \hfill 3
+    \item
+	Is Bar Diagram a better representation of this data? Justify. \hfill 4
+  \end{enumerate}
+  
+   \item
+	  \textbf{The marks of 57 students in a village are given below.}
+	  
+	  \begin{table}[h]
+	  \centering
+\begin{tabular}{c|c|c|c|c|c|c|c}
+Class     & 10-20 & 20-30 & 30-40 & 40-50 & 50-60 & 60-70 & 70-80 \\ \hline
+Frequency & 5     & 8     & 10    & 13    & 11    & 7     & 3    
+\end{tabular}
+\end{table}
+  
+  \begin{enumerate}
+    \item
+	Are the intervals discrete or continuous? \hfill 1
+    \item
+	Create an Ogive and interpret. \hfill 4
+
+  \end{enumerate}
+
+  
+
+\end{enumerate}
+
+ \vspace{0.5cm}
+
+%\begin{center}
+%An approximate answer to the right problem is worth a good deal more than an exact answer to an approximate problem. – John Tukey.
+%\end{center}
+
+%\pagebreak
+%\newpage  %Uncomment to put on new age
+%\bigskip
+
+%\begin{multicols}{3}
+%[
+%Answer Key
+%]
+%\showallanswers % Phil Hirschorn
+%\end{multicols}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lllll}
+\textbf{\large SYLHET CADET COLLEGE} &  &  &  &  \\ \cline{4-5} 
+FORTNIGHTLY EXAMINATION - 2024 &  & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{Set} & \multicolumn{1}{l|}{A} \\ \cline{4-5} 
+CLASS: XI &  &  &  &  \\ \cline{3-5} 
+SAQ and Creative QUESTIONS & \multicolumn{1}{l|}{\textbf{Subject Code:}} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{2} & \multicolumn{1}{l|}{9} \\ \cline{3-5} 
+STATISTICS &  &  &  &  \\
+TIME – 40 Minutes &  &  &  &  \\
+FULL MARKS – 15 &  &  &  & 
+\end{tabular}
+\end{table}
+%  \normalfont\normalsize
+ % 11.45a.m.~--~1.45p.m.
+\hrule
+
+\begin{center}
+
+  \textbf{Candidates are asked not to leave any mark or spot on the question paper.}
+\end{center}
+
+\onehalfspacing % Set line spacing to 1.5
+
+\begin{enumerate}
+
+  \item
+	  \textbf{The favorite fruits recorded from 30 individuals are as follows:} 
+	  
+	   \begin{centering}
+    Apple, Banana, Cherry, Banana, Mango, Apple, Cherry, Grape, Banana, Mango, \\
+    Cherry, Apple, Grape, Banana, Mango, Apple, Grape, Cherry, Apple, Banana, \\
+    Cherry, Mango, Apple, Banana, Grape, Cherry, Mango, Apple, Banana, Grape \\
+    \end{centering}
+  
+  \begin{enumerate}
+    \item
+	What kind of data is this? \hfill 1
+    \item
+	How can you present the data in this dataset? List three methods. \hfill 2
+    \item  
+	Draw a Pie Chart from the above data and explain. \hfill 3
+    \item
+	Is Bar Diagram a better representation of this data? Justify. \hfill 4
+  \end{enumerate}
+  
+   \item
+	  \textbf{The marks of 57 students in a village are given below.}
+	  
+	  \begin{table}[!hp]
+	  \centering
+\begin{tabular}{c|c|c|c|c|c|c|c}
+Class     & 10-20 & 20-30 & 30-40 & 40-50 & 50-60 & 60-70 & 70-80 \\ \hline
+Frequency & 5     & 8     & 10    & 13    & 11    & 7     & 3    
+\end{tabular}
+\end{table}
+  
+  \begin{enumerate}
+    \item
+	Are the intervals discrete or continuous? \hfill 1
+    \item
+	Create an Ogive and interpret. \hfill 4
+
+  \end{enumerate}
+
+\end{enumerate}
+
+\end{document}

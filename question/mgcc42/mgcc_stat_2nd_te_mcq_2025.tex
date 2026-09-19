@@ -1,0 +1,859 @@
+\documentclass[12pt]{exam}
+%\documentclass[11pt,a4paper]{exam}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,dsfont}
+\usepackage{float}
+\usepackage{ifthen}
+\usepackage{array}
+\usepackage{geometry}
+\geometry{
+legalpaper, total={177.8mm, 290mm},left=10mm, right=10mm,
+top=7mm, bottom=10mm,
+}
+\usepackage{enumerate}% http://ctan.org/pkg/enumerate
+\usepackage{multicol}
+\usepackage{hhline}
+\usepackage[table]{xcolor}
+
+
+% Accumulate the answers. Unmodified from Phil Hirschorn's answer
+% https://tex.stackexchange.com/questions/15350/showing-solutions-of-the-questions-separately/15353
+\newbox\allanswers
+\setbox\allanswers=\vbox{}
+
+\newenvironment{answer}
+{%
+    \global\setbox\allanswers=\vbox\bgroup
+    \unvbox\allanswers
+}%
+{%
+    \bigbreak
+    \egroup
+}
+
+\newcommand{\showallanswers}{\par\unvbox\allanswers}
+% End Phil's answer
+
+
+% Is there a better way?
+\newcommand*{\getanswer}[5]{%
+    \ifthenelse{\equal{#5}{a}}
+    {\begin{answer}\thequestion. (a)~#1\end{answer}}
+    {\ifthenelse{\equal{#5}{b}}
+        {\begin{answer}\thequestion. (b)~#2\end{answer}}
+        {\ifthenelse{\equal{#5}{c}}
+            {\begin{answer}\thequestion. (c)~#3\end{answer}}
+            {\ifthenelse{\equal{#5}{d}}
+                {\begin{answer}\thequestion. (d)~#4\end{answer}}
+                {\begin{answer}\textbf{\thequestion. (#5)~Invalid answer choice.}\end{answer}}}}}
+}
+
+\setlength\parindent{0pt}
+%usage \choice{ }{ }{ }{ }
+%(A)(B)(C)(D)
+\newcommand{\fourch}[5]{
+    \par
+    \begin{tabular}{*{4}{@{}p{0.23\textwidth}}}
+        (a)~#1 & (b)~#2 & (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)(B)
+%(C)(D)
+\newcommand{\twoch}[5]{
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (a)~#1 & (b)~#2
+    \end{tabular}
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)
+%(B)
+%(C)
+%(D)
+\newcommand{\onech}[5]{
+    \par
+    (a)~#1 \par (b)~#2 \par (c)~#3 \par (d)~#4
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+\newlength\widthcha
+\newlength\widthchb
+\newlength\widthchc
+\newlength\widthchd
+\newlength\widthch
+\newlength\tabmaxwidth
+
+\setlength\tabmaxwidth{0.96\textwidth}
+\newlength\fourthtabwidth
+\setlength\fourthtabwidth{0.25\textwidth}
+\newlength\halftabwidth
+\setlength\halftabwidth{0.5\textwidth}
+
+\newcommand{\choice}[5]{%
+\settowidth\widthcha{AM.#1}\setlength{\widthch}{\widthcha}%
+\settowidth\widthchb{BM.#2}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{CM.#3}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{DM.#4}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+
+% These if statements were bypassing the \onech option.
+% \ifdim\widthch<\fourthtabwidth
+%     \fourch{#1}{#2}{#3}{#4}{#5}
+% \else\ifdim\widthch<\halftabwidth
+% \ifdim\widthch>\fourthtabwidth
+%     \twoch{#1}{#2}{#3}{#4}{#5}
+% \else
+%      \onech{#1}{#2}{#3}{#4}{#5}
+%  \fi\fi\fi}
+
+% Allows for the \onech option.
+\ifdim\widthch>\halftabwidth
+    \onech{#1}{#2}{#3}{#4}{#5}
+\else\ifdim\widthch<\halftabwidth
+\ifdim\widthch>\fourthtabwidth
+    \twoch{#1}{#2}{#3}{#4}{#5}
+\else
+    \fourch{#1}{#2}{#3}{#4}{#5}
+\fi\fi\fi}
+
+
+\begin{document}
+
+
+\iffalse
+
+\begin{table}[]
+\begin{tabular}{lllllllllrlll}
+\textit{Falcon} &  &  &  &  &  & \textbf{SYLHET CADET COLLEGE}       &  &                       & \multicolumn{1}{l}{}                        &                        &                        &                        \\ \cline{10-13} 
+       &  &  &  &  &  & 2ND TERM END EXAMINATION - 2025             &  & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{Ques Setter}            & \multicolumn{3}{l|}{}                                                    \\ \cline{10-13} 
+       &  &  &  &  &  & CLASS: XII                          &  & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{Moderator}              & \multicolumn{3}{l|}{}                                                    \\ \cline{10-13} 
+       &  &  &  &  &  & MULTIPLE CHOICE QUESTIONS           &  & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{VP}                     & \multicolumn{3}{l|}{}                                                    \\ \cline{10-13} 
+       &  &  &  &  &  & STATISTICS                          &  &                       &                                             &                        &                        &                        \\ \cline{11-13} 
+       &  &  &  &  &  & SECOND PAPER                        &  &                       & \multicolumn{1}{r|}{\textbf{Subject Code:}} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{3} & \multicolumn{1}{l|}{0} \\ \cline{11-13} 
+       &  &  &  &  &  & [According to the Syllabus of 20--] &  &                       &                                             &                        &                        &                        \\ \cline{12-12}
+       &  &  &  &  &  & TIME – 25 minutes                   &  &                       & \textbf{Set:}                               & \multicolumn{1}{l|}{}  & \multicolumn{1}{l|}{Ka} &                        \\ \cline{12-12}
+       &  &  &  &  &  & FULL MARKS – 25                     &  &                       & \multicolumn{1}{l}{}                        &                        &                        &                       
+\end{tabular}
+\end{table}
+\fi
+
+
+\begin{table}[]
+\begin{tabular}{llllllllcllll}
+\textit{Falcon} &  &  &  &  &  &  &  & \multicolumn{1}{l}{\textbf{MYMENSINGH GIRLS' CADET COLLEGE}} &                                             &                        &                                 &                        \\
+                &  &  &  &  &  &  &  & \multicolumn{1}{l}{SECOND TERM END EXAMINATION - 2025}       &                                             &                        & \multicolumn{1}{c}{}            &                        \\
+                &  &  &  &  &  &  &  & CLASS: XII                                                   &                                             &                        & \multicolumn{1}{c}{}            &                        \\
+                &  &  &  &  &  &  &  & MULTIPLE CHOICE QUESTIONS                                    &                                             &                        & \multicolumn{1}{c}{}            &                        \\
+                &  &  &  &  &  &  &  & STATISTICS                                                   &                                             &                        & \multicolumn{1}{r}{}            &                        \\ \cline{11-13} 
+                &  &  &  &  &  &  &  & SECOND PAPER                                                 & \multicolumn{1}{r|}{\textbf{Subject Code:}} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{\textbf{3}} & \multicolumn{1}{l|}{0} \\ \cline{11-13} 
+                &  &  &  &  &  &  &  & [According to the Syllabus of 2026]                          & \multicolumn{1}{r}{}                        &                        &                                 &                        \\ \cline{12-12}
+                &  &  &  &  &  &  &  & TIME – 25 minutes                                            & \multicolumn{1}{r}{\textbf{Set:}}           & \multicolumn{1}{l|}{}  & \multicolumn{1}{l|}{\textbf{Ka}} &                        \\ \cline{12-12}
+                &  &  &  &  &  &  &  & FULL MARKS – 25                                              &                                             &                        &                                 &                       
+\end{tabular}
+\end{table}
+
+%  \normalfont\normalsize
+ % 11.45a.m.~--~1.45p.m.
+\hrule
+
+\begin{center}
+[N.B. – Answer all the questions. Each question carries ONE mark. Block fully, with a black ball- point pen, the circle of the letter that stands for the correct/best answer in the “Answer sheet” for the Multiple Choice Questions Examination.]\\
+
+  
+  \textbf{Candidates are asked not to leave any mark or spot on the question paper.}
+\end{center}
+\begin{questions}
+
+
+\question \textbf{Which is an example of time series data?}
+\choice{Number of calls received by a call center each month}
+{Height of children at different ages}
+{Tota salary of all employees at a company}
+{Population of different countries in 2020}{a}
+
+\question \textbf{Which can measure trend most precisely?}
+\choice{Graphical method}{Semi-average method}{Moving average method}
+{Quarter-average method}{c}
+
+\textbf{Answer the next THREE questions based on the following information}
+
+\begin{table}[h]
+\begin{tabular}{c|cccccccc}
+Year & 2016 & 2017 & 2018 & 2019 & 2020 & 2021 & 2022 & 2023 \\ \hline
+USD Exchange Rate & 78.35 & 79.49 & 82.87 & 83.26 & 84.60 & 84.37 & 85.80 & 106.70
+\end{tabular}
+
+\end{table}
+
+\question \textbf{What is the second value of semi-average method?}
+\choice{85.40}{90.37}{91.73}{89.78}{b}
+
+\question \textbf{What kind of a trend do the data have?}
+\choice{Upward}{Downward}{Both upward \& downward}{No trend}{a}
+
+\question \textbf{Which component of time series is visible in the later 
+part of the data?}
+\choice{Seasonal Variation}{General Trend}{Irregular Variation}
+{Cyclic Variation}{c}
+
+% Ch 1
+
+\question \textbf{$\displaystyle ^np_r=$}
+\choice{$\displaystyle \frac {n!}{(n-r)!}$}{$\displaystyle \frac {n!}{(n+r)!}$}{$\displaystyle \frac {n!}{r!}$}{$\displaystyle \frac {n!}{(r-n)!}$}{a}
+
+\question \textbf{The probability of two disjoint sets happening together is:}
+\choice{0.5}{0}{1}{$0  \leq x < 1$}{b}
+
+\question \textbf{$P(A\cap B) = P(A) \times P(B)$ implies A \& B are --}
+\choice{Disjoint}{Independent}{Joint}{Independent}{b}
+
+\question \textbf{Tossing a die r times generates how many outcomes?}
+\choice{$6\times r$}{$r^6$}{$6^r$}{$2^r$}{c}
+
+\textbf{Answer the next three questions using the following information}
+
+$P(C) = \frac 2 5, P(D) = \frac 3 4 \space \& \space P(C \cup D) = \frac{9}{10}$
+
+\question \textbf{$P(C \cap D) = ?$}
+\choice{$\frac{1}{10}$}{$\frac{1}{4}$}{$\frac{7}{20}$}{$\frac{4}{5}$}{b}
+
+\question \textbf{$P(C \cap \bar D)=?$}
+\choice{$\frac{1}{10}$}{$\frac{2}{5}$}{$\frac{2}{20}$}{$\frac{3}{10}$}{c}
+
+\question \textbf{What is the probability that D occurs or C does not occur?}
+\choice{$\frac{17}{20}$}{$\frac{7}{10}$}{$\frac{3}{4}$}{$\frac{11}{20}$}{a}
+
+\textbf{Answer the next TWO questions based on the following information.}
+
+An urn contains 5 red, 7 blue, and 8 green balls.
+
+\question \textbf{What is the probability that the ball drawn is red?}
+\choice{0.26}{0.25}{0.2}{0.4}{a}
+
+\question \textbf{P(The ball drawn is not blue)--}
+\choice{$\frac{13}{20}$}{$0.5$}{$\frac{7}{20}$}{$\frac{8}{20}$}{a}
+
+% CH 2
+
+\question \textbf{Which one is NOT an example of a continuous random variable -- }
+\choice{Weight}{Height}{Time}{Size of television}{d}
+
+\question \textbf{The properties of a discrete probability distribution table are--}
+
+i. $\sum P(X) = 1$
+
+ii. $P(X) \ge 0$ for all $X$
+
+iii. Each probability corresponds to a discrete value.
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{ii and iii}{i and iii}{i, ii, and iii}{d}
+
+\question \textbf{What is $F(-\infty)$ for a distribution function $F(x)$?}
+\choice{$-\infty$}{-1}{0}{1}{c}
+
+\textbf{Answer the next two questions based on the following information}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c|c}
+x & 1 & 2 & 3 \\ \hline
+P(x) & $\frac 13$ & $\frac12$ & $\frac16$
+\end{tabular}
+\end{table}
+
+\question \textbf{What is $F(2)$?}
+\choice{$\frac 23$}{$\frac 56$}{$\frac 12$}{$1$}{b}
+
+\question \textbf{$P(1 < X \leq 2)$}
+\choice{$\frac 56$}{$\frac 23$}{$\frac 12$}{$\frac 16$}{c}
+
+% CH 3
+
+\question \textbf{If $E(X) = 4$ and $V(X) = 5$, what is $E(X^2)$?}  
+\choice{9}{16}{21}{25}{c}
+
+\question \textbf{E(4x+2Y) = ?}
+\choice{E(X) - E(Y)}{4E(X) + 2E(Y)}{2E(X) + 4E(Y)}{$E(X) \times E(Y)$}{b}
+
+
+\question \textbf{What is the expected value of of the squared deviation of 
+the value of the random variable from their mean?}
+\choice{Arithmetic Mean}{Expectation}{Variance}{Co-variance}{c}
+
+\question \textbf{If $E(X) = -0.5$, then $E(1-2X) = $?}
+\choice{0}{-1}{2}{1}{c}
+
+% Multiple Completion Starts
+\question \textbf{The possible relationship between $E(X) and E(X^2)$}
+
+i. $E(X) \ge E(X^2)$ \\
+ii. $E(X) \le E(X^2)$ \\
+iii. $E(X) = E(X^2)$
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{d}
+% Multiple Completion Ends
+\question \textbf{What is the value of V(2X+5)?}
+\choice{$4V(X)-5$}{20}{$4V(X)$}{0}{c}
+
+\end{questions}
+
+
+\begin{center}
+ “Without data, you’re just another person with an opinion.” \\ -- William Edwards Deming
+
+\end{center}
+
+\newpage
+
+\begin{table}[]
+\begin{tabular}{llllllllcllll}
+\textit{Falcon} &  &  &  &  &  &  &  & \multicolumn{1}{l}{\textbf{MYMENSINGH GIRLS' CADET COLLEGE}} &                                             &                        &                                 &                        \\
+                &  &  &  &  &  &  &  & \multicolumn{1}{l}{SECOND TERM END EXAMINATION - 2025}       &                                             &                        & \multicolumn{1}{c}{}            &                        \\
+                &  &  &  &  &  &  &  & CLASS: XII                                                   &                                             &                        & \multicolumn{1}{c}{}            &                        \\
+                &  &  &  &  &  &  &  & MULTIPLE CHOICE QUESTIONS                                    &                                             &                        & \multicolumn{1}{c}{}            &                        \\
+                &  &  &  &  &  &  &  & STATISTICS                                                   &                                             &                        & \multicolumn{1}{r}{}            &                        \\ \cline{11-13} 
+                &  &  &  &  &  &  &  & SECOND PAPER                                                 & \multicolumn{1}{r|}{\textbf{Subject Code:}} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{\textbf{3}} & \multicolumn{1}{l|}{0} \\ \cline{11-13} 
+                &  &  &  &  &  &  &  & [According to the Syllabus of 2026]                          & \multicolumn{1}{r}{}                        &                        &                                 &                        \\ \cline{12-12}
+                &  &  &  &  &  &  &  & TIME – 25 minutes                                            & \multicolumn{1}{r}{\textbf{Set:}}           & \multicolumn{1}{l|}{}  & \multicolumn{1}{l|}{\textbf{Kha}} &                        \\ \cline{12-12}
+                &  &  &  &  &  &  &  & FULL MARKS – 25                                              &                                             &                        &                                 &                       
+\end{tabular}
+\end{table}
+
+%  \normalfont\normalsize
+ % 11.45a.m.~--~1.45p.m.
+\hrule
+
+\begin{center}
+[N.B. – Answer all the questions. Each question carries ONE mark. Block fully, with a black ball- point pen, the circle of the letter that stands for the correct/best answer in the “Answer sheet” for the Multiple Choice Questions Examination.]\\
+
+  
+  \textbf{Candidates are asked not to leave any mark or spot on the question paper.}
+\end{center}
+\begin{questions}
+
+
+
+% Ch 1
+
+\question \textbf{$\displaystyle ^np_r=$}
+\choice{$\displaystyle \frac {n!}{(n-r)!}$}{$\displaystyle \frac {n!}{(n+r)!}$}{$\displaystyle \frac {n!}{r!}$}{$\displaystyle \frac {n!}{(r-n)!}$}{a}
+
+\question \textbf{The probability of two disjoint sets happening together is:}
+\choice{0.5}{0}{1}{$0  \leq x < 1$}{b}
+
+\question \textbf{$P(A\cap B) = P(A) \times P(B)$ implies A \& B are --}
+\choice{Disjoint}{Independent}{Joint}{Independent}{b}
+
+\question \textbf{Tossing a die r times generates how many outcomes?}
+\choice{$6\times r$}{$r^6$}{$6^r$}{$2^r$}{c}
+
+\textbf{Answer the next three questions using the following information}
+
+$P(C) = \frac 2 5, P(D) = \frac 3 4 \space \& \space P(C \cup D) = \frac{9}{10}$
+
+\question \textbf{$P(C \cap D) = ?$}
+\choice{$\frac{1}{10}$}{$\frac{1}{4}$}{$\frac{7}{20}$}{$\frac{4}{5}$}{b}
+
+\question \textbf{$P(C \cap \bar D)=?$}
+\choice{$\frac{1}{10}$}{$\frac{2}{5}$}{$\frac{2}{20}$}{$\frac{3}{10}$}{c}
+
+\question \textbf{What is the probability that D occurs or C does not occur?}
+\choice{$\frac{17}{20}$}{$\frac{7}{10}$}{$\frac{3}{4}$}{$\frac{11}{20}$}{a}
+
+\textbf{Answer the next TWO questions based on the following information.}
+
+An urn contains 5 red, 7 blue, and 8 green balls.
+
+\question \textbf{What is the probability that the ball drawn is red?}
+\choice{0.26}{0.25}{0.2}{0.4}{a}
+
+\question \textbf{P(The ball drawn is not blue)--}
+\choice{$\frac{13}{20}$}{$0.5$}{$\frac{7}{20}$}{$\frac{8}{20}$}{a}
+
+% CH 2
+
+\question \textbf{Which one is NOT an example of a continuous random variable -- }
+\choice{Weight}{Height}{Time}{Size of television}{d}
+
+\question \textbf{The properties of a discrete probability distribution table are--}
+
+i. $\sum P(X) = 1$
+
+ii. $P(X) \ge 0$ for all $X$
+
+iii. Each probability corresponds to a discrete value.
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{ii and iii}{i and iii}{i, ii, and iii}{d}
+
+\question \textbf{What is $F(-\infty)$ for a distribution function $F(x)$?}
+\choice{$-\infty$}{-1}{0}{1}{c}
+
+\textbf{Answer the next two questions based on the following information}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c|c}
+x & 1 & 2 & 3 \\ \hline
+P(x) & $\frac 13$ & $\frac12$ & $\frac16$
+\end{tabular}
+\end{table}
+
+\question \textbf{What is $F(2)$?}
+\choice{$\frac 23$}{$\frac 56$}{$\frac 12$}{$1$}{b}
+
+\question \textbf{$P(1 < X \leq 2)$}
+\choice{$\frac 56$}{$\frac 23$}{$\frac 12$}{$\frac 16$}{c}
+
+% CH 3
+\question \textbf{If $E(X) = 4$ and $V(X) = 5$, what is $E(X^2)$?}  
+\choice{9}{16}{21}{25}{c}
+
+\question \textbf{What is the value of V(2X+5)?}
+\choice{$4V(X)-5$}{20}{$4V(X)$}{0}{c}
+
+\question \textbf{E(4x+2Y) = ?}
+\choice{E(X) - E(Y)}{4E(X) + 2E(Y)}{2E(X) + 4E(Y)}{$E(X) \times E(Y)$}{b}
+
+
+\question \textbf{What is the expected value of of the squared deviation of 
+the value of the random variable from their mean?}
+\choice{Arithmetic Mean}{Expectation}{Variance}{Co-variance}{c}
+
+\question \textbf{If $E(X) = -0.5$, then $E(1-2X) = $?}
+\choice{0}{-1}{2}{1}{c}
+
+% Multiple Completion Starts
+\question \textbf{The possible relationship between $E(X) and E(X^2)$}
+
+i. $E(X) \ge E(X^2)$ \\
+ii. $E(X) \le E(X^2)$ \\
+iii. $E(X) = E(X^2)$
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{d}
+% Multiple Completion Ends
+
+% TS
+\question \textbf{Which is an example of time series data?}
+\choice{Number of calls received by a call center each month}
+{Height of children at different ages}
+{Tota salary of all employees at a company}
+{Population of different countries in 2020}{a}
+
+\question \textbf{Which can measure trend most precisely?}
+\choice{Graphical method}{Semi-average method}{Moving average method}
+{Quarter-average method}{c}
+
+\textbf{Answer the next THREE questions based on the following information}
+
+\begin{table}[h]
+\begin{tabular}{c|cccccccc}
+Year & 2016 & 2017 & 2018 & 2019 & 2020 & 2021 & 2022 & 2023 \\ \hline
+USD Exchange Rate & 78.35 & 79.49 & 82.87 & 83.26 & 84.60 & 84.37 & 85.80 & 106.70
+\end{tabular}
+
+\end{table}
+
+\question \textbf{What is the second value of semi-average method?}
+\choice{85.40}{90.37}{91.73}{89.78}{b}
+
+\question \textbf{What kind of a trend do the data have?}
+\choice{Upward}{Downward}{Both upward \& downward}{No trend}{a}
+
+\question \textbf{Which component of time series is visible in the later 
+part of the data?}
+\choice{Seasonal Variation}{General Trend}{Irregular Variation}
+{Cyclic Variation}{c}
+
+\end{questions}
+
+
+
+\begin{center}
+ “Without data, you’re just another person with an opinion.” \\ -- William Edwards Deming
+ 
+ 
+\end{center}
+
+\newpage
+
+
+\begin{table}[]
+\begin{tabular}{llllllllcllll}
+\textit{Falcon} &  &  &  &  &  &  &  & \multicolumn{1}{l}{\textbf{MYMENSINGH GIRLS' CADET COLLEGE}} &                                             &                        &                                 &                        \\
+                &  &  &  &  &  &  &  & \multicolumn{1}{l}{SECOND TERM END EXAMINATION - 2025}       &                                             &                        & \multicolumn{1}{c}{}            &                        \\
+                &  &  &  &  &  &  &  & CLASS: XII                                                   &                                             &                        & \multicolumn{1}{c}{}            &                        \\
+                &  &  &  &  &  &  &  & MULTIPLE CHOICE QUESTIONS                                    &                                             &                        & \multicolumn{1}{c}{}            &                        \\
+                &  &  &  &  &  &  &  & STATISTICS                                                   &                                             &                        & \multicolumn{1}{r}{}            &                        \\ \cline{11-13} 
+                &  &  &  &  &  &  &  & SECOND PAPER                                                 & \multicolumn{1}{r|}{\textbf{Subject Code:}} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{\textbf{3}} & \multicolumn{1}{l|}{0} \\ \cline{11-13} 
+                &  &  &  &  &  &  &  & [According to the Syllabus of 2026]                          & \multicolumn{1}{r}{}                        &                        &                                 &                        \\ \cline{12-12}
+                &  &  &  &  &  &  &  & TIME – 25 minutes                                            & \multicolumn{1}{r}{\textbf{Set:}}           & \multicolumn{1}{l|}{}  & \multicolumn{1}{l|}{\textbf{Ga}} &                        \\ \cline{12-12}
+                &  &  &  &  &  &  &  & FULL MARKS – 25                                              &                                             &                        &                                 &                       
+\end{tabular}
+\end{table}
+
+%  \normalfont\normalsize
+ % 11.45a.m.~--~1.45p.m.
+\hrule
+
+\begin{center}
+[N.B. – Answer all the questions. Each question carries ONE mark. Block fully, with a black ball- point pen, the circle of the letter that stands for the correct/best answer in the “Answer sheet” for the Multiple Choice Questions Examination.]\\
+
+  
+  \textbf{Candidates are asked not to leave any mark or spot on the question paper.}
+\end{center}
+\begin{questions}
+
+
+
+
+% CH 2
+
+\question \textbf{Which one is NOT an example of a continuous random variable -- }
+\choice{Weight}{Height}{Time}{Size of television}{d}
+
+\question \textbf{The properties of a discrete probability distribution table are--}
+
+i. $\sum P(X) = 1$
+
+ii. $P(X) \ge 0$ for all $X$
+
+iii. Each probability corresponds to a discrete value.
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{ii and iii}{i and iii}{i, ii, and iii}{d}
+
+\question \textbf{What is $F(-\infty)$ for a distribution function $F(x)$?}
+\choice{$-\infty$}{-1}{0}{1}{c}
+
+\textbf{Answer the next two questions based on the following information}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c|c}
+x & 1 & 2 & 3 \\ \hline
+P(x) & $\frac 13$ & $\frac12$ & $\frac16$
+\end{tabular}
+\end{table}
+
+\question \textbf{What is $F(2)$?}
+\choice{$\frac 23$}{$\frac 56$}{$\frac 12$}{$1$}{b}
+
+\question \textbf{$P(1 < X \leq 2)$}
+\choice{$\frac 56$}{$\frac 23$}{$\frac 12$}{$\frac 16$}{c}
+
+% CH 3
+\question \textbf{If $E(X) = 4$ and $V(X) = 5$, what is $E(X^2)$?}  
+\choice{9}{16}{21}{25}{c}
+
+\question \textbf{What is the value of V(2X+5)?}
+\choice{$4V(X)-5$}{20}{$4V(X)$}{0}{c}
+
+\question \textbf{E(4x+2Y) = ?}
+\choice{E(X) - E(Y)}{4E(X) + 2E(Y)}{2E(X) + 4E(Y)}{$E(X) \times E(Y)$}{b}
+
+
+\question \textbf{What is the expected value of of the squared deviation of 
+the value of the random variable from their mean?}
+\choice{Arithmetic Mean}{Expectation}{Variance}{Co-variance}{c}
+
+\question \textbf{If $E(X) = -0.5$, then $E(1-2X) = $?}
+\choice{0}{-1}{2}{1}{c}
+
+% Multiple Completion Starts
+\question \textbf{The possible relationship between $E(X) and E(X^2)$}
+
+i. $E(X) \ge E(X^2)$ \\
+ii. $E(X) \le E(X^2)$ \\
+iii. $E(X) = E(X^2)$
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{d}
+% Multiple Completion Ends
+
+% TS
+\question \textbf{Which is an example of time series data?}
+\choice{Number of calls received by a call center each month}
+{Height of children at different ages}
+{Tota salary of all employees at a company}
+{Population of different countries in 2020}{a}
+
+\question \textbf{Which can measure trend most precisely?}
+\choice{Graphical method}{Semi-average method}{Moving average method}
+{Quarter-average method}{c}
+
+\textbf{Answer the next THREE questions based on the following information}
+
+\begin{table}[h]
+\begin{tabular}{c|cccccccc}
+Year & 2016 & 2017 & 2018 & 2019 & 2020 & 2021 & 2022 & 2023 \\ \hline
+USD Exchange Rate & 78.35 & 79.49 & 82.87 & 83.26 & 84.60 & 84.37 & 85.80 & 106.70
+\end{tabular}
+
+\end{table}
+
+\question \textbf{What is the second value of semi-average method?}
+\choice{85.40}{90.37}{91.73}{89.78}{b}
+
+\question \textbf{What kind of a trend do the data have?}
+\choice{Upward}{Downward}{Both upward \& downward}{No trend}{a}
+
+\question \textbf{Which component of time series is visible in the later 
+part of the data?}
+\choice{Seasonal Variation}{General Trend}{Irregular Variation}
+{Cyclic Variation}{c}
+
+
+% Ch 1
+
+\question \textbf{$\displaystyle ^np_r=$}
+\choice{$\displaystyle \frac {n!}{(n-r)!}$}{$\displaystyle \frac {n!}{(n+r)!}$}{$\displaystyle \frac {n!}{r!}$}{$\displaystyle \frac {n!}{(r-n)!}$}{a}
+
+\question \textbf{The probability of two disjoint sets happening together is:}
+\choice{0.5}{0}{1}{$0  \leq x < 1$}{b}
+
+\question \textbf{$P(A\cap B) = P(A) \times P(B)$ implies A \& B are --}
+\choice{Disjoint}{Independent}{Joint}{Independent}{b}
+
+\question \textbf{Tossing a die r times generates how many outcomes?}
+\choice{$6\times r$}{$r^6$}{$6^r$}{$2^r$}{c}
+
+\textbf{Answer the next three questions using the following information}
+
+$P(C) = \frac 2 5, P(D) = \frac 3 4 \space \& \space P(C \cup D) = \frac{9}{10}$
+
+\question \textbf{$P(C \cap D) = ?$}
+\choice{$\frac{1}{10}$}{$\frac{1}{4}$}{$\frac{7}{20}$}{$\frac{4}{5}$}{b}
+
+\question \textbf{$P(C \cap \bar D)=?$}
+\choice{$\frac{1}{10}$}{$\frac{2}{5}$}{$\frac{3}{20}$}{$\frac{3}{10}$}{c}
+
+\question \textbf{What is the probability that D occurs or C does not occur?}
+\choice{$\frac{17}{20}$}{$\frac{7}{10}$}{$\frac{3}{4}$}{$\frac{11}{20}$}{a}
+
+\textbf{Answer the next TWO questions based on the following information.}
+
+An urn contains 5 red, 7 blue, and 8 green balls.
+
+\question \textbf{What is the probability that the ball drawn is red?}
+\choice{0.26}{0.25}{0.2}{0.4}{a}
+
+\question \textbf{P(The ball drawn is not blue)--}
+\choice{$\frac{13}{20}$}{$0.5$}{$\frac{7}{20}$}{$\frac{8}{20}$}{a}
+
+\end{questions}
+
+
+
+\begin{center}
+ “Without data, you’re just another person with an opinion.” \\ -- William Edwards Deming
+ 
+\end{center}
+
+\newpage
+
+
+\begin{table}[]
+\begin{tabular}{llllllllcllll}
+\textit{Falcon} &  &  &  &  &  &  &  & \multicolumn{1}{l}{\textbf{MYMENSINGH GIRLS' CADET COLLEGE}} &                                             &                        &                                 &                        \\
+                &  &  &  &  &  &  &  & \multicolumn{1}{l}{SECOND TERM END EXAMINATION - 2025}       &                                             &                        & \multicolumn{1}{c}{}            &                        \\
+                &  &  &  &  &  &  &  & CLASS: XII                                                   &                                             &                        & \multicolumn{1}{c}{}            &                        \\
+                &  &  &  &  &  &  &  & MULTIPLE CHOICE QUESTIONS                                    &                                             &                        & \multicolumn{1}{c}{}            &                        \\
+                &  &  &  &  &  &  &  & STATISTICS                                                   &                                             &                        & \multicolumn{1}{r}{}            &                        \\ \cline{11-13} 
+                &  &  &  &  &  &  &  & SECOND PAPER                                                 & \multicolumn{1}{r|}{\textbf{Subject Code:}} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{\textbf{3}} & \multicolumn{1}{l|}{0} \\ \cline{11-13} 
+                &  &  &  &  &  &  &  & [According to the Syllabus of 2026]                          & \multicolumn{1}{r}{}                        &                        &                                 &                        \\ \cline{12-12}
+                &  &  &  &  &  &  &  & TIME – 25 minutes                                            & \multicolumn{1}{r}{\textbf{Set:}}           & \multicolumn{1}{l|}{}  & \multicolumn{1}{l|}{\textbf{Gha}} &                        \\ \cline{12-12}
+                &  &  &  &  &  &  &  & FULL MARKS – 25                                              &                                             &                        &                                 &                       
+\end{tabular}
+\end{table}
+
+%  \normalfont\normalsize
+ % 11.45a.m.~--~1.45p.m.
+\hrule
+
+\begin{center}
+[N.B. – Answer all the questions. Each question carries ONE mark. Block fully, with a black ball- point pen, the circle of the letter that stands for the correct/best answer in the “Answer sheet” for the Multiple Choice Questions Examination.]\\
+
+  
+  \textbf{Candidates are asked not to leave any mark or spot on the question paper.}
+\end{center}
+\begin{questions}
+
+
+
+
+% CH 3
+\question \textbf{What is the value of V(2X+5)?}
+\choice{$4V(X)-5$}{20}{$4V(X)$}{0}{c}
+
+\question \textbf{If $E(X) = 4$ and $V(X) = 5$, what is $E(X^2)$?}  
+\choice{9}{16}{21}{25}{c}
+
+\question \textbf{E(4x+2Y) = ?}
+\choice{E(X) - E(Y)}{4E(X) + 2E(Y)}{2E(X) + 4E(Y)}{$E(X) \times E(Y)$}{b}
+
+
+\question \textbf{What is the expected value of of the squared deviation of 
+the value of the random variable from their mean?}
+\choice{Arithmetic Mean}{Expectation}{Variance}{Co-variance}{c}
+
+\question \textbf{If $E(X) = -0.5$, then $E(1-2X) = $?}
+\choice{0}{-1}{2}{1}{c}
+
+% Multiple Completion Starts
+\question \textbf{The possible relationship between $E(X) and E(X^2)$}
+
+i. $E(X) \ge E(X^2)$ \\
+ii. $E(X) \le E(X^2)$ \\
+iii. $E(X) = E(X^2)$
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{d}
+% Multiple Completion Ends
+
+% TS
+\question \textbf{Which is an example of time series data?}
+\choice{Number of calls received by a call center each month}
+{Height of children at different ages}
+{Tota salary of all employees at a company}
+{Population of different countries in 2020}{a}
+
+\question \textbf{Which can measure trend most precisely?}
+\choice{Graphical method}{Semi-average method}{Moving average method}
+{Quarter-average method}{c}
+
+\textbf{Answer the next THREE questions based on the following information}
+
+\begin{table}[h]
+\begin{tabular}{c|cccccccc}
+Year & 2016 & 2017 & 2018 & 2019 & 2020 & 2021 & 2022 & 2023 \\ \hline
+USD Exchange Rate & 78.35 & 79.49 & 82.87 & 83.26 & 84.60 & 84.37 & 85.80 & 106.70
+\end{tabular}
+
+\end{table}
+
+\question \textbf{What is the second value of semi-average method?}
+\choice{85.40}{90.37}{91.73}{89.78}{b}
+
+\question \textbf{What kind of a trend do the data have?}
+\choice{Upward}{Downward}{Both upward \& downward}{No trend}{a}
+
+\question \textbf{Which component of time series is visible in the later 
+part of the data?}
+\choice{Seasonal Variation}{General Trend}{Irregular Variation}
+{Cyclic Variation}{c}
+
+
+% Ch 1
+
+\question \textbf{$\displaystyle ^np_r=$}
+\choice{$\displaystyle \frac {n!}{(n-r)!}$}{$\displaystyle \frac {n!}{(n+r)!}$}{$\displaystyle \frac {n!}{r!}$}{$\displaystyle \frac {n!}{(r-n)!}$}{a}
+
+\question \textbf{The probability of two disjoint sets happening together is:}
+\choice{0.5}{0}{1}{$0  \leq x < 1$}{b}
+
+\question \textbf{$P(A\cap B) = P(A) \times P(B)$ implies A \& B are --}
+\choice{Disjoint}{Independent}{Joint}{Independent}{b}
+
+\question \textbf{Tossing a die r times generates how many outcomes?}
+\choice{$6\times r$}{$r^6$}{$6^r$}{$2^r$}{c}
+
+\textbf{Answer the next three questions using the following information}
+
+$P(C) = \frac 2 5, P(D) = \frac 3 4 \space \& \space P(C \cup D) = \frac{9}{10}$
+
+\question \textbf{$P(C \cap D) = ?$}
+\choice{$\frac{1}{10}$}{$\frac{1}{4}$}{$\frac{7}{20}$}{$\frac{4}{5}$}{b}
+
+\question \textbf{$P(C \cap \bar D)=?$}
+\choice{$\frac{1}{10}$}{$\frac{2}{5}$}{$\frac{2}{20}$}{$\frac{3}{10}$}{c}
+
+\question \textbf{What is the probability that D occurs or C does not occur?}
+\choice{$\frac{17}{20}$}{$\frac{7}{10}$}{$\frac{3}{4}$}{$\frac{11}{20}$}{a}
+
+\textbf{Answer the next TWO questions based on the following information.}
+
+An urn contains 5 red, 7 blue, and 8 green balls.
+
+\question \textbf{What is the probability that the ball drawn is red?}
+\choice{0.26}{0.25}{0.2}{0.4}{a}
+
+\question \textbf{P(The ball drawn is not blue)--}
+\choice{$\frac{13}{20}$}{$0.5$}{$\frac{7}{20}$}{$\frac{8}{20}$}{a}
+
+% CH 2
+
+\question \textbf{Which one is NOT an example of a continuous random variable -- }
+\choice{Weight}{Height}{Time}{Size of television}{d}
+
+\question \textbf{The properties of a discrete probability distribution table are--}
+
+i. $\sum P(X) = 1$
+
+ii. $P(X) \ge 0$ for all $X$
+
+iii. Each probability corresponds to a discrete value.
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{ii and iii}{i and iii}{i, ii, and iii}{d}
+
+\question \textbf{What is $F(-\infty)$ for a distribution function $F(x)$?}
+\choice{$-\infty$}{-1}{0}{1}{c}
+
+\textbf{Answer the next two questions based on the following information}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c|c}
+x & 1 & 2 & 3 \\ \hline
+P(x) & $\frac 13$ & $\frac12$ & $\frac16$
+\end{tabular}
+\end{table}
+
+\question \textbf{What is $F(2)$?}
+\choice{$\frac 23$}{$\frac 56$}{$\frac 12$}{$1$}{b}
+
+\question \textbf{$P(1 < X \leq 2)$}
+\choice{$\frac 56$}{$\frac 23$}{$\frac 12$}{$\frac 16$}{c}
+
+\end{questions}
+
+
+
+\begin{center}
+ “Without data, you’re just another person with an opinion.” \\ -- William Edwards Deming
+ 
+\end{center}
+
+\pagebreak
+%\newpage  %Uncomment to put on new age
+\bigskip
+
+\begin{multicols}{3}
+[
+Answer Key
+]
+\showallanswers % Phil Hirschorn
+\end{multicols}
+
+
+\end{document}

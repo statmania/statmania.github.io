@@ -1,0 +1,307 @@
+\documentclass[12pt]{exam}
+%\documentclass[11pt,a4paper]{exam}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,dsfont}
+\usepackage{float}
+\usepackage{ifthen}
+\usepackage{array}
+\usepackage{geometry}
+\geometry{
+legalpaper, total={177.8mm, 290mm},left=10mm, right=10mm,
+top=7mm, bottom=10mm,
+}
+\usepackage{enumerate}% http://ctan.org/pkg/enumerate
+\usepackage{multicol}
+\usepackage{hhline}
+\usepackage[table]{xcolor}
+
+
+% Accumulate the answers. Unmodified from Phil Hirschorn's answer
+% https://tex.stackexchange.com/questions/15350/showing-solutions-of-the-questions-separately/15353
+\newbox\allanswers
+\setbox\allanswers=\vbox{}
+
+\newenvironment{answer}
+{%
+    \global\setbox\allanswers=\vbox\bgroup
+    \unvbox\allanswers
+}%
+{%
+    \bigbreak
+    \egroup
+}
+
+\newcommand{\showallanswers}{\par\unvbox\allanswers}
+% End Phil's answer
+
+
+% Is there a better way?
+\newcommand*{\getanswer}[5]{%
+    \ifthenelse{\equal{#5}{a}}
+    {\begin{answer}\thequestion. (a)~#1\end{answer}}
+    {\ifthenelse{\equal{#5}{b}}
+        {\begin{answer}\thequestion. (b)~#2\end{answer}}
+        {\ifthenelse{\equal{#5}{c}}
+            {\begin{answer}\thequestion. (c)~#3\end{answer}}
+            {\ifthenelse{\equal{#5}{d}}
+                {\begin{answer}\thequestion. (d)~#4\end{answer}}
+                {\begin{answer}\textbf{\thequestion. (#5)~Invalid answer choice.}\end{answer}}}}}
+}
+
+\setlength\parindent{0pt}
+%usage \choice{ }{ }{ }{ }
+%(A)(B)(C)(D)
+\newcommand{\fourch}[5]{
+    \par
+    \begin{tabular}{*{4}{@{}p{0.23\textwidth}}}
+        (a)~#1 & (b)~#2 & (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)(B)
+%(C)(D)
+\newcommand{\twoch}[5]{
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (a)~#1 & (b)~#2
+    \end{tabular}
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)
+%(B)
+%(C)
+%(D)
+\newcommand{\onech}[5]{
+    \par
+    (a)~#1 \par (b)~#2 \par (c)~#3 \par (d)~#4
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+\newlength\widthcha
+\newlength\widthchb
+\newlength\widthchc
+\newlength\widthchd
+\newlength\widthch
+\newlength\tabmaxwidth
+
+\setlength\tabmaxwidth{0.96\textwidth}
+\newlength\fourthtabwidth
+\setlength\fourthtabwidth{0.25\textwidth}
+\newlength\halftabwidth
+\setlength\halftabwidth{0.5\textwidth}
+
+\newcommand{\choice}[5]{%
+\settowidth\widthcha{AM.#1}\setlength{\widthch}{\widthcha}%
+\settowidth\widthchb{BM.#2}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{CM.#3}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{DM.#4}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+
+% These if statements were bypassing the \onech option.
+% \ifdim\widthch<\fourthtabwidth
+%     \fourch{#1}{#2}{#3}{#4}{#5}
+% \else\ifdim\widthch<\halftabwidth
+% \ifdim\widthch>\fourthtabwidth
+%     \twoch{#1}{#2}{#3}{#4}{#5}
+% \else
+%      \onech{#1}{#2}{#3}{#4}{#5}
+%  \fi\fi\fi}
+
+% Allows for the \onech option.
+\ifdim\widthch>\halftabwidth
+    \onech{#1}{#2}{#3}{#4}{#5}
+\else\ifdim\widthch<\halftabwidth
+\ifdim\widthch>\fourthtabwidth
+    \twoch{#1}{#2}{#3}{#4}{#5}
+\else
+    \fourch{#1}{#2}{#3}{#4}{#5}
+\fi\fi\fi}
+
+
+\begin{document}
+
+\begin{table}[]
+\begin{tabular}{lllllllllrlll}
+\textit{Falcon} &  &  &  &  &  & \textbf{MYMENSINGH GIRLS' CADET COLLEGE} &  &                       & \multicolumn{1}{l}{}                        &                        &                         &                        \\
+                &  &  &  &  &  & YEAR FINAL EXAMINATION - 2025            &  &                       & \multicolumn{1}{c}{}                        & \multicolumn{3}{l}{}                                                      \\
+                &  &  &  &  &  & CLASS: XI                               &  &                       & \multicolumn{1}{c}{}                        & \multicolumn{3}{l}{}                                                      \\
+                &  &  &  &  &  & MULTIPLE CHOICE QUESTIONS                &  &                       & \multicolumn{1}{c}{}                        & \multicolumn{3}{l}{}                                                      \\
+                &  &  &  &  &  & STATISTICS                               &  &                       &                                             &                        &                         &                        \\ \cline{10-13} 
+                &  &  &  &  &  & FIRST PAPER                                &  & \multicolumn{1}{l|}{} & \multicolumn{1}{r|}{\textbf{Subject Code:}} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{2}  & \multicolumn{1}{l|}{9} \\ \cline{10-13} 
+                &  &  &  &  &  & [According to the Syllabus of 2026]      &  &                       &                                             &                        &                         &                        \\ \cline{12-12}
+                &  &  &  &  &  & TIME – 25 minutes                        &  &                       & \textbf{Set:}                               & \multicolumn{1}{l|}{}  & \multicolumn{1}{l|}{Ka} &                        \\ \cline{12-12}
+                &  &  &  &  &  & FULL MARKS – 25                          &  &                       & \multicolumn{1}{l}{}                        &                        &                         &                       
+\end{tabular}
+\end{table}
+
+
+
+%  \normalfont\normalsize
+ % 11.45a.m.~--~1.45p.m.
+\hrule
+
+\begin{center}
+[N.B. – Answer all the questions. Each question carries ONE mark. Block fully, with a black ball- point pen, the circle of the letter that stands for the correct/best answer in the “Answer sheet” for the Multiple Choice Questions Examination.]\\
+
+  
+  \textbf{Candidates are asked not to leave any mark or spot on the question paper.}
+\end{center}
+\begin{questions}
+
+\question \textbf{Which one represents an infinite population?}
+\choice{Books in a library}{Fish in the Pacific Ocean}
+{Members of a sports club}{Mobile phones in a city}{b}
+
+\question \textbf{Which cannot be performed using Univariate data?}
+\choice{Central tendency}{Dispersion}{Skewness}{Regression}{d}
+
+\question \textbf{Given $\displaystyle \sum_{i=1}^{10} a_i^2=40$ and $\displaystyle \sum_{i=1}^{10} a_i=20$, find the value of $\displaystyle 2\sum_{i=1}^{10} a_i^2 - 3\sum_{i=1}^{10} a_i + 60$.}  
+\choice{70}{100}{80}{50}{c}  
+
+\question \textbf{What is the raw material of research?}
+\choice{Data}{Theory}{Graph}{Mean}{a}
+
+%--------Group Starts
+\textbf{Answer the next THREE questions based on the following information}
+
+Radius of 80 trees are recorded and this frequency distribution is constructed.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c|c|c}
+\begin{tabular}[c]{@{}c@{}}Radius (cm)\end{tabular} & 0-10 & 10-20 & 20-30 & 30-40 \\ \hline
+No. of Trees & 20 & 15 & 21 & 24
+\end{tabular}
+\end{table}
+
+\question \textbf{How many trees have radius between 10 and 30?}
+\choice{30}{15}{36}{21}{c}
+
+\question \textbf{How many trees have radius at least 20?}
+\choice{44}{45}{24}{21}{b}
+
+\question \textbf{What percent of trees have radius between 20 and 40?}
+\choice{44\%}{56\%}{46\%}{53\%}{a}
+%----Group Ends
+
+\question \textbf{Which of the following is an example of secondary data?}
+
+i. Data obtained from a published journal \\
+ii. Data collected by a government agency and used by a researcher \\
+iii. Data gathered directly through interviews
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{ii and iii}{i and iii}{i, ii and iii}{a}
+
+\question \textbf{Which is not a measure of central tendency?}
+\choice{Arithmetic mean}{Mode}{Range}{Quadratic mean}{c}
+
+\question \textbf{A good measure of central tendency -}
+
+i. is loosly defined \\
+ii. takes into consideration all values \\
+iii. easily understandable
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{c}
+
+\newpage
+
+\textbf{Answer the next three questions as per the following information.}
+
+\begin{center}
+42 44 59 64 70 72 74 91 94 are 9 values.
+\end{center}
+
+\question \textbf{What is the median?}
+\choice {64}{70}{72}{71}{b}
+
+\question \textbf{What is the first quartile?}
+\choice {42.4}{44.7}{51.5}{64.2}{c}
+
+\question \textbf{Above which value lie 60\% observations?}
+\choice{70.4}{72.0}{74.6}{66.4}{c}
+
+
+\question \textbf{What is the minimum possible value of standard deviation?}
+\choice{$\infty$}{-1}{0}{1}{c}
+
+\question \textbf{Which measure is unit-free?}
+\choice{Range}{Mean deviation}{Standard deviation}{Coefficient of variation}{d}
+
+\question \textbf{The moments around the origin are called --}
+\choice{Central moments}{Raw moments}{First raw moment}{Measures of dispersion}{b}
+
+% Multiple Completion Starts
+\question \textbf{Standard deviation ---}
+
+i. depends on all values \\
+ii. is not affected by outliers \\
+iii. can be analyzed algebraically 
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{b}
+% Multiple Completion Ends
+
+\question \textbf{First moment around zero is --}
+\choice{0}{1}{-1}{Arithmetic Mean}{d}
+
+\question \textbf{Which might have a negative value?}
+\choice{$\mu_4$}{$\mu_3$}{$\mu_2'$}{$\mu_2$}{b}
+
+\question \textbf{In a postively-skewed distribution--}
+
+i. Frequencies of higher values are lower \\
+ii. Frequencies of low values are higher \\
+iii. Frequencies of higher values are higher
+
+\textbf{Which one is correct?}
+
+\question \textbf{What is the formula of IQR?}
+\choice{$IQR = Q_3 + Q_1$}{$IQR = Q_3 - Q_1$}{$IQR = 2Q_3 - Q_1$}{$IQR = \frac{Q_3 - Q_1}{2}$}{b}
+
+\question \textbf{The lowest possible value of the correlation coefficient ---}
+\choice{1}{0}{$-\infty$}{-1}{d}
+
+\question \textbf{Karl Pearson's method of determining the strength of correlation is not applicable for ---}
+\choice{Qualitative variable}{Quantitative variable}{Discrete variable}{Continuous variable}{a}
+
+\question \textbf{Two variables having changes in same direction at same rates display ---}
+\choice{Perfect negative correlation}{Partial positive correlation}{Perfect positive correlation}{Partial negative correlation}{c}
+
+\question \textbf{Which organization typically publishes non-official statistics in the field of health?}
+\choice{UNICEF}{World Health Organization (WHO)}{World Bank}{United Nations (UN)}{b}
+
+\end{questions}
+
+ \vspace{.3cm}
+
+\begin{center}
+
+  \vfill
+ --- Abdullah Al Mahmud ---
+\end{center}
+
+\pagebreak
+%\newpage  %Uncomment to put on new age
+\bigskip
+
+%\begin{multicols}{3}
+%[
+%%Answer Key
+%]
+%\showallanswers % Phil Hirschorn
+%\end{multicols}
+
+
+\end{document}

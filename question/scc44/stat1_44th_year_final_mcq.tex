@@ -1,0 +1,283 @@
+\documentclass{exam}
+%\documentclass[11pt,a4paper]{exam}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,dsfont}
+\usepackage{ifthen}
+\usepackage[legalpaper, total={177.8mm, 290mm}]{geometry}
+\usepackage{enumerate}% http://ctan.org/pkg/enumerate
+\usepackage{multicol}
+\usepackage{hhline}
+\usepackage[table]{xcolor}
+
+
+% Accumulate the answers. Unmodified from Phil Hirschorn's answer
+% https://tex.stackexchange.com/questions/15350/showing-solutions-of-the-questions-separately/15353
+\newbox\allanswers
+\setbox\allanswers=\vbox{}
+
+\newenvironment{answer}
+{%
+    \global\setbox\allanswers=\vbox\bgroup
+    \unvbox\allanswers
+}%
+{%
+    \bigbreak
+    \egroup
+}
+
+\newcommand{\showallanswers}{\par\unvbox\allanswers}
+% End Phil's answer
+
+
+% Is there a better way?
+\newcommand*{\getanswer}[5]{%
+    \ifthenelse{\equal{#5}{a}}
+    {\begin{answer}\thequestion. (a)~#1\end{answer}}
+    {\ifthenelse{\equal{#5}{b}}
+        {\begin{answer}\thequestion. (b)~#2\end{answer}}
+        {\ifthenelse{\equal{#5}{c}}
+            {\begin{answer}\thequestion. (c)~#3\end{answer}}
+            {\ifthenelse{\equal{#5}{d}}
+                {\begin{answer}\thequestion. (d)~#4\end{answer}}
+                {\begin{answer}\textbf{\thequestion. (#5)~Invalid answer choice.}\end{answer}}}}}
+}
+
+\setlength\parindent{0pt}
+%usage \choice{ }{ }{ }{ }
+%(A)(B)(C)(D)
+\newcommand{\fourch}[5]{
+    \par
+    \begin{tabular}{*{4}{@{}p{0.23\textwidth}}}
+        (a)~#1 & (b)~#2 & (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)(B)
+%(C)(D)
+\newcommand{\twoch}[5]{
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (a)~#1 & (b)~#2
+    \end{tabular}
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)
+%(B)
+%(C)
+%(D)
+\newcommand{\onech}[5]{
+    \par
+    (a)~#1 \par (b)~#2 \par (c)~#3 \par (d)~#4
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+\newlength\widthcha
+\newlength\widthchb
+\newlength\widthchc
+\newlength\widthchd
+\newlength\widthch
+\newlength\tabmaxwidth
+
+\setlength\tabmaxwidth{0.96\textwidth}
+\newlength\fourthtabwidth
+\setlength\fourthtabwidth{0.25\textwidth}
+\newlength\halftabwidth
+\setlength\halftabwidth{0.5\textwidth}
+
+\newcommand{\choice}[5]{%
+\settowidth\widthcha{AM.#1}\setlength{\widthch}{\widthcha}%
+\settowidth\widthchb{BM.#2}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{CM.#3}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{DM.#4}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+
+% These if statements were bypassing the \onech option.
+% \ifdim\widthch<\fourthtabwidth
+%     \fourch{#1}{#2}{#3}{#4}{#5}
+% \else\ifdim\widthch<\halftabwidth
+% \ifdim\widthch>\fourthtabwidth
+%     \twoch{#1}{#2}{#3}{#4}{#5}
+% \else
+%      \onech{#1}{#2}{#3}{#4}{#5}
+%  \fi\fi\fi}
+
+% Allows for the \onech option.
+\ifdim\widthch>\halftabwidth
+    \onech{#1}{#2}{#3}{#4}{#5}
+\else\ifdim\widthch<\halftabwidth
+\ifdim\widthch>\fourthtabwidth
+    \twoch{#1}{#2}{#3}{#4}{#5}
+\else
+    \fourch{#1}{#2}{#3}{#4}{#5}
+\fi\fi\fi}
+
+
+\begin{document}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lllll}
+\textbf{\large SYLHET CADET COLLEGE} &  &  &  &  \\ \cline{4-5} 
+FIRST TERM-END EXAMINATION - 2023 &  & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{Set} & \multicolumn{1}{l|}{A} \\ \cline{4-5} 
+CLASS: XI &  &  &  &  \\ \cline{3-5} 
+MULTIPLE CHOICE QUESTIONS & \multicolumn{1}{l|}{\textbf{Subject Code:}} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{2} & \multicolumn{1}{l|}{9} \\ \cline{3-5} 
+STATISTICS FIRST PAPER &  &  &  &  \\
+TIME – 20 minutes &  &  &  &  \\
+FULL MARKS – 20 &  &  &  & 
+\end{tabular}
+\end{table}
+%  \normalfont\normalsize
+ % 11.45a.m.~--~1.45p.m.
+\hrule
+
+\begin{center}
+[N.B. – Answer all the questions. Each question carries ONE mark. Block fully, with a black ball- point pen, the circle of the letter that stands for the correct/best answer in the “Answer sheet” for the Multiple Choice Questions Examination.]\\
+
+  
+  \textbf{Candidates are asked not to leave any mark or spot on the question paper.}
+\end{center}
+\begin{questions}
+
+\question \textbf{If $f_i = 3, 5, 7$ and $x_i = 2, 4, 7$; ; what is the value of $\displaystyle \sum_{i=1}^3 f_ix_i^2$?}
+\choice{450}{350}{345}{435}{d}
+
+\question \textbf{Which is not a function of statistics?}
+\choice{Data collection}{Data organization}{Analysis}{Database creation}{d}
+
+\question \textbf{If $\sum (x_i-k)=0$, what is the value of k?}
+\choice{$n$}{$\bar x$}{$x$}{$n \bar x$}{b}
+
+\question \textbf{Which one is an example of an infinite population?}
+\choice{Students of Dhaka University}{Cadets of SCC}{Minor planets in the solar system}{Red blood cells in a person's body}{d}
+
+\question \textbf{If a rate is defined as $\displaystyle R = \frac cd$, where c is constant, then which measure is perfect?}
+\choice {Weighted arithmetic mean}{Harmonic mean}{Quadratic mean}{Weighted geometric mean}{b}
+
+\question \textbf{Capital and profit belong to a variable which is--}
+
+i. Bivariate \\
+ii. Quantitative \\
+iii. Qualitative
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{a}
+
+\question \textbf{Which formula is correct for harmonic mean?}
+\choice{$\dfrac{n}{\sum_{i=1}^n \dfrac{f_i}{x_i}}$}{$\dfrac{f_i}{\sum_{i=1}^n \dfrac{f_i}{x_i}}$}{$\dfrac{\sum f_i}{\sum_{i=1}^n \dfrac{f_i}{x_i}}$}{$\dfrac{\sum f_i}{\sum_{i=1}^n \dfrac{1}{x_i}}$}{a}
+
+\question \textbf{Which of the following may be used to determine mode?}
+\choice{Histogram}{Frequency Curve}{Ogive}{Frequency Polygon}{a}
+
+\question \textbf{Which is considered statistics?}
+\choice{Jaman obtained 75 in statistics}{Shafiq lives at Road no. 5}{Mean monthly income in a city is 60,000 taka}{Width of a book is 10 cm}{c}
+
+\question \textbf{Time Series has how many components?}
+\choice{2}{3}{4}{5}{c}
+
+\textbf{Answer the next three questions as per the following information.}
+
+\begin{center}
+42 44 59 64 70 72 74 91 94 are 9 values.
+\end{center}
+
+\question \textbf{What is the 50th percentile?}
+\choice {64}{70}{72}{71}{b}
+
+\question \textbf{Below which value lie 70 percent values?}
+\choice {42}{44}{59}{74}{d}
+
+\question \textbf{Above which value lie 30\% observations?}
+\choice{3rd Quartile}{Median}{30th Percentile}{70th percentile}{d}
+
+\question \textbf{Limitations of published statistics in Bangladesh are --}
+
+i. Wrong data collection method \\
+ii. Insufficient data \\
+iii. Lack of proper training
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{d}
+
+\question \textbf{An equation is: y = 5x + 9. If $\bar x = 20, \bar y = ?$}
+\choice{100}{209}{109}{29}{c}
+
+\question \textbf{The standard deviation of a mesokurtik distribution is 2. What is the value of the 4th central moment?}
+\choice{4}{8}{16}{48}{d}
+
+\question \textbf{$\beta_2 = \sqrt 9$ implies data are--}
+\choice{Leptokurtic}{Platykurtic}{Mesokurtic}{Symmetric}{c}
+
+\question \textbf{What is the second central moments of first 10 natural numbers?}
+\choice{9.90}{9.09}{8.25}{5.67}{c}
+
+\textbf{Answer the next THREE questions based on the following information}
+
+\begin{table}[h]
+\begin{tabular}{c|cccccccc}
+Year & 2016 & 2017 & 2018 & 2019 & 2020 & 2021 & 2022 & 2023 \\ \hline
+USD Exchange Rate & 78.35 & 79.49 & 82.87 & 83.26 & 84.60 & 84.37 & 85.80 & 106.70
+\end{tabular}
+\caption{\label{usdrate}Source--Investing.com}
+\end{table}
+
+\question \textbf{What is the second value of semi-average method?}
+\choice{85.40}{90.37}{91.73}{89.78}{b}
+
+\question \textbf{What kind of a trend do the data have?}
+\choice{Upward}{Downward}{Both upward \& downward}{No trend}{a}
+
+\question \textbf{Which component of time series is visible in the later part of the data?}
+\choice{Seasonal Variation}{General Trend}{Irregular Variation}{Cyclic Variation}{c}
+
+\question \textbf{First moment around zero is --}
+\choice{0}{1}{-1}{Arithmetic Mean}{d}
+
+\question \textbf{Which moment is equal to zero?}
+\choice{First raw moment around 1}{Second central moment}{First central moment}{Second raw moment around 0}{c}
+
+\question \textbf{Which measure of trend is subjective?}
+\choice{Semi-average method}{Graphical method}{Moving average method}{None of the above}{b}
+
+\question \textbf{Which is a type of trend?}
+
+i. Linear trend \\
+ii. Non-linear trend \\
+iii. Cyclic trend
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{a}
+
+%\question \textbf{To complete the song, the last answer should be
+%\choice{a}{b}{c}{d}{e} % Invalid answer choice
+
+\end{questions}
+
+ \vspace{2.5cm}
+
+\begin{center}
+An approximate answer to the right problem is worth a good deal more than an exact answer to an approximate problem. – John Tukey.
+\end{center}
+
+\pagebreak
+%\newpage  %Uncomment to put on new age
+\bigskip
+
+\begin{multicols}{3}
+[
+Answer Key
+]
+\showallanswers % Phil Hirschorn
+\end{multicols}
+
+
+\end{document}

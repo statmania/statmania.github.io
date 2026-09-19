@@ -1,0 +1,431 @@
+\documentclass{exam}
+%\documentclass[11pt,a4paper]{exam}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,dsfont}
+\usepackage{ifthen}
+\usepackage{setspace}
+\usepackage{geometry}
+\geometry{
+legalpaper, total={177.8mm, 290mm},left=20mm,
+top=10mm, bottom=20mm,
+}
+\usepackage{enumerate}% http://ctan.org/pkg/enumerate
+\usepackage{multicol}
+\usepackage{hhline}
+\usepackage[table]{xcolor}
+
+
+% Accumulate the answers. Unmodified from Phil Hirschorn's answer
+% https://tex.stackexchange.com/questions/15350/showing-solutions-of-the-questions-separately/15353
+\newbox\allanswers
+\setbox\allanswers=\vbox{}
+
+\newenvironment{answer}
+{%
+    \global\setbox\allanswers=\vbox\bgroup
+    \unvbox\allanswers
+}%
+{%
+    \bigbreak
+    \egroup
+}
+
+\newcommand{\showallanswers}{\par\unvbox\allanswers}
+% End Phil's answer
+
+
+% Is there a better way?
+\newcommand*{\getanswer}[5]{%
+    \ifthenelse{\equal{#5}{a}}
+    {\begin{answer}\thequestion. (a)~#1\end{answer}}
+    {\ifthenelse{\equal{#5}{b}}
+        {\begin{answer}\thequestion. (b)~#2\end{answer}}
+        {\ifthenelse{\equal{#5}{c}}
+            {\begin{answer}\thequestion. (c)~#3\end{answer}}
+            {\ifthenelse{\equal{#5}{d}}
+                {\begin{answer}\thequestion. (d)~#4\end{answer}}
+                {\begin{answer}\textbf{\thequestion. (#5)~Invalid answer choice.}\end{answer}}}}}
+}
+
+\setlength\parindent{0pt}
+%usage \choice{ }{ }{ }{ }
+%(A)(B)(C)(D)
+\newcommand{\fourch}[5]{
+    \par
+    \begin{tabular}{*{4}{@{}p{0.23\textwidth}}}
+        (a)~#1 & (b)~#2 & (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)(B)
+%(C)(D)
+\newcommand{\twoch}[5]{
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (a)~#1 & (b)~#2
+    \end{tabular}
+    \par
+    \begin{tabular}{*{2}{@{}p{0.46\textwidth}}}
+        (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)
+%(B)
+%(C)
+%(D)
+\newcommand{\onech}[5]{
+    \par
+    (a)~#1 \par (b)~#2 \par (c)~#3 \par (d)~#4
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+\newlength\widthcha
+\newlength\widthchb
+\newlength\widthchc
+\newlength\widthchd
+\newlength\widthch
+\newlength\tabmaxwidth
+
+\setlength\tabmaxwidth{0.96\textwidth}
+\newlength\fourthtabwidth
+\setlength\fourthtabwidth{0.25\textwidth}
+\newlength\halftabwidth
+\setlength\halftabwidth{0.5\textwidth}
+
+\newcommand{\choice}[5]{%
+\settowidth\widthcha{AM.#1}\setlength{\widthch}{\widthcha}%
+\settowidth\widthchb{BM.#2}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{CM.#3}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{DM.#4}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+
+% These if statements were bypassing the \onech option.
+% \ifdim\widthch<\fourthtabwidth
+%     \fourch{#1}{#2}{#3}{#4}{#5}
+% \else\ifdim\widthch<\halftabwidth
+% \ifdim\widthch>\fourthtabwidth
+%     \twoch{#1}{#2}{#3}{#4}{#5}
+% \else
+%      \onech{#1}{#2}{#3}{#4}{#5}
+%  \fi\fi\fi}
+
+% Allows for the \onech option.
+\ifdim\widthch>\halftabwidth
+    \onech{#1}{#2}{#3}{#4}{#5}
+\else\ifdim\widthch<\halftabwidth
+\ifdim\widthch>\fourthtabwidth
+    \twoch{#1}{#2}{#3}{#4}{#5}
+\else
+    \fourch{#1}{#2}{#3}{#4}{#5}
+\fi\fi\fi}
+
+
+\begin{document}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lllll}
+\textbf{\large SYLHET CADET COLLEGE} &  &  &  &  \\ \cline{4-5} 
+FIRST TERM-END EXAMINATION - 2024 &  & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{Set} & \multicolumn{1}{l|}{A} \\ \cline{4-5} 
+CLASS: XII &  &  &  &  \\ \cline{3-5} 
+MULTIPLE CHOICE QUESTIONS & \multicolumn{1}{l|}{\textbf{Subject Code:}} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{3} & \multicolumn{1}{l|}{0} \\ \cline{3-5} 
+STATISTICS FIRST PAPER &  &  &  &  \\
+TIME – 20 minutes &  &  &  &  \\
+FULL MARKS – 25 &  &  &  & 
+\end{tabular}
+\end{table}
+%  \normalfont\normalsize
+ % 11.45a.m.~--~1.45p.m.
+\hrule
+
+\begin{center}
+[N.B. – Answer all the questions. Each question carries ONE mark. Block fully, with a black ball- point pen, the circle of the letter that stands for the correct/best answer in the “Answer sheet” for the Multiple Choice Questions Examination.]\\
+
+  
+  \textbf{Candidates are asked not to leave any mark or spot on the question paper.}
+\end{center}
+
+\textbf{Short Questions}
+
+\onehalfspacing % Set line spacing to 1.5
+
+\begin{enumerate}
+
+\item $P(\bar A) = 1-$ \noindent\rule{2cm}{0.4pt}. 
+
+\item A die is tossed 5 times. What is the probability that 3 comes up 4 times? \noindent\rule{2cm}{0.4pt}
+
+\item What is the range of probability? \noindent\rule{2cm}{0.4pt}
+
+\item If card is drawn from a deck of cards, what is the probability 
+that it is not an ace? \noindent\rule{2cm}{0.4pt}
+
+\item Give an example of a discrete variable. \noindent\rule{5cm}{0.4pt}
+
+\item Can $F(x)$ be less than $P(x)$? \noindent\rule{2cm}{0.4pt} 
+
+\item Integration is used if we have a  \noindent\rule{4cm}{0.4pt} random variable.
+
+\item Expectation is equal to  \noindent\rule{2cm}{0.4pt} .
+
+\item $E(a) = $  \noindent\rule{2cm}{0.4pt}?
+
+\item Express $E(X^2)$ in terms of $E(X)$ and $V(X)$  \noindent\rule{2cm}{0.4pt}
+
+\end{enumerate}
+
+\singlespacing % Reset line spacing to 1 from here on
+
+\textbf{Multiple Choice Questions}
+
+\begin{questions}
+
+\question \textbf{In how many ways can a team of 2 be formed from 4 people?}
+\choice{4}{6}{8}{12}{b}
+
+\question \textbf{The probability of two disjoint sets happening together is:}
+\choice{0.5}{0}{1}{$0  \leq x < 1$}{b}
+
+\question \textbf{The third axiom of probability is --}
+\choice{$0 \le P(A) \le 1$}{$P(S) = 1$}{$\displaystyle P(A_1 U A_2 U \cdots U
+A_n) = \sum_{i=1}^{\infty}P(A_i)$}{$P(A) = 1 - P(A)$}{c}
+
+\question \textbf{Possible value of probability}
+
+i. -1 \quad
+ii. 0.5 \quad
+iii. 0
+
+\textbf{Which one is correct?}
+
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{c}
+
+\question \textbf{There are 3 red, 4 black, and 5 white balls in an urn. If two balls are randomly taken, what is the probability that both are red?}
+\choice{$\frac{1}{66}$}{$\frac{1}{22}$}{$\frac{2}{22}$}{$\frac{3}{11}$}{b}
+
+\textbf{Answer the next two questions based on the following information}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{cccc}
+X & 0 & 1 & 2 \\ \hline
+P(x) & $\frac 12$ & $\frac14$ & $\frac14$
+\end{tabular}
+\end{table}
+
+\question \textbf{What is F(1)}
+\choice{$0.65$}{$0.75$}{$0.5$}{$1$}{b}
+
+\question \textbf{$P(X \le 1 \le 3) =$--}
+\choice{0.75}{0.70}{0.95}{1}{a}
+
+\question \textbf{How many types of random variables are there?}
+\choice{2}{3}{4}{5}{a}
+
+\question \textbf{Which of the following is not a discrete random variable?}
+\choice{umber of students}{Weight}{Number of heads in coin toss}{Population}{b}
+
+\textbf{Answer the next two questions based on the following information.}
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{|l|l|l|l|l|l|l|}
+\hline
+x    & 4         & 5         & 6         & 3         & 2         & 1         \\ \hline
+P(X) & $\frac16$ & $\frac16$ & $\frac16$ & $\frac16$ & $\frac16$ & $\frac16$ \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\question \textbf{The value of $P(3<X<5)$ is:}
+\choice{$\frac12$}{$\frac16$}{$\frac13$}{0}{b}
+
+\question \textbf{$P(x \neq 2) is:$}
+\choice{$\frac56$}{$0$}{1}{Can't be found from this information}{a}
+
+\question \textbf{What is the value of $V(5)$?}
+\choice{0}{25}{5}{1}{a}
+
+\textbf{Answer the next THREE questions based on the following information}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{cccc}
+X & 0 & 1 & 2 \\ \hline
+P(x) & $\frac 13$ & $\frac14$ & $\frac5{12}$
+\end{tabular}
+\end{table}
+
+\question \textbf{What is the value of $E(X)$}
+\choice{$\frac{15}{12}$}{$\frac{13}{12}$}{$\frac{1}{12}$}{$\frac{11}{13}$}{b}
+
+\question \textbf{What is the value of $E(X^2)$}
+\choice{$\frac{25}{12}$}{$\frac{13}{12}$}{$\frac{23}{12}$}{$\frac{25}{13}$}{b}
+
+\question \textbf{What is $V(2X)$?}
+\choice{2.93}{2.91}{1.97}{2.97}{d}
+
+
+\end{questions}
+
+ \vspace{2.5cm}
+
+\begin{center}
+An approximate answer to the right problem is worth a good deal more than an exact answer to an approximate problem. – John Tukey.
+\end{center}
+
+%\pagebreak
+%\newpage  %Uncomment to put on new age
+%\bigskip
+
+%\begin{multicols}{3}
+%[
+%Answer Key
+%]
+%\showallanswers % Phil Hirschorn
+%\end{multicols}
+
+\newpage
+\setcounter{page}{1}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lllll}
+\textbf{\large SYLHET CADET COLLEGE} &  &  &  &  \\ \cline{4-5} 
+FIRST TERM-END EXAMINATION - 2024 &  & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{Set} & \multicolumn{1}{l|}{D} \\ \cline{4-5} 
+CLASS: XII &  &  &  &  \\ \cline{3-5} 
+STATISTICS (CREATIVE)& \multicolumn{1}{l|}{\textbf{Subject Code:}} & \multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{3} & \multicolumn{1}{l|}{0} \\ \cline{3-5} 
+ SECOND PAPER &  &  &  &  \\
+TIME – 2 hours \& 10 minutes &  &  &  &  \\
+FULL MARKS – 50 &  &  &  & 
+\end{tabular}
+\end{table}
+%  \normalfont\normalsize
+ % 11.45a.m.~--~1.45p.m.
+
+\hrule
+
+\begin{center}
+[\textbf{N.B.} – The figures of the right margin indicate full marks. Read the stems carefully and answer the associated questions. Answer any \textbf{FIVE} questions taking at least two from each group.]\\
+
+\end{center}
+
+  \begin{center}
+  \textbf{Group--A}
+  \end{center}
+  
+    \begin{enumerate}
+
+  
+     \item
+	  \textbf{It is observed that 50\% of mails are spam. A software filters spam mail before reaching the inbox. Its accuracy for detecting a spam mail is 99\% and chances of tagging a non-spam mail as spam mail is 5\%.} 
+  
+  \begin{enumerate}
+    \item
+	What is a disjoint event? \hfill 1
+    \item
+	For two independent events, what does the Bayes' theorem reduce to? \hfill 2
+    \item  
+	What is the probability that a mail is tagged as spam?  \hfill 3
+    \item
+	If a certain mail is tagged as spam, find the probability that it is not a spam mail. \hfill 4
+  \end{enumerate}
+  
+     \item
+	  \textbf{A continuos random variable X follows the following probability density function (pdf).} 
+	  \begin{center}
+	  $f(x) = 6x(1-x); 0\le x\le 1$
+  \end{center}
+  
+  \begin{enumerate}
+    \item
+	Give an example of a continous random variable. \hfill 1
+    \item
+	Examine whether the given function is a pdf. \hfill 2
+    \item  
+	If $P(X>a) = P(X<a)$, find the value of a. \hfill 3
+    \item
+	Should $P(0.5 \le X \le 1)$  be equal to 0.5? \hfill 4
+  \end{enumerate}
+  
+     \item
+	  \textbf{A box contains four blue and 6 green balls. 3 balls are drawn randomly.} 
+  
+  \begin{enumerate}
+    \item
+	What is the value of $^nC_r$? \hfill 1
+    \item
+	Illustrate the difference between permutation and combination with an example. \hfill 2
+    \item  
+	What is the probability that all balls are green? \hfill 3
+    \item
+	What is the probabilith that one ball has a different color? \hfill 4
+  \end{enumerate}
+
+  
+    \begin{center}
+  \textbf{Group--B}
+  \end{center}
+  
+       \item
+  \textbf{The joint probability function of two random variables X and Y is given below:}
+  
+  \begin{center}
+  $\displaystyle P(X,Y) = \frac {x+2y}{16}; x = 0, 1; y = 0 ,1,2,3$
+ \end{center}
+ 
+  \begin{enumerate}
+    \item
+	Write down the formula of conditional proibability. \hfill 1
+    \item
+    	What is the relationship between marginal and joint probability? \hfill 2
+    \item
+    	Find P(X). \hfill 3
+     \item
+     	Find $P(X\vert Y)$ and $P(X\vert 0)$. \hfill 4
+  \end{enumerate}
+  
+     \item
+	  \textbf{The probability distribution of a random X is provided below:} 
+	  
+	  \begin{table}[h]
+	  \centering
+\begin{tabular}{c|ccccc}
+X & -1 & 0 & 1 & 2 & 3 \\ \hline
+P(x) & $\frac 3{20}$ & $\frac 15$ & $\frac 14$ & $\frac 14$ & $\frac 3{20}$
+\end{tabular}
+\end{table}
+  
+  \begin{enumerate}
+    \item
+	What is the expectation of a constant m? \hfill 1
+    \item
+	Find $E(X).$ \hfill 2
+    \item  
+	Find $E(Y)$, where $Y = \frac X2$  \hfill 3
+    \item
+	Find Variance of (2X+3). \hfill 4
+  \end{enumerate}
+  
+  \item
+	  \textbf{An umbrella seller earns a revenue of BDT. 5000 if it rains. If it does not rain, he loses BDT. 1000. The probability that it rains on a given day is 0.04.} 
+  
+  \begin{enumerate}
+    \item
+	Write down the formula of Expectation for a continuous random variable. \hfill 1
+    \item
+	Can the value of Expectation be zero? \hfill 2
+    \item  
+	What is the umbrella seller's expected revenue? \hfill 3
+    \item
+	What should be the minimum probability of raining for him to achieve revenue greater than zero? \hfill 4
+  \end{enumerate}
+  
+  
+    \end{enumerate}
+
+\end{document}
