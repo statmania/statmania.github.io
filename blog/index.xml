@@ -10,7 +10,83 @@
 <atom:link href="https://www.statmania.info/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Posts on statistics theory, R &amp; Python, and developer tips from Stat Mania.</description>
 <generator>quarto-1.9.38</generator>
-<lastBuildDate>Thu, 10 Sep 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 15 Sep 2026 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>The Probability of Having Four Babies of the Same Sex</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/probability-4-boys-girls-in-a-row.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>Let’s say a family has 4 children. What’s the probability all four are the same sex — either 4 girls or 4 boys?</p>
+<p>We can find this using the <strong>binomial distribution</strong>, treating each birth as an independent event (the successive births are unrelated) with two possible outcomes: a boy or a girl.</p>
+<section id="direct-solution" class="level2">
+<h2 class="anchored" data-anchor-id="direct-solution">Direct Solution</h2>
+<p>There are 4 babies. We need to count how many of the possible birth sequences have all four babies the same sex.</p>
+<p>Since there are 4 babies, the size of the sample space is <img src="https://latex.codecogs.com/png.latex?2%5E4%20=%2016">.</p>
+<p>To mention a few, the babies can be like</p>
+<p>BBGB, GBGG, GGGB, and so on.</p>
+<p>And 4 children out of 4 can be selected in <img src="https://latex.codecogs.com/png.latex?%5Cbinom%7B4%7D%7B4%7D=1"> way.</p>
+<p>Therefore the probability of choosing 4 girls or boys = <img src="https://latex.codecogs.com/png.latex?P(4G%20%5Ccup%204B)%20=%20P(4G)%20+%20P(4B)%20=%20%5Cfrac%7B%5Cbinom%7B4%7D%7B4%7D%7D%7B2%5E4%7D+%5Cfrac%7B%5Cbinom%7B4%7D%7B4%7D%7D%7B2%5E4%7D%20=%20%5Cfrac%7B1%7D%7B16%7D%20+%20%5Cfrac%7B1%7D%7B16%7D%20=%20%5Cfrac%7B1%7D%7B8%7D=0.125"></p>
+</section>
+<section id="solution-with-binomial-distribution" class="level2">
+<h2 class="anchored" data-anchor-id="solution-with-binomial-distribution">Solution with Binomial Distribution</h2>
+<section id="the-mathematical-assumptions" class="level3">
+<h3 class="anchored" data-anchor-id="the-mathematical-assumptions">1. The Mathematical Assumptions</h3>
+<ul>
+<li>Let the probability of having a girl (<img src="https://latex.codecogs.com/png.latex?G">) be <img src="https://latex.codecogs.com/png.latex?p%20=%200.5">.</li>
+<li>Let the probability of having a boy (<img src="https://latex.codecogs.com/png.latex?B">) be <img src="https://latex.codecogs.com/png.latex?q%20=%201%20-%20p%20=%200.5">.</li>
+<li>Let the total number of trials (births) be <img src="https://latex.codecogs.com/png.latex?n%20=%204">.</li>
+</ul>
+<p>The probability of getting exactly <img src="https://latex.codecogs.com/png.latex?k"> successes in <img src="https://latex.codecogs.com/png.latex?n"> trials is given by the binomial formula: <img src="https://latex.codecogs.com/png.latex?P(X%20=%20k)%20=%20%5Cbinom%7Bn%7D%7Bk%7D%20%5Ccdot%20p%5Ek%20%5Ccdot%20q%5E%7Bn-k%7D"></p>
+<hr>
+</section>
+<section id="proving-4-girls-in-a-row-k-4" class="level3">
+<h3 class="anchored" data-anchor-id="proving-4-girls-in-a-row-k-4">2. Proving 4 Girls in a Row (<img src="https://latex.codecogs.com/png.latex?k%20=%204">)</h3>
+<p>To find the probability of a family having exactly 4 girls out of 4 children: <img src="https://latex.codecogs.com/png.latex?P(%5Ctext%7B4%20Girls%7D)%20=%20%5Cbinom%7B4%7D%7B4%7D%20%5Ccdot%20(0.5)%5E4%20%5Ccdot%20(0.5)%5E%7B4-4%7D"></p>
+<ul>
+<li><img src="https://latex.codecogs.com/png.latex?%5Cbinom%7B4%7D%7B4%7D%20=%201"> (there is only 1 unique way to have 4 girls: <img src="https://latex.codecogs.com/png.latex?GGGG">)</li>
+<li><img src="https://latex.codecogs.com/png.latex?(0.5)%5E4%20=%200.0625"></li>
+<li><img src="https://latex.codecogs.com/png.latex?(0.5)%5E0%20=%201"></li>
+</ul>
+<p><img src="https://latex.codecogs.com/png.latex?P(%5Ctext%7B4%20Girls%7D)%20=%201%20%5Ccdot%200.0625%20%5Ccdot%201%20=%20%5Cmathbf%7B0.0625%20%5Ctext%7B%20(or%20%7D%206.25%5C%25)%7D"></p>
+<hr>
+</section>
+<section id="proving-4-boys-in-a-row-k-0" class="level3">
+<h3 class="anchored" data-anchor-id="proving-4-boys-in-a-row-k-0">3. Proving 4 Boys in a Row (<img src="https://latex.codecogs.com/png.latex?k%20=%200">)</h3>
+<p>Using the same formula, the probability of having 0 girls (which means exactly 4 boys, <img src="https://latex.codecogs.com/png.latex?BBBB">) is: <img src="https://latex.codecogs.com/png.latex?P(%5Ctext%7B4%20Boys%7D)%20=%20%5Cbinom%7B4%7D%7B0%7D%20%5Ccdot%20(0.5)%5E0%20%5Ccdot%20(0.5)%5E%7B4-0%7D"></p>
+<ul>
+<li><img src="https://latex.codecogs.com/png.latex?%5Cbinom%7B4%7D%7B0%7D%20=%201"></li>
+<li><img src="https://latex.codecogs.com/png.latex?(0.5)%5E0%20=%201"></li>
+<li><img src="https://latex.codecogs.com/png.latex?(0.5)%5E4%20=%200.0625"></li>
+</ul>
+<p><img src="https://latex.codecogs.com/png.latex?P(%5Ctext%7B4%20Boys%7D)%20=%201%20%5Ccdot%201%20%5Ccdot%200.0625%20=%20%5Cmathbf%7B0.0625%20%5Ctext%7B%20(or%20%7D%206.25%5C%25)%7D"></p>
+<hr>
+</section>
+<section id="the-final-proof-same-sex" class="level3">
+<h3 class="anchored" data-anchor-id="the-final-proof-same-sex">4. The Final Proof: “Same Sex”</h3>
+<p>Because a family can have either all girls OR all boys, and these two outcomes are mutually exclusive, we add their individual binomial probabilities together: <img src="https://latex.codecogs.com/png.latex?P(%5Ctext%7BSame%20Sex%7D)%20=%20P(%5Ctext%7B4%20Girls%7D)%20+%20P(%5Ctext%7B4%20Boys%7D)"> <img src="https://latex.codecogs.com/png.latex?P(%5Ctext%7BSame%20Sex%7D)%20=%200.0625%20+%200.0625%20=%20%5Cmathbf%7B0.125%7D"></p>
+<p>Converting <img src="https://latex.codecogs.com/png.latex?0.125"> to a percentage gives <strong>12.5%</strong>. As a fraction, <img src="https://latex.codecogs.com/png.latex?0.125%20=%20%5Cfrac%7B1%7D%7B8%7D"> — so roughly <strong>1 family in 8</strong> with four children will have them all the same sex.</p>
+<hr>
+</section>
+</section>
+<section id="a-note-on-the-assumption" class="level2">
+<h2 class="anchored" data-anchor-id="a-note-on-the-assumption">A Note on the Assumption</h2>
+<p>This proof relies on <img src="https://latex.codecogs.com/png.latex?p%20=%200.5"> for a clean, exact result. In reality, the sex ratio at birth is closer to 105 boys per 100 girls (<img src="https://latex.codecogs.com/png.latex?p%20%5Capprox%200.512"> for a boy), which shifts the “4 boys” probability slightly higher than “4 girls.” The gap is small enough that <img src="https://latex.codecogs.com/png.latex?%5Cfrac%7B1%7D%7B8%7D"> remains an excellent approximation for four children.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>statistics</category>
+  <category>probability</category>
+  <guid>https://www.statmania.info/blog/posts/probability-4-boys-girls-in-a-row.html</guid>
+  <pubDate>Tue, 15 Sep 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/binom.jpeg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>The Best Order to Write a Research Paper</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
@@ -759,6 +835,178 @@ font-style: inherit;">$0</span></span></code></pre></div></div>
   <category>quarto</category>
   <guid>https://www.statmania.info/blog/posts/qdraw-new-features.html</guid>
   <pubDate>Fri, 28 Aug 2026 18:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>How to Run Python Inside RStudio with reticulate</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/python-rstudio.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>You can run Python directly inside RStudio by leveraging the <a href="https://rstudio.github.io/reticulate/articles/calling_python.html">reticulate</a> R package, which bridges the R and Python ecosystems. Here is how to set up and use Python inside the RStudio IDE.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/python-rstudio.jpeg" class="img-fluid figure-img"></p>
+<figcaption>RStudio’s Python interpreter settings panel</figcaption>
+</figure>
+</div>
+<section id="set-up-the-python-interpreter" class="level2">
+<h2 class="anchored" data-anchor-id="set-up-the-python-interpreter">1. Set Up the Python Interpreter</h2>
+<p>Before writing Python code, configure RStudio to recognize your Python installation.</p>
+<ol type="1">
+<li>Open RStudio and navigate to <strong>Tools &gt; Global Options</strong> (or <strong>Preferences</strong> on a Mac).</li>
+<li>Click <strong>Python</strong> in the left menu sidebar.</li>
+<li>Under <strong>Python interpreter</strong>, click <strong>Select…</strong> and choose your preferred environment (e.g., system Python, Anaconda, Miniconda, or a virtual environment).</li>
+</ol>
+</section>
+<section id="install-the-required-r-package" class="level2">
+<h2 class="anchored" data-anchor-id="install-the-required-r-package">2. Install the Required R Package</h2>
+<p>Install and load reticulate within your R console:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">install.packages</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"reticulate"</span>)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(reticulate)</span></code></pre></div></div>
+</section>
+<section id="three-ways-to-work-with-python-in-rstudio" class="level2">
+<h2 class="anchored" data-anchor-id="three-ways-to-work-with-python-in-rstudio">3. Three Ways to Work with Python in RStudio</h2>
+<p>Depending on your workflow, you can use Python in RStudio in three main ways.</p>
+<section id="option-a-native-python-scripts" class="level3">
+<h3 class="anchored" data-anchor-id="option-a-native-python-scripts">Option A: Native Python Scripts</h3>
+<p>You can treat RStudio like a standard Python IDE.</p>
+<ul>
+<li>Go to <strong>File &gt; New File &gt; Python Script</strong>.</li>
+<li>Write standard Python code and press <code>Ctrl+Enter</code> (or <code>Cmd+Enter</code> on Mac) to run lines one at a time.</li>
+<li>Interactive plots (like matplotlib or seaborn) will automatically populate in the Viewer pane.</li>
+</ul>
+</section>
+<section id="option-b-mix-r-and-python-in-quarto-or-r-markdown" class="level3">
+<h3 class="anchored" data-anchor-id="option-b-mix-r-and-python-in-quarto-or-r-markdown">Option B: Mix R and Python in Quarto or R Markdown</h3>
+<p>You can build data pipelines where R and Python share data seamlessly in a single document, switching between languages with standard code chunks:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Step 1: Load an R dataset</span></span>
+<span id="cb2-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(reticulate)</span>
+<span id="cb2-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(palmerpenguins)</span>
+<span id="cb2-4">r_data <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> palmerpenguins<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span>penguins</span></code></pre></div></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Step 2: Use the R dataset inside a Python chunk via 'r.'</span></span>
+<span id="cb3-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> pd</span>
+<span id="cb3-3"></span>
+<span id="cb3-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 'r.r_data' fetches the object from the R environment</span></span>
+<span id="cb3-5">py_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.DataFrame(r.r_data)</span>
+<span id="cb3-6"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(py_df.describe())</span></code></pre></div></div>
+</section>
+<section id="option-c-call-python-directly-from-an-r-script" class="level3">
+<h3 class="anchored" data-anchor-id="option-c-call-python-directly-from-an-r-script">Option C: Call Python Directly from an R Script</h3>
+<p>You can import Python modules directly into your native R code with <code>import()</code>. Python attributes are accessed with <code>$</code> instead of <code>.</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(reticulate)</span>
+<span id="cb4-2"></span>
+<span id="cb4-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Import a Python library</span></span>
+<span id="cb4-4">pd <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">import</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"pandas"</span>)</span>
+<span id="cb4-5"></span>
+<span id="cb4-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Call a Python function using R syntax</span></span>
+<span id="cb4-7">my_data <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> pd<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read_csv</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dataset.csv"</span>)</span></code></pre></div></div>
+</section>
+</section>
+<section id="installing-python-libraries" class="level2">
+<h2 class="anchored" data-anchor-id="installing-python-libraries">4. Installing Python Libraries</h2>
+<p>To use tools like numpy or pandas, install them directly through R using reticulate’s helper function:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">reticulate<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">py_install</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"pandas"</span>)</span></code></pre></div></div>
+<p>Alternatively, install them via your system terminal with <code>pip install pandas</code> before starting your RStudio session.</p>
+</section>
+<section id="running-python-line-by-line-repl-console" class="level2">
+<h2 class="anchored" data-anchor-id="running-python-line-by-line-repl-console">5. Running Python Line-by-Line (REPL Console)</h2>
+<p>If you want to run Python code line-by-line exactly like you do with R, send lines from a Python script to an interactive Python REPL console.</p>
+<section id="step-1-open-a-python-script" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-open-a-python-script">Step 1: Open a Python Script</h3>
+<ol type="1">
+<li>Go to <strong>File &gt; New File &gt; Python Script</strong>.</li>
+<li>Save the file with a <code>.py</code> extension (e.g., <code>script.py</code>).</li>
+</ol>
+</section>
+<section id="step-2-launch-the-python-repl-console" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-launch-the-python-repl-console">Step 2: Launch the Python REPL Console</h3>
+<p>Before executing code line-by-line, start the interactive Python environment in your console. Run this single line in your standard R console (bottom-left pane):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1">reticulate<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">repl_python</span>()</span></code></pre></div></div>
+<p>Your console prompt changes from <code>&gt;</code> (R) to <code>&gt;&gt;&gt;</code> (Python) — the RStudio console is now officially a Python terminal.</p>
+</section>
+<section id="step-3-execute-code-line-by-line" class="level3">
+<h3 class="anchored" data-anchor-id="step-3-execute-code-line-by-line">Step 3: Execute Code Line-by-Line</h3>
+<p>Go back to your <code>.py</code> script editor and use the same keyboard shortcuts you use for R:</p>
+<ul>
+<li><strong>Run a single line</strong>: place your cursor on the line and press <code>Ctrl+Enter</code>.</li>
+<li><strong>Run multiple lines</strong>: highlight the block of code and press <code>Ctrl+Enter</code>.</li>
+</ul>
+<p>The code executes instantly in the <code>&gt;&gt;&gt;</code> console below, and any variables you create show up in the Environment pane.</p>
+<p>To exit the Python environment and go back to R at any point, type <code>exit</code> in the console and hit enter.</p>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <category>R</category>
+  <category>Python</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/python-rstudio.html</guid>
+  <pubDate>Mon, 17 Aug 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/python-rstudio.jpeg" medium="image" type="image/jpeg"/>
 </item>
 <item>
   <title>Why Use the Geometric Distribution?</title>
@@ -2128,636 +2376,6 @@ font-style: inherit;">"Stop tracking folder_name"</span></span></code></pre></di
   <category>dispersion</category>
   <guid>https://www.statmania.info/blog/posts/iqr.html</guid>
   <pubDate>Tue, 04 Nov 2025 18:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>From t-test to Anova</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/t-test-to-anova.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>Let’s build a <strong>t-test</strong> and then showing how it generalizes naturally into <strong>ANOVA</strong> (Analysis of Variance).</p>
-<section id="step-1.-the-t-test-comparing-two-means" class="level2">
-<h2 class="anchored" data-anchor-id="step-1.-the-t-test-comparing-two-means">Step 1. The t-test — comparing <strong>two means</strong></h2>
-<p>Let’s imagine two groups of students and their test scores:</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Group</th>
-<th>Scores</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Group A</td>
-<td>70, 75, 80</td>
-</tr>
-<tr class="even">
-<td>Group B</td>
-<td>85, 90, 95</td>
-</tr>
-</tbody>
-</table>
-<p>We want to know:</p>
-<blockquote class="blockquote">
-<p>Are the mean scores of Group A and Group B <strong>significantly different</strong>?</p>
-</blockquote>
-<section id="hypotheses" class="level3">
-<h3 class="anchored" data-anchor-id="hypotheses">Hypotheses</h3>
-<p><img src="https://latex.codecogs.com/png.latex?H_0:%20%5Cmu_A%20=%20%5Cmu_B%20%5Cquad%20%5Ctext%7B(means%20are%20equal)%7D"></p>
-<p><img src="https://latex.codecogs.com/png.latex?H_1:%20%5Cmu_A%20%5Cne%20%5Cmu_B"></p>
-</section>
-<section id="logic-of-the-t-test" class="level3">
-<h3 class="anchored" data-anchor-id="logic-of-the-t-test">Logic of the t-test</h3>
-<p>We calculate:</p>
-<ol type="1">
-<li><p>The difference between sample means <img src="https://latex.codecogs.com/png.latex?%5Cbar%20X_A%20-%20%5Cbar%20X_B"></p></li>
-<li><p>The standard error of that difference (based on the variances and sample sizes)</p></li>
-<li><p>The <strong>t-statistic</strong></p>
-<p><img src="https://latex.codecogs.com/png.latex?t%20=%20%5Cfrac%7B(%5Cbar%20X_A%20-%20%5Cbar%20X_B)%7D%7BSE%7D"></p></li>
-</ol>
-<p>If the difference is large relative to its expected variation, we reject <img src="https://latex.codecogs.com/png.latex?H_0">.</p>
-<hr>
-</section>
-<section id="intuition" class="level3">
-<h3 class="anchored" data-anchor-id="intuition">Intuition</h3>
-<ul>
-<li>The <strong>numerator</strong> measures how far apart the groups are.</li>
-<li>The <strong>denominator</strong> measures how noisy the data are.</li>
-<li>A large t-value ⇒ groups differ more than we’d expect by chance.</li>
-</ul>
-<p>So the <strong>two-sample t-test</strong> compares <em>between-group difference</em> to <em>within-group variability</em>.</p>
-<hr>
-</section>
-</section>
-<section id="step-2.-extending-to-more-than-two-groups" class="level2">
-<h2 class="anchored" data-anchor-id="step-2.-extending-to-more-than-two-groups">Step 2. Extending to more than two groups</h2>
-<p>Now add a third group:</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Group</th>
-<th>Scores</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Group A</td>
-<td>70, 75, 80</td>
-</tr>
-<tr class="even">
-<td>Group B</td>
-<td>85, 90, 95</td>
-</tr>
-<tr class="odd">
-<td>Group C</td>
-<td>60, 65, 70</td>
-</tr>
-</tbody>
-</table>
-<p>Now what if we ask:</p>
-<blockquote class="blockquote">
-<p>Are all group means equal?</p>
-</blockquote>
-<p>You could do multiple t-tests (A vs B, A vs C, B vs C), but that inflates the chance of false positives. Instead, <strong>ANOVA</strong> does it all at once.</p>
-<hr>
-</section>
-<section id="step-3.-anova-conceptually" class="level2">
-<h2 class="anchored" data-anchor-id="step-3.-anova-conceptually">Step 3. ANOVA conceptually</h2>
-<section id="hypotheses-1" class="level3">
-<h3 class="anchored" data-anchor-id="hypotheses-1">Hypotheses</h3>
-<p><img src="https://latex.codecogs.com/png.latex?H_0:%20%5Cmu_A%20=%20%5Cmu_B%20=%20%5Cmu_C%20%5Cquad%20%5Ctext%7B(all%20equal)%7D"></p>
-<p><img src="https://latex.codecogs.com/png.latex?H_1:%20%5Ctext%7BAt%20least%20one%20mean%20differs%7D"></p>
-</section>
-<section id="how-anova-works" class="level3">
-<h3 class="anchored" data-anchor-id="how-anova-works">How ANOVA works</h3>
-<p>ANOVA decomposes total variability into two parts:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%5Ctext%7BTotal%20Variation%7D%20=%20%5Ctext%7BBetween-group%20Variation%7D%20+%20%5Ctext%7BWithin-group%20Variation%7D"></p>
-<p>It then forms a ratio:</p>
-<p><img src="https://latex.codecogs.com/png.latex?F%20=%20%5Cfrac%7B%5Ctext%7BBetween-group%20Mean%20Square%7D%7D%7B%5Ctext%7BWithin-group%20Mean%20Square%7D%7D"></p>
-<ul>
-<li>If <img src="https://latex.codecogs.com/png.latex?H_0"> is true, both parts estimate the same thing → <img src="https://latex.codecogs.com/png.latex?F%20%5Capprox%201">.</li>
-<li>If group means differ more than expected, <img src="https://latex.codecogs.com/png.latex?F%20%3E%201"> → reject <img src="https://latex.codecogs.com/png.latex?H_0">.</li>
-</ul>
-<hr>
-</section>
-</section>
-<section id="step-4.-conceptual-link-between-t-and-f" class="level2">
-<h2 class="anchored" data-anchor-id="step-4.-conceptual-link-between-t-and-f">Step 4. Conceptual link between t and F</h2>
-<p>For <strong>two groups</strong>, ANOVA and t-test give the same result:</p>
-<p><img src="https://latex.codecogs.com/png.latex?F%20=%20t%5E2"></p>
-<p>So ANOVA is just a <strong>generalization of the t-test</strong> from 2 groups to many groups.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 62%">
-<col style="width: 20%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Test</th>
-<th>Groups</th>
-<th>Statistic</th>
-<th>Distribution</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>t-test</td>
-<td>2</td>
-<td><img src="https://latex.codecogs.com/png.latex?t"></td>
-<td>t-distribution</td>
-</tr>
-<tr class="even">
-<td>ANOVA</td>
-<td>≥ 2</td>
-<td><img src="https://latex.codecogs.com/png.latex?F%20=%20%5Cfrac%7B%5Ctext%7BBetween%7D%7D%7B%5Ctext%7BWithin%7D%7D"></td>
-<td>F-distribution</td>
-</tr>
-</tbody>
-</table>
-<hr>
-</section>
-<section id="step-5.-interpretation" class="level2">
-<h2 class="anchored" data-anchor-id="step-5.-interpretation">Step 5. Interpretation</h2>
-<ul>
-<li>If <img src="https://latex.codecogs.com/png.latex?F"> (or <img src="https://latex.codecogs.com/png.latex?%7Ct%7C">) is large and the p-value &lt; 0.05, we reject <img src="https://latex.codecogs.com/png.latex?H_0">. → The means are not all equal.</li>
-<li>If not, we conclude that differences among sample means could just be random noise.</li>
-</ul>
-<hr>
-</section>
-<section id="summary-table" class="level2">
-<h2 class="anchored" data-anchor-id="summary-table">Summary Table</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 12%">
-<col style="width: 32%">
-<col style="width: 55%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Aspect</th>
-<th>t-test</th>
-<th>ANOVA</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Purpose</td>
-<td>Compare <strong>two</strong> means</td>
-<td>Compare <strong>two or more</strong> means</td>
-</tr>
-<tr class="even">
-<td>Hypothesis</td>
-<td><img src="https://latex.codecogs.com/png.latex?H_0:%20%5Cmu_1%20=%20%5Cmu_2"></td>
-<td><img src="https://latex.codecogs.com/png.latex?H_0:%20%5Cmu_1%20=%20%5Cmu_2%20=%20%5Cmu_3%20=%20%5Cdots"></td>
-</tr>
-<tr class="odd">
-<td>Statistic</td>
-<td>t</td>
-<td>F</td>
-</tr>
-<tr class="even">
-<td>Logic</td>
-<td>Difference of means / error</td>
-<td>Ratio of between-group / within-group variance</td>
-</tr>
-<tr class="odd">
-<td>Link</td>
-<td><img src="https://latex.codecogs.com/png.latex?F%20=%20t%5E2"> for 2 groups</td>
-<td>—</td>
-</tr>
-</tbody>
-</table>
-<hr>
-</section>
-<section id="why-not-many-t-tests" class="level2">
-<h2 class="anchored" data-anchor-id="why-not-many-t-tests">Why not many t-tests?</h2>
-<p>Doing multiple <em>t</em>-tests increases the <strong>Type I error rate (false positive probability)</strong>.</p>
-<p>Let us see how.</p>
-<hr>
-<p>Suppose you have <img src="https://latex.codecogs.com/png.latex?k%20=%203"> groups:</p>
-<ul>
-<li><img src="https://latex.codecogs.com/png.latex?G_1,%20G_2,%20G_3"></li>
-</ul>
-<p>To compare them, you could do <strong>pairwise <em>t</em>-tests</strong>:</p>
-<p><img src="https://latex.codecogs.com/png.latex?G_1%20%5Ctext%7B%20vs%20%7D%20G_2,%5Cquad%20G_1%20%5Ctext%7B%20vs%20%7D%20G_3,%5Cquad%20G_2%20%5Ctext%7B%20vs%20%7D%20G_3"></p>
-<p>That’s <img src="https://latex.codecogs.com/png.latex?C(k,2)%20=%203"> tests.</p>
-<p>Each test has <strong>significance level</strong> <img src="https://latex.codecogs.com/png.latex?%5Calpha%20=%200.05">. So the chance of <em>no false positive</em> across all tests = <img src="https://latex.codecogs.com/png.latex?(1-%5Calpha)%5Em">, where <img src="https://latex.codecogs.com/png.latex?m"> = number of tests.</p>
-<p>Hence, the <strong>overall false positive rate</strong> (familywise error rate) is:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%5Ctext%7BFWER%7D%20=%201%20-%20(1%20-%20%5Calpha)%5Em"></p>
-<p>For <img src="https://latex.codecogs.com/png.latex?k=3"> groups, <img src="https://latex.codecogs.com/png.latex?m=3">:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%5Ctext%7BFWER%7D%20=%201%20-%20(1%20-%200.05)%5E3%20=%201%20-%200.95%5E3%20=%200.1426"></p>
-<p>So even if all population means are <strong>equal</strong>, there’s <strong>≈14% chance</strong> you’ll (wrongly) find at least one “significant difference”.</p>
-<p>This is why ANOVA tests <strong>all means simultaneously</strong> with a <strong>single α = 0.05</strong> — controlling the false positive rate.</p>
-<hr>
-</section>
-<section id="minimal-empirical-example" class="level2">
-<h2 class="anchored" data-anchor-id="minimal-empirical-example">Minimal empirical example</h2>
-<p>Let’s make up a small dataset:</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Group</th>
-<th>Values</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>A</td>
-<td>5, 6, 7</td>
-</tr>
-<tr class="even">
-<td>B</td>
-<td>6, 7, 8</td>
-</tr>
-<tr class="odd">
-<td>C</td>
-<td>5, 7, 9</td>
-</tr>
-</tbody>
-</table>
-<p>All groups have similar means (~6.5–7). True means are equal (in population), but random variation exists.</p>
-<p>Now:</p>
-<section id="step-1.-pairwise-t-tests" class="level3">
-<h3 class="anchored" data-anchor-id="step-1.-pairwise-t-tests">Step 1. Pairwise t-tests</h3>
-<p>We do:</p>
-<ol type="1">
-<li>A vs B → p = 0.08</li>
-<li>A vs C → p = 0.04</li>
-<li>B vs C → p = 0.06</li>
-</ol>
-<p>One of them (A vs C) is &lt;0.05 → you’d claim a “significant” difference. But that’s <strong>a false positive</strong>, since groups were drawn from the same population.</p>
-<p>If you repeated this experiment 1000 times, around <strong>14%</strong> of runs would falsely detect <em>something</em> significant — matching our theoretical 0.1426.</p>
-<hr>
-</section>
-</section>
-<section id="key-takeaway" class="level2">
-<h2 class="anchored" data-anchor-id="key-takeaway">Key takeaway</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 15%">
-<col style="width: 17%">
-<col style="width: 21%">
-<col style="width: 45%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Method</th>
-<th>Number of tests</th>
-<th>Nominal α per test</th>
-<th>Familywise α (true false positive rate)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>One-way ANOVA</td>
-<td>1</td>
-<td>0.05</td>
-<td>0.05</td>
-</tr>
-<tr class="even">
-<td>Three t-tests</td>
-<td>3</td>
-<td>0.05</td>
-<td>0.14</td>
-</tr>
-<tr class="odd">
-<td>Ten t-tests</td>
-<td>10</td>
-<td>0.05</td>
-<td>0.40</td>
-</tr>
-</tbody>
-</table>
-
-
-</section>
-
- ]]></description>
-  <category>statistics</category>
-  <category>theory</category>
-  <category>anova</category>
-  <guid>https://www.statmania.info/blog/posts/t-test-to-anova.html</guid>
-  <pubDate>Thu, 09 Oct 2025 18:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>ARIMA and SARIMA Time Series Models</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/arima-sarima-r.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>Here’s a <strong>clear, concise explanation</strong> of <strong>ARIMA</strong>, <strong>SARIMA</strong>, and related models — followed by <strong>minimal R examples</strong>.</p>
-<hr>
-<section id="arima-autoregressive-integrated-moving-average" class="level1">
-<h1><strong>1. ARIMA (AutoRegressive Integrated Moving Average)</strong></h1>
-<p>ARIMA is a time-series forecasting model used for <strong>non-seasonal</strong>, <strong>univariate</strong> data. It is written as:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%5Ctext%7BARIMA%7D(p,d,q)"></p>
-<section id="meaning-of-the-parameters" class="level3">
-<h3 class="anchored" data-anchor-id="meaning-of-the-parameters"><strong>Meaning of the parameters</strong></h3>
-<ul>
-<li><strong>p</strong> = number of autoregressive (AR) terms</li>
-<li><strong>d</strong> = degree of differencing (to remove trend)</li>
-<li><strong>q</strong> = number of moving average (MA) terms</li>
-</ul>
-</section>
-<section id="when-to-use-arima" class="level3">
-<h3 class="anchored" data-anchor-id="when-to-use-arima"><strong>When to use ARIMA</strong></h3>
-<p>Use ARIMA when your data:</p>
-<ul>
-<li>has <strong>trend</strong>, but</li>
-<li><strong>no seasonality</strong>.</li>
-</ul>
-<hr>
-</section>
-<section id="minimal-arima-example-in-r" class="level2">
-<h2 class="anchored" data-anchor-id="minimal-arima-example-in-r">Minimal ARIMA Example in R</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(forecast)</span>
-<span id="cb1-2"></span>
-<span id="cb1-3"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Use an example built-in dataset</span></span>
-<span id="cb1-4">ts_data <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> AirPassengers[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">60</span>]   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Monthly passengers (first 5 years)</span></span>
-<span id="cb1-5"></span>
-<span id="cb1-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Fit a simple ARIMA model</span></span>
-<span id="cb1-7">fit <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">auto.arima</span>(ts_data)</span>
-<span id="cb1-8"></span>
-<span id="cb1-9"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Print model</span></span>
-<span id="cb1-10">fit</span>
-<span id="cb1-11"></span>
-<span id="cb1-12"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Forecast next 12 periods</span></span>
-<span id="cb1-13"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">forecast</span>(fit, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">h =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">12</span>)</span></code></pre></div></div>
-<p><code>auto.arima()</code> automatically selects (p, d, q).</p>
-<hr>
-</section>
-</section>
-<section id="sarima-seasonal-arima" class="level1">
-<h1><strong>2. SARIMA (Seasonal ARIMA)</strong></h1>
-<p>SARIMA extends ARIMA by adding <strong>seasonal components</strong>.</p>
-<p><img src="https://latex.codecogs.com/png.latex?%5Ctext%7BSARIMA%7D(p,d,q)(P,D,Q)_m"></p>
-<p>Where:</p>
-<ul>
-<li><p><strong>P</strong> = seasonal autoregressive order</p></li>
-<li><p><strong>D</strong> = seasonal differencing</p></li>
-<li><p><strong>Q</strong> = seasonal moving average</p></li>
-<li><p><strong>m</strong> = seasonal period</p>
-<ul>
-<li>Example: monthly data → m = 12</li>
-<li>Quarterly data → m = 4</li>
-</ul></li>
-</ul>
-<section id="when-to-use-sarima" class="level3">
-<h3 class="anchored" data-anchor-id="when-to-use-sarima"><strong>When to use SARIMA</strong></h3>
-<p>Use SARIMA when your time series has:</p>
-<ul>
-<li><strong>trend</strong>,</li>
-<li><strong>and clear seasonality</strong> (repeating yearly, quarterly, weekly pattern).</li>
-</ul>
-<hr>
-</section>
-<section id="minimal-sarima-example-in-r" class="level2">
-<h2 class="anchored" data-anchor-id="minimal-sarima-example-in-r">Minimal SARIMA Example in R</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(forecast)</span>
-<span id="cb2-2"></span>
-<span id="cb2-3">ts_data <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> AirPassengers  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># strong yearly seasonality</span></span>
-<span id="cb2-4"></span>
-<span id="cb2-5"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Fit SARIMA</span></span>
-<span id="cb2-6">fit <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">auto.arima</span>(ts_data, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">seasonal =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>)</span>
-<span id="cb2-7"></span>
-<span id="cb2-8">fit</span>
-<span id="cb2-9"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">forecast</span>(fit, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">h =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">12</span>)</span></code></pre></div></div>
-<hr>
-</section>
-</section>
-<section id="arimax-sarimax-arima-with-regressors" class="level1">
-<h1><strong>3. ARIMAX / SARIMAX</strong> (ARIMA with regressors)</h1>
-<p>These models include <strong>external variables</strong> (e.g., temperature, ads, price). Useful when other predictors help forecast the main series.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">x <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rnorm</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">length</span>(ts_data))   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Example external regressor</span></span>
-<span id="cb3-2">fit <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">auto.arima</span>(ts_data, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">xreg =</span> x)</span></code></pre></div></div>
-<hr>
-</section>
-<section id="seasonal-decomposition-not-a-model" class="level1">
-<h1><strong>4. Seasonal decomposition (not a model)</strong></h1>
-<p>Often used to inspect data before ARIMA.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">stl</span>(AirPassengers, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">s.window =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"periodic"</span>))</span></code></pre></div></div>
-<p>Shows:</p>
-<ul>
-<li>trend,</li>
-<li>seasonal,</li>
-<li>remainder components.</li>
-</ul>
-<hr>
-</section>
-<section id="summary-table" class="level1">
-<h1>⭐ Summary Table</h1>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 10%">
-<col style="width: 19%">
-<col style="width: 28%">
-<col style="width: 40%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Model</th>
-<th>Handles Trend</th>
-<th>Handles Seasonality</th>
-<th>Includes External Variables</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>ARIMA</td>
-<td>✔️</td>
-<td>❌</td>
-<td>✔️ (ARIMAX)</td>
-</tr>
-<tr class="even">
-<td>SARIMA</td>
-<td>✔️</td>
-<td>✔️</td>
-<td>✔️ (SARIMAX)</td>
-</tr>
-<tr class="odd">
-<td>ETS</td>
-<td>✔️</td>
-<td>✔️</td>
-<td>❌</td>
-</tr>
-<tr class="even">
-<td>Prophet</td>
-<td>✔️</td>
-<td>✔️</td>
-<td>✔️</td>
-</tr>
-</tbody>
-</table>
-<hr>
-</section>
-<section id="very-small-example-for-conceptual-understanding" class="level1">
-<h1><strong>Very Small Example for Conceptual Understanding</strong></h1>
-<p>Suppose monthly sales:</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Month</th>
-<th>Sales</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Jan</td>
-<td>100</td>
-</tr>
-<tr class="even">
-<td>Feb</td>
-<td>110</td>
-</tr>
-<tr class="odd">
-<td>Mar</td>
-<td>120</td>
-</tr>
-<tr class="even">
-<td>Apr</td>
-<td>130</td>
-</tr>
-<tr class="odd">
-<td>May</td>
-<td>140</td>
-</tr>
-<tr class="even">
-<td>Jun</td>
-<td>150</td>
-</tr>
-</tbody>
-</table>
-<p>This has <strong>trend but no seasonality</strong> → ARIMA.</p>
-<p>If you have:</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Month</th>
-<th>Sales</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Jan</td>
-<td>100</td>
-</tr>
-<tr class="even">
-<td>Feb</td>
-<td>120</td>
-</tr>
-<tr class="odd">
-<td>Mar</td>
-<td>150</td>
-</tr>
-<tr class="even">
-<td>…</td>
-<td>…</td>
-</tr>
-<tr class="odd">
-<td>Jan (next year)</td>
-<td>110</td>
-</tr>
-<tr class="even">
-<td>Feb (next year)</td>
-<td>130</td>
-</tr>
-</tbody>
-</table>
-<p>This has <strong>trend + yearly cycle</strong> → SARIMA.</p>
-
-
-</section>
-
- ]]></description>
-  <category>statistics</category>
-  <category>time-series</category>
-  <category>R</category>
-  <guid>https://www.statmania.info/blog/posts/arima-sarima-r.html</guid>
-  <pubDate>Sun, 05 Oct 2025 18:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>

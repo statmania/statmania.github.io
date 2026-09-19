@@ -1,0 +1,80 @@
+---
+title: "The Probability of Having Four Babies of the Same Sex"
+author: "Abdullah Al Mahmud"
+date: "2026-09-16"
+categories: [statistics, probability]
+tags: [binomial]
+image: ../img/binom.jpeg
+description: "A binomial-distribution proof that a family of 4 children has exactly a 1-in-8 (12.5%) chance of all four being the same sex."
+---
+
+Let's say a family has 4 children. What's the probability all four are the same sex — either 4 girls or 4 boys?
+
+We can find this using the **binomial distribution**, treating each birth as an independent event (the successive births are unrelated) with two possible outcomes: a boy or a girl.
+
+## Direct Solution
+
+There are 4 babies. We need to count how many of the possible birth sequences have all four babies the same sex.
+
+Since there are 4 babies, the size of the sample space is $2^4 = 16$.
+
+To mention a few, the babies can be like
+
+BBGB, GBGG, GGGB, and so on.
+
+And 4 children out of 4 can be selected in $\binom{4}{4}=1$ way.
+
+Therefore the probability of choosing 4 girls or boys = $P(4G \cup 4B) = P(4G) + P(4B) = \frac{\binom{4}{4}}{2^4}+\frac{\binom{4}{4}}{2^4} = \frac{1}{16} + \frac{1}{16} = \frac{1}{8}=0.125$
+
+## Solution with Binomial Distribution
+
+### 1. The Mathematical Assumptions
+
+* Let the probability of having a girl ($G$) be $p = 0.5$.
+* Let the probability of having a boy ($B$) be $q = 1 - p = 0.5$.
+* Let the total number of trials (births) be $n = 4$.
+
+The probability of getting exactly $k$ successes in $n$ trials is given by the binomial formula:
+$$P(X = k) = \binom{n}{k} \cdot p^k \cdot q^{n-k}$$
+
+---
+
+### 2. Proving 4 Girls in a Row ($k = 4$)
+
+To find the probability of a family having exactly 4 girls out of 4 children:
+$$P(\text{4 Girls}) = \binom{4}{4} \cdot (0.5)^4 \cdot (0.5)^{4-4}$$
+
+* $\binom{4}{4} = 1$ (there is only 1 unique way to have 4 girls: $GGGG$)
+* $(0.5)^4 = 0.0625$
+* $(0.5)^0 = 1$
+
+$$P(\text{4 Girls}) = 1 \cdot 0.0625 \cdot 1 = \mathbf{0.0625 \text{ (or } 6.25\%)}$$
+
+---
+
+### 3. Proving 4 Boys in a Row ($k = 0$)
+
+Using the same formula, the probability of having 0 girls (which means exactly 4 boys, $BBBB$) is:
+$$P(\text{4 Boys}) = \binom{4}{0} \cdot (0.5)^0 \cdot (0.5)^{4-0}$$
+
+* $\binom{4}{0} = 1$
+* $(0.5)^0 = 1$
+* $(0.5)^4 = 0.0625$
+
+$$P(\text{4 Boys}) = 1 \cdot 1 \cdot 0.0625 = \mathbf{0.0625 \text{ (or } 6.25\%)}$$
+
+---
+
+### 4. The Final Proof: "Same Sex"
+
+Because a family can have either all girls OR all boys, and these two outcomes are mutually exclusive, we add their individual binomial probabilities together:
+$$P(\text{Same Sex}) = P(\text{4 Girls}) + P(\text{4 Boys})$$
+$$P(\text{Same Sex}) = 0.0625 + 0.0625 = \mathbf{0.125}$$
+
+Converting $0.125$ to a percentage gives **12.5%**. As a fraction, $0.125 = \frac{1}{8}$ — so roughly **1 family in 8** with four children will have them all the same sex.
+
+---
+
+## A Note on the Assumption
+
+This proof relies on $p = 0.5$ for a clean, exact result. In reality, the sex ratio at birth is closer to 105 boys per 100 girls ($p \approx 0.512$ for a boy), which shifts the "4 boys" probability slightly higher than "4 girls." The gap is small enough that $\frac{1}{8}$ remains an excellent approximation for four children.

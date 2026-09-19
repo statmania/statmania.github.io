@@ -1,0 +1,118 @@
+---
+title: "How to Run Python Inside RStudio with reticulate"
+description: "Set up RStudio to run Python code alongside R — configure the interpreter, install reticulate, and use three different workflows (scripts, mixed Quarto/R Markdown chunks, and calling Python from R directly)."
+date: "2026-08-18"
+categories: [R, Python, Tutorial]
+tags: [RStudio, reticulate]
+author: "Abdullah Al Mahmud"
+image: "../img/python-rstudio.jpeg"
+---
+
+You can run Python directly inside RStudio by leveraging the [reticulate](https://rstudio.github.io/reticulate/articles/calling_python.html) R package, which bridges the R and Python ecosystems. Here is how to set up and use Python inside the RStudio IDE.
+
+![RStudio's Python interpreter settings panel](../img/python-rstudio.jpeg)
+
+## 1. Set Up the Python Interpreter
+
+Before writing Python code, configure RStudio to recognize your Python installation.
+
+1. Open RStudio and navigate to **Tools > Global Options** (or **Preferences** on a Mac).
+2. Click **Python** in the left menu sidebar.
+3. Under **Python interpreter**, click **Select...** and choose your preferred environment (e.g., system Python, Anaconda, Miniconda, or a virtual environment).
+
+## 2. Install the Required R Package
+
+Install and load reticulate within your R console:
+
+```r
+install.packages("reticulate")
+library(reticulate)
+```
+
+## 3. Three Ways to Work with Python in RStudio
+
+Depending on your workflow, you can use Python in RStudio in three main ways.
+
+### Option A: Native Python Scripts
+
+You can treat RStudio like a standard Python IDE.
+
+* Go to **File > New File > Python Script**.
+* Write standard Python code and press `Ctrl+Enter` (or `Cmd+Enter` on Mac) to run lines one at a time.
+* Interactive plots (like matplotlib or seaborn) will automatically populate in the Viewer pane.
+
+### Option B: Mix R and Python in Quarto or R Markdown
+
+You can build data pipelines where R and Python share data seamlessly in a single document, switching between languages with standard code chunks:
+
+```r
+# Step 1: Load an R dataset
+library(reticulate)
+library(palmerpenguins)
+r_data <- palmerpenguins::penguins
+```
+
+```python
+# Step 2: Use the R dataset inside a Python chunk via 'r.'
+import pandas as pd
+
+# 'r.r_data' fetches the object from the R environment
+py_df = pd.DataFrame(r.r_data)
+print(py_df.describe())
+```
+
+### Option C: Call Python Directly from an R Script
+
+You can import Python modules directly into your native R code with `import()`. Python attributes are accessed with `$` instead of `.`:
+
+```r
+library(reticulate)
+
+# Import a Python library
+pd <- import("pandas")
+
+# Call a Python function using R syntax
+my_data <- pd$read_csv("dataset.csv")
+```
+
+## 4. Installing Python Libraries
+
+To use tools like numpy or pandas, install them directly through R using reticulate's helper function:
+
+```r
+reticulate::py_install("pandas")
+```
+
+Alternatively, install them via your system terminal with `pip install pandas` before starting your RStudio session.
+
+## 5. Running Python Line-by-Line (REPL Console)
+
+If you want to run Python code line-by-line exactly like you do with R, send lines from a Python script to an interactive Python REPL console.
+
+### Step 1: Open a Python Script
+
+1. Go to **File > New File > Python Script**.
+2. Save the file with a `.py` extension (e.g., `script.py`).
+
+### Step 2: Launch the Python REPL Console
+
+Before executing code line-by-line, start the interactive Python environment in your console. Run this single line in your standard R console (bottom-left pane):
+
+```r
+reticulate::repl_python()
+```
+
+Your console prompt changes from `>` (R) to `>>>` (Python) — the RStudio console is now officially a Python terminal.
+
+### Step 3: Execute Code Line-by-Line
+
+Go back to your `.py` script editor and use the same keyboard shortcuts you use for R:
+
+* **Run a single line**: place your cursor on the line and press `Ctrl+Enter`.
+* **Run multiple lines**: highlight the block of code and press `Ctrl+Enter`.
+
+The code executes instantly in the `>>>` console below, and any variables you create show up in the Environment pane.
+
+To exit the Python environment and go back to R at any point, type `exit` in the console and hit enter.
+
+
