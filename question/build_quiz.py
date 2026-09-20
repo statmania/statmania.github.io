@@ -216,6 +216,8 @@ def latexify_inline(text):
     text = text.replace(r"\%", "%").replace(r"\&", "&").replace(r"\#", "#").replace(r"\$", "$")
     # spacing/typographic commands with no LaTeX-source meaning once rendered as HTML
     text = re.sub(r"\\,", " ", text)
+    text = re.sub(r"\\qquad", "  ", text)
+    text = re.sub(r"\\quad", " ", text)
     text = text.replace(r"\textemdash", "\u2014").replace(r"\emdash", "\u2014")
     text = re.sub(r"\\ldots|\\dots", "...", text)
     text = text.replace("~", " ")
@@ -933,7 +935,8 @@ function renderMath(el) {
     renderMathInElement(el, {
       delimiters: [
         {left: '$', right: '$', display: false},
-        {left: '\\(', right: '\\)', display: false}
+        {left: '\\(', right: '\\)', display: false},
+        {left: '\\[', right: '\\]', display: true}
       ],
       throwOnError: false
     });
