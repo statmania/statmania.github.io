@@ -16,6 +16,12 @@ SOURCES = [
     ("Statistics I", HERE / "bank" / "stat1_mcq_bank.tex"),
     ("Statistics II", HERE / "bank" / "stat2_mcq_bank.tex"),
 ]
+# Statistics II's chapters go well beyond probability proper (sampling, vital
+# statistics, index numbers, ...), hence "& Others" in its display title.
+SUBJECT_TITLES = {
+    "Statistics I": "Stat 1 — Statistics",
+    "Statistics II": "Stat 2 — Probability & Others",
+}
 OUT_HTML = HERE / "stat-prob.html"
 
 LETTER_TO_IDX = {"a": 0, "b": 1, "c": 2, "d": 3}
@@ -529,10 +535,11 @@ def parse_bank(path, subject_label):
 
 
 def build_outline(all_questions):
-    """chapter -> topic -> count, for the dropdown UI."""
+    """subject -> chapter -> topic -> count, for the dropdown UI."""
     outline = {}
     for q in all_questions:
-        ch = outline.setdefault(q["chapter"], {})
+        subj = outline.setdefault(q["subject"], {})
+        ch = subj.setdefault(q["chapter"], {})
         ch[q["topic"]] = ch.get(q["topic"], 0) + 1
     return outline
 
@@ -642,6 +649,10 @@ HTML_TEMPLATE = r"""<!doctype html>
 
             <div id="setup-view" class="sm-card p-8 space-y-5">
                 <div>
+                    <label class="block text-sm text-slate-400 mb-1">Subject</label>
+                    <select id="subject-select" class="sm-select w-full rounded-lg px-3 py-2"></select>
+                </div>
+                <div>
                     <label class="block text-sm text-slate-400 mb-1">Chapter</label>
                     <select id="chapter-select" class="sm-select w-full rounded-lg px-3 py-2"></select>
                 </div>
@@ -749,19 +760,49 @@ HTML_TEMPLATE = r"""<!doctype html>
 
 <script>
 const QUESTIONS = __QUESTIONS_JSON__;
-const OUTLINE = __OUTLINE_JSON__;
+const OUTLINE = __OUTLINE_JSON__; // subject -> chapter -> topic -> count
+const SUBJECT_TITLES = __SUBJECT_TITLES_JSON__;
 
+const subjectSelect = document.getElementById('subject-select');
 const chapterSelect = document.getElementById('chapter-select');
 const topicSelect = document.getElementById('topic-select');
 const countSelect = document.getElementById('count-select');
 
+function populateSubjects() {
+  const allOpt = document.createElement('option');
+  allOpt.value = '__ALL__';
+  allOpt.textContent = 'All Subjects';
+  subjectSelect.appendChild(allOpt);
+  Object.keys(OUTLINE).forEach(subj => {
+    const opt = document.createElement('option');
+    opt.value = subj;
+    opt.textContent = SUBJECT_TITLES[subj] || subj;
+    subjectSelect.appendChild(opt);
+  });
+}
+
+// chapter -> topic-count-map, merged across every subject the chapter appears in.
+function chaptersForSubject(subj) {
+  const chapters = {};
+  const subjects = subj === '__ALL__' ? Object.values(OUTLINE) : [OUTLINE[subj] || {}];
+  subjects.forEach(chMap => {
+    Object.entries(chMap).forEach(([ch, topics]) => {
+      const merged = chapters[ch] || (chapters[ch] = {});
+      Object.entries(topics).forEach(([tp, count]) => {
+        merged[tp] = (merged[tp] || 0) + count;
+      });
+    });
+  });
+  return chapters;
+}
+
 function populateChapters() {
-  const chapters = Object.keys(OUTLINE);
+  chapterSelect.innerHTML = '';
   const allOpt = document.createElement('option');
   allOpt.value = '__ALL__';
   allOpt.textContent = 'All Chapters';
   chapterSelect.appendChild(allOpt);
-  chapters.forEach(ch => {
+  Object.keys(chaptersForSubject(subjectSelect.value)).forEach(ch => {
     const opt = document.createElement('option');
     opt.value = ch;
     opt.textContent = ch;
@@ -775,12 +816,13 @@ function populateTopics() {
   allOpt.value = '__ALL__';
   allOpt.textContent = 'All Topics';
   topicSelect.appendChild(allOpt);
+  const chapters = chaptersForSubject(subjectSelect.value);
   const ch = chapterSelect.value;
   let topics = new Set();
   if (ch === '__ALL__') {
-    Object.values(OUTLINE).forEach(t => Object.keys(t).forEach(x => topics.add(x)));
-  } else if (OUTLINE[ch]) {
-    Object.keys(OUTLINE[ch]).forEach(x => topics.add(x));
+    Object.values(chapters).forEach(t => Object.keys(t).forEach(x => topics.add(x)));
+  } else if (chapters[ch]) {
+    Object.keys(chapters[ch]).forEach(x => topics.add(x));
   }
   [...topics].forEach(t => {
     const opt = document.createElement('option');
@@ -791,9 +833,14 @@ function populateTopics() {
 }
 
 function filteredQuestions() {
+  const subj = subjectSelect.value;
   const ch = chapterSelect.value;
   const tp = topicSelect.value;
-  return QUESTIONS.filter(q => (ch === '__ALL__' || q.chapter === ch) && (tp === '__ALL__' || q.topic === tp));
+  return QUESTIONS.filter(q =>
+    (subj === '__ALL__' || q.subject === subj) &&
+    (ch === '__ALL__' || q.chapter === ch) &&
+    (tp === '__ALL__' || q.topic === tp)
+  );
 }
 
 // Situation Set questions must always be kept together in the quiz. Group the
@@ -860,9 +907,11 @@ function populateCounts() {
   countSelect.value = uniq[uniq.length - 1];
 }
 
+subjectSelect.addEventListener('change', () => { populateChapters(); populateTopics(); populateCounts(); });
 chapterSelect.addEventListener('change', () => { populateTopics(); populateCounts(); });
 topicSelect.addEventListener('change', populateCounts);
 
+populateSubjects();
 populateChapters();
 populateTopics();
 populateCounts();
@@ -1237,13 +1286,16 @@ def main():
     print("By type:", type_counts)
 
     outline = build_outline(all_questions)
-    for ch, topics in outline.items():
-        print(f"  {ch}: {sum(topics.values())} q  ({len(topics)} topics)")
+    for subj, chapters in outline.items():
+        print(f"{subj}:")
+        for ch, topics in chapters.items():
+            print(f"  {ch}: {sum(topics.values())} q  ({len(topics)} topics)")
 
     html = HTML_TEMPLATE
     html = html.replace("__QCOUNT__", str(len(all_questions)))
     html = html.replace("__QUESTIONS_JSON__", json.dumps(all_questions, ensure_ascii=False))
     html = html.replace("__OUTLINE_JSON__", json.dumps(outline, ensure_ascii=False))
+    html = html.replace("__SUBJECT_TITLES_JSON__", json.dumps(SUBJECT_TITLES, ensure_ascii=False))
 
     OUT_HTML.write_text(html, encoding="utf-8")
     print(f"Wrote {OUT_HTML} ({OUT_HTML.stat().st_size / 1024:.1f} KB)")
