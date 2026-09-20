@@ -1,3 +1,5 @@
+Ignore this file for now. Not gonna execute.
+
 # Quiz App — Draft Plan
 
 # Option 1

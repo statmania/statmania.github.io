@@ -125,7 +125,10 @@
             <div id="quiz-view" class="hidden">
                 <div class="flex items-center justify-between text-sm mb-2" style="color:var(--sm-muted)">
                     <span id="progress-label">Question 1 / 10</span>
-                    <span id="score-label">Score: 0</span>
+                    <span class="flex items-center gap-4">
+                        <span id="score-label">Score: 0</span>
+                        <button id="end-quiz-btn" class="text-xs underline" style="color:var(--sm-muted)">End Quiz</button>
+                    </span>
                 </div>
                 <div class="h-1.5 rounded-full bg-white/10 overflow-hidden mb-6">
                     <div id="progress-bar" class="progress-bar-fill h-full bg-gradient-to-r from-[#00e5ff] via-[#a855f7] to-[#ff2fb4]" style="width:0%"></div>
@@ -433,7 +436,7 @@ function showSummary() {
   document.getElementById('quiz-view').classList.add('hidden');
   document.getElementById('summary-view').classList.remove('hidden');
   document.getElementById('summary-score').textContent =
-    `You scored ${state.score} / ${state.questions.length}.`;
+    `You scored ${state.score} / ${state.answers.length}.`;
   const listEl = document.getElementById('summary-list');
   listEl.innerHTML = '';
   state.answers.forEach((a, i) => {
@@ -457,6 +460,17 @@ function showSummary() {
 document.getElementById('restart-btn').addEventListener('click', () => {
   document.getElementById('summary-view').classList.add('hidden');
   document.getElementById('setup-view').classList.remove('hidden');
+});
+
+document.getElementById('end-quiz-btn').addEventListener('click', () => {
+  if (!state) return;
+  if (state.answers.length === 0) {
+    document.getElementById('quiz-view').classList.add('hidden');
+    document.getElementById('setup-view').classList.remove('hidden');
+    state = null;
+    return;
+  }
+  showSummary();
 });
 </script>
 </body>
