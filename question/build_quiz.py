@@ -80,7 +80,7 @@ def strip_comments_with_markers(text):
 def cell_to_html(cell):
     """Convert one table cell: unwrap \\textbf{...} -> <strong>, escape the rest."""
     cell = cell.strip()
-    cell = cell.replace(r"\%", "%").replace(r"\&", "&").replace(r"\#", "#")
+    cell = cell.replace(r"\%", "%").replace(r"\&", "&").replace(r"\#", "#").replace(r"\$", "$")
     out = []
     i = 0
     n = len(cell)
@@ -98,8 +98,42 @@ def cell_to_html(cell):
     return "".join(out).strip()
 
 
+def unwrap_decorative_tabulars(text):
+    """Cells sometimes wrap their content in a decorative single-cell tabular
+    (e.g. \\begin{tabular}[c]{@{}c@{}}Radius (cm)\\end{tabular}), a common
+    LaTeX trick for header wrapping. Its colspec (e.g. "{@{}c@{}}") contains
+    braces of its own, so a naive regex can't match it -- extract_braced can.
+    Unwrap it to plain content; it never itself nests another tabular."""
+    out = []
+    i = 0
+    n = len(text)
+    while i < n:
+        m = re.match(r"\\begin\{tabular\}(?:\[[^\]]*\])?", text[i:])
+        if m:
+            after_begin = i + m.end()
+            if after_begin < n and text[after_begin] == "{":
+                _, after_colspec = extract_braced(text, after_begin)
+            else:
+                after_colspec = after_begin
+            end_idx = text.find(r"\end{tabular}", after_colspec)
+            if end_idx == -1:
+                out.append(text[i:])
+                break
+            out.append(text[after_colspec:end_idx])
+            i = end_idx + len(r"\end{tabular}")
+            continue
+        nxt = text.find(r"\begin{tabular}", i)
+        if nxt == -1:
+            out.append(text[i:])
+            break
+        out.append(text[i:nxt])
+        i = nxt
+    return "".join(out)
+
+
 def convert_table(tabular_body):
     """Convert the inner body of a \\begin{tabular}{..}...\\end{tabular} into an HTML table."""
+    tabular_body = unwrap_decorative_tabulars(tabular_body)
     body = tabular_body.replace(r"\hline", "")
     rows = [r for r in re.split(r"\\\\", body) if r.strip()]
     html_rows = []
@@ -108,6 +142,52 @@ def convert_table(tabular_body):
         tds = "".join("<td>%s</td>" % cell_to_html(c) for c in cells)
         html_rows.append("<tr>%s</tr>" % tds)
     return '<table class="q-table">%s</table>' % "".join(html_rows)
+
+
+def extract_tabular_body(text, start):
+    """`start` is the index right after an outer '\\begin{tabular}{colspec}'.
+    Returns (body, index_after_matching_end_tag), correctly matching the
+    corresponding \\end{tabular} even when a decorative single-cell tabular is
+    nested inside (see convert_table)."""
+    begin_tag, end_tag = r"\begin{tabular}", r"\end{tabular}"
+    depth = 1
+    i = start
+    while True:
+        b = text.find(begin_tag, i)
+        e = text.find(end_tag, i)
+        if e == -1:
+            raise ValueError("Unbalanced \\begin{tabular}/\\end{tabular}")
+        if b != -1 and b < e:
+            depth += 1
+            i = b + len(begin_tag)
+        else:
+            depth -= 1
+            i = e + len(end_tag)
+            if depth == 0:
+                return text[start:e], i
+
+
+def stash_tables(text, stash):
+    """Replace each outer \\begin{tabular}{colspec}...\\end{tabular} with an
+    @@STASH#@@ placeholder holding its rendered HTML table."""
+    out = []
+    i = 0
+    n = len(text)
+    while i < n:
+        m = re.match(r"\\begin\{tabular\}\{[^{}]*\}", text[i:])
+        if m:
+            body, after = extract_tabular_body(text, i + m.end())
+            stash.append(convert_table(body))
+            out.append(" @@STASH%d@@ " % (len(stash) - 1))
+            i = after
+            continue
+        nxt = text.find(r"\begin{tabular}", i)
+        if nxt == -1:
+            out.append(text[i:])
+            break
+        out.append(text[i:nxt])
+        i = nxt
+    return "".join(out)
 
 
 def strip_table_wrappers(text):
@@ -122,26 +202,39 @@ def strip_table_wrappers(text):
 
 
 def latexify_inline(text):
-    """Escape HTML, convert \\textbf{...} -> <strong>, and line breaks -> <br>.
-    Leaves $...$ math delimiters intact for client-side KaTeX rendering."""
+    """Escape HTML, convert \\textbf{...}/\\textit{...} -> <strong>/<em>, and
+    line breaks -> <br>. Leaves $...$ math delimiters intact for client-side
+    KaTeX rendering."""
     text = text.strip()
     # escaped punctuation with no special meaning outside LaTeX -- drop the backslash
-    text = text.replace(r"\%", "%").replace(r"\&", "&").replace(r"\#", "#")
+    text = text.replace(r"\%", "%").replace(r"\&", "&").replace(r"\#", "#").replace(r"\$", "$")
+    # spacing/typographic commands with no LaTeX-source meaning once rendered as HTML
+    text = re.sub(r"\\,", " ", text)
+    text = text.replace(r"\textemdash", "\u2014").replace(r"\emdash", "\u2014")
+    text = re.sub(r"\\ldots|\\dots", "...", text)
+    text = text.replace("~", " ")
+    # purely decorative/whitespace LaTeX commands -- drop them outright
+    text = re.sub(r"\\vspace\*?\s*\{[^{}]*\}", "", text)
+    text = re.sub(r"\\(noindent|newpage|bigskip|bigbreak|vfill|parindent)\b", "", text)
 
-    # Convert \textbf{...} (brace-aware) before escaping, capturing plain inner text.
+    # Convert \textbf{...}/\textit{...} (brace-aware) before escaping, capturing
+    # plain inner text.
     out = []
     i = 0
     n = len(text)
     while i < n:
-        m = re.match(r"\\textbf\s*\{", text[i:])
+        m = re.match(r"\\(textbf|textit)\s*\{", text[i:])
         if m:
             brace_pos = i + m.end() - 1
             inner, after = extract_braced(text, brace_pos)
-            out.append(("STRONG", inner))
+            out.append(("STRONG" if m.group(1) == "textbf" else "EM", inner))
             i = after
             continue
-        # find next occurrence of \textbf from here
-        nxt = text.find("\\textbf", i)
+        # find next occurrence of \textbf/\textit from here
+        nxt_b = text.find("\\textbf", i)
+        nxt_i = text.find("\\textit", i)
+        candidates = [x for x in (nxt_b, nxt_i) if x != -1]
+        nxt = min(candidates) if candidates else -1
         if nxt == -1:
             out.append(("TEXT", text[i:]))
             break
@@ -156,10 +249,14 @@ def latexify_inline(text):
             esc = re.sub(r"\\begin\{center\}", "", esc)
             esc = re.sub(r"\\end\{center\}", "", esc)
             html_parts.append(esc)
-        else:  # STRONG (recurse in case of nested content, though rare)
+        elif kind == "STRONG":  # recurse in case of nested content, though rare
             inner_esc = _esc(val)
             inner_esc = inner_esc.replace("\\\\", "<br>")
             html_parts.append("<strong>%s</strong>" % inner_esc)
+        else:  # EM
+            inner_esc = _esc(val)
+            inner_esc = inner_esc.replace("\\\\", "<br>")
+            html_parts.append("<em>%s</em>" % inner_esc)
     html = "".join(html_parts)
     # a blank line is a real LaTeX paragraph break (e.g. between the question
     # stem and a roman-numeral list, or between the list and "Which one is
@@ -172,21 +269,90 @@ def latexify_inline(text):
     return html
 
 
+def stash_hrefs(text, stash):
+    """Replace \\href{url}{text} with an @@STASH#@@ placeholder (brace-aware,
+    so it survives being nested inside a \\caption{...}), recording the
+    rendered <a> tag in `stash` for substitution back in after escaping."""
+    out = []
+    i = 0
+    n = len(text)
+    while i < n:
+        m = re.match(r"\\href\s*\{", text[i:])
+        if m:
+            brace_pos = i + m.end() - 1
+            url, after = extract_braced(text, brace_pos)
+            nb = text.find("{", after)
+            if nb == -1:
+                out.append(text[i:])
+                break
+            label, after2 = extract_braced(text, nb)
+            link_html = '<a href="%s" target="_blank" rel="noopener">%s</a>' % (
+                _esc(url.strip()), _esc(label.strip())
+            )
+            stash.append(link_html)
+            out.append(" @@STASH%d@@ " % (len(stash) - 1))
+            i = after2
+            continue
+        nxt = text.find("\\href", i)
+        if nxt == -1:
+            out.append(text[i:])
+            break
+        out.append(text[i:nxt])
+        i = nxt
+    return "".join(out)
+
+
+def strip_captions(text, stash):
+    """Extract \\caption{...} (brace-aware, so a nested \\label{...} or
+    \\href{...}{...} doesn't truncate it) and render it as a small source/caption
+    line via an @@STASH#@@ placeholder, since it carries real content (e.g. data
+    source attribution) that should not be dropped or shown as raw LaTeX."""
+    out = []
+    i = 0
+    n = len(text)
+    while i < n:
+        m = re.match(r"\\caption\s*\{", text[i:])
+        if m:
+            brace_pos = i + m.end() - 1
+            inner, after = extract_braced(text, brace_pos)
+            inner = re.sub(r"\\label\s*\{[^{}]*\}", "", inner)
+            stash.append('<div class="text-xs mt-1 opacity-70">%s</div>' % latexify_inline(inner))
+            out.append(" @@STASH%d@@ " % (len(stash) - 1))
+            i = after
+            continue
+        nxt = text.find("\\caption", i)
+        if nxt == -1:
+            out.append(text[i:])
+            break
+        out.append(text[i:nxt])
+        i = nxt
+    return "".join(out)
+
+
+def convert_itemize(text, stash):
+    """Convert \\begin{itemize}...\\end{itemize} (\\item-separated) into a
+    <ul><li> block via an @@STASH#@@ placeholder."""
+    def _stash(m):
+        body = m.group(1)
+        items = re.split(r"\\item\b", body)[1:]  # drop text before first \item
+        lis = "".join("<li>%s</li>" % latexify_inline(it.strip()) for it in items if it.strip())
+        stash.append('<ul class="list-disc pl-5 my-2">%s</ul>' % lis)
+        return " @@STASH%d@@ " % (len(stash) - 1)
+
+    return re.sub(r"\\begin\{itemize\}(.*?)\\end\{itemize\}", _stash, text, flags=re.S)
+
+
 def latexify_block(text):
-    """Like latexify_inline but also converts any embedded LaTeX table to HTML.
-    Used for both Situation Set context paragraphs and question stems, since
-    either can carry a \\begin{table}/\\begin{center} wrapped tabular."""
+    """Like latexify_inline but also converts any embedded LaTeX table, caption,
+    hyperlink, or itemized list to HTML. Used for both Situation Set context
+    paragraphs and question stems, since either can carry this richer content."""
     text = text.strip()
     text = strip_table_wrappers(text)
-    table_htmls = []
-
-    def _stash(m):
-        table_htmls.append(convert_table(m.group(1)))
-        return " @@TABLE%d@@ " % (len(table_htmls) - 1)
-
-    text = re.sub(r"\\begin\{tabular\}\{[^}]*\}(.*?)\\end\{tabular\}", _stash, text, flags=re.S)
-
-    image_htmls = []
+    stash = []
+    text = stash_hrefs(text, stash)
+    text = strip_captions(text, stash)
+    text = convert_itemize(text, stash)
+    text = stash_tables(text, stash)
 
     def _stash_img(m):
         # Paths in the .tex are relative to question/bank/; stat-prob.html
@@ -194,16 +360,18 @@ def latexify_block(text):
         # "../" to re-base them (e.g. "../img/x.png" -> "img/x.png",
         # "../../slide/img/x.jpg" -> "../slide/img/x.jpg").
         path = re.sub(r"^\.\./", "", m.group(1).strip(), count=1)
-        image_htmls.append('<img src="%s" alt="" class="q-image">' % _esc(path))
-        return " @@IMG%d@@ " % (len(image_htmls) - 1)
+        stash.append('<img src="%s" alt="" class="q-image">' % _esc(path))
+        return " @@STASH%d@@ " % (len(stash) - 1)
 
     text = re.sub(r"\\includegraphics(?:\[[^\]]*\])?\{([^{}]*)\}", _stash_img, text)
 
     html = latexify_inline(text)
-    for idx, th in enumerate(table_htmls):
-        html = html.replace("@@TABLE%d@@" % idx, th)
-    for idx, ih in enumerate(image_htmls):
-        html = html.replace("@@IMG%d@@" % idx, ih)
+    # Substitute highest index first: a later stash entry (e.g. a \caption's
+    # rendered div) can carry an earlier entry's placeholder embedded as plain
+    # text (e.g. a \href nested inside that caption) -- reverse order resolves
+    # that nesting in one pass instead of leaving the inner token stranded.
+    for idx in range(len(stash) - 1, -1, -1):
+        html = html.replace("@@STASH%d@@" % idx, stash[idx])
     return html
 
 
@@ -405,6 +573,13 @@ HTML_TEMPLATE = r"""<!doctype html>
     background-color: #0a0f1e;
     color: #e5e9f5;
   }
+  input.sm-input {
+    background-color: #0a0f1e;
+    border: 1px solid rgba(0,229,255,0.3);
+    color: #e5e9f5;
+  }
+  input.sm-input:focus { outline: none; border-color: #00e5ff; }
+  input.sm-input::placeholder { color: rgba(229,233,245,0.35); }
   .opt-btn { transition: all .15s ease; }
   .opt-btn.correct { border-color: #22c55e !important; background: rgba(34,197,94,0.12) !important; }
   .opt-btn.wrong { border-color: #ef4444 !important; background: rgba(239,68,68,0.12) !important; }
@@ -489,17 +664,32 @@ HTML_TEMPLATE = r"""<!doctype html>
                             <input type="radio" name="reveal-mode" value="end"> After all questions
                         </label>
                     </div>
+                    <p class="text-xs mt-1.5" id="review-note">In "after all questions" mode, you'll get a review screen to change any answer before final submission.</p>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-1">Overall time limit (minutes)</label>
+                        <input type="number" min="0" id="overall-limit-input" class="sm-input w-full rounded-lg px-3 py-2" placeholder="No limit">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-1">Per-question time limit (seconds)</label>
+                        <input type="number" min="0" id="perq-limit-input" class="sm-input w-full rounded-lg px-3 py-2" placeholder="No limit">
+                    </div>
                 </div>
                 <button id="start-btn" class="sm-btn sm-btn-primary w-full justify-center">Start Quiz</button>
             </div>
 
             <div id="quiz-view" class="hidden">
-                <div class="flex items-center justify-between text-sm mb-2" style="color:var(--sm-muted)">
+                <div class="flex items-center justify-between text-sm mb-1" style="color:var(--sm-muted)">
                     <span id="progress-label">Question 1 / 10</span>
                     <span class="flex items-center gap-4">
                         <span id="score-label">Score: 0</span>
                         <button id="end-quiz-btn" class="text-xs underline" style="color:var(--sm-muted)">End Quiz</button>
                     </span>
+                </div>
+                <div class="flex items-center justify-between text-xs mb-2" style="color:var(--sm-muted)">
+                    <span id="overall-timer-label"></span>
+                    <span id="perq-timer-label"></span>
                 </div>
                 <div class="h-1.5 rounded-full bg-white/10 overflow-hidden mb-6">
                     <div id="progress-bar" class="progress-bar-fill h-full bg-gradient-to-r from-[#00e5ff] via-[#a855f7] to-[#ff2fb4]" style="width:0%"></div>
@@ -510,11 +700,22 @@ HTML_TEMPLATE = r"""<!doctype html>
                     <div id="q-text" class="text-lg font-semibold mb-5 leading-relaxed"></div>
                     <div id="q-options" class="space-y-3"></div>
                     <div id="q-feedback" class="mt-4 text-sm hidden"></div>
-                    <div class="mt-6 flex justify-end">
-                        <button id="next-btn" class="hidden sm-btn sm-btn-primary">Next</button>
-                        <button id="submit-end-btn" class="hidden sm-btn sm-btn-primary">Submit Answer</button>
+                    <div class="mt-6 flex justify-between items-center">
+                        <button id="skip-btn" class="hidden sm-btn sm-btn-ghost">Skip</button>
+                        <div class="flex gap-3 ml-auto">
+                            <button id="save-review-btn" class="hidden sm-btn sm-btn-primary">Save &amp; Back to Review</button>
+                            <button id="next-btn" class="hidden sm-btn sm-btn-primary">Next</button>
+                            <button id="submit-end-btn" class="hidden sm-btn sm-btn-primary">Submit Answer</button>
+                        </div>
                     </div>
                 </div>
+            </div>
+
+            <div id="review-view" class="hidden sm-card p-8">
+                <h2 class="text-2xl font-bold mb-1">Review your answers</h2>
+                <p class="text-sm mb-4" style="color:var(--sm-muted)">Click any question to change your answer before final submission.</p>
+                <div id="review-list" class="text-left space-y-3 max-h-[55vh] overflow-y-auto pr-1"></div>
+                <button id="submit-quiz-btn" class="sm-btn sm-btn-primary w-full justify-center mt-6">Submit Quiz</button>
             </div>
 
             <div id="summary-view" class="hidden sm-card p-8 text-center">
@@ -676,6 +877,7 @@ function shuffle(arr) {
 }
 
 let state = null;
+let tickHandle = null;
 
 function renderMath(el) {
   if (window.renderMathInElement) {
@@ -689,27 +891,126 @@ function renderMath(el) {
   }
 }
 
+function fmtTime(sec) {
+  sec = Math.max(0, Math.round(sec));
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+function startTicker() {
+  stopTicker();
+  tickHandle = setInterval(tick, 250);
+  tick();
+}
+
+function stopTicker() {
+  if (tickHandle) { clearInterval(tickHandle); tickHandle = null; }
+}
+
+function tick() {
+  if (!state || !state.current) return;
+  const overallElapsed = (Date.now() - state.startTs) / 1000;
+  const qElapsed = (Date.now() - state.qStartTs) / 1000;
+
+  document.getElementById('overall-timer-label').textContent = state.overallLimitSec
+    ? `Overall: ${fmtTime(overallElapsed)} / ${fmtTime(state.overallLimitSec)}`
+    : `Overall: ${fmtTime(overallElapsed)}`;
+  document.getElementById('perq-timer-label').textContent = state.perqLimitSec
+    ? `This question: ${fmtTime(qElapsed)} / ${fmtTime(state.perqLimitSec)}`
+    : `This question: ${fmtTime(qElapsed)}`;
+
+  if (state.overallLimitSec && overallElapsed >= state.overallLimitSec) {
+    endQuizNow();
+    return;
+  }
+  if (state.perqLimitSec && qElapsed >= state.perqLimitSec) {
+    // Hard timeout: unlike a manual Skip, this is final -- scored 0, no requeue.
+    const item = state.current;
+    state.current = null;
+    state.finalized.push({ q: item.q, pickedIdx: null, correct: false });
+    nextQuestion();
+  }
+}
+
 document.getElementById('start-btn').addEventListener('click', () => {
   const n = parseInt(countSelect.value, 10);
   if (!n) return;
   const pool = filteredQuestions();
   const { questions: picked, requested } = pickQuestions(pool, n);
   const revealMode = document.querySelector('input[name="reveal-mode"]:checked').value;
-  state = { questions: picked, idx: 0, score: 0, revealMode, answers: [], requested };
+  const overallLimitMin = parseFloat(document.getElementById('overall-limit-input').value);
+  const perqLimitSecVal = parseFloat(document.getElementById('perq-limit-input').value);
+  state = {
+    total: picked.length,
+    requested,
+    queue: picked.map(q => ({ q, skippedOnce: false })),
+    finalized: [],
+    revealMode,
+    score: 0,
+    current: null,
+    overallLimitSec: overallLimitMin > 0 ? overallLimitMin * 60 : 0,
+    perqLimitSec: perqLimitSecVal > 0 ? perqLimitSecVal : 0,
+    startTs: Date.now(),
+    qStartTs: null,
+    editing: null, // {entry} when reopened from the review screen
+  };
   document.getElementById('setup-view').classList.add('hidden');
   document.getElementById('summary-view').classList.add('hidden');
+  document.getElementById('review-view').classList.add('hidden');
   document.getElementById('quiz-view').classList.remove('hidden');
-  renderQuestion();
+  startTicker();
+  nextQuestion();
 });
 
+function nextQuestion() {
+  if (state.queue.length === 0) {
+    if (state.revealMode === 'end') {
+      openReview();
+    } else {
+      showSummary();
+    }
+    return;
+  }
+  state.current = state.queue.shift();
+  state.qStartTs = Date.now();
+  renderQuestion();
+}
+
+// A voluntary Skip requeues the question once so it can come back later in
+// the same run; skipping that same question a second time finalizes it as
+// wrong instead of requeuing forever.
+function doSkip() {
+  const item = state.current;
+  state.current = null;
+  if (item.skippedOnce) {
+    state.finalized.push({ q: item.q, pickedIdx: null, correct: false });
+  } else {
+    item.skippedOnce = true;
+    state.queue.push(item);
+  }
+  nextQuestion();
+}
+
 function renderQuestion() {
-  const q = state.questions[state.idx];
-  const shortLabel = state.questions.length < state.requested
-    ? ` (closest fit to ${state.requested} keeping Situation Sets together)`
-    : '';
-  document.getElementById('progress-label').textContent = `Question ${state.idx + 1} / ${state.questions.length}${shortLabel}`;
+  const editing = state.editing;
+  const q = editing ? editing.entry.q : state.current.q;
+  const skipBtn = document.getElementById('skip-btn');
+  const saveReviewBtn = document.getElementById('save-review-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const submitEndBtn = document.getElementById('submit-end-btn');
+
+  if (editing) {
+    document.getElementById('progress-label').textContent = `Reviewing Q${editing.index + 1} / ${state.finalized.length}`;
+    document.getElementById('progress-bar').style.width = '100%';
+  } else {
+    const shortLabel = state.total < state.requested
+      ? ` (closest fit to ${state.requested} keeping Situation Sets together)`
+      : '';
+    document.getElementById('progress-label').textContent = `Question ${state.finalized.length + 1} / ${state.total}${shortLabel}`;
+    document.getElementById('progress-bar').style.width = `${(state.finalized.length / state.total) * 100}%`;
+  }
   document.getElementById('score-label').textContent = `Score: ${state.score}`;
-  document.getElementById('progress-bar').style.width = `${(state.idx / state.questions.length) * 100}%`;
 
   const metaBits = [q.subject, q.chapter];
   if (q.topic && q.topic !== q.chapter) metaBits.push(q.topic);
@@ -732,24 +1033,29 @@ function renderQuestion() {
   const feedbackEl = document.getElementById('q-feedback');
   feedbackEl.classList.add('hidden');
   feedbackEl.innerHTML = '';
-  document.getElementById('next-btn').classList.add('hidden');
-  document.getElementById('submit-end-btn').classList.add('hidden');
+  nextBtn.classList.add('hidden');
+  submitEndBtn.classList.add('hidden');
+  skipBtn.classList.add('hidden');
+  saveReviewBtn.classList.add('hidden');
 
-  let picked = null;
+  let picked = editing ? editing.entry.pickedIdx : null;
 
   q.options_html.forEach((opt, i) => {
     const btn = document.createElement('button');
     btn.className = 'opt-btn w-full text-left rounded-lg border border-white/15 bg-white/[0.02] px-4 py-3 hover:border-cyan-400/60';
     btn.innerHTML = opt;
+    if (editing && picked === i) btn.classList.add('picked');
     btn.addEventListener('click', () => {
       if (state.locked) return;
       picked = i;
       [...optsEl.children].forEach(b => b.classList.remove('picked'));
       btn.classList.add('picked');
-      if (state.revealMode === 'immediate') {
+      if (editing) {
+        saveReviewBtn.classList.remove('hidden');
+      } else if (state.revealMode === 'immediate') {
         lockAndReveal(i);
       } else {
-        document.getElementById('submit-end-btn').classList.remove('hidden');
+        submitEndBtn.classList.remove('hidden');
       }
     });
     optsEl.appendChild(btn);
@@ -757,11 +1063,28 @@ function renderQuestion() {
 
   state.locked = false;
 
+  if (editing) {
+    saveReviewBtn.classList.remove('hidden');
+    saveReviewBtn.onclick = () => {
+      editing.entry.pickedIdx = picked;
+      editing.entry.correct = picked === q.answer;
+      state.finalized[editing.index] = editing.entry;
+      state.editing = null;
+      openReview();
+    };
+    renderMath(document.getElementById('quiz-view'));
+    return;
+  }
+
+  skipBtn.classList.remove('hidden');
+  skipBtn.onclick = doSkip;
+
   function lockAndReveal(pickedIdx) {
     state.locked = true;
     const correct = pickedIdx === q.answer;
     if (correct) state.score++;
-    state.answers.push({ q, pickedIdx, correct });
+    state.current = null;
+    state.finalized.push({ q, pickedIdx, correct });
     [...optsEl.children].forEach((b, i) => {
       if (i === q.answer) b.classList.add('correct');
       else if (i === pickedIdx) b.classList.add('wrong');
@@ -770,57 +1093,96 @@ function renderQuestion() {
     feedbackEl.innerHTML = correct
       ? '<span class="text-green-400 font-semibold">Correct!</span>'
       : `<span class="text-red-400 font-semibold">Not quite.</span> The correct answer is highlighted above.`;
-    document.getElementById('submit-end-btn').classList.add('hidden');
-    document.getElementById('next-btn').classList.remove('hidden');
+    submitEndBtn.classList.add('hidden');
+    skipBtn.classList.add('hidden');
+    nextBtn.classList.remove('hidden');
     document.getElementById('score-label').textContent = `Score: ${state.score}`;
     renderMath(feedbackEl);
   }
 
-  document.getElementById('submit-end-btn').onclick = () => {
+  submitEndBtn.onclick = () => {
     if (picked === null) return;
-    if (state.revealMode === 'end') {
-      state.locked = true;
-      const correct = picked === q.answer;
-      if (correct) state.score++;
-      state.answers.push({ q, pickedIdx: picked, correct });
-      document.getElementById('score-label').textContent = `Score: ${state.score}`;
-      document.getElementById('submit-end-btn').classList.add('hidden');
-      document.getElementById('next-btn').classList.remove('hidden');
-    } else {
-      lockAndReveal(picked);
-    }
+    state.locked = true;
+    const correct = picked === q.answer;
+    state.current = null;
+    state.finalized.push({ q, pickedIdx: picked, correct });
+    submitEndBtn.classList.add('hidden');
+    skipBtn.classList.add('hidden');
+    nextBtn.classList.remove('hidden');
   };
 
-  document.getElementById('next-btn').onclick = () => {
-    state.idx++;
-    if (state.idx >= state.questions.length) {
-      showSummary();
-    } else {
-      renderQuestion();
-    }
+  nextBtn.onclick = () => {
+    nextQuestion();
   };
 
   renderMath(document.getElementById('quiz-view'));
 }
 
-function showSummary() {
+function openReview() {
+  stopTicker();
   document.getElementById('quiz-view').classList.add('hidden');
+  document.getElementById('summary-view').classList.add('hidden');
+  document.getElementById('review-view').classList.remove('hidden');
+  renderReviewList();
+}
+
+function renderReviewList() {
+  const listEl = document.getElementById('review-list');
+  listEl.innerHTML = '';
+  state.finalized.forEach((entry, i) => {
+    const answered = entry.pickedIdx !== null && entry.pickedIdx !== undefined;
+    const div = document.createElement('div');
+    div.className = 'rounded-lg p-4 flex items-start justify-between gap-4';
+    div.style.background = 'rgba(255,255,255,0.02)';
+    div.style.border = '1px solid rgba(255,255,255,0.08)';
+    div.innerHTML = `
+      <div class="min-w-0 flex-1">
+        <div class="text-sm mb-1" style="color:var(--sm-muted)">Q${i + 1} &middot; ${answered ? '<span class="text-cyan-300">Answered</span>' : '<span class="text-amber-300">Skipped</span>'}</div>
+        <div class="font-medium">${entry.q.question_html}</div>
+        ${answered ? `<div class="text-sm mt-1" style="color:var(--sm-muted)">Your answer: ${entry.q.options_html[entry.pickedIdx]}</div>` : ''}
+      </div>
+      <button class="sm-btn sm-btn-ghost text-sm shrink-0">${answered ? 'Change' : 'Answer'}</button>
+    `;
+    div.querySelector('button').addEventListener('click', () => editFromReview(i));
+    listEl.appendChild(div);
+  });
+  renderMath(listEl);
+}
+
+function editFromReview(i) {
+  state.editing = { entry: state.finalized[i], index: i };
+  document.getElementById('review-view').classList.add('hidden');
+  document.getElementById('quiz-view').classList.remove('hidden');
+  renderQuestion();
+}
+
+document.getElementById('submit-quiz-btn').addEventListener('click', () => {
+  state.score = state.finalized.filter(a => a.correct).length;
+  document.getElementById('review-view').classList.add('hidden');
+  showSummary();
+});
+
+function showSummary() {
+  stopTicker();
+  document.getElementById('quiz-view').classList.add('hidden');
+  document.getElementById('review-view').classList.add('hidden');
   document.getElementById('summary-view').classList.remove('hidden');
   document.getElementById('summary-score').textContent =
-    `You scored ${state.score} / ${state.answers.length}.`;
+    `You scored ${state.score} / ${state.finalized.length}.`;
   const listEl = document.getElementById('summary-list');
   listEl.innerHTML = '';
-  state.answers.forEach((a, i) => {
+  state.finalized.forEach((a, i) => {
     const div = document.createElement('div');
     div.className = 'rounded-lg p-4';
     div.style.background = 'rgba(255,255,255,0.02)';
     div.style.border = '1px solid rgba(255,255,255,0.08)';
     const correctText = a.q.options_html[a.q.answer];
-    const pickedText = a.q.options_html[a.pickedIdx];
+    const answered = a.pickedIdx !== null && a.pickedIdx !== undefined;
+    const pickedText = answered ? a.q.options_html[a.pickedIdx] : null;
     div.innerHTML = `
       <div class="text-sm mb-1" style="color:var(--sm-muted)">Q${i + 1} · ${a.correct ? '<span class="text-green-400">Correct</span>' : '<span class="text-red-400">Incorrect</span>'}</div>
       <div class="font-medium mb-2">${a.q.question_html}</div>
-      ${a.correct ? '' : `<div class="text-sm text-red-300 mb-1">Your answer: ${pickedText}</div>`}
+      ${a.correct ? '' : `<div class="text-sm text-red-300 mb-1">${answered ? `Your answer: ${pickedText}` : 'You skipped this question'}</div>`}
       <div class="text-sm text-green-300">Correct answer: ${correctText}</div>
     `;
     listEl.appendChild(div);
@@ -829,20 +1191,33 @@ function showSummary() {
 }
 
 document.getElementById('restart-btn').addEventListener('click', () => {
+  stopTicker();
   document.getElementById('summary-view').classList.add('hidden');
   document.getElementById('setup-view').classList.remove('hidden');
 });
 
-document.getElementById('end-quiz-btn').addEventListener('click', () => {
+function endQuizNow() {
   if (!state) return;
-  if (state.answers.length === 0) {
+  stopTicker();
+  // A question still open when the quiz is ended early is dropped, not
+  // scored -- only questions actually answered, skipped-to-final, or timed
+  // out already sit in `finalized`.
+  state.current = null;
+  if (state.finalized.length === 0) {
     document.getElementById('quiz-view').classList.add('hidden');
+    document.getElementById('review-view').classList.add('hidden');
     document.getElementById('setup-view').classList.remove('hidden');
     state = null;
     return;
   }
-  showSummary();
-});
+  if (state.revealMode === 'end') {
+    openReview();
+  } else {
+    showSummary();
+  }
+}
+
+document.getElementById('end-quiz-btn').addEventListener('click', endQuizNow);
 </script>
 </body>
 </html>
