@@ -25,6 +25,12 @@ $code-color: #d7fff8;
 
 $sidebar-bg: $sm-bg2;
 
+// Quarto computes the page's CSS grid track widths from these at build
+// time (see /opt/quarto/share/formats/html/bootstrap/_bootstrap-variables.scss);
+// a plain CSS `width` override on #quarto-sidebar only resizes the sidebar
+// box without reflowing the grid, which clips the content column.
+$grid-sidebar-width: 300px !default;
+
 /*-- scss:rules --*/
 
 body {
@@ -38,13 +44,26 @@ body {
 .sidebar-item a, .sidebar-item-text {
   color: #c7cee6 !important;
 }
+.sidebar-item-container {
+  border-radius: 0.6rem;
+  margin: 0.15rem 0;
+}
+.sidebar-item-container > .sidebar-item-text,
+.sidebar-item-container > a {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.6rem;
+}
 .sidebar-item a:hover {
   color: $sm-cyan !important;
+  background-color: rgba(0,229,255,0.08);
 }
 .sidebar-item.active > .sidebar-item-container > a,
 .sidebar-item a.active {
   color: $sm-cyan !important;
   font-weight: 700;
+  background-color: rgba(0,229,255,0.14);
+  box-shadow: inset 3px 0 0 0 $sm-cyan;
 }
 .sidebar-title {
   color: #fff !important;
