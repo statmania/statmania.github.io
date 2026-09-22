@@ -31,6 +31,15 @@ $sidebar-bg: $sm-bg2;
 // box without reflowing the grid, which clips the content column.
 $grid-sidebar-width: 300px !default;
 
+// With toc: false and no margin notes, the default $grid-margin-width
+// (250px) still reserves a wide, mostly-empty right column (only the
+// quarto-webr "Code Links" panel lives there) while body content is
+// capped at the narrow $grid-body-width default (~800px). Rebalance:
+// give most of that space back to the content column, keep just enough
+// margin for the webR panel (styled below so it reads as intentional).
+$grid-body-width: 1150px !default;
+$grid-margin-width: 180px !default;
+
 /*-- scss:rules --*/
 
 body {
@@ -50,6 +59,50 @@ body {
 #quarto-sidebar, .sidebar {
   background-color: $sm-bg2 !important;
   border-right: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+/* The margin-sidebar (right column) also matches .sidebar above, but it's
+   not a navigation rail — quarto-webr injects a small "webR Code Links"
+   box into it via JS. Undo the left-sidebar treatment and style that box
+   as its own card instead, so the panel reads as a deliberate widget
+   rather than a stray line down an otherwise-empty column. */
+#quarto-margin-sidebar.sidebar {
+  background-color: transparent !important;
+  border-right: none !important;
+}
+#quarto-margin-sidebar .quarto-code-links {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 0.75rem;
+  padding: 1rem 1.1rem;
+  margin-top: 0.25rem;
+}
+#quarto-margin-sidebar .quarto-code-links h2 {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: $sm-cyan !important;
+  margin: 0 0 0.6rem 0;
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+}
+#quarto-margin-sidebar .quarto-code-links ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+#quarto-margin-sidebar .quarto-code-links a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #c7cee6 !important;
+  text-decoration: none !important;
+  font-size: 0.88rem;
+  padding: 0.4rem 0;
+}
+#quarto-margin-sidebar .quarto-code-links a:hover {
+  color: $sm-cyan !important;
 }
 .sidebar-item a, .sidebar-item-text {
   color: #c7cee6 !important;
