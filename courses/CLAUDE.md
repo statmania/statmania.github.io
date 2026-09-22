@@ -4,6 +4,13 @@ Guidance for adding to or working on the `courses/` section. Read this before
 touching anything here; it documents real bugs already hit and fixed once —
 don't re-derive them from scratch.
 
+## How to Name Files
+
+* Name them by topic
+* Example: variables.qmd, functions.qmd
+* Not: lesson1.qmd, lesson2.qmd
+* We would then order them in _quarto.yml as required
+
 ## Structure
 
 - `courses/index.html` — the course **hub page**. Quarto-rendered from
@@ -161,6 +168,56 @@ previous/next footer links automatically from the sidebar's `contents:`
 order. Don't add manual "Previous: ... · Next: ..." lines to lesson
 content — remove them if you find them, they're redundant and can drift out
 of sync with the actual sidebar order.
+
+## Per-lesson quizzes and "discuss first" prompts
+
+`courses/rprogramming` has a small, self-contained quiz component
+(`quiz.js` + styles in `dark.scss`) — no server, no R needed to grade it,
+so it works the same whether or not webR has finished loading. Wire it via
+`format.html.include-after-body` in `_quarto.yml` (already done for this
+course; copy for a new one). Two raw-HTML block types:
+
+- **Discussion prompt**, placed *before* the `{webr-r}` chunk so learners
+  form an expectation before running/seeing the answer:
+  ```html
+  <div class="sm-discuss">
+    <p class="sm-discuss-label"><i class="fa-solid fa-comments"></i>Discuss first</p>
+    <p>Before you run the code below: ... what do you expect and why?</p>
+  </div>
+  ```
+- **Quiz block**, placed after the chunk under a `## Check your understanding`
+  heading. `data-quiz="mcq"` + `data-answer` (matches a radio `value`,
+  case-insensitive):
+  ```html
+  <div class="sm-quiz" data-quiz="mcq" data-answer="b">
+    <p class="sm-quiz-q"><strong>Q1.</strong> ...?</p>
+    <div class="sm-quiz-options">
+      <label><input type="radio" name="q-<lesson>-1" value="a"> ...</label>
+      <label><input type="radio" name="q-<lesson>-1" value="b"> ...</label>
+    </div>
+    <button class="sm-quiz-check">Check Answer</button>
+    <div class="sm-quiz-feedback"></div>
+  </div>
+  ```
+  `data-quiz="fitb"` (fill-in-the-blank, exact-string match after trimming —
+  case-sensitive, since R identifiers are) wraps a `.sm-quiz-blank` text
+  input, e.g. for "what function goes in the blank of `____(x)`":
+  ```html
+  <div class="sm-quiz" data-quiz="fitb" data-answer="length">
+    <p class="sm-quiz-q"><strong>Q2.</strong> Fill in the blank: ...</p>
+    <div class="sm-quiz-fitb-row">
+      <span>____(x)</span>
+      <input type="text" class="sm-quiz-blank" placeholder="function name" autocomplete="off" spellcheck="false">
+    </div>
+    <button class="sm-quiz-check">Check Answer</button>
+    <div class="sm-quiz-feedback"></div>
+  </div>
+  ```
+  Use a unique `name="q-<lesson>-N"` per MCQ radio group per lesson page so
+  multiple quizzes on one page don't collide.
+
+The `your-turn.qmd`-style sandbox/practice page doesn't get a quiz — it has
+no single "correct" answer to check.
 
 ## Navbar branding format
 
