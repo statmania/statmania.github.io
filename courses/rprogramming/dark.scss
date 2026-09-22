@@ -1,0 +1,105 @@
+/* Stat Mania dark theme for the Quarto+quarto-webr R Programming course.
+   Bootstrap/bslib variable overrides plus direct rules for Quarto's
+   sidebar/TOC chrome and the quarto-webr extension's own DOM (class names
+   confirmed against the rendered page, not guessed from source — see
+   qwebr-console-area / qwebr-output-code-stdout below, which default to
+   near-black text and are otherwise unreadable on a dark background). */
+
+/*-- scss:defaults --*/
+
+$sm-bg: #05070d;
+$sm-bg2: #0a0f1e;
+$sm-cyan: #00e5ff;
+$sm-purple: #a855f7;
+$sm-pink: #ff2fb4;
+
+$body-bg: $sm-bg;
+$body-color: #e8ecf7;
+$link-color: $sm-cyan;
+
+$navbar-bg: $sm-bg2;
+$navbar-fg: #e8ecf7;
+
+$code-bg: #05070d;
+$code-color: #d7fff8;
+
+$sidebar-bg: $sm-bg2;
+
+/*-- scss:rules --*/
+
+body {
+  background-color: $sm-bg !important;
+}
+
+#quarto-sidebar, .sidebar {
+  background-color: $sm-bg2 !important;
+  border-right: 1px solid rgba(255,255,255,0.08) !important;
+}
+.sidebar-item a, .sidebar-item-text {
+  color: #c7cee6 !important;
+}
+.sidebar-item a:hover {
+  color: $sm-cyan !important;
+}
+.sidebar-item.active > .sidebar-item-container > a,
+.sidebar-item a.active {
+  color: $sm-cyan !important;
+  font-weight: 700;
+}
+.sidebar-title {
+  color: #fff !important;
+}
+
+main.content {
+  background-color: $sm-bg !important;
+  max-width: 900px;
+}
+
+/* Empty "On this page" box: these lesson pages don't use in-page TOC
+   (toc: false), so no rule needed here — kept off at the format level
+   instead of hiding an empty box after the fact. */
+
+pre.sourceCode, div.sourceCode {
+  background-color: #05070d !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 0.75rem;
+}
+
+h1, h2, h3, h4 { color: #fff !important; }
+
+code:not(.qwebr-output-code-stdout) { color: $sm-cyan; background: rgba(0,229,255,0.08); }
+
+/* webR extension cells */
+.qwebr-interactive-area {
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+.qwebr-editor-toolbar {
+  background-color: $sm-bg2 !important;
+  border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+}
+.qwebr-console-area {
+  background-color: #05070d !important;
+  color: #d7fff8 !important;
+  padding: 0.75rem 1rem;
+}
+.qwebr-output-code-stdout, .qwebr-output-code-area code {
+  color: #d7fff8 !important;
+}
+.qwebr-output-code-stderr {
+  color: #ff8a8a !important;
+}
+.qwebr-output-graph-area {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+.qwebr-button-run {
+  background: linear-gradient(90deg, $sm-cyan, #38bdf8) !important;
+  color: #04101c !important;
+  border: none !important;
+  border-radius: 999px !important;
+  font-weight: 700;
+}

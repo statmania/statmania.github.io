@@ -1,0 +1,32 @@
+name: Regenerate sitemap-tools.xml
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "utility/**"
+      - "games/**"
+      - "courses/**"
+      - "ds/**"
+      - "slide/**"
+      - "scripts/gen_sitemap_tools.py"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Regenerate sitemap-tools.xml
+        run: python3 scripts/gen_sitemap_tools.py
+
+      - name: Commit results
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add sitemap-tools.xml
+          git diff --cached --quiet && echo "No changes to commit" || git commit -m "Regenerate sitemap-tools.xml [skip ci]"
+          git push
