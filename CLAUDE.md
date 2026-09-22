@@ -24,7 +24,7 @@ Because the rendered HTML is committed, **most of the actual page content on the
 
 | Source dir | `_quarto.yml` output-dir | Renders to |
 |---|---|---|
-| `raw/` | `../` (repo root) | `index.html`, `snippets.html`, `resources.html`, `games.html`, `lectures.html`, `404.html` |
+| `raw/` | `../` (repo root) | `index.html`, `snippets.html`, `resources.html`, `games.html`, `lectures.html`, `404.html`, `games/index.html`, `utility/index.html`, `courses/index.html` |
 | `blograw/` | `../blog` | `blog/` |
 | `gre/` | `.` (in place) | `gre/*.html` |
 | `ielts/` | `.` (in place) | `ielts/*.html` |
@@ -33,7 +33,9 @@ Because the rendered HTML is committed, **most of the actual page content on the
 
 To rebuild a section, `cd` into its source dir and run `quarto render` (requires the Quarto CLI). Example: editing the homepage means editing `raw/index.qmd`, then `quarto render` from `raw/`, which regenerates `index.html` at the repo root.
 
-`ds/`, `games/`, `utility/` are **not** Quarto-rendered — they're hand-written static HTML pages (each self-contained with inline `<style>`/`<script>`, no shared build step). Edit those `.html` files directly.
+The **hub/index pages** `games/index.html`, `utility/index.html`, and `courses/index.html` are Quarto-rendered from `raw/games/index.qmd`, `raw/utility/index.qmd`, and `raw/courses/index.qmd` respectively (part of the `raw/` project, so `quarto render` from `raw/` regenerates them too). They use the shared site navbar/theme (`raw/styles.css`) and the `.sm-*` card/hero/footer component classes defined there — edit the `.qmd`, not the generated `.html`.
+
+Every **other** page under `ds/`, `games/`, `utility/` (e.g. `games/sudoku.html`, `utility/bmi.html`) is **not** Quarto-rendered — hand-written static HTML (self-contained with inline `<style>`/`<script>`, no shared build step, still using the per-directory `css/dark-theme.css` + `js/starfield.js`). Edit those `.html` files directly.
 
 The `.github/workflows/update.yml` GitHub Action runs on a daily cron: it renders `ds/dash/rpkg.qmd` (an R package dashboard, using R + `ggplot2`/`DT`/`dplyr`/etc. via `r-lib/actions`) and commits the result — the only automated render in this repo. [If not already done, opt out from this GHA and then delete this line]
 

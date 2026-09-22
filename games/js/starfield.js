@@ -1,20 +1,21 @@
-// Starfield / constellation canvas background for the games section hero.
-// Shared copy of the animation used on the homepage (raw/index.qmd) so both
-// look like the same site. Draws into every <canvas class="sm-canvas">.
+// Starfield / constellation canvas background, shared across games/,
+// utility/, and courses/ pages (and quiz.html / question/stat-prob.html,
+// which point here too) so they all look like the same site. The canvas is
+// fixed and sized to the viewport (see .sm-canvas in css/dark-theme.css) so
+// the animation spans the whole scrollable page, not just the hero section.
+// Draws into every <canvas class="sm-canvas">.
 (function () {
   function initCanvas(canvas) {
     if (!canvas || !canvas.getContext) return;
     var ctx = canvas.getContext('2d');
-    var wrap = canvas.parentElement;
     var W, H, dpr;
     var particles = [];
     var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var count = Math.min(50, Math.floor((window.innerWidth || 1200) / 24));
 
     function resize() {
       dpr = Math.min(window.devicePixelRatio || 1, 2);
-      W = wrap.clientWidth;
-      H = wrap.clientHeight;
+      W = window.innerWidth;
+      H = window.innerHeight;
       canvas.width = W * dpr;
       canvas.height = H * dpr;
       canvas.style.width = W + 'px';
@@ -23,6 +24,7 @@
     }
 
     function init() {
+      var count = Math.min(80, Math.floor((W || 1200) / 24));
       particles = [];
       for (var i = 0; i < count; i++) {
         particles.push({

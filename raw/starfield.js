@@ -1,11 +1,10 @@
-// Starfield / constellation canvas background, shared across games/,
-// utility/, and courses/ pages (and quiz.html / question/stat-prob.html,
-// which point here too) so they all look like the same site. The canvas is
-// fixed and sized to the viewport (see .sm-canvas in css/dark-theme.css) so
-// the animation spans the whole scrollable page, not just the hero section.
-// Draws into every <canvas class="sm-canvas">.
+// Starfield / constellation canvas background, shared by every raw/-rendered
+// page (index, games, utility, courses hubs). The canvas is fixed and sized
+// to the viewport (see #sm-canvas in styles.css) so the animation covers the
+// whole scrollable page, not just the hero section at the top.
 (function () {
-  function initCanvas(canvas) {
+  function initStarfield() {
+    var canvas = document.getElementById('sm-canvas');
     if (!canvas || !canvas.getContext) return;
     var ctx = canvas.getContext('2d');
     var W, H, dpr;
@@ -24,7 +23,7 @@
     }
 
     function init() {
-      var count = Math.min(80, Math.floor((W || 1200) / 24));
+      var count = Math.min(90, Math.floor((W || 1200) / 18));
       particles = [];
       for (var i = 0; i < count; i++) {
         particles.push({
@@ -39,7 +38,7 @@
 
     function step() {
       ctx.clearRect(0, 0, W, H);
-      var maxDist = 120;
+      var maxDist = 130;
       for (var i = 0; i < particles.length; i++) {
         var p = particles[i];
         p.x += p.vx; p.y += p.vy;
@@ -76,5 +75,11 @@
     window.addEventListener('resize', function () { resize(); init(); });
   }
 
-  document.querySelectorAll('canvas.sm-canvas').forEach(initCanvas);
+  function initFooterYear() {
+    var el = document.getElementById('sm-footer-year');
+    if (el) el.textContent = new Date().getFullYear();
+  }
+
+  initStarfield();
+  initFooterYear();
 })();
