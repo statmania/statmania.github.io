@@ -42,5 +42,52 @@ int main(){
   int z = 5;
   z = z + 20;
   printf("The new value is %d \n", z);
+  // Multiple variables
+  int a = 2, b = 6;
+  // Sum
+  printf("The sum is %d \n", a + b);
+
+  // Assign the same value to multiple variables
+  int p, q, r;
+  p = q = r = 30;
+  printf("The variables have the same value, and that's %d \n", p);
+  // Sum them
+  printf("Their sum is %d \n", p + q +r);
+
+  //Identifier
+  // Good
+  int age = 30;
+  printf("My age is %d \n", age);
+  // Fine, but not recognizabe
+  int x2 = 40;
+
+  // A personal profile
+  int id = 16;
+  int weight = 76;
+  int bp = 121;
+  float fee = 1000.20;
+  char grade = 'B';
+
+  printf("The student having the id %d\n has weight %d, \n BP %d, \n fee %f, \n and \n grade %c \n", id, weight, bp, fee, grade);
+
+  // Calculate area
+  int length = 40;
+  float width = 20;
+  float area;
+  area = length*width;
+  printf("The area is %f\n", area);
+
+  // Assign multiple characters together
+
+  char d = 65, e = 'F'; //65 for A
+  printf("The assigned values are %c and %c \n", d, e);
+
+
+  // Storing multiple character
+
+  char myText = 'Hello';
+  printf("The character is %c \n", myText); // last character (o) is returned.
+
+
   return 0;
 }

@@ -10,7 +10,622 @@
 <atom:link href="https://www.statmania.info/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Posts on statistics theory, R &amp; Python, and developer tips from Stat Mania.</description>
 <generator>quarto-1.9.38</generator>
-<lastBuildDate>Mon, 21 Sep 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Wed, 23 Sep 2026 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>10 Short Real-World C Programming Examples (if + Loop Patterns)</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/10-short-real-world-c-programming-examples.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p><img src="https://www.statmania.info/blog/img/c-examples-10.png" class="img-fluid"></p>
+<p><code>if</code> and loops are the two building blocks behind almost every embedded and systems program you’ll ever write in C: something happens repeatedly, and on each repetition you decide what to do. Here are 10 short, real-world examples — each with the problem it models and a quick walkthrough of the code.</p>
+<section id="atm-pin-verification-retry-up-to-3-times" class="level3">
+<h3 class="anchored" data-anchor-id="atm-pin-verification-retry-up-to-3-times">1. ATM PIN Verification — Retry Up to 3 Times</h3>
+<p><strong>The problem:</strong> An ATM shouldn’t let someone guess a PIN forever. Give the user 3 attempts, then stop.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> pin<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> tries <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>tries <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-3">    scanf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span>pin<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb1-4">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>pin <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1234</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span> printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Access granted"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">break</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-5">    tries<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++;</span></span>
+<span id="cb1-6"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p><strong>How it works:</strong> The <code>while (tries &lt; 3)</code> loop caps the attempts. Each pass reads a PIN and checks it with <code>if</code>; a correct guess prints a message and <code>break</code>s out immediately. A wrong guess falls through to <code>tries++</code>, and the loop simply ends on its own once <code>tries</code> hits 3 — there’s no explicit “access denied” branch needed.</p>
+</section>
+<section id="temperature-control-check-multiple-sensors" class="level3">
+<h3 class="anchored" data-anchor-id="temperature-control-check-multiple-sensors">2. Temperature Control — Check Multiple Sensors</h3>
+<p><strong>The problem:</strong> A server room or greenhouse has several temperature sensors, and any sensor reading too hot should switch on its own fan.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb2-2">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> temp <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> read_sensor<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb2-3">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>temp <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> fan_on<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb2-4"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p><strong>How it works:</strong> The <code>for</code> loop visits sensors <code>0</code> through <code>4</code> one at a time. <code>read_sensor(i)</code> fetches that sensor’s reading, and the <code>if</code> decides — independently for each sensor — whether to call <code>fan_on(i)</code>. Nothing here depends on the other sensors, so a simple sequential scan is enough.</p>
+</section>
+<section id="password-retry-keep-asking-until-correct" class="level3">
+<h3 class="anchored" data-anchor-id="password-retry-keep-asking-until-correct">3. Password Retry — Keep Asking Until Correct</h3>
+<p><strong>The problem:</strong> A login prompt that won’t move on until the user types the right password — no attempt limit, just “try again.”</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">char</span> pass<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">];</span></span>
+<span id="cb3-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb3-3">    scanf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%s</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> pass<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb3-4">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>strcmp<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>pass<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"secret"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">break</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb3-5"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<p><strong>How it works:</strong> <code>do...while (1)</code> is a loop that always runs its body at least once and would otherwise repeat forever — the only way out is the <code>break</code> inside the <code>if</code>. <code>strcmp</code> returns <code>0</code> when two C strings are identical, so <code>strcmp(pass, "secret") == 0</code> is how C spells “the passwords match.”</p>
+</section>
+<section id="traffic-light-timer-switch-when-time-expires" class="level3">
+<h3 class="anchored" data-anchor-id="traffic-light-timer-switch-when-time-expires">4. Traffic Light Timer — Switch When Time Expires</h3>
+<p><strong>The problem:</strong> A traffic light needs to stay green until its timer runs out, then switch to yellow — checked continuously, forever.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(;;)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb4-2">    green_on<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">();</span></span>
+<span id="cb4-3">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>timer_expired<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">())</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span> green_off<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">();</span> yellow_on<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">();</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb4-4"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p><strong>How it works:</strong> <code>for (;;)</code> is C’s idiom for an infinite loop (all three parts of the <code>for</code> are left blank). Each pass keeps the green light on and asks <code>timer_expired()</code> whether it’s time to move on; when it is, the <code>if</code> body turns green off and yellow on. A real controller would extend this with more states (yellow → red → green), but the pattern — infinite loop, <code>if</code> to notice a change — stays the same.</p>
+</section>
+<section id="vending-machine-change-dispense-quarters" class="level3">
+<h3 class="anchored" data-anchor-id="vending-machine-change-dispense-quarters">5. Vending Machine Change — Dispense Quarters</h3>
+<p><strong>The problem:</strong> A vending machine owes a customer change and needs to dispense it as physical quarters, one at a time, until the amount owed drops below a quarter’s value.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>change <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb5-2">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>change <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span> dispense_quarter<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">();</span> change <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb5-3"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p><strong>How it works:</strong> The loop condition and the <code>if</code> condition are the same test (<code>change &gt;= 25</code>) — while that’s redundant here (a plain <code>while</code> without the inner <code>if</code> would do the same job), it’s a common defensive habit once the loop body grows and other conditions get added. Each pass dispenses one quarter and subtracts 25 (cents) from <code>change</code>, until there isn’t enough left for another quarter.</p>
+</section>
+<section id="student-grade-calculator-count-passes" class="level3">
+<h3 class="anchored" data-anchor-id="student-grade-calculator-count-passes">6. Student Grade Calculator — Count Passes</h3>
+<p><strong>The problem:</strong> Given a class of <code>n</code> students’ marks, count how many passed (scored 40 or above).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> pass <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb6-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb6-3">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>marks<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> pass<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++;</span></span>
+<span id="cb6-4"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p><strong>How it works:</strong> This is the classic <strong>filter-and-count</strong> pattern: loop over every element of an array (<code>marks[i]</code> for <code>i</code> from <code>0</code> to <code>n - 1</code>), test each one with <code>if</code>, and increment a counter (<code>pass</code>) when it qualifies. The same shape works for counting anything — failing grades, over-budget items, expired records — just by changing the condition.</p>
+</section>
+<section id="led-blink-pattern-read-bits-of-a-pattern" class="level3">
+<h3 class="anchored" data-anchor-id="led-blink-pattern-read-bits-of-a-pattern">7. LED Blink Pattern — Read Bits of a Pattern</h3>
+<p><strong>The problem:</strong> A hardware pattern like <code>0b10110010</code> should blink an LED on and off to match each bit, one bit at a time.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb7-2">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>pattern <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;&lt;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">))</span> led_on<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">();</span></span>
+<span id="cb7-3">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> led_off<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">();</span></span>
+<span id="cb7-4">    delay<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">200</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb7-5"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p><strong>How it works:</strong> <code>1 &lt;&lt; i</code> shifts the value <code>1</code> left by <code>i</code> bits, producing a mask with only bit <code>i</code> set (<code>00000001</code>, <code>00000010</code>, <code>00000100</code>, …). <code>pattern &amp; (1 &lt;&lt; i)</code> keeps just that one bit from <code>pattern</code>; the result is non-zero (truthy) only if bit <code>i</code> was <code>1</code>. So the loop walks through all 8 bits of <code>pattern</code>, turning the LED on or off to match each one, with a <code>delay(200)</code> (milliseconds) so the blinking is visible.</p>
+</section>
+<section id="digital-clock-roll-over-seconds-to-minutes" class="level3">
+<h3 class="anchored" data-anchor-id="digital-clock-roll-over-seconds-to-minutes">8. Digital Clock — Roll Over Seconds to Minutes</h3>
+<p><strong>The problem:</strong> A clock needs to tick once a second and carry seconds into minutes once they reach 60 — the same “carrying” logic behind every digital clock display.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb8-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb8-2">    delay<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1000</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb8-3">    sec<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++;</span></span>
+<span id="cb8-4">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>sec <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">60</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span> sec <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> min<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb8-5"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p><strong>How it works:</strong> <code>while (1)</code> ticks forever. Each iteration waits one second (<code>delay(1000)</code> milliseconds), then increments <code>sec</code>. The <code>if</code> catches the moment <code>sec</code> reaches 60 and resets it to <code>0</code> while bumping <code>min</code> — the same rollover a real clock would also need to apply to <code>min</code> rolling into <code>hour</code>.</p>
+</section>
+<section id="menu-driven-calculator-repeat-until-exit" class="level3">
+<h3 class="anchored" data-anchor-id="menu-driven-calculator-repeat-until-exit">9. Menu-Driven Calculator — Repeat Until Exit</h3>
+<p><strong>The problem:</strong> A simple calculator menu that keeps prompting for a choice and performing it, until the user picks the “exit” option.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb9-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> choice<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb9-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb9-3">    scanf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span>choice<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb9-4">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>choice <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> a <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> b<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb9-5"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>choice <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<p><strong>How it works:</strong> <code>do...while (choice != 0)</code> runs the menu at least once, then keeps looping as long as the user hasn’t chosen <code>0</code> (exit). Inside, <code>if (choice == 1)</code> handles one menu option; a real program would follow it with <code>else if</code> branches for subtraction, multiplication, and so on, all guarded by the same loop.</p>
+</section>
+<section id="bank-withdrawal-check-balance-before-deducting" class="level3">
+<h3 class="anchored" data-anchor-id="bank-withdrawal-check-balance-before-deducting">10. Bank Withdrawal — Check Balance Before Deducting</h3>
+<p><strong>The problem:</strong> A withdrawal should only go through if there’s enough balance to cover it — otherwise, reject it and let the user try again.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb10-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb10-2">    scanf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%f</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span>amount<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb10-3">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>amount <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;=</span> balance<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> balance <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-=</span> amount<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb10-4">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Insufficient funds"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb10-5"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p><strong>How it works:</strong> Each pass through the infinite loop reads a requested <code>amount</code>. The <code>if</code>/<code>else</code> is the guard: if <code>amount</code> fits within <code>balance</code>, it’s deducted; otherwise the request is rejected with a message and <code>balance</code> is left untouched. Note there’s no way to leave this loop — a real version would add a “cancel” choice the same way Example 9 handles <code>choice == 0</code>.</p>
+<hr>
+<p>These are simplified sketches, not production code — there’s no input validation, and several of them (4, 8, 10) loop forever by design, the way an embedded device’s main loop or a always-on hardware controller would. But the underlying shape repeats everywhere in C: <strong>a loop for repetition, an <code>if</code> for decision-making.</strong> Once that pattern is second nature, most short C programs are just variations on it.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>C</category>
+  <category>Programming</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/10-short-real-world-c-programming-examples.html</guid>
+  <pubDate>Wed, 23 Sep 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/c-examples-10.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
 <item>
   <title>C’s “Hello, World!” Explained Line by Line (for R &amp; Python Users)</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
@@ -2791,70 +3406,6 @@ font-style: inherit;">"Stop tracking folder_name"</span></span></code></pre></di
   <category>theory</category>
   <category>regression</category>
   <guid>https://www.statmania.info/blog/posts/regression-interaction.html</guid>
-  <pubDate>Tue, 18 Nov 2025 18:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Z-score: What it is and what it does</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/z-score.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>A <strong>z-score</strong> (also known as a <strong>standard score</strong> or <strong>z-value</strong>) measures how many standard deviations a data point is from the mean of a distribution. It’s a way of standardizing individual data points so they can be compared, regardless of the scale of the data.</p>
-<section id="how-to-calculate-the-z-score" class="level3">
-<h3 class="anchored" data-anchor-id="how-to-calculate-the-z-score">How to calculate the z-score:</h3>
-<p>The formula for the <strong>z-score</strong> of a data point is:</p>
-<p><img src="https://latex.codecogs.com/png.latex?z%20=%20%5Cfrac%7BX%20-%20%5Cmu%7D%7B%5Csigma%7D"></p>
-<p>Where:</p>
-<ul>
-<li><img src="https://latex.codecogs.com/png.latex?X"> = the value of the data point.</li>
-<li><img src="https://latex.codecogs.com/png.latex?%5Cmu"> = the mean (average) of the dataset.</li>
-<li><img src="https://latex.codecogs.com/png.latex?%5Csigma"> = the standard deviation of the dataset.</li>
-</ul>
-</section>
-<section id="steps-to-calculate-the-z-score" class="level3">
-<h3 class="anchored" data-anchor-id="steps-to-calculate-the-z-score">Steps to calculate the z-score:</h3>
-<ol type="1">
-<li><strong>Find the mean</strong> of the dataset.</li>
-<li><strong>Find the standard deviation</strong> of the dataset.</li>
-<li><strong>Subtract the mean</strong> from the data point you’re interested in.</li>
-<li><strong>Divide the result</strong> by the standard deviation.</li>
-</ol>
-</section>
-<section id="example" class="level3">
-<h3 class="anchored" data-anchor-id="example">Example:</h3>
-<p>Imagine you have the following dataset of test scores: [80, 85, 90, 95, 100]</p>
-<ul>
-<li><p><strong>Mean (μ)</strong>: ((80 + 85 + 90 + 95 + 100) / 5 = 90)</p></li>
-<li><p><strong>Standard Deviation (σ)</strong>: Calculate the standard deviation of the dataset (you could use a standard formula or a calculator for this). Let’s say it’s <strong>7.91</strong>.</p></li>
-<li><p>To find the <strong>z-score</strong> for a score of <strong>85</strong>:</p>
-<p><img src="https://latex.codecogs.com/png.latex?z%20=%20%5Cfrac%7B85%20-%2090%7D%7B7.91%7D%20%5Capprox%20-0.63"></p>
-<p>This means the score of 85 is <strong>0.63 standard deviations below the mean</strong>.</p></li>
-</ul>
-<hr>
-</section>
-<section id="common-uses-of-the-z-score" class="level3">
-<h3 class="anchored" data-anchor-id="common-uses-of-the-z-score">Common uses of the z-score:</h3>
-<ol type="1">
-<li><p><strong>Standardizing data</strong>: Z-scores are used to standardize data, especially when you want to compare values from different datasets with different units or scales.</p></li>
-<li><p><strong>Identifying outliers</strong>: A data point with a z-score greater than +3 or less than -3 is often considered an <strong>outlier</strong> because it lies more than 3 standard deviations away from the mean.</p></li>
-<li><p><strong>Probability and normal distribution</strong>: In statistics, z-scores are crucial when working with the <strong>normal distribution</strong>. They can be used to find the <strong>probability</strong> of a value occurring within a normal distribution by looking up the z-score in a standard normal distribution table (or using statistical software).</p></li>
-<li><p><strong>Comparing scores across different distributions</strong>: For example, in education, z-scores allow you to compare scores from different tests, even if those tests have different scales (e.g., SAT vs.&nbsp;ACT scores). You can convert raw scores into z-scores to compare relative performance.</p></li>
-<li><p><strong>Risk assessment and finance</strong>: In finance, z-scores can be used to assess the risk or financial stability of a company. The <strong>Altman Z-score</strong>, for instance, is used to predict the likelihood of bankruptcy.</p></li>
-<li><p><strong>Quality control and manufacturing</strong>: In quality control, z-scores help assess whether a product meets specifications, identifying whether the production process is consistent or if corrective action is needed.</p></li>
-</ol>
-
-
-</section>
-
- ]]></description>
-  <category>statistics</category>
-  <category>theory</category>
-  <category>probability</category>
-  <guid>https://www.statmania.info/blog/posts/z-score.html</guid>
   <pubDate>Tue, 18 Nov 2025 18:00:00 GMT</pubDate>
 </item>
 </channel>
