@@ -158,6 +158,474 @@ font-style: inherit;"># code starts here</span></span></code></pre></div></div>
   <media:content url="https://www.statmania.info/blog/img/linux-prog.jpeg" medium="image" type="image/jpeg"/>
 </item>
 <item>
+  <title>Compiling and Running C Programs on Linux: A Practical Workflow</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/running-c-programs-on-linux.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>If you’re learning C on Linux, typing out <code>gcc program.c -o program &amp;&amp; ./program</code> for every tiny change gets tedious fast — and the bare compiler command hides bugs that would otherwise show up as warnings. Here’s a practical workflow: faster ways to compile and run, the flags you should always turn on, tools that get you closer to a REPL, how to debug crashes and memory errors, and a routine for practicing deliberately.</p>
+<section id="the-fastest-way-to-practice-one-liners-and-aliases" class="level3">
+<h3 class="anchored" data-anchor-id="the-fastest-way-to-practice-one-liners-and-aliases">1. The Fastest Way to Practice: One-Liners and Aliases</h3>
+<p>Typing <code>gcc program.c -o program &amp;&amp; ./program</code> every time gets old fast. Here are three ways to speed it up.</p>
+<p><strong>Option A: The One-Liner with <code>&amp;&amp;</code></strong></p>
+<p>The <code>&amp;&amp;</code> means “only run the next command if the previous one succeeded.” This prevents you from running a stale old binary if your code has compile errors.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gcc</span> program.c <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-o</span> program <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">&amp;&amp;</span> <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">./program</span></span></code></pre></div></div>
+<p><strong>Option B: Bash Aliases (Highly Recommended)</strong></p>
+<p>Open your shell config file:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">nano</span> ~/.bashrc</span></code></pre></div></div>
+<p>Add these lines at the bottom:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Compile and run C</span></span>
+<span id="cb3-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">alias</span> crun=<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'gcc -Wall -Wextra -g -o /tmp/a.out &amp;&amp; /tmp/a.out'</span></span>
+<span id="cb3-3"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">alias</span> cwarn=<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'gcc -Wall -Wextra -Wpedantic -g -o /tmp/a.out'</span></span></code></pre></div></div>
+<p>Save, then reload:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> ~/.bashrc</span></code></pre></div></div>
+<p>Now, from any directory, you can just type:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">crun</span> program.c</span></code></pre></div></div>
+<p>This compiles <code>program.c</code> with all warnings enabled, outputs to <code>/tmp/a.out</code>, and runs it immediately if compilation succeeds. <code>cwarn</code> is useful when you want to compile but not run yet.</p>
+<p><strong>Option C: A Simple <code>Makefile</code></strong></p>
+<p>For anything beyond a single file, create a file named <code>Makefile</code> in your working directory:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode makefile code-with-copy"><code class="sourceCode makefile"><span id="cb6-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">CC</span> <span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> gcc</span></span>
+<span id="cb6-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">CFLAGS</span> <span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> -Wall -Wextra -g -std=c11</span></span>
+<span id="cb6-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">TARGET</span> <span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> program</span></span>
+<span id="cb6-4"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">SRC</span> <span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> program.c</span></span>
+<span id="cb6-5"></span>
+<span id="cb6-6"><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">all:</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;"> </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">$(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">TARGET</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb6-7"></span>
+<span id="cb6-8"><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">$(TARGET):</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;"> </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">$(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">SRC</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb6-9"><span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">    </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">$(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">CC</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">)</span> <span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">$(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">CFLAGS</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">)</span> -o <span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">$(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">TARGET</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">)</span> <span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">$(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">SRC</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb6-10"></span>
+<span id="cb6-11"><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">run:</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;"> </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">$(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">TARGET</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb6-12"><span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">    </span>./<span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">$(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">TARGET</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb6-13"></span>
+<span id="cb6-14"><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">clean:</span></span>
+<span id="cb6-15"><span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">    </span>rm -f <span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">$(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">TARGET</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div></div>
+<p>Then you just type:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">make</span> run</span></code></pre></div></div>
+<p>And to clean up:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">make</span> clean</span></code></pre></div></div>
+<p>This is the professional standard and scales to multiple files later.</p>
+<hr>
+</section>
+<section id="the-flags-you-should-always-use" class="level3">
+<h3 class="anchored" data-anchor-id="the-flags-you-should-always-use">2. The Flags You Should Always Use</h3>
+<p>The bare-minimum command <code>gcc program_name.c -o my_program</code> works, but it hides problems. Always add these flags:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gcc</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-Wall</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-Wextra</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-Wpedantic</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-g</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-std</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>c11 program.c <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-o</span> program</span></code></pre></div></div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Flag</th>
+<th style="text-align: left;">What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>-Wall</code></td>
+<td style="text-align: left;">Enables most common warnings (uninitialized variables, unused variables, etc.)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>-Wextra</code></td>
+<td style="text-align: left;">Enables additional warnings beyond <code>-Wall</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>-Wpedantic</code></td>
+<td style="text-align: left;">Warns about non-standard C extensions</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>-g</code></td>
+<td style="text-align: left;">Includes debug symbols (essential for <code>gdb</code>)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>-std=c11</code></td>
+<td style="text-align: left;">Uses the C11 standard (or use <code>-std=c17</code>, <code>-std=c99</code>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>-O2</code></td>
+<td style="text-align: left;">Optimization level 2 (for release builds; <strong>don’t use while debugging</strong>)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why warnings matter:</strong> In C, many bugs are not errors—they compile fine but crash at runtime or behave incorrectly. Warnings catch these before you run. <strong>Treat every warning as an error you must fix.</strong></p>
+<p>To make warnings fatal (force yourself to fix them):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gcc</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-Wall</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-Wextra</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-Werror</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-g</span> program.c <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-o</span> program</span></code></pre></div></div>
+<p>With <code>-Werror</code>, the compiler refuses to produce an executable if there are any warnings.</p>
+<hr>
+</section>
+<section id="faster-testing-the-repl-like-workflow" class="level3">
+<h3 class="anchored" data-anchor-id="faster-testing-the-repl-like-workflow">3. Faster Testing: The REPL-like Workflow</h3>
+<p>C doesn’t have a REPL like Python or R, but you can approximate one with these tools:</p>
+<p><strong>Tool 1: <code>tcc</code> (Tiny C Compiler)</strong></p>
+<p><code>tcc</code> compiles and runs C almost instantly. Install it:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sudo</span> apt install tcc    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Debian/Ubuntu</span></span>
+<span id="cb11-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sudo</span> dnf install tcc    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Fedora</span></span></code></pre></div></div>
+<p>Then:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">tcc</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-run</span> program.c</span></code></pre></div></div>
+<p>This compiles and runs in one step with no output file. It’s the closest thing to a C REPL for quick experiments. It’s not as strict as <code>gcc</code>, but great for testing small snippets.</p>
+<p><strong>Tool 2: <code>cling</code> (C++ Interpreter, works for C)</strong></p>
+<p><code>cling</code> is an interactive C++ interpreter built on LLVM. It can run C code interactively:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sudo</span> apt install cling   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># May need to add a PPA or download from GitHub</span></span>
+<span id="cb13-2"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">cling</span></span></code></pre></div></div>
+<p>Then type C statements directly:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb14-1">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Hello</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb14-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> x <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb14-3">x <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span></span></code></pre></div></div>
+<p>This is genuinely REPL-like and excellent for experimenting with expressions.</p>
+<p><strong>Tool 3: Online Compilers (for zero-setup experiments)</strong></p>
+<ul>
+<li><strong>Compiler Explorer (godbolt.org):</strong> Shows the assembly output side-by-side with your C code. Incredible for understanding what the compiler does.</li>
+<li><strong>OnlineGDB (onlinegdb.com):</strong> Full IDE with debugger in the browser.</li>
+<li><strong>Replit (replit.com):</strong> Collaborative, instant C environment.</li>
+</ul>
+<p>Use these when you want to test a quick idea without touching your terminal.</p>
+<hr>
+</section>
+<section id="debugging-gdb-and-valgrind" class="level3">
+<h3 class="anchored" data-anchor-id="debugging-gdb-and-valgrind">4. Debugging: <code>gdb</code> and <code>valgrind</code></h3>
+<p><strong><code>gdb</code> (GNU Debugger)</strong></p>
+<p>Compile with <code>-g</code>, then:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gdb</span> ./program</span></code></pre></div></div>
+<p>Inside gdb:</p>
+<pre><code>(gdb) break main        # Set a breakpoint at main
+(gdb) run               # Start the program
+(gdb) next              # Execute next line
+(gdb) print x           # Print value of variable x
+(gdb) continue          # Continue execution
+(gdb) quit              # Exit</code></pre>
+<p>This lets you step through your code line by line, inspect variables, and see exactly where a crash happens. Essential for finding segmentation faults.</p>
+<p><strong><code>valgrind</code> (Memory Error Detector)</strong></p>
+<p>This is critical once you start using <code>malloc</code> and <code>free</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">valgrind</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--leak-check</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>full ./program</span></code></pre></div></div>
+<p>It will tell you: * If you leaked memory (allocated but never freed) * If you accessed memory you shouldn’t have * If you used uninitialized memory</p>
+<p>Install it:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sudo</span> apt install valgrind</span></code></pre></div></div>
+<p>Run this on every program you write that uses dynamic memory. It will save you hours of confusion.</p>
+<hr>
+</section>
+<section id="a-suggested-practice-routine" class="level3">
+<h3 class="anchored" data-anchor-id="a-suggested-practice-routine">5. A Suggested Practice Routine</h3>
+<p><strong>Week 1–2: Fundamentals</strong> Write 5–10 small programs per day covering: * Variables, types, <code>printf</code>/<code>scanf</code> * <code>if/else</code>, <code>switch</code> * <code>for</code>, <code>while</code>, <code>do-while</code> * Functions and recursion</p>
+<p><strong>Week 3–4: Arrays and Strings</strong> * Reverse an array * Find the max/min * Implement <code>strlen</code>, <code>strcpy</code>, <code>strcmp</code> yourself * Bubble sort, selection sort, insertion sort on arrays</p>
+<p><strong>Week 5–6: Pointers</strong> * Swap two variables using pointers * Pass arrays to functions * Pointer arithmetic * Dynamic arrays with <code>malloc</code>/<code>free</code></p>
+<p><strong>Week 7–8: Structs and Files</strong> * Define a <code>struct</code> for a student record * Read/write structs to a binary file * Build a simple linked list</p>
+<p><strong>Daily habit:</strong> 1. Write the program in a text editor (use <code>nano</code>, <code>vim</code>, or VS Code). 2. Compile with all warnings: <code>gcc -Wall -Wextra -Wpedantic -g -std=c11 file.c -o file</code> 3. Fix every warning. 4. Run it. 5. If it crashes, use <code>gdb</code>. 6. If it uses <code>malloc</code>, run <code>valgrind</code>.</p>
+<hr>
+</section>
+<section id="recommended-editorsides-on-linux" class="level3">
+<h3 class="anchored" data-anchor-id="recommended-editorsides-on-linux">6. Recommended Editors/IDEs on Linux</h3>
+<ul>
+<li><strong>VS Code</strong> with the C/C++ extension: Best balance of features and simplicity. Has integrated debugging.</li>
+<li><strong>Neovim/Vim</strong> with <code>coc.nvim</code> or <code>clangd</code>: For terminal purists.</li>
+<li><strong>CLion</strong>: Full-featured IDE (free for students with a JetBrains account).</li>
+<li><strong>Code::Blocks</strong>: Lightweight IDE, good for beginners.</li>
+</ul>
+<p>For your MS course, <strong>VS Code</strong> is probably the most practical choice—it gives you syntax highlighting, error squiggles, and integrated <code>gdb</code> debugging without the overhead of a full IDE.</p>
+<hr>
+</section>
+<section id="quick-reference-card" class="level3">
+<h3 class="anchored" data-anchor-id="quick-reference-card">Quick Reference Card</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Compile with all warnings</span></span>
+<span id="cb19-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gcc</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-Wall</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-Wextra</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-Wpedantic</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-g</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-std</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>c11 program.c <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-o</span> program</span>
+<span id="cb19-3"></span>
+<span id="cb19-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Compile and run (only if compile succeeds)</span></span>
+<span id="cb19-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gcc</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-Wall</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-Wextra</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-g</span> program.c <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-o</span> program <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">&amp;&amp;</span> <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">./program</span></span>
+<span id="cb19-6"></span>
+<span id="cb19-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Run with memory checking (for programs using malloc)</span></span>
+<span id="cb19-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">valgrind</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--leak-check</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>full ./program</span>
+<span id="cb19-9"></span>
+<span id="cb19-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Debug</span></span>
+<span id="cb19-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gdb</span> ./program</span>
+<span id="cb19-12"></span>
+<span id="cb19-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Quick test with tcc</span></span>
+<span id="cb19-14"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">tcc</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-run</span> program.c</span>
+<span id="cb19-15"></span>
+<span id="cb19-16"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Using make</span></span>
+<span id="cb19-17"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">make</span> run</span>
+<span id="cb19-18"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">make</span> clean</span></code></pre></div></div>
+<p>Pin an alias, turn on <code>-Wall -Wextra</code>, and reach for <code>gdb</code>/<code>valgrind</code> the moment something misbehaves — that’s most of the workflow. The rest comes from writing a lot of small programs, which is exactly what the practice routine above is for.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>Linux</category>
+  <category>C</category>
+  <category>Programming</category>
+  <guid>https://www.statmania.info/blog/posts/running-c-programs-on-linux.html</guid>
+  <pubDate>Sat, 19 Sep 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/linux-prog.jpeg" medium="image" type="image/jpeg"/>
+</item>
+<item>
   <title>The Probability of Having Four Babies of the Same Sex</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://www.statmania.info/blog/posts/probability-4-boys-girls-in-a-row.html</link>
@@ -2374,105 +2842,6 @@ font-style: inherit;">"Stop tracking folder_name"</span></span></code></pre></di
   <category>probability</category>
   <guid>https://www.statmania.info/blog/posts/z-score.html</guid>
   <pubDate>Tue, 18 Nov 2025 18:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>A/B Testing: A Sample Analysis</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/a-b-testing.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="scenario-testing-a-new-button-color" class="level2">
-<h2 class="anchored" data-anchor-id="scenario-testing-a-new-button-color">Scenario: Testing a new button color</h2>
-<p>A website wants to compare:</p>
-<ul>
-<li><strong>Version A:</strong> Blue button</li>
-<li><strong>Version B:</strong> Red button</li>
-</ul>
-<p>The outcome is <strong>conversion</strong> (1 = user clicked, 0 = did not click).</p>
-<hr>
-</section>
-<section id="sample-data" class="level2">
-<h2 class="anchored" data-anchor-id="sample-data">Sample data</h2>
-<section id="group-a-blue-button" class="level3">
-<h3 class="anchored" data-anchor-id="group-a-blue-button"><strong>Group A (blue button)</strong></h3>
-<p>Users: 10 Clicks: <strong>3</strong></p>
-<p>So conversion rate:</p>
-<p><img src="https://latex.codecogs.com/png.latex?p_A%20=%20%5Cfrac%7B3%7D%7B10%7D%20=%200.30"></p>
-<hr>
-</section>
-<section id="group-b-red-button" class="level3">
-<h3 class="anchored" data-anchor-id="group-b-red-button"><strong>Group B (red button)</strong></h3>
-<p>Users: 10 Clicks: <strong>6</strong></p>
-<p>So conversion rate:</p>
-<p><img src="https://latex.codecogs.com/png.latex?p_B%20=%20%5Cfrac%7B6%7D%7B10%7D%20=%200.60"></p>
-<hr>
-</section>
-</section>
-<section id="step-1-state-hypotheses" class="level2">
-<h2 class="anchored" data-anchor-id="step-1-state-hypotheses">Step 1: State hypotheses</h2>
-<p>We want to know if B performs <strong>better</strong> than A.</p>
-<p><img src="https://latex.codecogs.com/png.latex?H_0:%20p_A%20=%20p_B"> (null hypothesis, which we don’t expect/want to disprove)</p>
-<p><img src="https://latex.codecogs.com/png.latex?H_1:%20p_B%20%3E%20p_A"> (alternative hypothesis)</p>
-<hr>
-</section>
-<section id="step-2-pooled-proportion" class="level2">
-<h2 class="anchored" data-anchor-id="step-2-pooled-proportion">Step 2: Pooled proportion</h2>
-<p>Because under <img src="https://latex.codecogs.com/png.latex?H_0">, both groups have the same conversion rate.</p>
-<p>Total clicks = 3 + 6 = 9 Total users = 20</p>
-<p><img src="https://latex.codecogs.com/png.latex?p_%7B%5Ctext%7Bpooled%7D%7D%20=%20%5Cfrac%7B9%7D%7B20%7D=0.45"></p>
-<hr>
-</section>
-<section id="step-3-standard-error" class="level2">
-<h2 class="anchored" data-anchor-id="step-3-standard-error">Step 3: Standard error</h2>
-<p><img src="https://latex.codecogs.com/png.latex?SE%20=%20%5Csqrt%7Bp(1-p)%5Cleft(%5Cfrac%7B1%7D%7Bn_A%7D+%5Cfrac%7B1%7D%7Bn_B%7D%5Cright)%7D"></p>
-<p><img src="https://latex.codecogs.com/png.latex?SE%20=%20%5Csqrt%7B0.45%20%5Ctimes%200.55%20%5Ctimes%20%5Cleft(%5Cfrac%7B1%7D%7B10%7D+%5Cfrac%7B1%7D%7B10%7D%5Cright)%7D"></p>
-<p><img src="https://latex.codecogs.com/png.latex?=%20%5Csqrt%7B0.2475%20%5Ctimes%200.2%7D%20=%20%5Csqrt%7B0.0495%7D%20%5Capprox%200.2225"></p>
-<hr>
-</section>
-<section id="step-4-z-statistic" class="level2">
-<h2 class="anchored" data-anchor-id="step-4-z-statistic">Step 4: z-statistic</h2>
-<p><img src="https://latex.codecogs.com/png.latex?z%20=%20%5Cfrac%7Bp_B%20-%20p_A%7D%7BSE%7D%20=%20%5Cfrac%7B0.60%20-%200.30%7D%7B0.2225%7D%20=%20%5Cfrac%7B0.30%7D%7B0.2225%7D%20%5Capprox%201.35"></p>
-<hr>
-</section>
-<section id="step-5-p-value" class="level2">
-<h2 class="anchored" data-anchor-id="step-5-p-value">Step 5: p-value</h2>
-<p>For a <strong>one-sided test</strong>, z = 1.35 → p ≈ <strong>0.088</strong>.</p>
-<hr>
-</section>
-<section id="interpretation" class="level2">
-<h2 class="anchored" data-anchor-id="interpretation">Interpretation</h2>
-<ul>
-<li>p-value = 0.088 &gt; 0.05</li>
-<li>We <strong>fail to reject</strong> (H_0).</li>
-<li><strong>Evidence is suggestive but not strong enough</strong> to conclude that the red button performs better.</li>
-</ul>
-<section id="business-interpretation" class="level3">
-<h3 class="anchored" data-anchor-id="business-interpretation">Business interpretation:</h3>
-<p>Even though conversion increased from <strong>30% → 60%</strong>, the sample is very small (only 10 per group), so the difference is not statistically significant at α = 0.05.</p>
-<hr>
-</section>
-</section>
-<section id="what-we-can-say" class="level2">
-<h2 class="anchored" data-anchor-id="what-we-can-say">What we <em>can</em> say</h2>
-<ul>
-<li>B looks <strong>promising</strong>: a <strong>+100% relative lift</strong> in conversions.</li>
-<li>But the <strong>sample size is too small</strong> to be confident.</li>
-<li>A larger A/B test should be run.</li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>statistics</category>
-  <category>theory</category>
-  <category>business</category>
-  <guid>https://www.statmania.info/blog/posts/a-b-testing.html</guid>
-  <pubDate>Mon, 17 Nov 2025 18:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
