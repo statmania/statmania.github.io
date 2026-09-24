@@ -627,6 +627,159 @@ font-style: inherit;">}</span></span></code></pre></div></div>
   <media:content url="https://www.statmania.info/blog/img/c-examples-10.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 <item>
+  <title>Modulus vs. Remainder: Why -5 % 3 Isn’t the Same Everywhere</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/modulus-vs-remainder.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p><img src="https://www.statmania.info/blog/img/modulus-vs-remainder.png" class="img-fluid"></p>
+<p>No, modulus and remainder are not always the same — though they give the exact same answer for positive numbers. The difference shows up once negative numbers are involved, and it depends entirely on how the programming language (or math formula) handles negative division.</p>
+<section id="key-differences" class="level3">
+<h3 class="anchored" data-anchor-id="key-differences">Key Differences</h3>
+<p><strong>For positive numbers</strong>, both operations do the same thing: divide two numbers and return what’s left over. <code>5 % 2</code> is <code>1</code> either way.</p>
+<p><strong>For negative numbers</strong>, they use different rules to decide the sign of the result:</p>
+<ul>
+<li><strong>Remainder</strong> keeps the sign of the <em>dividend</em> (the first number). C, C++, Java, and JavaScript all treat <code>%</code> as a remainder operator — <code>-21 % 4</code> is <code>-1</code>.</li>
+<li><strong>Modulus</strong> (modulo) keeps the sign of the <em>divisor</em> (the second number). Python treats <code>%</code> as a true modulo — <code>-21 % 4</code> is <code>3</code>.</li>
+</ul>
+</section>
+<section id="why-they-differ" class="level3">
+<h3 class="anchored" data-anchor-id="why-they-differ">Why They Differ</h3>
+<ul>
+<li><strong>Remainder</strong> comes from <strong>truncated division</strong>: the quotient is rounded <em>toward zero</em>, so the leftover value keeps the sign of the number being divided.</li>
+<li><strong>Modulo</strong> comes from <strong>floored division</strong>: the quotient is rounded <em>down, toward negative infinity</em>, so the leftover value always matches the sign of the divisor.</li>
+</ul>
+</section>
+<section id="worked-example--5-3" class="level3">
+<h3 class="anchored" data-anchor-id="worked-example--5-3">Worked Example: -5 ÷ 3</h3>
+<p><img src="https://latex.codecogs.com/png.latex?-5%20%5Cdiv%203%20%5Capprox%20-1.66%5Coverline%7B6%7D"></p>
+<p><strong>Remainder (truncate toward zero):</strong> the quotient rounds to <img src="https://latex.codecogs.com/png.latex?-1">. <img src="https://latex.codecogs.com/png.latex?%5Ctext%7Bleftover%7D%20=%20-5%20-%20(3%20%5Ctimes%20-1)%20=%20%5Cmathbf%7B-2%7D"></p>
+<p><strong>Modulo (floor toward <img src="https://latex.codecogs.com/png.latex?-%5Cinfty">):</strong> the quotient rounds to <img src="https://latex.codecogs.com/png.latex?-2">. <img src="https://latex.codecogs.com/png.latex?%5Ctext%7Bleftover%7D%20=%20-5%20-%20(3%20%5Ctimes%20-2)%20=%20%5Cmathbf%7B1%7D"></p>
+<p>Same inputs, different rounding rule for the quotient, different sign on the result.</p>
+</section>
+<section id="c-vs.-python-side-by-side" class="level3">
+<h3 class="anchored" data-anchor-id="c-vs.-python-side-by-side">C vs.&nbsp;Python, Side by Side</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>C (and C++, Java, JavaScript)</th>
+<th>Python</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Operation</td>
+<td>Remainder</td>
+<td>Modulus</td>
+</tr>
+<tr class="even">
+<td>Rule</td>
+<td>Result takes the sign of the <strong>dividend</strong></td>
+<td>Result takes the sign of the <strong>divisor</strong></td>
+</tr>
+<tr class="odd">
+<td>Expression</td>
+<td><code>-5 % 3</code></td>
+<td><code>-5 % 3</code></td>
+</tr>
+<tr class="even">
+<td>Result</td>
+<td><code>-2</code></td>
+<td><code>1</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="the-clock-intuition-for-modulo" class="level3">
+<h3 class="anchored" data-anchor-id="the-clock-intuition-for-modulo">The “Clock” Intuition for Modulo</h3>
+<p>Think of modulo as a circular clock. If the divisor is <code>3</code>, the only possible results are <code>0</code>, <code>1</code>, and <code>2</code> — it always wraps around cleanly to a value with the divisor’s sign. Starting at <code>0</code> and stepping backward 5 times on a 3-hour clock lands you on <code>1</code>, which is exactly what <code>-5 % 3</code> gives in Python.</p>
+</section>
+<section id="where-r-fits-in" class="level3">
+<h3 class="anchored" data-anchor-id="where-r-fits-in">Where R Fits In</h3>
+<p>R behaves exactly like Python: it computes a true mathematical modulus (floored division), not a truncated remainder. In R, the modulus operator is written <code>%%</code> — it rounds the division downward toward negative infinity, so the result always takes the sign of the divisor.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%%</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span></span>
+<span id="cb1-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># [1] 1</span></span>
+<span id="cb1-3"></span>
+<span id="cb1-4"><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%%</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span></span>
+<span id="cb1-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># [1] -1</span></span></code></pre></div></div>
+<p>R also provides a matching integer-division operator, <code>%/%</code>, which finds the quotient rounded down toward negative infinity:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%/%</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span></span>
+<span id="cb2-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># [1] -2</span></span></code></pre></div></div>
+<p>That quotient is exactly what makes the modulus formula work: <code>-5 - (3 * -2) = 1</code>.</p>
+</section>
+<section id="summary-checklist" class="level3">
+<h3 class="anchored" data-anchor-id="summary-checklist">Summary Checklist</h3>
+<ul>
+<li><strong>Positive numbers?</strong> Remainder and modulus always agree — <code>5 % 3</code> is <code>2</code> in both C and Python.</li>
+<li><strong>Negative numbers?</strong> They can disagree:
+<ul>
+<li>C, C++, Java, JavaScript: result takes the sign of the <strong>dividend</strong> (remainder).</li>
+<li>Python, R: result takes the sign of the <strong>divisor</strong> (modulus).</li>
+</ul></li>
+<li><strong>The reason:</strong> remainder truncates the quotient toward zero; modulus floors it toward negative infinity.</li>
+</ul>
+</section>
+<section id="further-reading" class="level3">
+<h3 class="anchored" data-anchor-id="further-reading">Further Reading</h3>
+<ul>
+<li><a href="https://stackoverflow.com/questions/13683563/whats-the-difference-between-mod-and-remainder">Stack Overflow: What’s the difference between “mod” and “remainder”?</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Modulo">Wikipedia: Modulo</a></li>
+<li><a href="https://bigmachine.io/articles/theory/mod-and-remainder-are-not-the-same">bigmachine.io: Mod and remainder are not the same</a></li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>C</category>
+  <category>Python</category>
+  <category>R</category>
+  <category>Mathematics</category>
+  <guid>https://www.statmania.info/blog/posts/modulus-vs-remainder.html</guid>
+  <pubDate>Wed, 23 Sep 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/modulus-vs-remainder.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
   <title>C’s “Hello, World!” Explained Line by Line (for R &amp; Python Users)</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://www.statmania.info/blog/posts/c-hello-world-explained.html</link>
@@ -3294,119 +3447,6 @@ font-style: inherit;">"Stop tracking folder_name"</span></span></code></pre></di
   <guid>https://www.statmania.info/blog/posts/gitignore-folder.html</guid>
   <pubDate>Sun, 04 Jan 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/gitignore.jpeg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Interaction Effect in Regression Analysis</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/regression-interaction.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="what-an-interaction-means-intuitive-view" class="level2">
-<h2 class="anchored" data-anchor-id="what-an-interaction-means-intuitive-view">1. What an interaction means (intuitive view)</h2>
-<p>An <strong>interaction effect</strong> means:</p>
-<blockquote class="blockquote">
-<p>The effect of one variable on the outcome depends on the level of another variable.</p>
-</blockquote>
-<p>So, the relationship between <img src="https://latex.codecogs.com/png.latex?X_1"> and <img src="https://latex.codecogs.com/png.latex?Y"> <strong>changes</strong> depending on the value of <img src="https://latex.codecogs.com/png.latex?X_2">.</p>
-<hr>
-</section>
-<section id="a-simple-regression-without-interaction" class="level2">
-<h2 class="anchored" data-anchor-id="a-simple-regression-without-interaction">2. A simple regression without interaction</h2>
-<p>Say we model income as a function of gender and education:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%5Ctext%7BIncome%7D%20=%20%5Cbeta_0%20+%20%5Cbeta_1(%5Ctext%7BGender%7D)%20+%20%5Cbeta_2(%5Ctext%7BEducation%7D)%20+%20%5Cepsilon"></p>
-<p>Here:</p>
-<ul>
-<li><img src="https://latex.codecogs.com/png.latex?%5Cbeta_1">: average difference between males and females (assuming Gender is dummy coded, say Male=1, Female=0)</li>
-<li><img src="https://latex.codecogs.com/png.latex?%5Cbeta_2">: effect of moving from one education level to another</li>
-<li>The two effects are <strong>independent</strong> — the gender gap is the same across all education levels.</li>
-</ul>
-<hr>
-</section>
-<section id="add-an-interaction-term" class="level2">
-<h2 class="anchored" data-anchor-id="add-an-interaction-term">3. Add an interaction term</h2>
-<p>Now we include a product term:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%5Ctext%7BIncome%7D%20=%20%5Cbeta_0%20+%20%5Cbeta_1(%5Ctext%7BGender%7D)%20+%20%5Cbeta_2(%5Ctext%7BEducation%7D)%20+%20%5Cbeta_3(%5Ctext%7BGender%7D%20%5Ctimes%20%5Ctext%7BEducation%7D)%20+%20%5Cepsilon"></p>
-<p>That last term — <img src="https://latex.codecogs.com/png.latex?%5Cbeta_3(%5Ctext%7BGender%7D%20%5Ctimes%20%5Ctext%7BEducation%7D)"> — is the <strong>interaction</strong>.</p>
-<section id="meaning" class="level3">
-<h3 class="anchored" data-anchor-id="meaning">Meaning:</h3>
-<p>It tells us whether the effect of education <strong>differs by gender</strong>.</p>
-<ul>
-<li>If <img src="https://latex.codecogs.com/png.latex?%5Cbeta_3%20=%200">: no interaction — both genders gain equally from higher education.</li>
-<li>If <img src="https://latex.codecogs.com/png.latex?%5Cbeta_3%20%3E%200">: the return to education (effect on income) is <strong>greater for males</strong> than females.</li>
-<li>If <img src="https://latex.codecogs.com/png.latex?%5Cbeta_3%20%3C%200">: the return to education is <strong>greater for females</strong> than males.</li>
-</ul>
-<hr>
-</section>
-</section>
-<section id="example-with-numbers" class="level2">
-<h2 class="anchored" data-anchor-id="example-with-numbers">4. Example with numbers</h2>
-<p>Suppose you fit this model (Gender=1 for Male, 0 for Female; Education=years of schooling):</p>
-<p><img src="https://latex.codecogs.com/png.latex?%5Ctext%7BIncome%7D%20=%2020%7B,%7D000%20+%205%7B,%7D000(%5Ctext%7BEducation%7D)%20+%203%7B,%7D000(%5Ctext%7BGender%7D)%20+%201%7B,%7D000(%5Ctext%7BGender%7D%20%5Ctimes%20%5Ctext%7BEducation%7D)"></p>
-<p>Interpretation:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 7%">
-<col style="width: 92%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Term</th>
-<th>Meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>20,000</td>
-<td>Average income for a female with 0 years of education (baseline).</td>
-</tr>
-<tr class="even">
-<td>5,000</td>
-<td>Each year of education increases income by $5,000 for <strong>females</strong>.</td>
-</tr>
-<tr class="odd">
-<td>3,000</td>
-<td>Males earn $3,000 more than females at 0 years of education.</td>
-</tr>
-<tr class="even">
-<td>1,000</td>
-<td>For males, the effect of each additional year of education is $1,000 higher.</td>
-</tr>
-</tbody>
-</table>
-<p>So:</p>
-<ul>
-<li>For females: effect of education = 5,000 per year</li>
-<li>For males: effect of education = 5,000 + 1,000 = <strong>6,000 per year</strong></li>
-</ul>
-<p>That difference (1,000) is the <strong>interaction effect</strong>.</p>
-<hr>
-</section>
-<section id="in-general" class="level2">
-<h2 class="anchored" data-anchor-id="in-general">5. In general</h2>
-<p>Interactions can occur between:</p>
-<ul>
-<li><strong>Two categorical variables</strong> (e.g., gender × marital status)</li>
-<li><strong>Categorical × continuous</strong> (e.g., gender × education years)</li>
-<li><strong>Two continuous</strong> (e.g., age × income in predicting health)</li>
-</ul>
-<p>Each type changes the interpretation slightly — but the core idea is always:</p>
-<blockquote class="blockquote">
-<p>the slope (or effect) of one predictor depends on the value of another.</p>
-</blockquote>
-
-
-</section>
-
- ]]></description>
-  <category>statistics</category>
-  <category>theory</category>
-  <category>regression</category>
-  <guid>https://www.statmania.info/blog/posts/regression-interaction.html</guid>
-  <pubDate>Tue, 18 Nov 2025 18:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
