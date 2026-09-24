@@ -56,5 +56,21 @@ int main(){
   //Modulus
   p %= 5;
   printf("Modulus is %d \n", p);
+
+  //Comparison
+
+  // we use x and y assigned before.
+
+  printf("%d\n", x > y); //1 if true
+  printf("%d\n", x != y);
+  printf("%d\n", x == y);
+  printf("%d\n", x < y);
+  printf("%d\n", x <= y);
+  printf("%d\n", x >= y);
+
+  // Real-world example
+
+  int score = 60;
+  printf("Has the students passed? Answer is %d\n", score >= 60);
   return 0;
 }
