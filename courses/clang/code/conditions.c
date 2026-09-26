@@ -128,6 +128,21 @@ int main(){
 
   // Logical operators with conditions
 
+  // Redo the previous one with && (both conditions must be true)
+
+  if (pin == 5103 && balance >= 40000) {
+    printf("You're ready to withdraw money!\n");
+  }
+
+  // OR (||)
+  // Use isMember and purchaseAmount variables from before
+
+  if (isMember == 1 || purchaseAmount >=1000);
+  printf("You are eligible for a discount. \n");
+
+  // NOT (!)
+  if (isMember != 1 || purchaseAmount < 1000);
+  printf("You are not eligible for a discount. \n");
 
   return 0;
 }
