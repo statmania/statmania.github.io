@@ -162,5 +162,20 @@ int main(){
     printf("It's an odd number.\n");
   }
 
+  // Switch Statement
+  // When there are many if else statements
+
+  // Let's toss a coin (head, tail)
+  int toss = 1;
+
+  switch (toss){
+    case 1:
+      printf("Head\n");
+      break;
+    case 2:
+      printf("Tail\n");
+      break;
+  }
+
   return 0;
 }
