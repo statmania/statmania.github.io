@@ -58,7 +58,7 @@ int main(){
 
   int temp = 43;
 
-  if (temp < - 10){
+  if (temp < -10){
     printf("The weather is extremely cold\n");
   } else if (temp <= 10) {
     printf("The weather is cold\n");
@@ -69,6 +69,43 @@ int main(){
     printf("Extremely Hot!\n");
   }
 
+  // Short hand
+
+  (temp < 0) ? printf("The temperature is below freezing level.\n") : printf("The temperature is above freezing level.\n");
+
+  // Let's reassign x and y. Already declared.
+
+  x = 50;
+  y = 40;
+
+  if (x > 25) {
+    printf("x is greater than 25. \n");
+
+    //Nested
+    if (y > 20) {
+      printf("y is greater than 20.\n");
+    }
+  }
+
+  // Real-world Nested if example
+
+  int isMember = 1;
+  double purchaseAmount = 1250.00;
+
+  //Check if premium member
+  if (isMember == 1){
+    printf("Membership verified!\n");
+
+    // Check amount of purchase with a nested if
+    if (purchaseAmount > 1000.0){
+      printf("You're eligible for a 20%% discount!\n");
+    } else {
+      printf("You're eligible for a 10%% discount.\n");
+    }
+  } else {
+    // Not a member
+    printf("Standard customer: No discount at this time. \n");
+  }
 
   return 0;
 }

@@ -42,8 +42,32 @@ $grid-margin-width: 180px !default;
 
 /*-- scss:rules --*/
 
-body {
+// Solid colour lives on <html>; <body> is transparent so the shared
+// starfield canvas (/starfield.js, z-index -1) shows through outside the
+// content panel.
+html {
   background-color: $sm-bg !important;
+}
+body {
+  background-color: transparent !important;
+}
+.sm-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  display: block;
+  pointer-events: none;
+}
+// Lesson content sits on an opaque panel so stars never run behind text.
+main.content {
+  background: $sm-bg2;
+  border: 1px solid rgba(0,229,255,0.10);
+  border-radius: 14px;
+  padding: 1.5rem 1.75rem;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 /* Quarto auto-classifies this theme as "dark" (from $body-bg) and hides

@@ -1414,6 +1414,985 @@ font-style: inherit;">}</span></span></code></pre></div></div>
   <media:content url="https://www.statmania.info/blog/img/if-else-flow.svg" medium="image" type="image/svg+xml"/>
 </item>
 <item>
+  <title>float vs double in C: Precision, Memory, and When to Use Which</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/c-double-vs-float.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p><code>float</code> and <code>double</code> both store decimal (floating-point) numbers in C, but they differ in precision, memory usage, and range.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/c-float-vs-double.svg" class="img-fluid figure-img"></p>
+<figcaption>A <code>double</code> spends more bits on the mantissa (precision) and the exponent (range) than a <code>float</code></figcaption>
+</figure>
+</div>
+<p>The fundamental difference is that <code>double</code> provides roughly twice the precision of <code>float</code>. Modern desktop computers handle both at similar speeds, so <code>double</code> is generally preferred unless memory is tightly restricted.</p>
+<section id="quick-comparison" class="level2">
+<h2 class="anchored" data-anchor-id="quick-comparison">Quick Comparison</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>float</th>
+<th>double</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Precision</td>
+<td>Single (~6–7 decimal digits)</td>
+<td>Double (~15 decimal digits)</td>
+</tr>
+<tr class="even">
+<td>Memory size</td>
+<td>4 bytes (32 bits)</td>
+<td>8 bytes (64 bits)</td>
+</tr>
+<tr class="odd">
+<td>IEEE 754 bit layout</td>
+<td>1 sign, 8 exponent, 23 mantissa</td>
+<td>1 sign, 11 exponent, 52 mantissa</td>
+</tr>
+<tr class="even">
+<td>Range</td>
+<td>≈ 1.2 × 10⁻³⁸ to 3.4 × 10⁺³⁸</td>
+<td>≈ 2.2 × 10⁻³⁰⁸ to 1.8 × 10⁺³⁰⁸</td>
+</tr>
+<tr class="odd">
+<td><code>printf</code> specifier</td>
+<td><code>%f</code></td>
+<td><code>%f</code> (<code>%lf</code> also accepted)</td>
+</tr>
+<tr class="even">
+<td><code>scanf</code> specifier</td>
+<td><code>%f</code></td>
+<td><code>%lf</code></td>
+</tr>
+<tr class="odd">
+<td>Literal</td>
+<td><code>3.14f</code> (needs <code>f</code> or <code>F</code>)</td>
+<td><code>3.14</code> (the default)</td>
+</tr>
+</tbody>
+</table>
+<p>The ranges above are the smallest and largest normal positive values. You can check every number on your own machine with <code>sizeof</code> and the constants in <code>&lt;float.h&gt;</code>.</p>
+</section>
+<section id="precision-and-the-rounding-trap" class="level2">
+<h2 class="anchored" data-anchor-id="precision-and-the-rounding-trap">1. Precision and the Rounding Trap</h2>
+<p>A <code>float</code> has 23 bits for its fractional part (the mantissa), so it starts losing accuracy after about 7 significant digits. A <code>double</code> has 52 bits and stays accurate to about 15.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdio.h&gt;</span></span>
+<span id="cb1-2"></span>
+<span id="cb1-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">()</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-4">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Both variables are assigned the same long decimal</span></span>
+<span id="cb1-5">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">float</span> pi_float <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3.141592653589793</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">f</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-6">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">double</span> pi_double <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3.141592653589793</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-7"></span>
+<span id="cb1-8">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// %.15f prints 15 digits after the decimal point</span></span>
+<span id="cb1-9">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Float value:  </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%.15f\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> pi_float<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb1-10">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Double value: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%.15f\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> pi_double<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb1-11">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-12"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>Output (compiled with GCC):</p>
+<pre><code>Float value:  3.141592741012573
+Double value: 3.141592653589793</code></pre>
+<p>The float is already wrong from the 7th decimal place onward (<code>3.1415927...</code> instead of <code>3.1415926...</code>).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Why do float and double often look identical when printed?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>%f</code> prints only 6 digits after the decimal point by default, which hides the difference. Ask for more digits, such as <code>%.15f</code>, to see it.</p>
+</div>
+</div>
+</section>
+<section id="neither-can-store-0.1-exactly" class="level2">
+<h2 class="anchored" data-anchor-id="neither-can-store-0.1-exactly">2. Neither Can Store 0.1 Exactly</h2>
+<p>Computers store numbers in binary, and 0.1 has no finite binary representation. Both types store the nearest approximation; <code>double</code> is just much closer.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">float</span>  a <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">f</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb3-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">double</span> b <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb3-3">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%.20f\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 0.10000000149011611938</span></span>
+<span id="cb3-4">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%.20f\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> b<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 0.10000000000000000555</span></span></code></pre></div></div>
+<p>This is why comparing floating-point numbers with <code>==</code> is risky, even with <code>double</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.2</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 0 (false!)</span></span>
+<span id="cb4-2">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%.17f\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>       <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 0.30000000000000004</span></span></code></pre></div></div>
+<p>Instead of <code>==</code>, check whether the difference is tiny: <code>fabs(x - y) &lt; 1e-9</code> (needs <code>&lt;math.h&gt;</code>).</p>
+</section>
+<section id="errors-accumulate" class="level2">
+<h2 class="anchored" data-anchor-id="errors-accumulate">3. Errors Accumulate</h2>
+<p>Small rounding errors add up when repeated. Here we add 0.1 ten million times, so the exact answer is 1,000,000:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">float</span>  s <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">double</span> d <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-3"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10000000</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb5-4">    s <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">f</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-5">    d <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-6"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb5-7">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"float:  </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%f\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 1087937.000000  (about 9% off!)</span></span>
+<span id="cb5-8">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"double: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%f\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> d<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 999999.999839   (off by about 0.0002)</span></span></code></pre></div></div>
+<p>A <code>float</code> also runs out of whole-number precision early: above 16,777,216 (2²⁴) it cannot represent every integer, so <code>16777216.0f + 1.0f</code> is still <code>16777216.0</code>.</p>
+</section>
+<section id="literals-and-defaults" class="level2">
+<h2 class="anchored" data-anchor-id="literals-and-defaults">4. Literals and Defaults</h2>
+<p>In C, any decimal number written directly in code (such as <code>3.14</code>) is a <code>double</code>. To make a <code>float</code>, add an <code>f</code> or <code>F</code> suffix:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">float</span>  x <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3.14</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">f</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// float literal</span></span>
+<span id="cb6-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">float</span>  y <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3.14</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span>    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// double literal silently converted to float</span></span>
+<span id="cb6-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">double</span> z <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3.14</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span>    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// double literal</span></span></code></pre></div></div>
+<p>Writing <code>float y = 3.14;</code> compiles fine, but the compiler converts a <code>double</code> to a <code>float</code>, which can lose precision. Use the <code>f</code> suffix to be explicit.</p>
+</section>
+<section id="mixing-types" class="level2">
+<h2 class="anchored" data-anchor-id="mixing-types">5. Mixing Types</h2>
+<p>When a <code>float</code> and a <code>double</code> meet in an expression, the <code>float</code> is promoted to <code>double</code>. Also, <code>printf</code> always receives a <code>double</code> for <code>%f</code>, which is why <code>%f</code> works for both types:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">float</span> f <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3.0</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">f</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb7-2">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%f\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> f<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>          <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 0.333333</span></span>
+<span id="cb7-3">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%.15f\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">double</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> f<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 0.333333343267441 (the float's rounding error is still there)</span></span></code></pre></div></div>
+<p>Promoting to <code>double</code> does not repair an error that already happened; it only prevents new ones.</p>
+</section>
+<section id="when-to-use-which" class="level2">
+<h2 class="anchored" data-anchor-id="when-to-use-which">When to Use Which?</h2>
+<p><strong>Use <code>double</code> for:</strong></p>
+<ul>
+<li>Everyday programming and general calculations.</li>
+<li>Scientific computing, statistics, and simulations, where errors can grow.</li>
+<li>Large sums or long loops, where rounding errors accumulate.</li>
+</ul>
+<p><strong>Use <code>float</code> for:</strong></p>
+<ul>
+<li>Memory-critical systems, such as embedded hardware with limited RAM.</li>
+<li>Huge arrays of floating-point numbers, where halving the memory matters.</li>
+<li>Graphics, games, and GPU computing (CUDA), where throughput matters more than extreme accuracy.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Rule of thumb
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Start with <code>double</code>. Switch to <code>float</code> only when you have a measured memory or speed reason, and you know the reduced precision is acceptable.</p>
+</div>
+</div>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ol type="1">
+<li><a href="https://www.reddit.com/r/learnprogramming/comments/1gi6xo5/float_vs_double_whats_the_key_difference/">Float vs double: what’s the key difference? (Reddit r/learnprogramming)</a></li>
+<li><a href="https://www.geeksforgeeks.org/cpp/difference-float-double-c-cpp/">Difference between float and double in C/C++ (GeeksforGeeks)</a></li>
+<li><a href="https://www.geeksforgeeks.org/c/c-float-and-double/">C float and double (GeeksforGeeks)</a></li>
+<li><a href="https://www.programiz.com/cpp-programming/float-double">C++ float and double (Programiz)</a></li>
+<li><a href="https://softwareengineering.stackexchange.com/questions/188721/when-do-you-use-float-and-when-do-you-use-double">When do you use float and when do you use double? (Software Engineering Stack Exchange)</a></li>
+<li><a href="https://www.scaler.com/topics/difference-between-float-and-double-in-c-cpp/">Difference between float and double in C/C++ (Scaler)</a></li>
+<li><a href="https://www.freecodecamp.org/news/double-vs-float-in-cpp-the-difference-between-floats-and-doubles/">Double vs float in C++ (freeCodeCamp)</a></li>
+<li><a href="https://unstop.com/blog/difference-between-float-and-double">Difference between float and double (Unstop)</a></li>
+<li><a href="https://meshlib.io/documentation/FloatVSDouble.html">Float vs double (MeshLib)</a></li>
+</ol>
+
+
+</section>
+
+ ]]></description>
+  <category>C</category>
+  <category>Programming</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/c-double-vs-float.html</guid>
+  <pubDate>Fri, 25 Sep 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/c-float-vs-double.svg" medium="image" type="image/svg+xml"/>
+</item>
+<item>
+  <title>Nested if in C, Explained with Real-Life Examples</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/c-nested-if-explained-with-examples.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/c-nested-if-flow.svg" class="img-fluid figure-img"></p>
+<figcaption>Nested <code>if</code>: the inner check runs only when the outer condition is true</figcaption>
+</figure>
+</div>
+<p>A nested <code>if</code> statement in C is simply an <code>if</code> statement placed inside another <code>if</code> statement. It lets you test conditions that depend on one another: the inner condition is evaluated only if the outer condition is true.</p>
+<section id="example-1-e-commerce-discount-eligibility" class="level2">
+<h2 class="anchored" data-anchor-id="example-1-e-commerce-discount-eligibility">Example 1: E-commerce discount eligibility</h2>
+<p>Imagine an online store running a promotion:</p>
+<ol type="1">
+<li><strong>Outer condition:</strong> is the customer a premium member?</li>
+<li><strong>Inner condition:</strong> only if they are, check the purchase amount. Over $1,000 earns a 20% discount; otherwise 10%.</li>
+<li>Non-members get no discount at all.</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdio.h&gt;</span></span>
+<span id="cb1-2"></span>
+<span id="cb1-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">()</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-4">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> isMember <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span>              <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 1 for yes, 0 for no</span></span>
+<span id="cb1-5">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">double</span> purchaseAmount <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1250.00</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-6"></span>
+<span id="cb1-7">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Outer if: is the user a premium member?</span></span>
+<span id="cb1-8">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>isMember <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-9">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Membership verified.</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb1-10"></span>
+<span id="cb1-11">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Inner (nested) if: the order total decides the discount</span></span>
+<span id="cb1-12">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>purchaseAmount <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1000.0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-13">            printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Success: You qualify for a 20</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%%</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> VIP discount!</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb1-14">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-15">            printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Success: You qualify for a 10</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%%</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> Standard Member discount.</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb1-16">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-17"></span>
+<span id="cb1-18">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-19">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Runs if the outer condition (isMember == 1) is false</span></span>
+<span id="cb1-20">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Standard account: No discount available for non-members.</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb1-21">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-22"></span>
+<span id="cb1-23">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-24"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>Output:</p>
+<pre><code>Membership verified.
+Success: You qualify for a 20% VIP discount!</code></pre>
+<p>Note <code>%%</code> in <code>printf</code>: a single <code>%</code> starts a format specifier, so a literal percent sign must be written twice.</p>
+<p>The flowchart at the top of this post shows the same logic. If <code>isMember</code> were <code>0</code>, the computer would skip the inner <code>purchaseAmount</code> check entirely and jump straight to the outer <code>else</code>.</p>
+</section>
+<section id="example-2-atm-withdrawal" class="level2">
+<h2 class="anchored" data-anchor-id="example-2-atm-withdrawal">Example 2: ATM withdrawal</h2>
+<p>Here is another common scenario:</p>
+<ol type="1">
+<li><strong>Outer condition:</strong> did the user enter the correct PIN?</li>
+<li><strong>Inner condition:</strong> only if so, does the account have enough balance for the withdrawal?</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdio.h&gt;</span></span>
+<span id="cb3-2"></span>
+<span id="cb3-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">()</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb3-4">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> enteredPin <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1234</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb3-5">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> correctPin <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1234</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb3-6">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">double</span> accountBalance <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5000.00</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb3-7">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">double</span> withdrawalAmount <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6000.00</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb3-8"></span>
+<span id="cb3-9">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Outer if: security check for the PIN</span></span>
+<span id="cb3-10">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>enteredPin <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> correctPin<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb3-11">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PIN verified successfully.</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb3-12"></span>
+<span id="cb3-13">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Inner (nested) if: financial check for sufficient funds</span></span>
+<span id="cb3-14">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>withdrawalAmount <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;=</span> accountBalance<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb3-15">            printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Transaction approved. Please collect your cash.</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb3-16">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb3-17">            printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Transaction denied: Insufficient funds in your account.</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb3-18">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb3-19"></span>
+<span id="cb3-20">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb3-21">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Runs if the outer condition (enteredPin == correctPin) is false</span></span>
+<span id="cb3-22">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Transaction denied: Invalid PIN entered.</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb3-23">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb3-24"></span>
+<span id="cb3-25">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb3-26"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>Output (the withdrawal exceeds the balance):</p>
+<pre><code>PIN verified successfully.
+Transaction denied: Insufficient funds in your account.</code></pre>
+<p>The logic as a text flowchart:</p>
+<pre><code>[Is the PIN correct?]
+       │
+       ├──► YES ──► [Is there enough cash in the account?]
+       │                   │
+       │                   ├──► YES ──► Dispense cash
+       │                   └──► NO  ──► Show "Insufficient funds"
+       │
+       └──► NO  ──────────────────────► Show "Invalid PIN"</code></pre>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Why this must be nested
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>You must not check the account balance before verifying the user’s identity. Nesting keeps the balance logic locked behind a successful PIN check, so it can never run when the PIN is wrong.</p>
+</div>
+</div>
+</section>
+<section id="nested-if-or" class="level2">
+<h2 class="anchored" data-anchor-id="nested-if-or">Nested <code>if</code> or <code>&amp;&amp;</code>?</h2>
+<p>If the outer check has <strong>no <code>else</code> of its own</strong> and you only want to know whether <em>both</em> conditions hold, a single <code>if</code> with <code>&amp;&amp;</code> is shorter:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>isMember <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;&amp;</span> purchaseAmount <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1000.0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb6-2">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"20</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%%</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> discount</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb6-3"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>Use nesting when each level needs its <strong>own different outcome</strong> (as in both examples above, where “not a member” and “member but small purchase” give different results).</p>
+</section>
+<section id="common-pitfalls" class="level2">
+<h2 class="anchored" data-anchor-id="common-pitfalls">Common pitfalls</h2>
+<ul>
+<li><strong>Dangling <code>else</code>:</strong> an <code>else</code> always belongs to the nearest unmatched <code>if</code>. Without braces, the compiler pairs it differently from what the indentation suggests. Always use braces <code>{ }</code>.</li>
+<li><strong>Too deep:</strong> more than two or three levels becomes hard to read. Flatten with <code>&amp;&amp;</code>, an early <code>return</code>, or a helper function.</li>
+<li><strong><code>=</code> instead of <code>==</code>:</strong> <code>if (isMember = 1)</code> assigns and is always true. Compile with <code>-Wall</code> to catch it.</li>
+</ul>
+</section>
+<section id="key-takeaway" class="level2">
+<h2 class="anchored" data-anchor-id="key-takeaway">Key takeaway</h2>
+<p>The inner <code>if</code> is evaluated only when the outer condition is true. This makes the program efficient and lets you express steps that must happen in order, such as verifying identity before touching money.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ol type="1">
+<li><a href="https://www.w3schools.com/c/c_conditions_nested.php">C nested if (W3Schools)</a></li>
+<li><a href="https://uncodemy.com/blog/nested-if-statement-in-c-with-code-examples">Nested if statement in C with code examples (Uncodemy)</a></li>
+<li><a href="https://www.wscubetech.com/resources/c-programming/nested-if-else">Nested if-else in C (WsCube Tech)</a></li>
+<li><a href="https://beginnersbook.com/2014/01/c-if-else-statement-example/">C if…else statement example (BeginnersBook)</a></li>
+</ol>
+
+
+</section>
+
+ ]]></description>
+  <category>C</category>
+  <category>Programming</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/c-nested-if-explained-with-examples.html</guid>
+  <pubDate>Fri, 25 Sep 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/c-nested-if-flow.svg" medium="image" type="image/svg+xml"/>
+</item>
+<item>
   <title>10 Short Real-World C Programming Examples (if + Loop Patterns)</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://www.statmania.info/blog/posts/10-short-real-world-c-programming-examples.html</link>
@@ -4499,284 +5478,6 @@ font-style: inherit;">theme_minimal</span>()</span></code></pre></div></div>
   <guid>https://www.statmania.info/blog/posts/negative-binomial.html</guid>
   <pubDate>Mon, 11 May 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/binom.jpeg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Be Impressive with Mathematics</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/be-impressive-with-math.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>Suppose we want to publish something that is as simple as</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A1%20+%201%20=%202%20%5Ctag%7B1%7D%0A"></p>
-<p>This is not very impressive. If we want our article to be accepted by IEEE reviewers, we have to be more abstract. So, we could complicate the left hand side of the expression by using</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cln(e)%20=%201%20%5Cquad%20%5Ctext%7Band%7D%20%5Cquad%20%5Csin%5E2%20x%20+%20%5Ccos%5E2%20x%20=%201%0A"></p>
-<p>and the right hand side can be stated as</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A2%20=%20%5Csum_%7Bn=0%7D%5E%5Cinfty%20%5Cfrac%7B1%7D%7B2%5En%7D.%0A"></p>
-<p>Therefore, Equation (1) can be expressed more scientifically as:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cln(e)%20+%20(%5Csin%5E2%20x%20+%20%5Ccos%5E2%20x)%20=%20%5Csum_%7Bn=0%7D%5E%5Cinfty%20%5Cfrac%7B1%7D%7B2%5En%7D%20%5Ctag%7B2%7D%0A"></p>
-<p>which is far more impressive. However, we should not stop here. The expression can be further complicated by using</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0Ae%20=%20%5Clim_%7Bz%20%5Cto%20%5Cinfty%7D%20%5Cleft(%201%20+%20%5Cfrac%7B1%7D%7Bz%7D%20%5Cright)%5Ez%20%5Cquad%20%5Ctext%7Band%7D%20%5Cquad%201%20=%20%5Ccosh(y)%20%5Csqrt%7B1%20-%20%5Ctanh%5E2%20y%7D.%0A"></p>
-<p>Equation (2) may therefore be written as</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cln%20%5Cleft%5B%20%5Clim_%7Bz%20%5Cto%20%5Cinfty%7D%20%5Cleft(%201%20+%20%5Cfrac%7B1%7D%7Bz%7D%20%5Cright)%5Ez%20%5Cright%5D%20+%20(%5Csin%5E2%20x%20+%20%5Ccos%5E2%20x)%20=%20%5Csum_%7Bn=0%7D%5E%5Cinfty%20%5Cfrac%7B%5Ccosh(y)%20%5Csqrt%7B1%20-%20%5Ctanh%5E2%20y%7D%7D%7B2%5En%7D%20%5Ctag%7B3%7D%0A"></p>
-<p><strong>Note:</strong> Other methods of a similar nature could also be used to enhance our prestige, once we grasp the underlying principles.</p>
-<p>Source: <a href="https://www.facebook.com/ahsan.jaamee">Ahsan Jaame</a></p>
-
-
-
- ]]></description>
-  <category>Mathematics</category>
-  <category>recreational-math</category>
-  <guid>https://www.statmania.info/blog/posts/be-impressive-with-math.html</guid>
-  <pubDate>Wed, 22 Apr 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/math-student.png" medium="image" type="image/png"/>
-</item>
-<item>
-  <title>SVM vs ANN: relative power, and usage guidelines</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/ANN-vs-SVM.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="svm-support-vector-machine" class="level2">
-<h2 class="anchored" data-anchor-id="svm-support-vector-machine"><strong>1. SVM (Support Vector Machine)</strong></h2>
-<section id="strengths" class="level3">
-<h3 class="anchored" data-anchor-id="strengths"><strong>Strengths</strong></h3>
-<ul>
-<li><strong>Effective in high dimensions</strong> with clear margin separation</li>
-<li><strong>Memory efficient</strong> (uses only support vectors for prediction)</li>
-<li><strong>Robust to overfitting</strong> in high-dimensional spaces</li>
-<li><strong>Global optimum guaranteed</strong> (convex optimization)</li>
-<li><strong>Works well with small-to-medium datasets</strong></li>
-<li><strong>Excellent with clear margin separation</strong></li>
-</ul>
-</section>
-<section id="weaknesses" class="level3">
-<h3 class="anchored" data-anchor-id="weaknesses"><strong>Weaknesses</strong></h3>
-<ul>
-<li><strong>Poor with very large datasets</strong> (training is O(n³))</li>
-<li><strong>Struggles with noisy/overlapping data</strong></li>
-<li><strong>Kernel choice is critical and heuristic</strong></li>
-<li><strong>Doesn’t directly provide probability estimates</strong></li>
-<li><strong>Binary by nature</strong> (needs extensions for multi-class)</li>
-</ul>
-<hr>
-</section>
-</section>
-<section id="ann-artificial-neural-networks" class="level2">
-<h2 class="anchored" data-anchor-id="ann-artificial-neural-networks"><strong>2. ANN (Artificial Neural Networks)</strong></h2>
-<section id="strengths-1" class="level3">
-<h3 class="anchored" data-anchor-id="strengths-1"><strong>Strengths</strong></h3>
-<ul>
-<li><strong>Universal approximators</strong> can model any complex function</li>
-<li><strong>Excellent with huge datasets</strong> (scales well)</li>
-<li><strong>Automatic feature learning</strong> (deep networks)</li>
-<li><strong>State-of-the-art</strong> for vision, NLP, audio</li>
-<li><strong>Handles noisy data well</strong></li>
-<li><strong>Natively supports multi-class problems</strong></li>
-</ul>
-</section>
-<section id="weaknesses-1" class="level3">
-<h3 class="anchored" data-anchor-id="weaknesses-1"><strong>Weaknesses</strong></h3>
-<ul>
-<li><strong>Requires lots of data</strong> (overfits easily on small data)</li>
-<li><strong>Computationally expensive</strong> to train</li>
-<li><strong>Black box</strong> (hard to interpret)</li>
-<li><strong>Many hyperparameters</strong> to tune</li>
-<li><strong>Local minima</strong> (non-convex optimization)</li>
-<li><strong>Sensitive to initialization</strong></li>
-</ul>
-<hr>
-</section>
-</section>
-<section id="which-is-more-powerful" class="level2">
-<h2 class="anchored" data-anchor-id="which-is-more-powerful"><strong>3. Which is More “Powerful”?</strong></h2>
-<section id="theoretical-power" class="level3">
-<h3 class="anchored" data-anchor-id="theoretical-power"><strong>Theoretical Power</strong>:</h3>
-<ul>
-<li><strong>ANN wins</strong> in representational capacity</li>
-<li>Universal approximation theorem: ANN with 1+ hidden layers can approximate any continuous function</li>
-<li>SVM with RBF kernel also universal, but less flexible in practice</li>
-</ul>
-</section>
-<section id="practical-power" class="level3">
-<h3 class="anchored" data-anchor-id="practical-power"><strong>Practical Power</strong>:</h3>
-<ul>
-<li><strong>Large data, complex patterns</strong>: ANN/DL</li>
-<li><strong>Small/medium data, clear margins</strong>: SVM</li>
-<li><strong>Tabular data</strong>: Often SVM or gradient boosting</li>
-<li><strong>Image/text/sequence data</strong>: ANN dominates</li>
-</ul>
-<hr>
-</section>
-</section>
-<section id="decision-guide-when-to-use-which" class="level2">
-<h2 class="anchored" data-anchor-id="decision-guide-when-to-use-which"><strong>4. Decision Guide: When to Use Which</strong></h2>
-<section id="use-svm-when" class="level3">
-<h3 class="anchored" data-anchor-id="use-svm-when"><strong>Use SVM when</strong>:</h3>
-<ol type="1">
-<li><strong>Dataset is small-to-medium</strong> (n &lt; 10K-50K samples)</li>
-<li><strong>Features &gt; samples</strong> (genomics, text mining)</li>
-<li><strong>Clear margin of separation</strong> exists</li>
-<li><strong>Limited computational resources</strong></li>
-<li><strong>Need interpretable model</strong> (linear SVM)</li>
-<li><strong>Working with structured tabular data</strong></li>
-</ol>
-</section>
-<section id="use-ann-when" class="level3">
-<h3 class="anchored" data-anchor-id="use-ann-when"><strong>Use ANN when</strong>:</h3>
-<ol type="1">
-<li><strong>Massive datasets</strong> (millions of samples)</li>
-<li><strong>Raw/unstructured data</strong> (images, text, audio)</li>
-<li><strong>Need automatic feature extraction</strong></li>
-<li><strong>Complex non-linear patterns</strong></li>
-<li><strong>State-of-the-art performance</strong> is critical</li>
-<li><strong>Sequential/temporal data</strong> (RNNs/LSTMs)</li>
-</ol>
-<hr>
-</section>
-</section>
-<section id="performance-comparison-by-domain" class="level2">
-<h2 class="anchored" data-anchor-id="performance-comparison-by-domain"><strong>5. Performance Comparison by Domain</strong></h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 27%">
-<col style="width: 44%">
-<col style="width: 27%">
-</colgroup>
-<thead>
-<tr class="header">
-<th><strong>Domain</strong></th>
-<th><strong>Typical Winner</strong></th>
-<th><strong>Reason</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Image Classification</td>
-<td>ANN (CNN)</td>
-<td>Automatic feature learning from pixels</td>
-</tr>
-<tr class="even">
-<td>Text Classification</td>
-<td>ANN (BERT, Transformers)</td>
-<td>Context understanding</td>
-</tr>
-<tr class="odd">
-<td>Tabular Data &lt; 10K samples</td>
-<td>SVM/Gradient Boosting</td>
-<td>Clear margins, efficient</td>
-</tr>
-<tr class="even">
-<td>Genomics/Microarrays</td>
-<td>SVM</td>
-<td>High dimensions, small n</td>
-</tr>
-<tr class="odd">
-<td>Time Series Forecasting</td>
-<td>ANN (LSTM)</td>
-<td>Sequential dependency</td>
-</tr>
-<tr class="even">
-<td>Anomaly Detection (small n)</td>
-<td>One-Class SVM</td>
-<td>Novelty detection efficiency</td>
-</tr>
-</tbody>
-</table>
-<hr>
-</section>
-<section id="example-scenarios" class="level2">
-<h2 class="anchored" data-anchor-id="example-scenarios"><strong>6. Example Scenarios</strong></h2>
-<section id="scenario-1-medical-diagnosis-1000-patient-records-200-features" class="level3">
-<h3 class="anchored" data-anchor-id="scenario-1-medical-diagnosis-1000-patient-records-200-features"><strong>Scenario 1: Medical Diagnosis (1,000 patient records, 200 features)</strong></h3>
-<ul>
-<li><strong>Choose</strong>: SVM or Random Forest</li>
-<li><strong>Why</strong>: Moderate dataset, interpretability important, clear risk factors</li>
-</ul>
-</section>
-<section id="scenario-2-image-recognition-1m-images" class="level3">
-<h3 class="anchored" data-anchor-id="scenario-2-image-recognition-1m-images"><strong>Scenario 2: Image Recognition (1M images)</strong></h3>
-<ul>
-<li><strong>Choose</strong>: ANN (Convolutional Neural Network)</li>
-<li><strong>Why</strong>: Raw pixel data, needs feature learning, massive dataset</li>
-</ul>
-</section>
-<section id="scenario-3-sentiment-analysis-50k-reviews" class="level3">
-<h3 class="anchored" data-anchor-id="scenario-3-sentiment-analysis-50k-reviews"><strong>Scenario 3: Sentiment Analysis (50K reviews)</strong></h3>
-<ul>
-<li><strong>Traditional</strong>: SVM with TF-IDF</li>
-<li><strong>Modern</strong>: ANN (BERT fine-tuning) for better accuracy</li>
-</ul>
-</section>
-<section id="scenario-4-stock-price-prediction-20-years-daily-data" class="level3">
-<h3 class="anchored" data-anchor-id="scenario-4-stock-price-prediction-20-years-daily-data"><strong>Scenario 4: Stock Price Prediction (20 years daily data)</strong></h3>
-<ul>
-<li><strong>Choose</strong>: ANN (LSTM/Transformers)</li>
-<li><strong>Why</strong>: Sequential patterns, complex dependencies</li>
-</ul>
-<hr>
-</section>
-</section>
-<section id="hybrid-approaches" class="level2">
-<h2 class="anchored" data-anchor-id="hybrid-approaches"><strong>7. Hybrid Approaches</strong></h2>
-<p>Sometimes best results come from combining: - <strong>SVM as final layer</strong> of neural network - <strong>ANN features + SVM classifier</strong> - <strong>Ensemble</strong> of both</p>
-<hr>
-</section>
-<section id="practical-recommendations" class="level2">
-<h2 class="anchored" data-anchor-id="practical-recommendations"><strong>8. Practical Recommendations</strong></h2>
-<ol type="1">
-<li><strong>Start with SVM/Gradient Boosting</strong> for tabular data unless:
-<ul>
-<li>You have &gt; 50K samples</li>
-<li>Data is unstructured</li>
-<li>You need SOTA performance</li>
-</ul></li>
-<li><strong>Default to ANN</strong> for:
-<ul>
-<li>Computer vision</li>
-<li>Natural language processing</li>
-<li>Speech/audio processing</li>
-<li>Recommender systems with implicit feedback</li>
-</ul></li>
-<li><strong>Consider computational constraints</strong>:
-<ul>
-<li>SVM: Faster training on small data</li>
-<li>ANN: Faster inference after training</li>
-</ul></li>
-<li><strong>Skill availability</strong>:
-<ul>
-<li>SVM: Easier to implement and tune</li>
-<li>ANN: Requires more expertise</li>
-</ul></li>
-</ol>
-<hr>
-</section>
-<section id="conclusion" class="level2">
-<h2 class="anchored" data-anchor-id="conclusion"><strong>Conclusion</strong></h2>
-<p><strong>Neither is universally “more powerful”</strong> — it depends on context:</p>
-<ul>
-<li><strong>SVM</strong>: “Smart, efficient scalpel” for well-defined problems with limited data</li>
-<li><strong>ANN</strong>: “Powerful, data-hungry excavator” for complex patterns with abundant data</li>
-</ul>
-<p><strong>Rule of thumb</strong>: Try SVM/Random Forest/XGBoost first on tabular data. Use ANN when (1) data is unstructured, or (2) you need the absolute best performance and have the data/compute to support it.</p>
-
-
-</section>
-
- ]]></description>
-  <category>statistics</category>
-  <category>theory</category>
-  <category>ML</category>
-  <category>algorithm</category>
-  <guid>https://www.statmania.info/blog/posts/ANN-vs-SVM.html</guid>
-  <pubDate>Sun, 04 Jan 2026 18:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>

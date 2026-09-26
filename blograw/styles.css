@@ -27,9 +27,40 @@
   --sm-muted: #9aa4c2;
 }
 
-html, body{
+html{
   background-color: var(--sm-bg) !important;
+}
+/* body is transparent so the fixed starfield canvas (starfield.html)
+   shows through; the solid colour lives on <html>. */
+body{
+  background-color: transparent !important;
   color: var(--sm-text);
+}
+.sm-canvas{
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  display: block;
+  pointer-events: none;
+}
+#quarto-content,
+.nav-footer,
+footer.footer{
+  position: relative;
+  z-index: 1;
+}
+/* Leave the header's own position (Quarto makes it fixed-top); overriding it
+   left the body's fixed-navbar padding as an empty strip above the nav. */
+/* Post body: opaque panel so the starfield stays outside the text area */
+main.content{
+  background: var(--sm-bg2);
+  border: 1px solid rgba(0,229,255,0.10);
+  border-radius: 14px;
+  padding: 1.5rem 1.75rem;
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 /* Navbar */
@@ -307,4 +338,52 @@ main.content hr{ border-color: rgba(255,255,255,0.12); }
 .aa-Panel{
   background: var(--sm-bg2) !important;
   color: var(--sm-text) !important;
+}
+
+/* Callouts (note / tip / warning / important / caution) on the dark theme.
+   Cosmo's defaults are light-tinted panels, which leave our light body text
+   unreadable, so give them a dark panel, a coloured left border, and
+   explicit high-contrast text. */
+div.callout.callout-style-default,
+div.callout.callout-style-simple{
+  /* futuristic panel: tinted glow from the corner + faint grid lines */
+  background:
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px) 0 0 / 22px 22px,
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px) 0 0 / 22px 22px,
+    linear-gradient(135deg, rgba(0,229,255,0.18) 0%, rgba(168,85,247,0.10) 55%, rgba(10,15,30,0.92) 100%),
+    var(--sm-bg2) !important;
+  background:
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px) 0 0 / 22px 22px,
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px) 0 0 / 22px 22px,
+    linear-gradient(135deg, color-mix(in srgb, var(--callout-color, #00e5ff) 24%, transparent) 0%, rgba(168,85,247,0.10) 55%, rgba(10,15,30,0.92) 100%),
+    var(--sm-bg2) !important;
+  box-shadow: 0 0 22px color-mix(in srgb, var(--callout-color, #00e5ff) 22%, transparent), inset 0 0 0 1px rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  border-left: 5px solid var(--callout-color, var(--sm-cyan)) !important;
+  border-radius: 8px;
+  color: var(--sm-text);
+}
+div.callout.callout-style-default .callout-body-container,
+div.callout.callout-style-default .callout-body,
+div.callout.callout-style-simple .callout-body-container,
+div.callout.callout-style-simple .callout-body{
+  color: var(--sm-text) !important;
+}
+div.callout.callout-style-default > .callout-header{
+  background: rgba(255,255,255,0.05) !important;
+  color: #fff !important;
+  font-weight: 600;
+}
+div.callout .callout-title-container,
+div.callout .callout-title-container p{
+  color: #fff !important;
+}
+div.callout.callout-note{      --callout-color: var(--sm-cyan); }
+div.callout.callout-tip{       --callout-color: #34d399; }
+div.callout.callout-important{ --callout-color: var(--sm-pink); }
+div.callout.callout-warning{   --callout-color: #fbbf24; }
+div.callout.callout-caution{   --callout-color: #fb923c; }
+div.callout code{
+  color: #8be9ff;
+  background: rgba(0,229,255,0.10);
 }

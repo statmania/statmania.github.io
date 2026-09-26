@@ -7,10 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Abdullah Al Mahmud">
-<meta name="dcterms.date" content="2026-08-05">
-<meta name="description" content="The geometric distribution models the number of trials until the first success in independent Bernoulli trials. This post explains when and why to use it, with a real-world example and R visualization.">
+<meta name="dcterms.date" content="2026-09-26">
+<meta name="description" content="What a nested if statement is in C, when the inner check runs, and two worked examples (a store discount and an ATM withdrawal) with flowcharts, code and common pitfalls.">
 
-<title>Why Use the Geometric Distribution? – Stat Mania</title>
+<title>Nested if in C, Explained with Real-Life Examples – Stat Mania</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -119,48 +119,15 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
 </script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <link rel="stylesheet" href="../styles.css">
-<meta property="og:title" content="Why Use the Geometric Distribution? – Stat Mania">
-<meta property="og:description" content="The geometric distribution models the number of trials until the first success in independent Bernoulli trials. This post explains when and why to use it, with a real-world example and R visualization.">
-<meta property="og:image" content="https://www.statmania.info/blog/posts/geometric-distribution_files/figure-html/unnamed-chunk-1-1.png">
+<meta property="og:title" content="Nested if in C, Explained with Real-Life Examples – Stat Mania">
+<meta property="og:description" content="What a nested if statement is in C, when the inner check runs, and two worked examples (a store discount and an ATM withdrawal) with flowcharts, code and common pitfalls.">
+<meta property="og:image" content="https://www.statmania.info/blog/img/c-nested-if-flow.svg">
 <meta property="og:site_name" content="Stat Mania">
-<meta property="og:image:height" content="960">
-<meta property="og:image:width" content="1344">
-<meta name="twitter:title" content="Why Use the Geometric Distribution? – Stat Mania">
-<meta name="twitter:description" content="The geometric distribution models the number of trials until the first success in independent Bernoulli trials. This post explains when and why to use it, with a real-world example and R visualization.">
-<meta name="twitter:image" content="https://www.statmania.info/blog/posts/geometric-distribution_files/figure-html/unnamed-chunk-1-1.png">
-<meta name="twitter:image-height" content="960">
-<meta name="twitter:image-width" content="1344">
+<meta name="twitter:title" content="Nested if in C, Explained with Real-Life Examples – Stat Mania">
+<meta name="twitter:description" content="What a nested if statement is in C, when the inner check runs, and two worked examples (a store discount and an ATM withdrawal) with flowcharts, code and common pitfalls.">
+<meta name="twitter:image" content="https://www.statmania.info/blog/img/c-nested-if-flow.svg">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
@@ -220,15 +187,16 @@ window.Quarto = {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Why Use the Geometric Distribution?</h1>
+      <h1 class="title">Nested if in C, Explained with Real-Life Examples</h1>
                   <div>
         <div class="description">
-          The geometric distribution models the number of trials until the first success in independent Bernoulli trials. This post explains when and why to use it, with a real-world example and R visualization.
+          What a nested if statement is in C, when the inner check runs, and two worked examples (a store discount and an ATM withdrawal) with flowcharts, code and common pitfalls.
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">probability</div>
-                <div class="quarto-category">discrete distributions</div>
+                <div class="quarto-category">C</div>
+                <div class="quarto-category">Programming</div>
+                <div class="quarto-category">Tutorial</div>
               </div>
                   </div>
   </div>
@@ -246,7 +214,7 @@ window.Quarto = {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">August 5, 2026</p>
+        <p class="date">September 26, 2026</p>
       </div>
     </div>
     
@@ -265,123 +233,138 @@ window.Quarto = {
 
 
 
-<section id="what-is-the-geometric-distribution" class="level2">
-<h2 class="anchored" data-anchor-id="what-is-the-geometric-distribution">What is the Geometric Distribution?</h2>
-<p>The <strong>geometric distribution</strong> models the number of trials needed to get the <strong>first success</strong> in a sequence of independent Bernoulli trials (each with success probability <span class="math inline">\(p\)</span>).</p>
-<p>It answers questions like: <em>“How many times must we try before we succeed for the first time?”</em></p>
-<hr>
-</section>
-<section id="key-characteristics" class="level2">
-<h2 class="anchored" data-anchor-id="key-characteristics">Key Characteristics</h2>
-<ul>
-<li><p><strong>Memoryless property</strong>: The probability of success in the next trial does not depend on how many failures have already occurred.</p></li>
-<li><p><strong>Two common formulations</strong>:</p></li>
-</ul>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 23%">
-<col style="width: 41%">
-<col style="width: 12%">
-<col style="width: 23%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Version</th>
-<th>What it models</th>
-<th>PMF</th>
-<th>Support</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Type 1</td>
-<td>Number of trials until first success (including the success)</td>
-<td><span class="math inline">\(P(X = k) = (1-p)^{k-1}p\)</span></td>
-<td><span class="math inline">\(k = 1, 2, 3, \dots\)</span></td>
-</tr>
-<tr class="even">
-<td>Type 2</td>
-<td>Number of failures before first success</td>
-<td><span class="math inline">\(P(Y = y) = (1-p)^y p\)</span></td>
-<td><span class="math inline">\(y = 0, 1, 2, \dots\)</span></td>
-</tr>
-</tbody>
-</table>
-<hr>
-</section>
-<section id="real-world-example" class="level2">
-<h2 class="anchored" data-anchor-id="real-world-example">Real-World Example</h2>
-<blockquote class="blockquote">
-<p>A quality control inspector tests items coming off an assembly line. Each item has a 5% chance of being defective. What is the probability that the <strong>first defect</strong> is found on the <strong>5th item</strong> tested?</p>
-</blockquote>
-<p>Here:</p>
-<ul>
-<li><span class="math inline">\(p = 0.05\)</span></li>
-<li>We want <span class="math inline">\(P(X = 5)\)</span> with Type 1 formulation.</li>
-</ul>
-<p><span class="math inline">\(P(X = 5) = (1 - 0.05)^{5-1} \times 0.05\)</span></p>
-<p><span class="math inline">\(= (0.95)^4 \times 0.05 \approx 0.8145 \times 0.05 \approx 0.0407\)</span></p>
-<p>So about <strong>4.07%</strong>.</p>
-<hr>
-</section>
-<section id="when-is-the-geometric-distribution-used" class="level2">
-<h2 class="anchored" data-anchor-id="when-is-the-geometric-distribution-used">When Is the Geometric Distribution Used?</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Situation</th>
-<th>Example</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Quality control</td>
-<td>Number of items tested until first defect</td>
-</tr>
-<tr class="even">
-<td>Sports</td>
-<td>Number of shots until first goal</td>
-</tr>
-<tr class="odd">
-<td>Customer behavior</td>
-<td>Number of calls until first sale</td>
-</tr>
-<tr class="even">
-<td>Medicine</td>
-<td>Number of patients until first responder</td>
-</tr>
-<tr class="odd">
-<td>Engineering</td>
-<td>Number of components until first failure</td>
-</tr>
-</tbody>
-</table>
-<hr>
-</section>
-<section id="visualizing-the-geometric-distribution" class="level2">
-<h2 class="anchored" data-anchor-id="visualizing-the-geometric-distribution">Visualizing the Geometric Distribution</h2>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fl">0.05</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">20</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>prob <span class="ot">&lt;-</span> <span class="fu">dgeom</span>(x <span class="sc">-</span> <span class="dv">1</span>, p)  <span class="co"># Type 1: P(X = k) = (1-p)^(k-1) p</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Trials =</span> x, <span class="at">Probability =</span> prob)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> Trials, <span class="at">y =</span> Probability)) <span class="sc">+</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"steelblue"</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Geometric Distribution (p ="</span>, p, <span class="st">")"</span>),</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Number of trials until first success"</span>,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Number of trials"</span>, <span class="at">y =</span> <span class="st">"Probability"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="geometric-distribution_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="../img/c-nested-if-flow.svg" class="img-fluid figure-img"></p>
+<figcaption>Nested <code>if</code>: the inner check runs only when the outer condition is true</figcaption>
 </figure>
 </div>
+<p>A nested <code>if</code> statement in C is simply an <code>if</code> statement placed inside another <code>if</code> statement. It lets you test conditions that depend on one another: the inner condition is evaluated only if the outer condition is true.</p>
+<section id="example-1-e-commerce-discount-eligibility" class="level2">
+<h2 class="anchored" data-anchor-id="example-1-e-commerce-discount-eligibility">Example 1: E-commerce discount eligibility</h2>
+<p>Imagine an online store running a promotion:</p>
+<ol type="1">
+<li><strong>Outer condition:</strong> is the customer a premium member?</li>
+<li><strong>Inner condition:</strong> only if they are, check the purchase amount. Over $1,000 earns a 20% discount; otherwise 10%.</li>
+<li>Non-members get no discount at all.</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> isMember <span class="op">=</span> <span class="dv">1</span><span class="op">;</span>              <span class="co">// 1 for yes, 0 for no</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">double</span> purchaseAmount <span class="op">=</span> <span class="fl">1250.00</span><span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Outer if: is the user a premium member?</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>isMember <span class="op">==</span> <span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"Membership verified.</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Inner (nested) if: the order total decides the discount</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>purchaseAmount <span class="op">&gt;=</span> <span class="fl">1000.0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>            printf<span class="op">(</span><span class="st">"Success: You qualify for a 20</span><span class="sc">%%</span><span class="st"> VIP discount!</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>            printf<span class="op">(</span><span class="st">"Success: You qualify for a 10</span><span class="sc">%%</span><span class="st"> Standard Member discount.</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Runs if the outer condition (isMember == 1) is false</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"Standard account: No discount available for non-members.</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Output:</p>
+<pre><code>Membership verified.
+Success: You qualify for a 20% VIP discount!</code></pre>
+<p>Note <code>%%</code> in <code>printf</code>: a single <code>%</code> starts a format specifier, so a literal percent sign must be written twice.</p>
+<p>The flowchart at the top of this post shows the same logic. If <code>isMember</code> were <code>0</code>, the computer would skip the inner <code>purchaseAmount</code> check entirely and jump straight to the outer <code>else</code>.</p>
+</section>
+<section id="example-2-atm-withdrawal" class="level2">
+<h2 class="anchored" data-anchor-id="example-2-atm-withdrawal">Example 2: ATM withdrawal</h2>
+<p>Here is another common scenario:</p>
+<ol type="1">
+<li><strong>Outer condition:</strong> did the user enter the correct PIN?</li>
+<li><strong>Inner condition:</strong> only if so, does the account have enough balance for the withdrawal?</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> enteredPin <span class="op">=</span> <span class="dv">1234</span><span class="op">;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> correctPin <span class="op">=</span> <span class="dv">1234</span><span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">double</span> accountBalance <span class="op">=</span> <span class="fl">5000.00</span><span class="op">;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">double</span> withdrawalAmount <span class="op">=</span> <span class="fl">6000.00</span><span class="op">;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Outer if: security check for the PIN</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>enteredPin <span class="op">==</span> correctPin<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"PIN verified successfully.</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Inner (nested) if: financial check for sufficient funds</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>withdrawalAmount <span class="op">&lt;=</span> accountBalance<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>            printf<span class="op">(</span><span class="st">"Transaction approved. Please collect your cash.</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>            printf<span class="op">(</span><span class="st">"Transaction denied: Insufficient funds in your account.</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Runs if the outer condition (enteredPin == correctPin) is false</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"Transaction denied: Invalid PIN entered.</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Output (the withdrawal exceeds the balance):</p>
+<pre><code>PIN verified successfully.
+Transaction denied: Insufficient funds in your account.</code></pre>
+<p>The logic as a text flowchart:</p>
+<pre><code>[Is the PIN correct?]
+       │
+       ├──► YES ──► [Is there enough cash in the account?]
+       │                   │
+       │                   ├──► YES ──► Dispense cash
+       │                   └──► NO  ──► Show "Insufficient funds"
+       │
+       └──► NO  ──────────────────────► Show "Invalid PIN"</code></pre>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Why this must be nested
 </div>
 </div>
+<div class="callout-body-container callout-body">
+<p>You must not check the account balance before verifying the user’s identity. Nesting keeps the balance logic locked behind a successful PIN check, so it can never run when the PIN is wrong.</p>
+</div>
+</div>
+</section>
+<section id="nested-if-or" class="level2">
+<h2 class="anchored" data-anchor-id="nested-if-or">Nested <code>if</code> or <code>&amp;&amp;</code>?</h2>
+<p>If the outer check has <strong>no <code>else</code> of its own</strong> and you only want to know whether <em>both</em> conditions hold, a single <code>if</code> with <code>&amp;&amp;</code> is shorter:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>isMember <span class="op">==</span> <span class="dv">1</span> <span class="op">&amp;&amp;</span> purchaseAmount <span class="op">&gt;=</span> <span class="fl">1000.0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"20</span><span class="sc">%%</span><span class="st"> discount</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Use nesting when each level needs its <strong>own different outcome</strong> (as in both examples above, where “not a member” and “member but small purchase” give different results).</p>
+</section>
+<section id="common-pitfalls" class="level2">
+<h2 class="anchored" data-anchor-id="common-pitfalls">Common pitfalls</h2>
+<ul>
+<li><strong>Dangling <code>else</code>:</strong> an <code>else</code> always belongs to the nearest unmatched <code>if</code>. Without braces, the compiler pairs it differently from what the indentation suggests. Always use braces <code>{ }</code>.</li>
+<li><strong>Too deep:</strong> more than two or three levels becomes hard to read. Flatten with <code>&amp;&amp;</code>, an early <code>return</code>, or a helper function.</li>
+<li><strong><code>=</code> instead of <code>==</code>:</strong> <code>if (isMember = 1)</code> assigns and is always true. Compile with <code>-Wall</code> to catch it.</li>
+</ul>
+</section>
+<section id="key-takeaway" class="level2">
+<h2 class="anchored" data-anchor-id="key-takeaway">Key takeaway</h2>
+<p>The inner <code>if</code> is evaluated only when the outer condition is true. This makes the program efficient and lets you express steps that must happen in order, such as verifying identity before touching money.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ol type="1">
+<li><a href="https://www.w3schools.com/c/c_conditions_nested.php">C nested if (W3Schools)</a></li>
+<li><a href="https://uncodemy.com/blog/nested-if-statement-in-c-with-code-examples">Nested if statement in C with code examples (Uncodemy)</a></li>
+<li><a href="https://www.wscubetech.com/resources/c-programming/nested-if-else">Nested if-else in C (WsCube Tech)</a></li>
+<li><a href="https://beginnersbook.com/2014/01/c-if-else-statement-example/">C if…else statement example (BeginnersBook)</a></li>
+</ol>
 
 
 </section>

@@ -249,7 +249,7 @@ HTML_TEMPLATE = """<!doctype html>
     mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
     mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
 </script>
-<script src="../games/js/starfield.js"></script>
+<script src="../starfield.js"></script>
 
 <script>
 const QUESTIONS = __QUESTIONS_JSON__;

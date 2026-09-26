@@ -285,6 +285,13 @@ inside the course's own context already.)
    `site-url`.
 3. If it needs live code: `quarto add coatless/quarto-webr`, copy
    `qwebr-force-dark.js` and its `include-after-body` wiring.
+   (Skip this step for a course with no live code.)
+3a. Starfield background (every course): add
+   `- ../../starfield-include.html` to `include-after-body` in `_quarto.yml`
+   (a list, with the `text:` scripts as another item), and copy the
+   `html`/`body`/`.sm-canvas`/`main.content` rules at the top of `dark.scss`
+   (transparent body, opaque content panel so stars stay outside the text).
+   The script and include live once at the repo root — never copy them.
 4. Write `index.qmd` + one `.qmd` per lesson.
 5. `quarto render`.
 6. Add a card for it in `raw/courses/index.qmd`, then `quarto render` from

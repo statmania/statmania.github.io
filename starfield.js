@@ -1,10 +1,17 @@
-// Starfield / constellation canvas background, shared by every raw/-rendered
-// page (index, games, utility, courses hubs). The canvas is fixed and sized
-// to the viewport (see #sm-canvas in styles.css) so the animation covers the
-// whole scrollable page, not just the hero section at the top.
+// Starfield / constellation canvas background — the ONE shared copy, used by
+// every section of the site (raw/ pages, games/, utility/, courses/ hub,
+// blog/, slide/, question/, quiz/). Don't copy it into a section; point a
+// <script> tag at it with the right relative path (e.g. ../starfield.js).
+//
+// It draws into every canvas matching any of:
+//   canvas.sm-canvas   (games, utility, blog, quiz, question pages)
+//   #sm-canvas         (raw/-rendered pages: homepage and hubs)
+//   #sm-slide-canvas   (reveal.js slide decks)
+// The canvas is fixed and viewport-sized (see the .sm-canvas / #sm-canvas
+// rules in each section's CSS) so the animation spans the whole page.
+// Also fills #sm-footer-year if present (homepage/hub footers).
 (function () {
-  function initStarfield() {
-    var canvas = document.getElementById('sm-canvas');
+  function initCanvas(canvas) {
     if (!canvas || !canvas.getContext) return;
     var ctx = canvas.getContext('2d');
     var W, H, dpr;
@@ -23,7 +30,7 @@
     }
 
     function init() {
-      var count = Math.min(90, Math.floor((W || 1200) / 18));
+      var count = Math.min(80, Math.floor((W || 1200) / 24));
       particles = [];
       for (var i = 0; i < count; i++) {
         particles.push({
@@ -38,7 +45,7 @@
 
     function step() {
       ctx.clearRect(0, 0, W, H);
-      var maxDist = 130;
+      var maxDist = 120;
       for (var i = 0; i < particles.length; i++) {
         var p = particles[i];
         p.x += p.vx; p.y += p.vy;
@@ -75,11 +82,8 @@
     window.addEventListener('resize', function () { resize(); init(); });
   }
 
-  function initFooterYear() {
-    var el = document.getElementById('sm-footer-year');
-    if (el) el.textContent = new Date().getFullYear();
-  }
+  document.querySelectorAll('canvas.sm-canvas, #sm-canvas, #sm-slide-canvas').forEach(initCanvas);
 
-  initStarfield();
-  initFooterYear();
+  var year = document.getElementById('sm-footer-year');
+  if (year) year.textContent = new Date().getFullYear();
 })();
