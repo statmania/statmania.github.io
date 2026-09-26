@@ -8,9 +8,9 @@
 
 <meta name="author" content="Abdullah Al Mahmud">
 <meta name="dcterms.date" content="2026-09-26">
-<meta name="description" content="How C’s float and double differ in precision, size, range, literals and format specifiers, with real compiler output showing where float goes wrong.">
+<meta name="description" content="The same if / else if / else written in C, Python and R, with a comparison table, the R ‘else on a new line’ trap, truthiness rules, and R’s vectorized ifelse().">
 
-<title>float vs double in C: Precision, Memory, and When to Use Which – Stat Mania</title>
+<title>if-else in C, Python and R: Syntax Compared Side by Side – Stat Mania</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -121,15 +121,15 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
 
 
 <link rel="stylesheet" href="../styles.css">
-<meta property="og:title" content="float vs double in C: Precision, Memory, and When to Use Which – Stat Mania">
-<meta property="og:description" content="How C’s float and double differ in precision, size, range, literals and format specifiers, with real compiler output showing where float goes wrong.">
-<meta property="og:image" content="https://www.statmania.info/blog/img/c-float-vs-double.png">
+<meta property="og:title" content="if-else in C, Python and R: Syntax Compared Side by Side – Stat Mania">
+<meta property="og:description" content="The same if / else if / else written in C, Python and R, with a comparison table, the R ‘else on a new line’ trap, truthiness rules, and R’s vectorized ifelse().">
+<meta property="og:image" content="https://www.statmania.info/blog/img/if-else-c-python-r.png">
 <meta property="og:site_name" content="Stat Mania">
 <meta property="og:image:height" content="630">
 <meta property="og:image:width" content="1200">
-<meta name="twitter:title" content="float vs double in C: Precision, Memory, and When to Use Which – Stat Mania">
-<meta name="twitter:description" content="How C’s float and double differ in precision, size, range, literals and format specifiers, with real compiler output showing where float goes wrong.">
-<meta name="twitter:image" content="https://www.statmania.info/blog/img/c-float-vs-double.png">
+<meta name="twitter:title" content="if-else in C, Python and R: Syntax Compared Side by Side – Stat Mania">
+<meta name="twitter:description" content="The same if / else if / else written in C, Python and R, with a comparison table, the R ‘else on a new line’ trap, truthiness rules, and R’s vectorized ifelse().">
+<meta name="twitter:image" content="https://www.statmania.info/blog/img/if-else-c-python-r.png">
 <meta name="twitter:image-height" content="630">
 <meta name="twitter:image-width" content="1200">
 <meta name="twitter:card" content="summary_large_image">
@@ -191,14 +191,16 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">float vs double in C: Precision, Memory, and When to Use Which</h1>
+      <h1 class="title">if-else in C, Python and R: Syntax Compared Side by Side</h1>
                   <div>
         <div class="description">
-          How C’s float and double differ in precision, size, range, literals and format specifiers, with real compiler output showing where float goes wrong.
+          The same if / else if / else written in C, Python and R, with a comparison table, the R ‘else on a new line’ trap, truthiness rules, and R’s vectorized ifelse().
         </div>
       </div>
                           <div class="quarto-categories">
                 <div class="quarto-category">C</div>
+                <div class="quarto-category">Python</div>
+                <div class="quarto-category">R</div>
                 <div class="quarto-category">Programming</div>
                 <div class="quarto-category">Tutorial</div>
               </div>
@@ -237,184 +239,183 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
 
 
 
-<p><code>float</code> and <code>double</code> both store decimal (floating-point) numbers in C, but they differ in precision, memory usage, and range.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../img/c-float-vs-double.svg" class="img-fluid figure-img"></p>
-<figcaption>A <code>double</code> spends more bits on the mantissa (precision) and the exponent (range) than a <code>float</code></figcaption>
+<p><img src="../img/if-else-c-python-r.svg" class="img-fluid figure-img" alt="Three cards compare the same if, else if, else grade check in C, Python and R. C and R use parentheses and braces; Python uses colons, indentation and elif."></p>
+<figcaption>The same grade check in C, Python and R</figcaption>
 </figure>
 </div>
-<p>The fundamental difference is that <code>double</code> provides roughly twice the precision of <code>float</code>. Modern desktop computers handle both at similar speeds, so <code>double</code> is generally preferred unless memory is tightly restricted.</p>
-<section id="quick-comparison" class="level2">
-<h2 class="anchored" data-anchor-id="quick-comparison">Quick Comparison</h2>
+<p>The logic of an <code>if-else</code> statement is identical in C, Python and R: test a condition, run one block if it is true, otherwise run another. What differs is the <strong>syntax</strong>: how blocks are marked (braces vs.&nbsp;indentation) and how “else if” is written.</p>
+<p>The same program in each language (grade from a score of 85):</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">C</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">R</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p>C uses parentheses <code>()</code> around the condition and curly braces <code>{}</code> for blocks. Multiple conditions use <code>else if</code>, and every statement ends with <code>;</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> score <span class="op">=</span> <span class="dv">85</span><span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>score <span class="op">&gt;=</span> <span class="dv">90</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"Grade: A</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>score <span class="op">&gt;=</span> <span class="dv">80</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"Grade: B</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"Grade: C</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<p>Python drops the braces and the parentheses. A colon <code>:</code> and <strong>indentation</strong> define the blocks, and “else if” is contracted to a single keyword, <code>elif</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>score <span class="op">=</span> <span class="dv">85</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> score <span class="op">&gt;=</span> <span class="dv">90</span>:</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Grade: A"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="cf">elif</span> score <span class="op">&gt;=</span> <span class="dv">80</span>:</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Grade: B"</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Grade: C"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
+<p>R looks much like C: parentheses, braces, <code>else if</code>. But it has a formatting quirk: at the top level, <code>else</code> must sit on the <strong>same line</strong> as the closing brace <code>}</code> of the previous block.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>score <span class="ot">&lt;-</span> <span class="dv">85</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (score <span class="sc">&gt;=</span> <span class="dv">90</span>) {</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="st">"Grade: A"</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> <span class="cf">if</span> (score <span class="sc">&gt;=</span> <span class="dv">80</span>) {</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="st">"Grade: B"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="st">"Grade: C"</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<p>All three print <code>Grade: B</code>.</p>
+<section id="direct-syntax-comparison" class="level2">
+<h2 class="anchored" data-anchor-id="direct-syntax-comparison">Direct syntax comparison</h2>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
 </colgroup>
 <thead>
 <tr class="header">
 <th>Feature</th>
-<th>float</th>
-<th>double</th>
+<th>C</th>
+<th>Python</th>
+<th>R</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Precision</td>
-<td>Single (~6–7 decimal digits)</td>
-<td>Double (~15 decimal digits)</td>
+<td>Condition wrapper</td>
+<td>Requires <code>( )</code></td>
+<td>No wrapper</td>
+<td>Requires <code>( )</code></td>
 </tr>
 <tr class="even">
-<td>Memory size</td>
-<td>4 bytes (32 bits)</td>
-<td>8 bytes (64 bits)</td>
+<td>Block boundary</td>
+<td><code>{ }</code></td>
+<td><code>:</code> + indentation</td>
+<td><code>{ }</code></td>
 </tr>
 <tr class="odd">
-<td>IEEE 754 bit layout</td>
-<td>1 sign, 8 exponent, 23 mantissa</td>
-<td>1 sign, 11 exponent, 52 mantissa</td>
+<td>“Else if” keyword</td>
+<td><code>else if</code></td>
+<td><code>elif</code></td>
+<td><code>else if</code></td>
 </tr>
 <tr class="even">
-<td>Range</td>
-<td>≈ 1.2 × 10⁻³⁸ to 3.4 × 10⁺³⁸</td>
-<td>≈ 2.2 × 10⁻³⁰⁸ to 1.8 × 10⁺³⁰⁸</td>
+<td>Statement end</td>
+<td><code>;</code></td>
+<td>Line break</td>
+<td>Line break</td>
 </tr>
 <tr class="odd">
-<td><code>printf</code> specifier</td>
-<td><code>%f</code></td>
-<td><code>%f</code> (<code>%lf</code> also accepted)</td>
+<td>Boolean operators</td>
+<td><code>&amp;&amp;</code>, <code>\|\|</code>, <code>!</code></td>
+<td><code>and</code>, <code>or</code>, <code>not</code></td>
+<td><code>&amp;&amp;</code>, <code>\|\|</code>, <code>!</code></td>
 </tr>
 <tr class="even">
-<td><code>scanf</code> specifier</td>
-<td><code>%f</code></td>
-<td><code>%lf</code></td>
+<td>True / false</td>
+<td><code>1</code> / <code>0</code> (or <code>true</code> / <code>false</code> with <code>&lt;stdbool.h&gt;</code>)</td>
+<td><code>True</code> / <code>False</code></td>
+<td><code>TRUE</code> / <code>FALSE</code></td>
 </tr>
 <tr class="odd">
-<td>Literal</td>
-<td><code>3.14f</code> (needs <code>f</code> or <code>F</code>)</td>
-<td><code>3.14</code> (the default)</td>
+<td>Equality test</td>
+<td><code>==</code></td>
+<td><code>==</code></td>
+<td><code>==</code></td>
 </tr>
 </tbody>
 </table>
-<p>The ranges above are the smallest and largest normal positive values. You can check every number on your own machine with <code>sizeof</code> and the constants in <code>&lt;float.h&gt;</code>.</p>
 </section>
-<section id="precision-and-the-rounding-trap" class="level2">
-<h2 class="anchored" data-anchor-id="precision-and-the-rounding-trap">1. Precision and the Rounding Trap</h2>
-<p>A <code>float</code> has 23 bits for its fractional part (the mantissa), so it starts losing accuracy after about 7 significant digits. A <code>double</code> has 52 bits and stays accurate to about 15.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Both variables are assigned the same long decimal</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">float</span> pi_float <span class="op">=</span> <span class="fl">3.141592653589793</span><span class="bu">f</span><span class="op">;</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">double</span> pi_double <span class="op">=</span> <span class="fl">3.141592653589793</span><span class="op">;</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">// %.15f prints 15 digits after the decimal point</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"Float value:  </span><span class="sc">%.15f\n</span><span class="st">"</span><span class="op">,</span> pi_float<span class="op">);</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"Double value: </span><span class="sc">%.15f\n</span><span class="st">"</span><span class="op">,</span> pi_double<span class="op">);</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Output (compiled with GCC):</p>
-<pre><code>Float value:  3.141592741012573
-Double value: 3.141592653589793</code></pre>
-<p>The float is already wrong from the 7th decimal place onward (<code>3.1415927...</code> instead of <code>3.1415926...</code>).</p>
-<div class="callout callout-style-default callout-note callout-titled">
+<section id="gotchas-in-each-language" class="level2">
+<h2 class="anchored" data-anchor-id="gotchas-in-each-language">Gotchas in each language</h2>
+<div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Why do float and double often look identical when printed?
+<span class="screen-reader-only">Warning</span>R: <code>else</code> on a new line fails at top level
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>%f</code> prints only 6 digits after the decimal point by default, which hides the difference. Ask for more digits, such as <code>%.15f</code>, to see it.</p>
+<p>This works inside a function or a <code>{ }</code> block, but at the console or top level of a script it is a syntax error, because R finishes the <code>if</code> statement at the end of the line:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (score <span class="sc">&gt;=</span> <span class="dv">90</span>) {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="st">"Grade: A"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span> {              <span class="co"># Error: unexpected 'else'</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="st">"Grade: B"</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Keep <code>} else {</code> on one line and you never hit this.</p>
 </div>
 </div>
-</section>
-<section id="neither-can-store-0.1-exactly" class="level2">
-<h2 class="anchored" data-anchor-id="neither-can-store-0.1-exactly">2. Neither Can Store 0.1 Exactly</h2>
-<p>Computers store numbers in binary, and 0.1 has no finite binary representation. Both types store the nearest approximation; <code>double</code> is just much closer.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span>  a <span class="op">=</span> <span class="fl">0.1</span><span class="bu">f</span><span class="op">;</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> b <span class="op">=</span> <span class="fl">0.1</span><span class="op">;</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%.20f\n</span><span class="st">"</span><span class="op">,</span> a<span class="op">);</span>   <span class="co">// 0.10000000149011611938</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%.20f\n</span><span class="st">"</span><span class="op">,</span> b<span class="op">);</span>   <span class="co">// 0.10000000000000000555</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>This is why comparing floating-point numbers with <code>==</code> is risky, even with <code>double</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> <span class="fl">0.1</span> <span class="op">+</span> <span class="fl">0.2</span> <span class="op">==</span> <span class="fl">0.3</span><span class="op">);</span>   <span class="co">// 0 (false!)</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%.17f\n</span><span class="st">"</span><span class="op">,</span> <span class="fl">0.1</span> <span class="op">+</span> <span class="fl">0.2</span><span class="op">);</span>       <span class="co">// 0.30000000000000004</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Instead of <code>==</code>, check whether the difference is tiny: <code>fabs(x - y) &lt; 1e-9</code> (needs <code>&lt;math.h&gt;</code>).</p>
-</section>
-<section id="errors-accumulate" class="level2">
-<h2 class="anchored" data-anchor-id="errors-accumulate">3. Errors Accumulate</h2>
-<p>Small rounding errors add up when repeated. Here we add 0.1 ten million times, so the exact answer is 1,000,000:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span>  s <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> d <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">10000000</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    s <span class="op">+=</span> <span class="fl">0.1</span><span class="bu">f</span><span class="op">;</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    d <span class="op">+=</span> <span class="fl">0.1</span><span class="op">;</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"float:  </span><span class="sc">%f\n</span><span class="st">"</span><span class="op">,</span> s<span class="op">);</span>   <span class="co">// 1087937.000000  (about 9% off!)</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"double: </span><span class="sc">%f\n</span><span class="st">"</span><span class="op">,</span> d<span class="op">);</span>   <span class="co">// 999999.999839   (off by about 0.0002)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>A <code>float</code> also runs out of whole-number precision early: above 16,777,216 (2²⁴) it cannot represent every integer, so <code>16777216.0f + 1.0f</code> is still <code>16777216.0</code>.</p>
-</section>
-<section id="literals-and-defaults" class="level2">
-<h2 class="anchored" data-anchor-id="literals-and-defaults">4. Literals and Defaults</h2>
-<p>In C, any decimal number written directly in code (such as <code>3.14</code>) is a <code>double</code>. To make a <code>float</code>, add an <code>f</code> or <code>F</code> suffix:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span>  x <span class="op">=</span> <span class="fl">3.14</span><span class="bu">f</span><span class="op">;</span>   <span class="co">// float literal</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span>  y <span class="op">=</span> <span class="fl">3.14</span><span class="op">;</span>    <span class="co">// double literal silently converted to float</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> z <span class="op">=</span> <span class="fl">3.14</span><span class="op">;</span>    <span class="co">// double literal</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Writing <code>float y = 3.14;</code> compiles fine, but the compiler converts a <code>double</code> to a <code>float</code>, which can lose precision. Use the <code>f</code> suffix to be explicit.</p>
-</section>
-<section id="mixing-types" class="level2">
-<h2 class="anchored" data-anchor-id="mixing-types">5. Mixing Types</h2>
-<p>When a <code>float</code> and a <code>double</code> meet in an expression, the <code>float</code> is promoted to <code>double</code>. Also, <code>printf</code> always receives a <code>double</code> for <code>%f</code>, which is why <code>%f</code> works for both types:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> f <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> <span class="fl">3.0</span><span class="bu">f</span><span class="op">;</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%f\n</span><span class="st">"</span><span class="op">,</span> f<span class="op">);</span>          <span class="co">// 0.333333</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%.15f\n</span><span class="st">"</span><span class="op">,</span> <span class="op">(</span><span class="dt">double</span><span class="op">)</span> f<span class="op">);</span>  <span class="co">// 0.333333343267441 (the float's rounding error is still there)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Promoting to <code>double</code> does not repair an error that already happened; it only prevents new ones.</p>
-</section>
-<section id="when-to-use-which" class="level2">
-<h2 class="anchored" data-anchor-id="when-to-use-which">When to Use Which?</h2>
-<p><strong>Use <code>double</code> for:</strong></p>
 <ul>
-<li>Everyday programming and general calculations.</li>
-<li>Scientific computing, statistics, and simulations, where errors can grow.</li>
-<li>Large sums or long loops, where rounding errors accumulate.</li>
+<li><strong>C: <code>=</code> instead of <code>==</code>.</strong> <code>if (score = 90)</code> assigns 90 and is always true. Compile with <code>-Wall</code> and the compiler warns you. Python and R reject an assignment in the condition in most forms.</li>
+<li><strong>C: no braces means one statement.</strong> Braces are optional for a single statement, but adding a second line without them is a classic bug. Always use braces.</li>
+<li><strong>Python: inconsistent indentation.</strong> Mixing tabs and spaces raises an <code>IndentationError</code>. Use 4 spaces everywhere.</li>
+<li><strong>R: the condition must be a single <code>TRUE</code> or <code>FALSE</code>.</strong> In R 4.2 and later, <code>if (c(TRUE, FALSE))</code> is an error. For whole vectors, use <code>ifelse()</code> (below).</li>
 </ul>
-<p><strong>Use <code>float</code> for:</strong></p>
-<ul>
-<li>Memory-critical systems, such as embedded hardware with limited RAM.</li>
-<li>Huge arrays of floating-point numbers, where halving the memory matters.</li>
-<li>Graphics, games, and GPU computing (CUDA), where throughput matters more than extreme accuracy.</li>
-</ul>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Rule of thumb
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Start with <code>double</code>. Switch to <code>float</code> only when you have a measured memory or speed reason, and you know the reduced precision is acceptable.</p>
-</div>
-</div>
 </section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<ol type="1">
-<li><a href="https://www.reddit.com/r/learnprogramming/comments/1gi6xo5/float_vs_double_whats_the_key_difference/">Float vs double: what’s the key difference? (Reddit r/learnprogramming)</a></li>
-<li><a href="https://www.geeksforgeeks.org/cpp/difference-float-double-c-cpp/">Difference between float and double in C/C++ (GeeksforGeeks)</a></li>
-<li><a href="https://www.geeksforgeeks.org/c/c-float-and-double/">C float and double (GeeksforGeeks)</a></li>
-<li><a href="https://www.programiz.com/cpp-programming/float-double">C++ float and double (Programiz)</a></li>
-<li><a href="https://softwareengineering.stackexchange.com/questions/188721/when-do-you-use-float-and-when-do-you-use-double">When do you use float and when do you use double? (Software Engineering Stack Exchange)</a></li>
-<li><a href="https://www.scaler.com/topics/difference-between-float-and-double-in-c-cpp/">Difference between float and double in C/C++ (Scaler)</a></li>
-<li><a href="https://www.freecodecamp.org/news/double-vs-float-in-cpp-the-difference-between-floats-and-doubles/">Double vs float in C++ (freeCodeCamp)</a></li>
-<li><a href="https://unstop.com/blog/difference-between-float-and-double">Difference between float and double (Unstop)</a></li>
-<li><a href="https://meshlib.io/documentation/FloatVSDouble.html">Float vs double (MeshLib)</a></li>
-</ol>
+<section id="what-counts-as-true" class="level2">
+<h2 class="anchored" data-anchor-id="what-counts-as-true">What counts as “true”?</h2>
+<ul>
+<li><strong>C:</strong> any non-zero value is true; <code>0</code> is false. <code>if (5)</code> runs.</li>
+<li><strong>Python:</strong> <code>0</code>, <code>0.0</code>, <code>""</code>, <code>[]</code>, <code>{}</code> and <code>None</code> are false; almost everything else is true.</li>
+<li><strong>R:</strong> only logical values (or numbers, where <code>0</code> is false and non-zero is true) are accepted, and <code>NA</code> in a condition is an error: <code>if (NA)</code> stops with “missing value where TRUE/FALSE needed”.</li>
+</ul>
+</section>
+<section id="one-line-versions-conditional-expressions" class="level2">
+<h2 class="anchored" data-anchor-id="one-line-versions-conditional-expressions">One-line versions (conditional expressions)</h2>
+<p>Each language has a compact form that picks a value:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">// C: ternary operator</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>result <span class="op">=</span> <span class="op">(</span>score <span class="op">&gt;=</span> <span class="dv">50</span><span class="op">)</span> <span class="op">?</span> <span class="st">"Pass"</span> <span class="op">:</span> <span class="st">"Fail"</span><span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Python: conditional expression</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> <span class="st">"Pass"</span> <span class="cf">if</span> score <span class="op">&gt;=</span> <span class="dv">50</span> <span class="cf">else</span> <span class="st">"Fail"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># R: if-else is itself an expression</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="cf">if</span> (score <span class="sc">&gt;=</span> <span class="dv">50</span>) <span class="st">"Pass"</span> <span class="cf">else</span> <span class="st">"Fail"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="r-bonus-vectorized-ifelse" class="level2">
+<h2 class="anchored" data-anchor-id="r-bonus-vectorized-ifelse">R bonus: vectorized <code>ifelse()</code></h2>
+<p>Base <code>if</code> works on one value. To apply a condition to every element of a vector, use <code>ifelse()</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>scores <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">95</span>, <span class="dv">85</span>, <span class="dv">72</span>, <span class="dv">40</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ifelse</span>(scores <span class="sc">&gt;=</span> <span class="dv">50</span>, <span class="st">"Pass"</span>, <span class="st">"Fail"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "Pass" "Pass" "Pass" "Fail"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The Python equivalent for arrays is <code>numpy.where(scores &gt;= 50, "Pass", "Fail")</code>.</p>
+</section>
+<section id="which-should-you-use" class="level2">
+<h2 class="anchored" data-anchor-id="which-should-you-use">Which should you use?</h2>
+<p>There is no “better” version, only different conventions. If you know one, the others are quick to learn: the concept transfers, and only the punctuation changes. Pay most attention to Python’s indentation and R’s <code>} else</code> rule, since those are the two places where a small formatting slip changes the meaning or breaks the program.</p>
+<p>See also: <a href="10-c-if-else-examples.html">10 Real-World <code>if / else</code> Examples in C</a>.</p>
 
 
 </section>
