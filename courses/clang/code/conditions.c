@@ -177,5 +177,34 @@ int main(){
       break;
   }
 
+  // Menu Example
+
+  int choice;
+  printf("--- Simple Menu ---\n");
+  printf("1. Check Balance\n");
+  printf("2. Deposit Money\n");
+  printf("3. Withdraw Money\n");
+  printf("Enter your choice (1-3)\n");
+  scanf("%d", &choice);
+
+  switch (choice){
+    case 1:
+      printf("Your balance is $1500.\n");
+      break;
+
+    case 2:
+      printf("Enter the amount to deposit.\n");
+      break;
+
+    case 3:
+      printf("Enter the amount to withdraw.\n");
+      break;
+
+    default:
+      //When no choice matches
+      printf("Invalid selection. Select a number between 1-3.\n");
+      break;
+  }
+
   return 0;
 }

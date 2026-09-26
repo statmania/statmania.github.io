@@ -12,6 +12,484 @@
 <generator>quarto-1.9.38</generator>
 <lastBuildDate>Fri, 25 Sep 2026 18:00:00 GMT</lastBuildDate>
 <item>
+  <title>The do-while Loop in C: Run First, Check After</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/c-do-while.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/c-do-while-flow.svg" class="img-fluid figure-img" alt="Flowchart: the loop body runs, then the condition PIN != 2471 is tested. If true, control returns to the body; if false, the loop exits."></p>
+<figcaption>A do-while loop runs its body first, then tests the condition</figcaption>
+</figure>
+</div>
+<p>Most loops check their condition <strong>before</strong> each pass. A <code>do-while</code> loop does the opposite: it runs the body first and checks the condition <strong>afterwards</strong>, so the body always runs <strong>at least once</strong>.</p>
+<p>That makes it the natural choice whenever we need to do something before we can know whether to repeat it: asking for input, showing a menu, or retrying an action. Asking for a PIN is a perfect example, because we can’t validate a PIN we haven’t read yet.</p>
+<p>The general form is:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-2">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// body: runs at least once</span></span>
+<span id="cb1-3"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>condition<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// note the semicolon</span></span></code></pre></div></div>
+<section id="example-1-keep-asking-until-the-pin-is-right" class="level2">
+<h2 class="anchored" data-anchor-id="example-1-keep-asking-until-the-pin-is-right">Example 1: keep asking until the PIN is right</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdio.h&gt;</span></span>
+<span id="cb2-2"></span>
+<span id="cb2-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb2-4">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> PIN<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb2-5"></span>
+<span id="cb2-6">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb2-7">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Enter PIN</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb2-8">        scanf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span>PIN<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb2-9">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>PIN <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2471</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb2-10"></span>
+<span id="cb2-11">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Correct PIN!</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb2-12">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb2-13"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>A sample run:</p>
+<pre><code>Enter PIN
+1111
+Enter PIN
+2471
+Correct PIN!</code></pre>
+<p>The prompt appears once no matter what, and then again for as long as <code>PIN != 2471</code> is true. With an ordinary <code>while</code> loop we would have to give <code>PIN</code> a dummy starting value first just to get inside the loop. <code>do-while</code> avoids that.</p>
+</section>
+<section id="example-2-limit-the-attempts" class="level2">
+<h2 class="anchored" data-anchor-id="example-2-limit-the-attempts">Example 2: limit the attempts</h2>
+<p>Real systems don’t let anyone guess forever. Here we count attempts, leave early with <code>break</code> on success, and lock the account after 10 failures:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdio.h&gt;</span></span>
+<span id="cb4-2"></span>
+<span id="cb4-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb4-4">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> PIN<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb4-5">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> attempts <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb4-6"></span>
+<span id="cb4-7">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb4-8">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Enter PIN: "</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb4-9">        scanf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span>PIN<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb4-10">        attempts<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++;</span></span>
+<span id="cb4-11"></span>
+<span id="cb4-12">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>PIN <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2471</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb4-13">            <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">break</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// correct PIN: exit the loop early</span></span>
+<span id="cb4-14">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb4-15"></span>
+<span id="cb4-16">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>attempts <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb4-17">            printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Too many wrong attempts. Account locked.</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb4-18">            <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// exit the program with a failure code</span></span>
+<span id="cb4-19">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb4-20"></span>
+<span id="cb4-21">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Wrong PIN. </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> attempts left.</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> attempts<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb4-22">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// loop "forever"; we leave via break or return</span></span>
+<span id="cb4-23"></span>
+<span id="cb4-24">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Correct PIN!</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb4-25">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb4-26"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>A sample run (entering <code>1</code>, <code>2</code>, then the correct PIN):</p>
+<pre><code>Enter PIN: 1
+Wrong PIN. 9 attempts left.
+Enter PIN: 2
+Wrong PIN. 8 attempts left.
+Enter PIN: 2471
+Correct PIN!</code></pre>
+<p>Here the condition is <code>while (1)</code>, which is always true, so the loop only ends through <code>break</code> (success) or <code>return</code> (locked out). We use <code>break</code> to leave just this loop and <code>return 1</code> to end the whole program with a non-zero exit code, the usual way to signal failure.</p>
+</section>
+<section id="do-while-vs-while" class="level2">
+<h2 class="anchored" data-anchor-id="do-while-vs-while">do-while vs while</h2>
+<p>The only difference is <strong>when the test happens</strong>. Compare what happens when the condition is false from the start:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> n <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb6-2"></span>
+<span id="cb6-3"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb6-4">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"do-while body, n = </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// runs once</span></span>
+<span id="cb6-5"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>n <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb6-6"></span>
+<span id="cb6-7"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>n <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb6-8">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"while body</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>                 <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// never runs</span></span>
+<span id="cb6-9"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>Output:</p>
+<pre><code>do-while body, n = 10</code></pre>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><code>while</code></th>
+<th><code>do-while</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Condition checked</td>
+<td>Before each pass</td>
+<td>After each pass</td>
+</tr>
+<tr class="even">
+<td>Minimum runs</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>Typical use</td>
+<td>Loop while there is work to do</td>
+<td>Ask/act first, then decide to repeat</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="common-pitfalls" class="level2">
+<h2 class="anchored" data-anchor-id="common-pitfalls">Common pitfalls</h2>
+<ul>
+<li><strong>Missing semicolon.</strong> <code>do { ... } while (cond);</code> needs the <code>;</code> after the condition. Forgetting it is a compile error.</li>
+<li><strong>Bad input can loop forever.</strong> If the user types a letter, <code>scanf("%d", ...)</code> fails and leaves the text in the input buffer, so the loop above may repeat endlessly. Real programs check <code>scanf</code>’s return value (it is <code>1</code> on success) and clear the buffer.</li>
+<li><strong>A condition that never becomes false.</strong> Make sure something inside the body changes what the condition tests, or exit with <code>break</code>.</li>
+<li><strong>Using <code>do-while</code> when zero passes is valid.</strong> If the loop should be skipped when there is nothing to do, use <code>while</code> or <code>for</code> instead.</li>
+</ul>
+</section>
+<section id="key-takeaway" class="level2">
+<h2 class="anchored" data-anchor-id="key-takeaway">Key takeaway</h2>
+<p><code>do-while</code> = <strong>do the body, then decide whether to repeat</strong>. Use it when the body must run at least once, such as prompts, menus and retry logic. Otherwise, <code>while</code> or <code>for</code> is usually clearer.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>C</category>
+  <category>Programming</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/c-do-while.html</guid>
+  <pubDate>Fri, 25 Sep 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/c-do-while-flow.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
   <title>float vs double in C: Precision, Memory, and When to Use Which</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://www.statmania.info/blog/posts/c-double-vs-float.html</link>
@@ -7050,152 +7528,6 @@ font-style: inherit;">"Probability"</span>)</span></code></pre></div></div>
   <guid>https://www.statmania.info/blog/posts/geometric-distribution.html</guid>
   <pubDate>Tue, 04 Aug 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/posts/geometric-distribution_files/figure-html/unnamed-chunk-1-1.png" medium="image" type="image/png"/>
-</item>
-<item>
-  <title>C’s “Hello, World!” Explained Line by Line (for R &amp; Python Users)</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/c-hello-world-explained.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>The classic “Hello, World!” program in C is as follows:</p>
-<p><img src="https://www.statmania.info/blog/img/linux-prog.jpeg" class="img-fluid"></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb1-2"></span>
-<span id="cb1-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">()</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb1-4"></span>
-<span id="cb1-5">  printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Hello, World!</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb1-6"></span>
-<span id="cb1-7">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb1-8"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>Let’s break it down line by line, explaining not just <em>what</em> each line does, but <em>why</em> it’s there.</p>
-<hr>
-<section id="line-1-include-stdio.h" class="level3">
-<h3 class="anchored" data-anchor-id="line-1-include-stdio.h">Line 1: <code>#include &lt;stdio.h&gt;</code></h3>
-<p><strong>What it does:</strong> This is a <strong>preprocessor directive</strong>. Before the C compiler actually translates your code into machine language, a program called the <em>preprocessor</em> scans your code. When it sees <code>#include</code>, it literally copies and pastes the contents of another file into your code at that exact spot.</p>
-<p>Here, it’s copying the contents of a file called <code>stdio.h</code> (Standard Input/Output header) into your program.</p>
-<p><strong>Why it’s needed:</strong> C is a very small language. It doesn’t even have built-in commands to print text to the screen or read input from the keyboard. Those capabilities live in external libraries.</p>
-<p><code>printf</code> (which we use on line 5) is not a built-in C keyword. It is a function defined in the standard library. The <code>stdio.h</code> file contains the <strong>function prototype</strong> (a declaration) for <code>printf</code>. Without this include, the compiler wouldn’t know that <code>printf</code> exists, what arguments it takes, or what it returns. It would throw an error or a warning.</p>
-<p><strong>Analogy for R/Python users:</strong> Think of it like <code>import</code> in Python or <code>library()</code> in R. In Python, if you want to use <code>sqrt()</code>, you have to <code>import math</code> first. In C, if you want to use <code>printf()</code>, you have to <code>#include &lt;stdio.h&gt;</code>.</p>
-<hr>
-</section>
-<section id="line-3-int-main" class="level3">
-<h3 class="anchored" data-anchor-id="line-3-int-main">Line 3: <code>int main() {</code></h3>
-<p><strong>What it does:</strong> This defines the <strong>main function</strong>.</p>
-<ul>
-<li><code>int</code> means this function will return an <strong>integer</strong> value to the operating system when it finishes.</li>
-<li><code>main</code> is the special name C looks for. It is the <strong>entry point</strong> of every C program. When you run the compiled program, execution <em>always</em> starts at the first line inside <code>main</code>.</li>
-<li><code>()</code> indicates this function takes no parameters (for now).</li>
-<li><code>{</code> marks the beginning of the function’s body.</li>
-</ul>
-<p><strong>Why it’s needed:</strong> Unlike Python or R, where you can write code at the top level of a script and it just runs from top to bottom, C requires a structured entry point. The operating system needs to know exactly where to start executing your instructions. <code>main</code> is that starting line.</p>
-<p><strong>Analogy for R/Python users:</strong> In Python, you often see:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">__name__</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"__main__"</span>:</span>
-<span id="cb2-2">    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># code starts here</span></span></code></pre></div></div>
-<p>C’s <code>main()</code> function is essentially that concept, but it is <strong>mandatory</strong>. You cannot write a C program without a <code>main</code> function.</p>
-<hr>
-</section>
-<section id="line-5-printfhello-worldn" class="level3">
-<h3 class="anchored" data-anchor-id="line-5-printfhello-worldn">Line 5: <code>printf("Hello, World!\n");</code></h3>
-<p><strong>What it does:</strong> This is the actual instruction. It calls the <code>printf</code> function (Print Formatted) and passes it a single argument: the string <code>"Hello, World!\n"</code>.</p>
-<ul>
-<li><code>printf</code> takes the string and sends it to the standard output (usually your terminal/console).</li>
-<li><code>\n</code> is an <strong>escape sequence</strong>. It represents a <em>newline</em> character. It tells the terminal to move the cursor to the next line after printing. Without it, your terminal prompt would appear immediately after the exclamation mark on the same line.</li>
-<li>The <code>;</code> (semicolon) at the end is <strong>mandatory</strong> in C. It marks the end of a statement. Unlike Python (which uses newlines) or R (which can use newlines or semicolons), C requires a semicolon after every single executable statement. Forgetting it is the #1 beginner error.</li>
-</ul>
-<p><strong>Why it’s needed:</strong> This is the actual work of the program. Everything else is setup and structure.</p>
-<p><strong>Analogy for R/Python users:</strong> * Python: <code>print("Hello, World!")</code> * R: <code>cat("Hello, World!\n")</code> or <code>print("Hello, World!")</code> * The <code>\n</code> is the same concept in all three languages, but in C, it is almost always required if you want clean output.</p>
-<hr>
-</section>
-<section id="line-7-return-0" class="level3">
-<h3 class="anchored" data-anchor-id="line-7-return-0">Line 7: <code>return 0;</code></h3>
-<p><strong>What it does:</strong> This ends the <code>main</code> function and sends the integer value <code>0</code> back to the operating system.</p>
-<p><strong>Why it’s needed:</strong> Remember how <code>main</code> was declared as <code>int main()</code>? That means it <em>must</em> return an integer.</p>
-<p>In C and Unix/Linux conventions, a return value of <code>0</code> means <strong>success</strong>. Any non-zero value (like <code>1</code>, <code>-1</code>, or <code>EXIT_FAILURE</code>) indicates that an error occurred during execution.</p>
-<p>When you run a program in a terminal and then type <code>echo $?</code> (on Linux/Mac) or <code>echo %ERRORLEVEL%</code> (on Windows), you will see the value returned by <code>main</code>. Scripts and automated tools use this exit code to determine if your program ran correctly.</p>
-<p><strong>Analogy for R/Python users:</strong> * Python: <code>sys.exit(0)</code> explicitly exits with a success code. If you just let a script end, Python implicitly returns <code>0</code>. * R: <code>quit(status = 0)</code> does the same thing. * In C, you <em>must</em> explicitly write <code>return 0;</code> (or <code>return EXIT_SUCCESS;</code>) at the end of <code>main</code> to signal success.</p>
-<hr>
-</section>
-<section id="line-8" class="level3">
-<h3 class="anchored" data-anchor-id="line-8">Line 8: <code>}</code></h3>
-<p><strong>What it does:</strong> This closing curly brace marks the end of the <code>main</code> function’s body.</p>
-<hr>
-</section>
-<section id="the-big-picture-what-happens-when-you-run-this" class="level3">
-<h3 class="anchored" data-anchor-id="the-big-picture-what-happens-when-you-run-this">The Big Picture: What happens when you run this?</h3>
-<ol type="1">
-<li><strong>Preprocessing:</strong> The preprocessor sees <code>#include &lt;stdio.h&gt;</code> and pastes the contents of that header file into your code.</li>
-<li><strong>Compilation:</strong> The compiler translates your C code into assembly language, then into machine code (object files).</li>
-<li><strong>Linking:</strong> The linker combines your object file with the standard C library (which contains the actual compiled code for <code>printf</code>).</li>
-<li><strong>Execution:</strong> You run the executable. The OS loads it into memory, finds the <code>main</code> function, and starts executing line by line.</li>
-<li><strong>Output:</strong> <code>printf</code> sends “Hello, World!” followed by a newline to your terminal.</li>
-<li><strong>Exit:</strong> <code>return 0;</code> tells the OS the program finished successfully.</li>
-</ol>
-</section>
-<section id="why-this-feels-so-different-from-rpython" class="level3">
-<h3 class="anchored" data-anchor-id="why-this-feels-so-different-from-rpython">Why this feels so different from R/Python</h3>
-<p>In R and Python, the interpreter handles memory, types, and execution flow for you. In C, you are explicitly telling the computer:</p>
-<ol type="1">
-<li>What external code to bring in (<code>#include</code>)</li>
-<li>Where the program starts (<code>main</code>)</li>
-<li>What the program does (<code>printf</code>)</li>
-<li>How to cleanly exit (<code>return 0</code>)</li>
-</ol>
-<p>It is more verbose, but it gives you complete control over the machine. As you progress, you will learn to appreciate this structure, especially when you start managing memory and building complex data structures.</p>
-
-
-</section>
-
- ]]></description>
-  <category>C</category>
-  <category>Programming</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/c-hello-world-explained.html</guid>
-  <pubDate>Mon, 20 Jul 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/linux-prog.jpeg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
