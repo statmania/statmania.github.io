@@ -10,7 +10,7 @@ image: ../img/c-struct-memory.png
 
 ![A struct is one block of memory holding several fields, with padding between them](../img/c-struct-memory.svg){fig-alt="A struct Student occupies 60 bytes: name uses 50, then 2 bytes of padding, then id uses 4 and gpa uses 4."}
 
-A **struct** (short for "structure") lets you group **related variables of different types** into a single unit. It's the C way of saying "these pieces of data belong together."
+A **struct** (short for "structure") lets us group **related variables of different types** into a single unit. It's the C way of saying "these pieces of data belong together."
 
 This is something used more explicitly in R and Python. In Python, we'd write:
 
@@ -29,7 +29,7 @@ In C, we use a **struct** to build this same idea — but with strict typing and
 
 ### The Problem Structs Solve
 
-Suppose you want to track a student's name, ID, and GPA. Without structs, you'd need three separate arrays:
+Suppose we want to track a student's name, ID, and GPA. Without structs, we'd need three separate arrays:
 
 ```c
 char names[100][50];
@@ -39,8 +39,8 @@ float gpas[100];
 
 This works, but it has problems:
 - The data for one student is **scattered** across three arrays.
-- If you pass a student to a function, you must pass three separate arguments.
-- If you add a new field (say, `email`), you must update every function signature.
+- If we pass a student to a function, we must pass three separate arguments.
+- If we add a new field (say, `email`), we must update every function signature.
 - It's easy to keep the arrays out of sync — e.g., swap `ids[3]` with `names[3]` accidentally.
 
 A struct fixes all of this by keeping the fields together.
@@ -76,7 +76,7 @@ int main(void) {
 
 Key points:
 
-- `struct Student` defines a **new type**. It's a template — no memory is allocated until you declare a variable of that type.
+- `struct Student` defines a **new type**. It's a template — no memory is allocated until we declare a variable of that type.
 - `s1` is a variable of type `struct Student`. It contains all three fields **contiguously in memory**.
 - The `.` (dot) operator accesses individual fields: `s1.name`, `s1.id`, `s1.gpa`.
 - The fields add up to `50 + 4 + 4 = 58` bytes, but `sizeof(struct Student)` is actually **60** on typical systems because of padding (see the diagram above and the gotchas below).
@@ -84,7 +84,7 @@ Key points:
 
 ### Example 2: Multiple Students, Passed to a Function
 
-This is where structs really shine — you can pass an entire record as one argument.
+This is where structs really shine: we can pass an entire record as one argument.
 
 ```c
 #include <stdio.h>
@@ -125,7 +125,7 @@ Charlie     ID: 103  GPA: 3.90
 
 Things to notice:
 
-- An **array of structs** (`struct Student roster[3]`) is how you build a "table" of records. This is the C equivalent of a data frame with 3 rows.
+- An **array of structs** (`struct Student roster[3]`) is how we build a "table" of records. This is the C equivalent of a data frame with 3 rows.
 - **Initializer syntax**: `{"Alice", 101, 3.8}` matches the fields in declaration order.
 - `printStudent` takes one argument and prints all three fields. Compare this to a function that would need `char name[], int id, float gpa` as three separate parameters — structs are cleaner.
 
@@ -161,12 +161,12 @@ int main(void) {
 
 Compile with `gcc point.c -o point -lm`: on many systems `sqrt` lives in the math library, which must be linked explicitly.
 
-This is the pattern you'll use constantly in geometry, graphics, and simulation work. The `distance` function reads as "distance between two points" — much clearer than `distance(x1, y1, x2, y2)`.
+This is a pattern we'll use constantly in geometry, graphics, and simulation work. The `distance` function reads as "distance between two points" — much clearer than `distance(x1, y1, x2, y2)`.
 
 
 ### Example 4: A Linked List Node (Preview of What's Coming)
 
-Structs become essential when you build data structures. A linked list node in C looks like this:
+Structs become essential when we build data structures. A linked list node in C looks like this:
 
 ```c
 struct Node {
@@ -175,7 +175,7 @@ struct Node {
 };
 ```
 
-Notice the struct **contains a pointer to its own type**. This is how linked lists, trees, and graphs are built. You cannot do this with plain arrays. (The field must be a pointer to `struct Node`: a struct cannot contain itself by value.)
+Notice the struct **contains a pointer to its own type**. This is how linked lists, trees, and graphs are built. We cannot do this with plain arrays. (The field must be a pointer to `struct Node`: a struct cannot contain itself by value.)
 
 
 ### Structs vs. Arrays
@@ -210,7 +210,7 @@ The trade-off: structs are **rigid but fast and type-safe**. Python dicts and R 
 
 1. **Always end with a semicolon.** `struct Student { ... };` — the semicolon after `}` is mandatory. Forgetting it is a common beginner error.
 
-2. **You can use `typedef` to shorten the name:**
+2. **We can use `typedef` to shorten the name:**
    ```c
    typedef struct {
        char name[50];
@@ -222,11 +222,11 @@ The trade-off: structs are **rigid but fast and type-safe**. Python dicts and R 
    ```
    This is very common in modern C code. Most real-world C uses `typedef`.
 
-3. **You cannot compare structs with `==`.** This won't work:
+3. **We cannot compare structs with `==`.** This won't work:
    ```c
    if (s1 == s2) { ... }   // compile error
    ```
-   You must compare field by field, or use `memcmp` (with caution due to padding).
+   We must compare field by field, or use `memcmp` (with caution due to padding).
 
 4. **Structs can be passed by value or by pointer.** Passing by value copies the whole struct (potentially many bytes). Passing by pointer avoids the copy:
    ```c
@@ -234,14 +234,14 @@ The trade-off: structs are **rigid but fast and type-safe**. Python dicts and R 
        printf("%s\n", s->name);   // note the -> operator
    }
    ```
-   The `->` operator is shorthand for `(*s).name`. You'll see it everywhere once you start using pointers with structs.
+   The `->` operator is shorthand for `(*s).name`. We'll see it everywhere once we start using pointers with structs.
 
-5. **Memory padding.** The compiler may insert unused bytes between fields to align them properly. Here `sizeof(struct Student)` is 60 rather than 58: `name` ends at byte 50, but the `int` must start at a multiple of 4, so 2 bytes of padding are added (`id` at offset 52, `gpa` at 56). This usually doesn't matter, but it's why you shouldn't assume a struct's size is the sum of its field sizes.
+5. **Memory padding.** The compiler may insert unused bytes between fields to align them properly. Here `sizeof(struct Student)` is 60 rather than 58: `name` ends at byte 50, but the `int` must start at a multiple of 4, so 2 bytes of padding are added (`id` at offset 52, `gpa` at 56). This usually doesn't matter, but it's why we shouldn't assume a struct's size is the sum of its field sizes.
 
 
-### When Should You Use a Struct?
+### When Should We Use a Struct?
 
-Use a struct whenever **two or more pieces of data logically belong together**:
+We use a struct whenever **two or more pieces of data logically belong together**:
 
 - A point (x, y) or (x, y, z)
 - A date (year, month, day)
@@ -251,15 +251,15 @@ Use a struct whenever **two or more pieces of data logically belong together**:
 - A configuration (width, height, color depth)
 - A complex number (real, imaginary)
 
-If you find yourself passing the same set of variables to multiple functions, or keeping parallel arrays in sync, that's a signal you should define a struct.
+If we find ourselves passing the same set of variables to multiple functions, or keeping parallel arrays in sync, that's a signal to define a struct.
 
 
 ### A Practical Summary
 
-Start with Example 1 (student record) and Example 3 (point). Write them, compile them, run them. Then modify them:
+Let's start with Example 1 (student record) and Example 3 (point): write them, compile them, run them. Then we can modify them:
 
 - Add a new field to the Student struct (e.g., `char email[100]`) and update the print function.
 - Write a function that takes two points and returns the midpoint (another struct Point).
 - Build an array of 5 students and sort them by GPA.
 
-Once you're comfortable with these, structs will become a natural tool for organizing your data, and you'll be ready for pointer-based data structures such as linked lists, trees and hash tables.
+Once we're comfortable with these, structs will become a natural tool for organizing our data, and we'll be ready for pointer-based data structures such as linked lists, trees and hash tables.

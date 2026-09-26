@@ -3,7 +3,7 @@ title: "Poisson Regression: A Simple Example"
 author: "Abdullah Al Mahmud"
 date: "2026-01-02"
 categories: [regression, statistics, poisson]
-tags: [MA, AR]
+tags: [poisson-regression, count-data, regression, glm]
 description: Poisson regression is a statistical model for analyzing count data (e.g., number of events, calls, clicks) that occur in a fixed interval, using the Poisson distribution.
 ---
 

@@ -144,5 +144,23 @@ int main(){
   if (isMember != 1 || purchaseAmount < 1000);
   printf("You are not eligible for a discount. \n");
 
+  // Using bool again
+  int departmentalCustomer = 0;
+
+  if (departmentalCustomer || (isMember == 1 && purchaseAmount >=1000)){
+      printf("You are eligible for a discount. \n");
+  } else {
+    printf("Standard customer: No discount at this time. \n");
+  }
+
+  // Find odd/even numbers
+
+  int selectedNumber = 10;
+  if (selectedNumber %2 == 0){
+    printf("The number %d is even.\n", selectedNumber);
+  } else {
+    printf("It's an odd number.\n");
+  }
+
   return 0;
 }

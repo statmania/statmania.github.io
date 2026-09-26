@@ -3556,7 +3556,7 @@ font-style: inherit;">$0</span></span></code></pre></div></div>
 <figcaption>A struct is one block of memory holding several fields, with padding between them</figcaption>
 </figure>
 </div>
-<p>A <strong>struct</strong> (short for “structure”) lets you group <strong>related variables of different types</strong> into a single unit. It’s the C way of saying “these pieces of data belong together.”</p>
+<p>A <strong>struct</strong> (short for “structure”) lets us group <strong>related variables of different types</strong> into a single unit. It’s the C way of saying “these pieces of data belong together.”</p>
 <p>This is something used more explicitly in R and Python. In Python, we’d write:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1">student <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -3594,7 +3594,7 @@ font-style: inherit;">3.8</span>)</span></code></pre></div></div>
 <p>In C, we use a <strong>struct</strong> to build this same idea — but with strict typing and a fixed layout.</p>
 <section id="the-problem-structs-solve" class="level3">
 <h3 class="anchored" data-anchor-id="the-problem-structs-solve">The Problem Structs Solve</h3>
-<p>Suppose you want to track a student’s name, ID, and GPA. Without structs, you’d need three separate arrays:</p>
+<p>Suppose we want to track a student’s name, ID, and GPA. Without structs, we’d need three separate arrays:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">char</span> names<span class="op" style="color: #5E5E5E;
@@ -3626,7 +3626,7 @@ background-color: null;
 font-style: inherit;">100</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">];</span></span></code></pre></div></div>
-<p>This works, but it has problems: - The data for one student is <strong>scattered</strong> across three arrays. - If you pass a student to a function, you must pass three separate arguments. - If you add a new field (say, <code>email</code>), you must update every function signature. - It’s easy to keep the arrays out of sync — e.g., swap <code>ids[3]</code> with <code>names[3]</code> accidentally.</p>
+<p>This works, but it has problems: - The data for one student is <strong>scattered</strong> across three arrays. - If we pass a student to a function, we must pass three separate arguments. - If we add a new field (say, <code>email</code>), we must update every function signature. - It’s easy to keep the arrays out of sync — e.g., swap <code>ids[3]</code> with <code>names[3]</code> accidentally.</p>
 <p>A struct fixes all of this by keeping the fields together.</p>
 </section>
 <section id="example-1-a-student-record" class="level3">
@@ -3783,7 +3783,7 @@ background-color: null;
 font-style: inherit;">}</span></span></code></pre></div></div>
 <p>Key points:</p>
 <ul>
-<li><code>struct Student</code> defines a <strong>new type</strong>. It’s a template — no memory is allocated until you declare a variable of that type.</li>
+<li><code>struct Student</code> defines a <strong>new type</strong>. It’s a template — no memory is allocated until we declare a variable of that type.</li>
 <li><code>s1</code> is a variable of type <code>struct Student</code>. It contains all three fields <strong>contiguously in memory</strong>.</li>
 <li>The <code>.</code> (dot) operator accesses individual fields: <code>s1.name</code>, <code>s1.id</code>, <code>s1.gpa</code>.</li>
 <li>The fields add up to <code>50 + 4 + 4 = 58</code> bytes, but <code>sizeof(struct Student)</code> is actually <strong>60</strong> on typical systems because of padding (see the diagram above and the gotchas below).</li>
@@ -3791,7 +3791,7 @@ font-style: inherit;">}</span></span></code></pre></div></div>
 </section>
 <section id="example-2-multiple-students-passed-to-a-function" class="level3">
 <h3 class="anchored" data-anchor-id="example-2-multiple-students-passed-to-a-function">Example 2: Multiple Students, Passed to a Function</h3>
-<p>This is where structs really shine — you can pass an entire record as one argument.</p>
+<p>This is where structs really shine: we can pass an entire record as one argument.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><span class="pp" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">#include </span><span class="im" style="color: #00769E;
@@ -4005,7 +4005,7 @@ Bob         ID: 102  GPA: 3.20
 Charlie     ID: 103  GPA: 3.90</code></pre>
 <p>Things to notice:</p>
 <ul>
-<li>An <strong>array of structs</strong> (<code>struct Student roster[3]</code>) is how you build a “table” of records. This is the C equivalent of a data frame with 3 rows.</li>
+<li>An <strong>array of structs</strong> (<code>struct Student roster[3]</code>) is how we build a “table” of records. This is the C equivalent of a data frame with 3 rows.</li>
 <li><strong>Initializer syntax</strong>: <code>{"Alice", 101, 3.8}</code> matches the fields in declaration order.</li>
 <li><code>printStudent</code> takes one argument and prints all three fields. Compare this to a function that would need <code>char name[], int id, float gpa</code> as three separate parameters — structs are cleaner.</li>
 </ul>
@@ -4181,11 +4181,11 @@ font-style: inherit;">;</span></span>
 background-color: null;
 font-style: inherit;">}</span></span></code></pre></div></div>
 <p>Compile with <code>gcc point.c -o point -lm</code>: on many systems <code>sqrt</code> lives in the math library, which must be linked explicitly.</p>
-<p>This is the pattern you’ll use constantly in geometry, graphics, and simulation work. The <code>distance</code> function reads as “distance between two points” — much clearer than <code>distance(x1, y1, x2, y2)</code>.</p>
+<p>This is a pattern we’ll use constantly in geometry, graphics, and simulation work. The <code>distance</code> function reads as “distance between two points” — much clearer than <code>distance(x1, y1, x2, y2)</code>.</p>
 </section>
 <section id="example-4-a-linked-list-node-preview-of-whats-coming" class="level3">
 <h3 class="anchored" data-anchor-id="example-4-a-linked-list-node-preview-of-whats-coming">Example 4: A Linked List Node (Preview of What’s Coming)</h3>
-<p>Structs become essential when you build data structures. A linked list node in C looks like this:</p>
+<p>Structs become essential when we build data structures. A linked list node in C looks like this:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb8-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -4210,7 +4210,7 @@ font-style: inherit;">// pointer to another Node</span></span>
 <span id="cb8-4"><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">};</span></span></code></pre></div></div>
-<p>Notice the struct <strong>contains a pointer to its own type</strong>. This is how linked lists, trees, and graphs are built. You cannot do this with plain arrays. (The field must be a pointer to <code>struct Node</code>: a struct cannot contain itself by value.)</p>
+<p>Notice the struct <strong>contains a pointer to its own type</strong>. This is how linked lists, trees, and graphs are built. We cannot do this with plain arrays. (The field must be a pointer to <code>struct Node</code>: a struct cannot contain itself by value.)</p>
 </section>
 <section id="structs-vs.-arrays" class="level3">
 <h3 class="anchored" data-anchor-id="structs-vs.-arrays">Structs vs.&nbsp;Arrays</h3>
@@ -4295,7 +4295,7 @@ font-style: inherit;">};</span></span></code></pre></div></div>
 <h3 class="anchored" data-anchor-id="a-few-rules-and-gotchas">A Few Rules and Gotchas</h3>
 <ol type="1">
 <li><p><strong>Always end with a semicolon.</strong> <code>struct Student { ... };</code> — the semicolon after <code>}</code> is mandatory. Forgetting it is a common beginner error.</p></li>
-<li><p><strong>You can use <code>typedef</code> to shorten the name:</strong></p>
+<li><p><strong>We can use <code>typedef</code> to shorten the name:</strong></p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb9-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -4336,7 +4336,7 @@ font-style: inherit;">;</span>   <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">// no "struct" prefix needed</span></span></code></pre></div></div>
 <p>This is very common in modern C code. Most real-world C uses <code>typedef</code>.</p></li>
-<li><p><strong>You cannot compare structs with <code>==</code>.</strong> This won’t work:</p>
+<li><p><strong>We cannot compare structs with <code>==</code>.</strong> This won’t work:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb10-1"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -4355,7 +4355,7 @@ background-color: null;
 font-style: inherit;">}</span>   <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">// compile error</span></span></code></pre></div></div>
-<p>You must compare field by field, or use <code>memcmp</code> (with caution due to padding).</p></li>
+<p>We must compare field by field, or use <code>memcmp</code> (with caution due to padding).</p></li>
 <li><p><strong>Structs can be passed by value or by pointer.</strong> Passing by value copies the whole struct (potentially many bytes). Passing by pointer avoids the copy:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb11-1"><span class="dt" style="color: #AD0000;
 background-color: null;
@@ -4391,13 +4391,13 @@ font-style: inherit;">// note the -&gt; operator</span></span>
 <span id="cb11-3"><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">}</span></span></code></pre></div></div>
-<p>The <code>-&gt;</code> operator is shorthand for <code>(*s).name</code>. You’ll see it everywhere once you start using pointers with structs.</p></li>
-<li><p><strong>Memory padding.</strong> The compiler may insert unused bytes between fields to align them properly. Here <code>sizeof(struct Student)</code> is 60 rather than 58: <code>name</code> ends at byte 50, but the <code>int</code> must start at a multiple of 4, so 2 bytes of padding are added (<code>id</code> at offset 52, <code>gpa</code> at 56). This usually doesn’t matter, but it’s why you shouldn’t assume a struct’s size is the sum of its field sizes.</p></li>
+<p>The <code>-&gt;</code> operator is shorthand for <code>(*s).name</code>. We’ll see it everywhere once we start using pointers with structs.</p></li>
+<li><p><strong>Memory padding.</strong> The compiler may insert unused bytes between fields to align them properly. Here <code>sizeof(struct Student)</code> is 60 rather than 58: <code>name</code> ends at byte 50, but the <code>int</code> must start at a multiple of 4, so 2 bytes of padding are added (<code>id</code> at offset 52, <code>gpa</code> at 56). This usually doesn’t matter, but it’s why we shouldn’t assume a struct’s size is the sum of its field sizes.</p></li>
 </ol>
 </section>
-<section id="when-should-you-use-a-struct" class="level3">
-<h3 class="anchored" data-anchor-id="when-should-you-use-a-struct">When Should You Use a Struct?</h3>
-<p>Use a struct whenever <strong>two or more pieces of data logically belong together</strong>:</p>
+<section id="when-should-we-use-a-struct" class="level3">
+<h3 class="anchored" data-anchor-id="when-should-we-use-a-struct">When Should We Use a Struct?</h3>
+<p>We use a struct whenever <strong>two or more pieces of data logically belong together</strong>:</p>
 <ul>
 <li>A point (x, y) or (x, y, z)</li>
 <li>A date (year, month, day)</li>
@@ -4407,17 +4407,17 @@ font-style: inherit;">}</span></span></code></pre></div></div>
 <li>A configuration (width, height, color depth)</li>
 <li>A complex number (real, imaginary)</li>
 </ul>
-<p>If you find yourself passing the same set of variables to multiple functions, or keeping parallel arrays in sync, that’s a signal you should define a struct.</p>
+<p>If we find ourselves passing the same set of variables to multiple functions, or keeping parallel arrays in sync, that’s a signal to define a struct.</p>
 </section>
 <section id="a-practical-summary" class="level3">
 <h3 class="anchored" data-anchor-id="a-practical-summary">A Practical Summary</h3>
-<p>Start with Example 1 (student record) and Example 3 (point). Write them, compile them, run them. Then modify them:</p>
+<p>Let’s start with Example 1 (student record) and Example 3 (point): write them, compile them, run them. Then we can modify them:</p>
 <ul>
 <li>Add a new field to the Student struct (e.g., <code>char email[100]</code>) and update the print function.</li>
 <li>Write a function that takes two points and returns the midpoint (another struct Point).</li>
 <li>Build an array of 5 students and sort them by GPA.</li>
 </ul>
-<p>Once you’re comfortable with these, structs will become a natural tool for organizing your data, and you’ll be ready for pointer-based data structures such as linked lists, trees and hash tables.</p>
+<p>Once we’re comfortable with these, structs will become a natural tool for organizing our data, and we’ll be ready for pointer-based data structures such as linked lists, trees and hash tables.</p>
 
 
 </section>

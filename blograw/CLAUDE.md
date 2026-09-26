@@ -25,7 +25,7 @@ new post anyway (lowercase, hyphenated, specific: `c`, `struct`, `typedef`,
 `python-dict`). We plan to use them later for related-posts and topic pages,
 and it is much cheaper to tag posts as you write than to backfill. `categories`
 stay broad (language, subject, post type); `tags` are the specific concepts.
-Older posts still have `tags: []`.
+Every existing post has been backfilled (2026-09-26); keep tags lowercase and hyphenated for consistency.
 
 ## Images: SVG in the body, PNG in the front matter
 
@@ -59,6 +59,7 @@ Older posts still have `tags: []`.
   any needed flag (e.g. `-lm` for `<math.h>`).
 - Use `::: {.callout-note}` / `-tip` / `-warning` for asides (styled for the
   dark theme in `styles.css`).
+- Voice: first-person plural for tutorials ("we", "us", "let's") rather than "you"; keep instructions short and concrete.
 - Don't include personal details (course codes, degree info) in public posts.
 - Only list references you actually used.
 
