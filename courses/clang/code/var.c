@@ -14,7 +14,7 @@ int main(){
   printf("%c \n", myChar);
 
   // Combining text and variable
-  printf("The chosen number is %d", myNum);
+  printf("The chosen number is %d\n", myNum);
   // Text, letter, and number
   printf("The number is %d and the letter is %c \n", myNum, myChar);
   //   print without storing
@@ -30,7 +30,7 @@ int main(){
   // Declare with no assignment
   int barevar;
   barevar = myNum;
-  printf("This varibale (barevar) has a value now and %d is the value \n", myNum);
+  printf("This variable (barevar) has a value now and %d is the value \n", barevar);
 
   // Add variables
   int x = 10;
@@ -58,7 +58,7 @@ int main(){
   // Good
   int age = 30;
   printf("My age is %d \n", age);
-  // Fine, but not recognizabe
+  // Fine, but not recognizable
   int x2 = 40;
 
   // A personal profile

@@ -219,6 +219,41 @@ course; copy for a new one). Two raw-HTML block types:
 The `your-turn.qmd`-style sandbox/practice page doesn't get a quiz — it has
 no single "correct" answer to check.
 
+## Question bank archive (separate from per-lesson quizzes)
+
+Besides the per-lesson `sm-quiz` widgets above, a course can have a
+**question bank**: `courses/<slug>/<slug>_question_bank.tex`, written in the
+same LaTeX-exam-style bank format as `question/bank/stat1_mcq_bank.tex` /
+`stat2_mcq_bank.tex` (see `courses/rprogramming/rprogramming_question_bank.tex`
+for a working example). This feeds a site-wide practice/archive quiz page —
+it's unrelated to the course's own Quarto build and doesn't need
+`quarto render`.
+
+- Wrap content in `\begin{document}...\end{document}`, `\begin{questions}`,
+  matching the stat1/stat2 bank files' wrapper convention.
+- Use `\section{}`/`\subsection{}`/`\subsubsection{}` to group questions —
+  these drive the chapter/topic dropdown filter on the generated quiz page.
+- MCQ: `\question \textbf{prompt} \choice{a}{b}{c}{d}{answer-letter}`.
+- Fill-in-the-blank: `\fitb{prompt}{answer}` — graded by exact trimmed
+  case-sensitive string match (same convention as the `sm-quiz` `fitb` type
+  above).
+
+**Discovery is automatic** — `courses/discover_quiz_banks.py` globs
+`courses/*/*_question_bank.tex` and derives each course's display label from
+its `_quarto.yml`'s `website.title` (the part after `·`). A new course's
+bank file is picked up with no edits to `question/build_quiz.py`.
+
+To regenerate the quiz page after adding/editing questions:
+
+```
+cd question/ && python3 build_quiz.py
+```
+
+This parses every discovered bank (plus the stat1/stat2 banks) into
+`question/stat-prob.html`, a single dark-theme practice page with a subject/
+chapter/topic dropdown — checked into git like the other rendered output in
+this repo.
+
 ## Navbar branding format
 
 Every course's `_quarto.yml` navbar should read, left to right: **logo,

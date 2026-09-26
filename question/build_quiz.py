@@ -8,16 +8,24 @@ Re-run any time the .tex source files change to regenerate the HTML.
 """
 import json
 import re
+import sys
 from html import escape as _esc
 from pathlib import Path
 
 HERE = Path(__file__).parent
+sys.path.insert(0, str(HERE.parent / "courses"))
+from discover_quiz_banks import discover_quiz_banks  # noqa: E402
+
 SOURCES = [
     ("Statistics I", HERE / "bank" / "stat1_mcq_bank.tex"),
     ("Statistics II", HERE / "bank" / "stat2_mcq_bank.tex"),
 ]
+SOURCES += discover_quiz_banks(HERE.parent / "courses")
 # Statistics II's chapters go well beyond probability proper (sampling, vital
 # statistics, index numbers, ...), hence "& Others" in its display title.
+# Courses discovered via discover_quiz_banks() aren't listed here -- their
+# discovered label is already the display title (see SUBJECT_TITLES.get
+# fallback in the generated JS).
 SUBJECT_TITLES = {
     "Statistics I": "Stat 1 — Statistics",
     "Statistics II": "Stat 2 — Probability & Others",
@@ -393,7 +401,7 @@ def parse_bank(path, subject_label):
     stream = strip_comments_with_markers(body)
 
     token_re = re.compile(
-        r"\\subsubsection\*?\s*\{|\\subsection\*?\s*\{|\\section\*?\s*\{|\\question\b"
+        r"\\subsubsection\*?\s*\{|\\subsection\*?\s*\{|\\section\*?\s*\{|\\question\b|\\fitb\s*\{"
         r"|@@SITSTART@@|@@SITEND@@|@@MCSTART@@|@@MCEND@@"
     )
 
@@ -506,6 +514,7 @@ def parse_bank(path, subject_label):
                 "chapter": current["section"] or "General",
                 "topic": topic,
                 "subtopic": subtopic,
+                "kind": "mcq",
                 "type": q_type,
                 "situation_id": ("%s-%s" % (subject_label, current_situation_id)) if in_situation else None,
                 "question_html": latexify_block(q_text_raw),
@@ -525,6 +534,35 @@ def parse_bank(path, subject_label):
                 nb = stream.find("{", after)
                 bp2 = nb if nb != -1 else after
             pos = end_after
+            continue
+
+        if tok.startswith("\\fitb"):
+            # \fitb{prompt}{answer} -- fill-in-the-blank / short-answer question.
+            brace_pos = m2.end() - 1
+            prompt_raw, after = extract_braced(stream, brace_pos)
+            nb = stream.find("{", after)
+            if nb == -1:
+                pending_text = []
+                pos = after
+                continue
+            answer_raw, after2 = extract_braced(stream, nb)
+
+            topic = current["subsection"] or current["section"] or "General"
+            subtopic = current["subsubsection"]
+
+            questions.append({
+                "subject": subject_label,
+                "chapter": current["section"] or "General",
+                "topic": topic,
+                "subtopic": subtopic,
+                "kind": "fitb",
+                "type": "simple",
+                "situation_id": None,
+                "question_html": latexify_block(prompt_raw),
+                "answer_text": latexify_inline(answer_raw).strip(),
+            })
+            pending_text = []
+            pos = after2
             continue
 
     # attach situation context to each question
@@ -641,7 +679,7 @@ HTML_TEMPLATE = r"""<!doctype html>
                 </svg>
                 Statistics &amp; Probability Quiz
             </h1>
-            <p class="text-lg sm:text-xl sm-subtitle-sm">__QCOUNT__ questions across both Statistics I and Statistics II question banks &mdash; pick a chapter, a topic, and how many questions you want.</p>
+            <p class="text-lg sm:text-xl sm-subtitle-sm">__QCOUNT__ questions across the Statistics I, Statistics II, and R Programming question banks &mdash; pick a chapter, a topic, and how many questions you want.</p>
         </div>
     </section>
 
@@ -943,6 +981,12 @@ function renderMath(el) {
   }
 }
 
+function escapeHtml(s) {
+  const div = document.createElement('div');
+  div.textContent = s;
+  return div.innerHTML;
+}
+
 function fmtTime(sec) {
   sec = Math.max(0, Math.round(sec));
   const m = Math.floor(sec / 60);
@@ -1087,39 +1131,73 @@ function renderQuestion() {
   feedbackEl.innerHTML = '';
   nextBtn.classList.add('hidden');
   submitEndBtn.classList.add('hidden');
+  submitEndBtn.textContent = 'Submit Answer';
   skipBtn.classList.add('hidden');
   saveReviewBtn.classList.add('hidden');
 
-  let picked = editing ? editing.entry.pickedIdx : null;
+  const isFitb = q.kind === 'fitb';
+  let picked = editing ? (isFitb ? editing.entry.pickedText : editing.entry.pickedIdx) : null;
+  if (picked === undefined) picked = null;
 
-  q.options_html.forEach((opt, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'opt-btn w-full text-left rounded-lg border border-white/15 bg-white/[0.02] px-4 py-3 hover:border-cyan-400/60';
-    btn.innerHTML = opt;
-    if (editing && picked === i) btn.classList.add('picked');
-    btn.addEventListener('click', () => {
+  let fitbInput = null;
+  if (isFitb) {
+    fitbInput = document.createElement('input');
+    fitbInput.type = 'text';
+    fitbInput.className = 'sm-input w-full rounded-lg px-3 py-2';
+    fitbInput.placeholder = 'Type your answer';
+    fitbInput.autocomplete = 'off';
+    fitbInput.spellcheck = false;
+    if (picked !== null) fitbInput.value = picked;
+    fitbInput.addEventListener('input', () => {
       if (state.locked) return;
-      picked = i;
-      [...optsEl.children].forEach(b => b.classList.remove('picked'));
-      btn.classList.add('picked');
-      if (editing) {
-        saveReviewBtn.classList.remove('hidden');
-      } else if (state.revealMode === 'immediate') {
-        lockAndReveal(i);
-      } else {
-        submitEndBtn.classList.remove('hidden');
-      }
+      picked = fitbInput.value;
+      if (editing) saveReviewBtn.classList.remove('hidden');
+      else submitEndBtn.classList.remove('hidden');
     });
-    optsEl.appendChild(btn);
-  });
+    fitbInput.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' || state.locked || editing) return;
+      submitEndBtn.click();
+    });
+    optsEl.appendChild(fitbInput);
+    if (!editing) {
+      submitEndBtn.textContent = 'Check Answer';
+      submitEndBtn.classList.remove('hidden');
+    }
+  } else {
+    q.options_html.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'opt-btn w-full text-left rounded-lg border border-white/15 bg-white/[0.02] px-4 py-3 hover:border-cyan-400/60';
+      btn.innerHTML = opt;
+      if (editing && picked === i) btn.classList.add('picked');
+      btn.addEventListener('click', () => {
+        if (state.locked) return;
+        picked = i;
+        [...optsEl.children].forEach(b => b.classList.remove('picked'));
+        btn.classList.add('picked');
+        if (editing) {
+          saveReviewBtn.classList.remove('hidden');
+        } else if (state.revealMode === 'immediate') {
+          lockAndReveal(i);
+        } else {
+          submitEndBtn.classList.remove('hidden');
+        }
+      });
+      optsEl.appendChild(btn);
+    });
+  }
 
   state.locked = false;
 
   if (editing) {
     saveReviewBtn.classList.remove('hidden');
     saveReviewBtn.onclick = () => {
-      editing.entry.pickedIdx = picked;
-      editing.entry.correct = picked === q.answer;
+      if (isFitb) {
+        editing.entry.pickedText = picked;
+        editing.entry.correct = picked !== null && picked.trim() === q.answer_text;
+      } else {
+        editing.entry.pickedIdx = picked;
+        editing.entry.correct = picked === q.answer;
+      }
       state.finalized[editing.index] = editing.entry;
       state.editing = null;
       openReview();
@@ -1152,15 +1230,48 @@ function renderQuestion() {
     renderMath(feedbackEl);
   }
 
-  submitEndBtn.onclick = () => {
-    if (picked === null) return;
+  function lockAndRevealText(text) {
     state.locked = true;
-    const correct = picked === q.answer;
+    const correct = text.trim() === q.answer_text;
+    if (correct) state.score++;
     state.current = null;
-    state.finalized.push({ q, pickedIdx: picked, correct });
+    state.finalized.push({ q, pickedText: text, correct });
+    fitbInput.classList.add(correct ? 'correct' : 'wrong');
+    feedbackEl.classList.remove('hidden');
+    feedbackEl.innerHTML = correct
+      ? '<span class="text-green-400 font-semibold">Correct!</span>'
+      : `<span class="text-red-400 font-semibold">Not quite.</span> The correct answer is <strong>${escapeHtml(q.answer_text)}</strong>.`;
     submitEndBtn.classList.add('hidden');
     skipBtn.classList.add('hidden');
     nextBtn.classList.remove('hidden');
+    document.getElementById('score-label').textContent = `Score: ${state.score}`;
+    renderMath(feedbackEl);
+  }
+
+  submitEndBtn.onclick = () => {
+    if (isFitb) {
+      if (picked === null || picked.trim() === '') return;
+      if (state.revealMode === 'immediate') {
+        lockAndRevealText(picked);
+      } else {
+        state.locked = true;
+        const correct = picked.trim() === q.answer_text;
+        state.current = null;
+        state.finalized.push({ q, pickedText: picked, correct });
+        submitEndBtn.classList.add('hidden');
+        skipBtn.classList.add('hidden');
+        nextBtn.classList.remove('hidden');
+      }
+    } else {
+      if (picked === null) return;
+      state.locked = true;
+      const correct = picked === q.answer;
+      state.current = null;
+      state.finalized.push({ q, pickedIdx: picked, correct });
+      submitEndBtn.classList.add('hidden');
+      skipBtn.classList.add('hidden');
+      nextBtn.classList.remove('hidden');
+    }
   };
 
   nextBtn.onclick = () => {
@@ -1182,7 +1293,11 @@ function renderReviewList() {
   const listEl = document.getElementById('review-list');
   listEl.innerHTML = '';
   state.finalized.forEach((entry, i) => {
-    const answered = entry.pickedIdx !== null && entry.pickedIdx !== undefined;
+    const isFitb = entry.q.kind === 'fitb';
+    const answered = isFitb
+      ? (entry.pickedText !== null && entry.pickedText !== undefined && entry.pickedText.trim() !== '')
+      : (entry.pickedIdx !== null && entry.pickedIdx !== undefined);
+    const yourAnswerHtml = isFitb ? escapeHtml(entry.pickedText || '') : entry.q.options_html[entry.pickedIdx];
     const div = document.createElement('div');
     div.className = 'rounded-lg p-4 flex items-start justify-between gap-4';
     div.style.background = 'rgba(255,255,255,0.02)';
@@ -1191,7 +1306,7 @@ function renderReviewList() {
       <div class="min-w-0 flex-1">
         <div class="text-sm mb-1" style="color:var(--sm-muted)">Q${i + 1} &middot; ${answered ? '<span class="text-cyan-300">Answered</span>' : '<span class="text-amber-300">Skipped</span>'}</div>
         <div class="font-medium">${entry.q.question_html}</div>
-        ${answered ? `<div class="text-sm mt-1" style="color:var(--sm-muted)">Your answer: ${entry.q.options_html[entry.pickedIdx]}</div>` : ''}
+        ${answered ? `<div class="text-sm mt-1" style="color:var(--sm-muted)">Your answer: ${yourAnswerHtml}</div>` : ''}
       </div>
       <button class="sm-btn sm-btn-ghost text-sm shrink-0">${answered ? 'Change' : 'Answer'}</button>
     `;
@@ -1228,9 +1343,12 @@ function showSummary() {
     div.className = 'rounded-lg p-4';
     div.style.background = 'rgba(255,255,255,0.02)';
     div.style.border = '1px solid rgba(255,255,255,0.08)';
-    const correctText = a.q.options_html[a.q.answer];
-    const answered = a.pickedIdx !== null && a.pickedIdx !== undefined;
-    const pickedText = answered ? a.q.options_html[a.pickedIdx] : null;
+    const isFitb = a.q.kind === 'fitb';
+    const correctText = isFitb ? escapeHtml(a.q.answer_text) : a.q.options_html[a.q.answer];
+    const answered = isFitb
+      ? (a.pickedText !== null && a.pickedText !== undefined && a.pickedText.trim() !== '')
+      : (a.pickedIdx !== null && a.pickedIdx !== undefined);
+    const pickedText = answered ? (isFitb ? escapeHtml(a.pickedText) : a.q.options_html[a.pickedIdx]) : null;
     div.innerHTML = `
       <div class="text-sm mb-1" style="color:var(--sm-muted)">Q${i + 1} · ${a.correct ? '<span class="text-green-400">Correct</span>' : '<span class="text-red-400">Incorrect</span>'}</div>
       <div class="font-medium mb-2">${a.q.question_html}</div>

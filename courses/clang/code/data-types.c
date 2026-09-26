@@ -120,10 +120,10 @@ int main(){
   printf("%f, %f\n", ratio1, ratio2);
 
   // Constants, unchangeable
-  const birth_year = 2001;
+  const int BIRTH_YEAR = 2001; // skipping int is not right
   const birth_month = 12;
   const DAY = 7; //better to write in uppercase
 
-  printf("Born in %d.\n", birth_year);
+  printf("Born in %d.\n", BIRTH_YEAR);
   return 0;
 }
