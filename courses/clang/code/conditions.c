@@ -107,5 +107,23 @@ int main(){
     printf("Standard customer: No discount at this time. \n");
   }
 
+
+  // ATM Pin and amount check
+
+  int pin = 5103;
+  int balance = 50000;
+
+  if (pin == 5103) {
+    printf("Thank you! You're logged in!\n");
+
+    // Nested if to verify balance
+    if (balance >= 40000) {
+      printf("And you have sufficient balance.\n");
+    } else {
+      printf("Sorry! Your balance is too low!\n");
+    }
+  } else {
+    printf("Your PIN is not correct \n");
+  }
   return 0;
 }

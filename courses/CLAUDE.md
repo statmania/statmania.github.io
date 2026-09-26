@@ -256,26 +256,29 @@ this repo.
 
 ## Navbar branding format
 
-Every course's `_quarto.yml` navbar should read, left to right: **logo,
-"Stat Mania", the course name**, then a link back to the hub. Set this via
-`website.title`, not a separate hard-coded element:
+Every course's `_quarto.yml` navbar should read, left to right: **logo +
+"Stat Mania"** (both link to the main site home), then the **course name**
+(links to the course's own home), then the other links (no separate Home link, the brand is it). Quarto's brand link is
+one target for logo and title, so set `logo-href` to the site home and put the
+course name as the first `left` item:
 
 ```yaml
 website:
-  title: "Stat Mania · <Course Name>"
+  title: "Stat Mania"
   navbar:
-    logo: ../../img/statmania_logo.png
+    logo: ../../img/statmania_logo.svg
+    logo-href: ../../index.html
     left:
-      - href: ../../index.html
-        text: Home
-        icon: house
+      - href: index.qmd
+        text: "<Course Name>"
       - href: ../index.html
         text: All Courses
         icon: mortarboard
 ```
 
 (The `sidebar.title` can stay just the course name — that's fine, it's
-inside the course's own context already.)
+inside the course's own context already. `dark.scss` styles the first navbar
+item bold cyan so the course name reads as part of the brand.)
 
 ## Checklist for a new course
 
