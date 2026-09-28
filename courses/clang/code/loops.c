@@ -36,6 +36,25 @@ int main(){
     scanf("%d", &PIN);
   } while (PIN != 2471);
   printf("Correct PIN!\n");
+
+  // More examples
+  // a program that only prints even numbers between 0 and 10 (inclusive):
+
+  int num = 0;
+  while (num <= 10) {
+    printf("%d\n", num);
+    num += 2;
+  }
+
+  // Reverse digits
+
+  int numbers = 12345;
+  revNumber = 0;
+  while (numbers) {
+    revNumber = revNumber * 10 + numbers % 10
+    number /= 10;
+  }
+
   return 0;
 }
 
