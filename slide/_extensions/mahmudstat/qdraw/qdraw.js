@@ -10,15 +10,9 @@ window.RevealQdraw = function () {
           <i class="fas fa-pen-nib"></i>
         </button>
         <div id="controls">
-          <label style="font-weight: bold;" class="colorSynced" id="penTool" title="Pen Tool"><i class="fas fa-marker"></i></label>
-          <input type="color" id="penColor" value="#000000" style="display: none;" />
-          <label for="penColor" id="penColorLabel" title="Pen &amp; Shape Color">
-            <i class="fas fa-palette"></i>
-          </label>
-          <input type="range" id="penSize" min="1" max="20" value="4" />
+          <label style="font-weight: bold;" class="colorSynced" id="penTool" title="Pen Tool (click again for stroke size &amp; color)"><i class="fas fa-marker"></i></label>
           <label style="font-weight: bold; color: #408000;" id="undo" title="Undo drawing"><i class="fas fa-undo"></i></label>
           <label style="font-weight: bold; color: red;" id="eraserTool" title="Eraser Tool (tip: right-click-drag, or a resting palm on touchscreens, quick-erases with any tool selected)"><i class="fas fa-eraser"></i></label>
-          <input type="range" id="eraserSize" min="20" max="250" value="60" />
           <label style="font-weight: bold;" class="colorSynced" id="shapeTool" title="Shape Tool"><i class="fas fa-shapes"></i></label>
           <label style="font-weight: bold; color: green;" id="bgTool" title="Canvas Background"><i class="fas fa-fill-drip"></i></label>
           <label style="font-weight: bold; color: #408000;" id="pagesTool" title="Pages"><i class="fas fa-clone"></i></label>
@@ -30,13 +24,30 @@ window.RevealQdraw = function () {
           </label>
         </div>
         <div id="aboutPopover">
-          Tip: right-click-drag, or a resting palm on touchscreens, quick-erases with any tool selected.<br />
           <a href="https://www.thinkermahmud.com/qdraw" target="_blank" rel="noopener">Learn more</a>
         </div>
         <div id="eraserOptions">
           <label class="eraserOption active" data-erasemode="eraser" title="Eraser"><i class="fas fa-eraser"></i></label>
           <label class="eraserOption" data-erasemode="select" title="Select area to erase"><i class="fas fa-vector-square"></i></label>
           <label class="eraserOption" data-erasemode="clear" title="Delete all drawing"><i class="fas fa-trash"></i></label>
+          <span class="optionsDivider"></span>
+          <label class="sizeOption" data-size="20" title="Small"><span class="sizeDot" style="width: 6px; height: 6px;"></span></label>
+          <label class="sizeOption active" data-size="60" title="Medium"><span class="sizeDot" style="width: 10px; height: 10px;"></span></label>
+          <label class="sizeOption" data-size="110" title="Large"><span class="sizeDot" style="width: 14px; height: 14px;"></span></label>
+          <label class="sizeOption" data-size="180" title="Extra Large"><span class="sizeDot" style="width: 18px; height: 18px;"></span></label>
+          <label class="sizeOption" data-size="250" title="Huge"><span class="sizeDot" style="width: 22px; height: 22px;"></span></label>
+        </div>
+        <div id="penSizeOptions">
+          <label class="sizeOption" data-size="2" title="Thin"><span class="sizeLine" style="height: 2px;"></span></label>
+          <label class="sizeOption active" data-size="4" title="Fine"><span class="sizeLine" style="height: 4px;"></span></label>
+          <label class="sizeOption" data-size="8" title="Medium"><span class="sizeLine" style="height: 8px;"></span></label>
+          <label class="sizeOption" data-size="14" title="Thick"><span class="sizeLine" style="height: 14px;"></span></label>
+          <label class="sizeOption" data-size="20" title="Extra Thick"><span class="sizeLine" style="height: 20px;"></span></label>
+          <span class="optionsDivider"></span>
+          <label id="penColorLabel" class="colorSwatch" title="Pen &amp; Shape Color">
+            <i class="fas fa-palette"></i>
+            <input type="color" id="penColor" value="#000000" />
+          </label>
         </div>
         <div id="shapeOptions">
           <label class="shapeOption active" data-shape="line" title="Line"><i class="fas fa-minus"></i></label>
@@ -47,8 +58,10 @@ window.RevealQdraw = function () {
           <label class="shapeFillToggle" id="shapeFillToggle" title="Toggle solid fill"><i class="fas fa-fill"></i></label>
         </div>
         <div id="bgOptions">
-          <input type="color" id="bgColor" style="display: none;" />
-          <label for="bgColor" id="bgColorLabel" class="bgOption" title="Choose background color"><i class="fas fa-fill-drip"></i></label>
+          <label id="bgColorLabel" class="bgOption colorSwatch" title="Choose background color">
+            <i class="fas fa-fill-drip"></i>
+            <input type="color" id="bgColor" />
+          </label>
           <label id="resetBg" class="bgOption" title="Reset background color"><i class="fas fa-rotate-left"></i></label>
         </div>
         <div id="pageOptions">
@@ -84,8 +97,9 @@ window.RevealQdraw = function () {
       const resetBgBtn = document.getElementById('resetBg');
       const penColorInput = document.getElementById('penColor');
       const penIcon = document.querySelector('#penColorLabel i');
-      const penSize = document.getElementById('penSize');
-      const eraserSize = document.getElementById('eraserSize');
+      const penSizeOptions = document.getElementById('penSizeOptions');
+      const penSizeOptionEls = Array.from(document.querySelectorAll('#penSizeOptions .sizeOption'));
+      const eraserSizeOptionEls = Array.from(document.querySelectorAll('#eraserOptions .sizeOption'));
       const penTool = document.getElementById('penTool');
       const undo = document.getElementById('undo');
       const eraserTool = document.getElementById('eraserTool');
@@ -123,8 +137,14 @@ window.RevealQdraw = function () {
       let shapeType = 'line'; // 'line' | 'rect' | 'triangle' | 'circle'
       let shapeFilled = false;
       let shapeBase = null;
+      // Fixed sizes (thin to thick) picked from the popovers, replacing the old sliders.
+      let penSizeValue = 4;
+      let eraserSizeValue = 60;
       let controlsEnabled = false;
       let lastX = 0, lastY = 0;
+      // Midpoint of the previous segment, used to smooth freehand strokes into
+      // a chain of quadratic curves instead of a jagged polyline - see draw().
+      let lastMidX = null, lastMidY = null;
       // A touch contact wider/taller than this (CSS px) is treated as a resting
       // palm rather than a fingertip - roughly double a typical thumb's contact
       // width - and quick-erases wherever it touches.
@@ -184,7 +204,7 @@ window.RevealQdraw = function () {
       }
 
       function updateEraser(x, y) {
-        const size = Number(eraserSize.value);
+        const size = eraserSizeValue;
         eraserCursor.style.width = size + 'px';
         eraserCursor.style.height = size + 'px';
         eraserCursor.style.left = x - size / 2 + 'px';
@@ -211,6 +231,8 @@ window.RevealQdraw = function () {
         const p = pos(e);
         lastX = p.x;
         lastY = p.y;
+        lastMidX = null;
+        lastMidY = null;
         if (quickErase) {
           eraserCursor.style.display = 'block';
         }
@@ -246,7 +268,7 @@ window.RevealQdraw = function () {
       }
 
       function drawShape(x0, y0, x1, y1) {
-        ctx.lineWidth = Number(penSize.value);
+        ctx.lineWidth = penSizeValue;
         ctx.lineCap = 'round';
         ctx.globalCompositeOperation = 'source-over';
         ctx.strokeStyle = penColorInput.value;
@@ -306,16 +328,25 @@ window.RevealQdraw = function () {
         }
 
         const erasing = activeMode === 'eraser';
-        const size = erasing ? Number(eraserSize.value) : Number(penSize.value);
+        const size = erasing ? eraserSizeValue : penSizeValue;
         ctx.lineWidth = size;
         ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
         ctx.globalCompositeOperation = erasing ? 'destination-out' : 'source-over';
         ctx.strokeStyle = penColorInput.value;
         if (erasing) updateEraser(p.x, p.y);
+
+        // Smooth the freehand stroke by curving through the midpoint of each
+        // segment rather than joining raw points with straight lines - a
+        // fast pointer otherwise produces a visibly jagged/faceted polyline.
+        const midX = (lastX + p.x) / 2;
+        const midY = (lastY + p.y) / 2;
         ctx.beginPath();
-        ctx.moveTo(lastX, lastY);
-        ctx.lineTo(p.x, p.y);
+        ctx.moveTo(lastMidX === null ? lastX : lastMidX, lastMidY === null ? lastY : lastMidY);
+        ctx.quadraticCurveTo(lastX, lastY, midX, midY);
         ctx.stroke();
+        lastMidX = midX;
+        lastMidY = midY;
         lastX = p.x;
         lastY = p.y;
       }
@@ -348,12 +379,6 @@ window.RevealQdraw = function () {
         shapeTool.style.color = penColorInput.value;
       });
 
-      penTool.onclick = () => {
-        mode = 'pen';
-        eraserCursor.style.display = 'none';
-        canvas.style.pointerEvents = 'auto';
-      };
-
       function positionPopover(popoverEl, anchorEl) {
         // Popovers live outside #controls (so they don't widen the toolbar
         // column) and are positioned against their anchor icon's actual
@@ -370,55 +395,86 @@ window.RevealQdraw = function () {
         }
       }
 
+      // Closes every popover except the one about to be toggled open.
+      function closeOtherPopovers(except) {
+        [shapeOptions, eraserOptions, bgOptions, pageOptions, penSizeOptions]
+          .filter((el) => el !== except)
+          .forEach((el) => el.classList.remove('show'));
+      }
+
+      penTool.onclick = () => {
+        mode = 'pen';
+        eraserCursor.style.display = 'none';
+        canvas.style.pointerEvents = 'auto';
+        closeOtherPopovers(penSizeOptions);
+        positionPopover(penSizeOptions, penTool);
+        penSizeOptions.classList.toggle('show');
+      };
+
+      penSizeOptionEls.forEach((el) => {
+        el.addEventListener('click', () => {
+          penSizeValue = Number(el.dataset.size);
+          penSizeOptionEls.forEach((opt) => opt.classList.remove('active'));
+          el.classList.add('active');
+          penSizeOptions.classList.remove('show');
+        });
+      });
+
       shapeTool.onclick = () => {
         mode = 'shape';
         eraserCursor.style.display = 'none';
         canvas.style.pointerEvents = 'auto';
-        pageOptions.classList.remove('show');
-        eraserOptions.classList.remove('show');
-        bgOptions.classList.remove('show');
+        closeOtherPopovers(shapeOptions);
         positionPopover(shapeOptions, shapeTool);
         shapeOptions.classList.toggle('show');
       };
 
-      eraserTool.onclick = () => {
-        shapeOptions.classList.remove('show');
-        pageOptions.classList.remove('show');
-        bgOptions.classList.remove('show');
-        positionPopover(eraserOptions, eraserTool);
-        eraserOptions.classList.toggle('show');
-      };
-
       bgTool.onclick = () => {
-        shapeOptions.classList.remove('show');
-        eraserOptions.classList.remove('show');
-        pageOptions.classList.remove('show');
+        closeOtherPopovers(bgOptions);
         positionPopover(bgOptions, bgTool);
         bgOptions.classList.toggle('show');
       };
 
+      // Applies an erase mode (activating the option's active state), shared
+      // by clicking the eraser tool itself (defaults to the first option,
+      // freehand erase) and by explicitly picking an option from the popover.
+      function activateEraseMode(eraseMode) {
+        if (eraseMode === 'clear') {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          history.length = 0;
+          return;
+        }
+        mode = eraseMode === 'select' ? 'select-erase' : 'eraser';
+        eraserCursor.style.display = eraseMode === 'eraser' ? 'block' : 'none';
+        canvas.style.pointerEvents = 'auto';
+        eraserOptionEls.forEach((opt) => opt.classList.toggle('active', opt.dataset.erasemode === eraseMode));
+      }
+
+      eraserTool.onclick = () => {
+        activateEraseMode('eraser');
+        closeOtherPopovers(eraserOptions);
+        positionPopover(eraserOptions, eraserTool);
+        eraserOptions.classList.toggle('show');
+      };
+
       eraserOptionEls.forEach((el) => {
         el.addEventListener('click', () => {
-          const eraseMode = el.dataset.erasemode;
-          if (eraseMode === 'clear') {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            history.length = 0;
-            eraserOptions.classList.remove('show');
-            return;
-          }
-          mode = eraseMode === 'select' ? 'select-erase' : 'eraser';
-          eraserCursor.style.display = eraseMode === 'eraser' ? 'block' : 'none';
-          canvas.style.pointerEvents = 'auto';
-          eraserOptionEls.forEach((opt) => opt.classList.remove('active'));
+          activateEraseMode(el.dataset.erasemode);
+          eraserOptions.classList.remove('show');
+        });
+      });
+
+      eraserSizeOptionEls.forEach((el) => {
+        el.addEventListener('click', () => {
+          eraserSizeValue = Number(el.dataset.size);
+          eraserSizeOptionEls.forEach((opt) => opt.classList.remove('active'));
           el.classList.add('active');
           eraserOptions.classList.remove('show');
         });
       });
 
       pagesTool.onclick = () => {
-        shapeOptions.classList.remove('show');
-        eraserOptions.classList.remove('show');
-        bgOptions.classList.remove('show');
+        closeOtherPopovers(pageOptions);
         positionPopover(pageOptions, pagesTool);
         pageOptions.classList.toggle('show');
       };
@@ -485,10 +541,7 @@ window.RevealQdraw = function () {
           eraserCursor.style.display = 'none';
         }
         aboutPopover.classList.remove('show');
-        shapeOptions.classList.remove('show');
-        eraserOptions.classList.remove('show');
-        bgOptions.classList.remove('show');
-        pageOptions.classList.remove('show');
+        closeOtherPopovers();
       };
 
       about.onclick = (e) => {
@@ -512,16 +565,16 @@ window.RevealQdraw = function () {
         if (pageOptions.classList.contains('show') && !pageOptions.contains(e.target) && e.target !== pagesTool && !pagesTool.contains(e.target)) {
           pageOptions.classList.remove('show');
         }
+        if (penSizeOptions.classList.contains('show') && !penSizeOptions.contains(e.target) && e.target !== penTool && !penTool.contains(e.target)) {
+          penSizeOptions.classList.remove('show');
+        }
       });
 
       moveControls.onclick = () => {
         controlsWrapper.classList.toggle('right');
         moveControls.classList.toggle('left');
         aboutPopover.classList.remove('show');
-        shapeOptions.classList.remove('show');
-        eraserOptions.classList.remove('show');
-        bgOptions.classList.remove('show');
-        pageOptions.classList.remove('show');
+        closeOtherPopovers();
       };
 
       downloadButton.addEventListener('click', function () {

@@ -31,7 +31,7 @@
   gap: 5px;
 }
 
-#controls input, #controls button {
+#controls button {
   width: 40px; height: 40px;
 }
 #toggleControls {
@@ -52,7 +52,7 @@
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
 }
 
-#shapeOptions, #pageOptions, #eraserOptions, #bgOptions {
+#shapeOptions, #pageOptions, #eraserOptions, #bgOptions, #penSizeOptions {
   display: none;
   position: absolute;
   flex-direction: row;
@@ -64,8 +64,15 @@
   z-index: 1002;
 }
 
-#shapeOptions.show, #pageOptions.show, #eraserOptions.show, #bgOptions.show {
+#shapeOptions.show, #pageOptions.show, #eraserOptions.show, #bgOptions.show, #penSizeOptions.show {
   display: flex;
+}
+
+.optionsDivider {
+  align-self: stretch;
+  width: 1px;
+  margin: 0 2px;
+  background: rgba(0, 0, 0, 0.2);
 }
 
 #prevPage, #nextPage, #addPage {
@@ -124,6 +131,44 @@
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
 }
 
+.sizeOption {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 5px;
+  border-radius: 6px;
+  background-color: #ccccff;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+.sizeOption.active {
+  background-color: #8f246b;
+}
+
+.sizeDot {
+  display: block;
+  border-radius: 50%;
+  background-color: #222;
+}
+
+.sizeOption.active .sizeDot {
+  background-color: #fff;
+}
+
+.sizeLine {
+  display: block;
+  width: 20px;
+  border-radius: 2px;
+  background-color: #222;
+}
+
+.sizeOption.active .sizeLine {
+  background-color: #fff;
+}
+
 .shapeFillToggle {
   cursor: pointer;
   font-size: 1em;
@@ -175,16 +220,13 @@
   position: absolute;
   left: 50px;
   bottom: 6px;
-  background: #fff;
+  background: #b3b3ff;
   color: #222;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 10px;
   padding: 8px 10px;
   font-size: 0.85em;
   font-weight: normal;
-  white-space: normal;
-  max-width: 220px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
   z-index: 1002;
 }
 
@@ -201,10 +243,29 @@
   right: 50px;
 }
 
-#penSize, #eraserSize { accent-color: green; }
-
 #penColorLabel i {
   transition: color 0.3s;
+}
+
+/* The real <input type="color"> is nested inside the visible swatch label
+   and stretched to cover it (invisible but still in normal document flow),
+   so the browser's native color-picker dialog anchors to the swatch's
+   actual on-screen position - including when the toolbar is moved to the
+   other screen edge - instead of a detached, position:none input. */
+.colorSwatch {
+  position: relative;
+  overflow: hidden;
+}
+
+.colorSwatch input[type="color"] {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
 }
 
 /* penTool/shapeTool icons track the selected pen color (see #penColorLabel),
