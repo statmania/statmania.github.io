@@ -9,16 +9,21 @@ tic-tac-toe minimax bot and WordWeave's AI tiers.
 
 ## Word / vocabulary games
 
-- **Word Ladder** — turn one word into another one letter at a time,
-  each step a valid word (`cat` → `cot` → `cog` → `dog`). Single-player
-  against a par (shortest path via BFS over the word list, computed at
-  build time or on the fly), or race the computer to see who finds a
-  shorter chain. Reuses the WordWeave word list directly.
-- **Word Search / Boggle** — random letter grid (fixed or rolling
-  dice-style), find as many valid words as possible (reading in any of
-  8 directions) before time runs out. Scoring by word length, same
-  word-list lookup as WordWeave. No opponent needed for a first version;
-  could add a "computer also searches the same grid" race mode later.
+- ~~**Word Ladder**~~ **Built** — `games/word-ladder.html`. Turn one
+  word into another one letter at a time; the ladder graph (wildcard
+  pattern buckets, not an all-pairs comparison) and BFS shortest path
+  are computed client-side on the fly from the WordWeave word list, so
+  there's no separate build-time data step. "Computer's Best" par is
+  shown alongside your step count, with Hint (BFS distance-to-target,
+  costs a rating downgrade) and Give Up (reveals one optimal path).
+  Length (3-6 letters) and difficulty (par-range) are selectable.
+- ~~**Word Search / Boggle**~~ **Built** — `games/word-search.html`.
+  Classic 4×4 or Big 5×5 boards rolled from the real Boggle/Big Boggle
+  dice sets (including the "Qu" die face), found via pointer-drag
+  selection across 8-directional adjacency. When the timer runs out, a
+  trie + bitmask-DFS solver exhaustively finds every valid word on that
+  exact board to reveal what you missed. Standard Boggle scoring
+  (length-based points, no double-counting a word).
 - **Word Chain (Shiritori)** — the *other* obvious mechanic once you
   have a word list and a lemma-checker: each player says a word
   starting with the last letter of the previous word, no repeats. Much
@@ -86,4 +91,4 @@ If picking a next one: **Word Chain** (cheapest — reuses the WordWeave
 word list and build pipeline almost as-is) → **Connect Four** (reuses
 the tic-tac-toe minimax pattern, rounds out the board-game shelf) →
 **Mastermind** (novel mechanic, still a small self-contained build) →
-bigger ones (Sudoku, Nonogram, Word Search) as time allows.
+bigger ones (Nonogram, Minesweeper, 2048) as time allows.
