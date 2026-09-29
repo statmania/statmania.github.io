@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stat Mania - Parametric Equations Visualizer</title>
-    <meta name="description" content="Visualize beautiful parametric equations (roses, astroids, Lissajous figures, and more) interactively with Stat Mania's free online tool.">
+<title>Stat Mania - Aesthetic Equations</title>
+    <meta name="description" content="Visualize beautiful aesthetic equations (roses, hearts, spirals, spirograph flowers, and more) interactively with Stat Mania's free online tool.">
     <link rel="canonical" href="https://www.statmania.info/ds/viz/aes.html">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://www.statmania.info/ds/viz/aes.html">
     <meta property="og:site_name" content="Stat Mania">
-    <meta property="og:title" content="Stat Mania - Parametric Equations Visualizer">
-    <meta property="og:description" content="Visualize beautiful parametric equations (roses, astroids, Lissajous figures, and more) interactively with Stat Mania's free online tool.">
+    <meta property="og:title" content="Stat Mania - Aesthetic Equations">
+    <meta property="og:description" content="Visualize beautiful aesthetic equations (roses, hearts, spirals, spirograph flowers, and more) interactively with Stat Mania's free online tool.">
     <meta property="og:image" content="https://www.statmania.info/assets/images/logo.png">
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Stat Mania - Parametric Equations Visualizer">
-    <meta name="twitter:description" content="Visualize beautiful parametric equations (roses, astroids, Lissajous figures, and more) interactively with Stat Mania's free online tool.">
+    <meta name="twitter:title" content="Stat Mania - Aesthetic Equations">
+    <meta name="twitter:description" content="Visualize beautiful aesthetic equations (roses, hearts, spirals, spirograph flowers, and more) interactively with Stat Mania's free online tool.">
     <meta name="twitter:image" content="https://www.statmania.info/assets/images/logo.png">
 <!-- Tailwind CSS CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
@@ -151,9 +151,9 @@
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-12 h-12 sm-hero-icon">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12c1.5-5.25 3.75-5.25 5.25 0s3.75 5.25 5.25 0 3.75-5.25 5.25 0 3.75 5.25 5.25 0" />
                     </svg>
-                    Parametric Equations
+                    Aesthetic Equations
                 </h1>
-                <p class="text-lg sm:text-xl sm-subtitle-sm">Six beautiful curves, traced live from their equations &mdash; roses, hearts, and figures that only mathematics can draw</p>
+                <p class="text-lg sm:text-xl sm-subtitle-sm">Ten beautiful curves, traced live from their equations &mdash; roses, hearts, and figures that only mathematics can draw</p>
             </div>
         </section>
 
@@ -179,6 +179,10 @@
                                         <option value="astroid">Astroid</option>
                                         <option value="lissajous">Lissajous Figure</option>
                                         <option value="deltoid">Deltoid (Hypocycloid)</option>
+                                        <option value="cardioid">Cardioid</option>
+                                        <option value="nephroid">Nephroid</option>
+                                        <option value="hypotrochoid">Spirograph Flower</option>
+                                        <option value="spiral">Archimedean Spiral</option>
                                     </select>
                                 </div>
 
@@ -213,6 +217,10 @@
                             <li><em>Astroid</em> &mdash; the path traced by a point on a small circle rolling inside a circle 4&times; its size.</li>
                             <li><em>Lissajous Figure</em> &mdash; two perpendicular sine waves at a 3:2 frequency ratio, the pattern behind oscilloscope art.</li>
                             <li><em>Deltoid</em> &mdash; a hypocycloid with 3 cusps, traced by a circle rolling inside one 3&times; its size.</li>
+                            <li><em>Cardioid</em> &mdash; the polar equation $r=2(1+\cos\theta)$ traces the classic single-lobed "heart" curve, the epicycloid with one cusp.</li>
+                            <li><em>Nephroid</em> &mdash; a 2-cusped epicycloid, literally Greek for "kidney-shaped".</li>
+                            <li><em>Spirograph Flower</em> &mdash; a hypotrochoid with a pen offset larger than the rolling circle, looping outward into a 5-petaled flower over 3 full turns.</li>
+                            <li><em>Archimedean Spiral</em> &mdash; radius grows linearly with angle ($r=0.3\theta$), the only open (non-closed) curve here.</li>
                             <li>Drag the <em>Points</em> slider to trade off smoothness vs. performance, and switch <em>Drawing Mode</em> to see the individual sampled points instead of connecting lines.</li>
                         </ul>
                     </div>
@@ -347,6 +355,58 @@
             xMin: -3, xMax: 3, yMin: -3, yMax: 3,
             sliderMin: 20, sliderMax: 1000, sliderStep: 10, sliderDefault: 200,
             color: '#38bdf8'
+        },
+        cardioid: {
+            x: (t) => 2 * (1 + Math.cos(t)) * Math.cos(t),
+            y: (t) => 2 * (1 + Math.cos(t)) * Math.sin(t),
+            tRange: { start: 0, end: 2 * Math.PI },
+            latex: `
+                <p class="latex">$$r = 2(1 + \\cos\\theta)$$</p>
+                <p class="latex">$$x = r\\cos\\theta, \\quad y = r\\sin\\theta$$</p>
+            `,
+            tRangeText: `(where $\\theta$ ranges from $0$ to $2\\pi$)`,
+            xMin: -1, xMax: 4.2, yMin: -2.8, yMax: 2.8,
+            sliderMin: 20, sliderMax: 1000, sliderStep: 10, sliderDefault: 150,
+            color: '#fb7185'
+        },
+        nephroid: {
+            x: (t) => 3 * Math.cos(t) - Math.cos(3 * t),
+            y: (t) => 3 * Math.sin(t) - Math.sin(3 * t),
+            tRange: { start: 0, end: 2 * Math.PI },
+            latex: `
+                <p class="latex">$$x = 3\\cos(t) - \\cos(3t)$$</p>
+                <p class="latex">$$y = 3\\sin(t) - \\sin(3t)$$</p>
+            `,
+            tRangeText: `(where $t$ ranges from $0$ to $2\\pi$)`,
+            xMin: -3, xMax: 3, yMin: -4.2, yMax: 4.2,
+            sliderMin: 20, sliderMax: 1000, sliderStep: 10, sliderDefault: 150,
+            color: '#2dd4bf'
+        },
+        hypotrochoid: {
+            x: (t) => 2 * Math.cos(t) + 5 * Math.cos((2 / 3) * t),
+            y: (t) => 2 * Math.sin(t) - 5 * Math.sin((2 / 3) * t),
+            tRange: { start: 0, end: 6 * Math.PI },
+            latex: `
+                <p class="latex">$$x = 2\\cos(t) + 5\\cos(\\tfrac{2}{3}t)$$</p>
+                <p class="latex">$$y = 2\\sin(t) - 5\\sin(\\tfrac{2}{3}t)$$</p>
+            `,
+            tRangeText: `(where $t$ ranges from $0$ to $6\\pi$; a circle of radius 3 rolling inside a circle of radius 5, tracing a point 5 units from its center)`,
+            xMin: -6, xMax: 7.2, yMin: -7, yMax: 7,
+            sliderMin: 100, sliderMax: 3000, sliderStep: 25, sliderDefault: 800,
+            color: '#e879f9'
+        },
+        spiral: {
+            x: (t) => 0.3 * t * Math.cos(t),
+            y: (t) => 0.3 * t * Math.sin(t),
+            tRange: { start: 0, end: 6 * Math.PI },
+            latex: `
+                <p class="latex">$$r = 0.3\\,\\theta$$</p>
+                <p class="latex">$$x = r\\cos\\theta, \\quad y = r\\sin\\theta$$</p>
+            `,
+            tRangeText: `(where $\\theta$ ranges from $0$ to $6\\pi$, i.e. 3 full turns)`,
+            xMin: -5, xMax: 6, yMin: -5.5, yMax: 4.5,
+            sliderMin: 50, sliderMax: 2000, sliderStep: 10, sliderDefault: 400,
+            color: '#a3e635'
         }
     };
 
