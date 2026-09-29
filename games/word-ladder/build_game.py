@@ -136,6 +136,27 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   .win-box.info { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
                    color: var(--ink); box-shadow: none; }
 
+  .hidden { display: none !important; }
+
+  .turn-banner { text-align: center; margin-bottom: 16px; }
+  .turn-banner .pill { display: inline-block; padding: 6px 18px; border-radius: 999px;
+                        font-weight: 700; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.18); }
+  .turn-banner .pill.p1 { color: var(--accent); border-color: rgba(0,229,255,0.4); background: rgba(0,229,255,0.08); }
+  .turn-banner .pill.p2 { color: #c084fc; border-color: rgba(168,85,247,0.4); background: rgba(168,85,247,0.08); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+  @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+  .player-col { background: var(--card); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;
+                padding: 12px; transition: border-color 0.2s, box-shadow 0.2s; }
+  .player-col.active { border-color: var(--accent); box-shadow: 0 0 20px rgba(0,229,255,0.2); }
+  .player-col.p2.active { border-color: #a855f7; box-shadow: 0 0 20px rgba(168,85,247,0.25); }
+  .player-col-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .player-col-head .name { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .player-col.p1 .player-col-head .name { color: var(--accent); }
+  .player-col.p2 .player-col-head .name { color: #c084fc; }
+  .player-col-head .steps { font-size: 0.85rem; color: var(--ink); font-family: 'Courier New', monospace; }
+  .player-col .chain-wrap { max-height: 220px; margin-bottom: 0; }
+
   .rules-panel { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
                  border-radius: 14px; padding: 20px 22px; margin-top: 24px; }
   .rules-panel h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.06em;
@@ -216,15 +237,24 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                                     <option value="hard">Hard</option>
                                 </select>
                             </div>
+                            <div class="select-group">
+                                <span class="select-label">Players</span>
+                                <select id="mode-select" aria-label="Number of players">
+                                    <option value="1p" selected>1 Player</option>
+                                    <option value="2p">2 Player (pass &amp; play)</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="toolbar-right">
-                            <button id="hint-btn" class="action ghost">💡 Hint</button>
-                            <button id="give-up-btn" class="action ghost">🏳️ Give Up</button>
+                            <span id="assist-actions">
+                                <button id="hint-btn" class="action ghost">💡 Hint</button>
+                                <button id="give-up-btn" class="action ghost">🏳️ Give Up</button>
+                            </span>
                             <button id="new-game-btn" class="action">🔄 New Ladder</button>
                         </div>
                     </div>
 
-                    <div class="meta-row">
+                    <div class="meta-row" id="meta-row-1p">
                         <div class="meta-stat">
                             <div class="num" id="steps-count">0</div>
                             <div class="lbl">Your Steps</div>
@@ -236,6 +266,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                         <div class="meta-stat">
                             <div class="num" id="hints-count">0</div>
                             <div class="lbl">Hints Used</div>
+                        </div>
+                    </div>
+
+                    <div class="meta-row hidden" id="meta-row-2p">
+                        <div class="meta-stat par">
+                            <div class="num" id="par-count-2p">–</div>
+                            <div class="lbl">Computer's Best</div>
                         </div>
                     </div>
 
@@ -251,9 +288,24 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                         </div>
                     </div>
 
+                    <div class="turn-banner hidden" id="turn-banner">
+                        <span class="pill p1" id="turn-pill">Player 1's turn</span>
+                    </div>
+
                     <div id="win-banner"></div>
 
                     <div class="chain-wrap" id="chain-wrap"></div>
+
+                    <div class="two-col hidden" id="two-col-wrap">
+                        <div class="player-col p1" id="player-col-1">
+                            <div class="player-col-head"><span class="name">Player 1</span><span class="steps" id="p1-steps">0</span></div>
+                            <div class="chain-wrap" id="chain-wrap-p1"></div>
+                        </div>
+                        <div class="player-col p2" id="player-col-2">
+                            <div class="player-col-head"><span class="name">Player 2</span><span class="steps" id="p2-steps">0</span></div>
+                            <div class="chain-wrap" id="chain-wrap-p2"></div>
+                        </div>
+                    </div>
 
                     <div id="wl-hint"></div>
                     <div class="input-row">
@@ -270,6 +322,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                             <li>You can't repeat a word you've already used in the chain.</li>
                             <li><em>Computer's Best</em> is the shortest possible chain length, found by the computer via breadth-first search &mdash; try to match or beat it.</li>
                             <li>Stuck? <em>Hint</em> suggests one valid next word (cheap, but it counts against your final rating). <em>Give Up</em> reveals a full shortest path.</li>
+                            <li>In <em>2 Player</em> mode, pass the device back and forth: the same start/target is shared, each player builds their own chain, and whoever reaches the target first in fewer moves wins.</li>
                         </ul>
                     </div>
                 </div>
@@ -412,16 +465,22 @@ function reconstructPath(target, parent) {
    ============================================================ */
 const state = {
   length: 4, start: "", target: "", dist: null, parent: null, distToTarget: null,
-  chain: [], finished: false, hintsUsed: 0,
+  mode: "1p", chains: [[]], current: 0, finished: false, winner: null, hintsUsed: 0,
 };
+
+function activeChain() {
+  return state.mode === "2p" ? state.chains[state.current] : state.chains[0];
+}
 
 const lengthSelect = document.getElementById("length-select");
 const difficultySelect = document.getElementById("difficulty-select");
+const modeSelect = document.getElementById("mode-select");
 const startWordEl = document.getElementById("start-word");
 const targetWordEl = document.getElementById("target-word");
 const chainWrapEl = document.getElementById("chain-wrap");
 const stepsCountEl = document.getElementById("steps-count");
 const parCountEl = document.getElementById("par-count");
+const parCount2El = document.getElementById("par-count-2p");
 const hintsCountEl = document.getElementById("hints-count");
 const errorEl = document.getElementById("wl-error");
 const hintEl = document.getElementById("wl-hint");
@@ -430,23 +489,40 @@ const winBannerEl = document.getElementById("win-banner");
 const giveUpBtn = document.getElementById("give-up-btn");
 const hintBtn = document.getElementById("hint-btn");
 const submitBtn = document.getElementById("submit-word-btn");
+const assistActionsEl = document.getElementById("assist-actions");
+const metaRow1pEl = document.getElementById("meta-row-1p");
+const metaRow2pEl = document.getElementById("meta-row-2p");
+const turnBannerEl = document.getElementById("turn-banner");
+const turnPillEl = document.getElementById("turn-pill");
+const twoColWrapEl = document.getElementById("two-col-wrap");
+const chainWrapP1El = document.getElementById("chain-wrap-p1");
+const chainWrapP2El = document.getElementById("chain-wrap-p2");
+const p1StepsEl = document.getElementById("p1-steps");
+const p2StepsEl = document.getElementById("p2-steps");
+const playerCol1El = document.getElementById("player-col-1");
+const playerCol2El = document.getElementById("player-col-2");
 
 function newGame() {
   const len = parseInt(lengthSelect.value, 10);
+  const mode = modeSelect.value;
   const [minPar, maxPar] = DIFFICULTY_RANGES[difficultySelect.value];
   const puzzle = pickPuzzle(len, minPar, maxPar, 60) || pickPuzzle(len, 2, 999, 60);
   if (!puzzle) {
     errorEl.textContent = "Couldn't find a ladder for this length - try another one.";
     return;
   }
+  const is2p = mode === "2p";
   state.length = len;
+  state.mode = mode;
   state.start = puzzle.start;
   state.target = puzzle.target;
   state.dist = puzzle.dist;
   state.parent = puzzle.parent;
   state.distToTarget = bfs(puzzle.target).dist;
-  state.chain = [puzzle.start];
+  state.chains = is2p ? [[puzzle.start], [puzzle.start]] : [[puzzle.start]];
+  state.current = 0;
   state.finished = false;
+  state.winner = null;
   state.hintsUsed = 0;
   errorEl.textContent = "";
   hintEl.textContent = "";
@@ -454,28 +530,66 @@ function newGame() {
   winBannerEl.innerHTML = "";
   inputEl.value = "";
   inputEl.disabled = false;
+  inputEl.placeholder = is2p ? "Player 1: type the next word..." : "Type the next word...";
   submitBtn.disabled = false;
-  giveUpBtn.disabled = false;
-  hintBtn.disabled = false;
+  giveUpBtn.disabled = is2p;
+  hintBtn.disabled = is2p;
+
+  metaRow1pEl.classList.toggle("hidden", is2p);
+  metaRow2pEl.classList.toggle("hidden", !is2p);
+  turnBannerEl.classList.toggle("hidden", !is2p);
+  chainWrapEl.classList.toggle("hidden", is2p);
+  twoColWrapEl.classList.toggle("hidden", !is2p);
+  assistActionsEl.classList.toggle("hidden", is2p);
+
   render();
   inputEl.focus();
+}
+
+function renderChainHTML(chain, target, revealTarget) {
+  return chain.map((word, i) => {
+    const isStart = i === 0;
+    const isTarget = revealTarget && word === target;
+    const tiles = word.split("").map(ch => `<span class="wl-tile">${ch}</span>`).join("");
+    const cls = isStart ? "is-start" : (isTarget ? "is-target" : "");
+    return `<div class="chain-row ${cls}"><span class="chain-idx">${i}.</span><div class="wl-tiles">${tiles}</div></div>`;
+  }).join("");
 }
 
 function render() {
   startWordEl.textContent = state.start;
   targetWordEl.textContent = state.target;
-  stepsCountEl.textContent = String(state.chain.length - 1);
+  if (state.mode === "2p") render2p(); else render1p();
+}
+
+function render1p() {
+  const chain = state.chains[0];
+  stepsCountEl.textContent = String(chain.length - 1);
   parCountEl.textContent = state.finished ? String(state.dist.get(state.target)) : "?";
   hintsCountEl.textContent = String(state.hintsUsed);
-
-  chainWrapEl.innerHTML = state.chain.map((word, i) => {
-    const isStart = i === 0;
-    const isTarget = state.finished && word === state.target;
-    const tiles = word.split("").map(ch => `<span class="wl-tile">${ch}</span>`).join("");
-    const cls = isStart ? "is-start" : (isTarget ? "is-target" : "");
-    return `<div class="chain-row ${cls}"><span class="chain-idx">${i}.</span><div class="wl-tiles">${tiles}</div></div>`;
-  }).join("");
+  chainWrapEl.innerHTML = renderChainHTML(chain, state.target, state.finished);
   chainWrapEl.scrollTop = chainWrapEl.scrollHeight;
+}
+
+function render2p() {
+  parCount2El.textContent = state.finished ? String(state.dist.get(state.target)) : "?";
+  const [c1, c2] = state.chains;
+  p1StepsEl.textContent = String(c1.length - 1);
+  p2StepsEl.textContent = String(c2.length - 1);
+  chainWrapP1El.innerHTML = renderChainHTML(c1, state.target, state.winner === 0);
+  chainWrapP2El.innerHTML = renderChainHTML(c2, state.target, state.winner === 1);
+  chainWrapP1El.scrollTop = chainWrapP1El.scrollHeight;
+  chainWrapP2El.scrollTop = chainWrapP2El.scrollHeight;
+  playerCol1El.classList.toggle("active", state.winner === null && state.current === 0);
+  playerCol2El.classList.toggle("active", state.winner === null && state.current === 1);
+  if (state.winner === null) {
+    turnPillEl.className = `pill p${state.current + 1}`;
+    turnPillEl.textContent = `Player ${state.current + 1}'s turn`;
+    inputEl.placeholder = `Player ${state.current + 1}: type the next word...`;
+  } else {
+    turnPillEl.className = `pill p${state.winner + 1}`;
+    turnPillEl.textContent = `🏆 Player ${state.winner + 1} wins!`;
+  }
 }
 
 function showError(msg) {
@@ -496,49 +610,60 @@ function submitWord() {
     showError(`"${word}" is not a recognized word.`);
     return;
   }
-  const prev = state.chain[state.chain.length - 1];
+  const chain = activeChain();
+  const prev = chain[chain.length - 1];
   if (hammingDistance(word, prev) !== 1) {
     showError(`Must differ from "${prev}" by exactly one letter.`);
     return;
   }
-  if (state.chain.includes(word)) {
+  if (chain.includes(word)) {
     showError(`You already used "${word}" in this chain.`);
     return;
   }
   showError("");
-  state.chain.push(word);
+  chain.push(word);
   inputEl.value = "";
   if (word === state.target) {
-    finishGame();
+    finishGame(state.mode === "2p" ? state.current : 0);
+    return;
   }
+  if (state.mode === "2p") state.current = 1 - state.current;
   render();
 }
 
-function finishGame() {
+function finishGame(playerIdx) {
   state.finished = true;
+  state.winner = playerIdx;
   inputEl.disabled = true;
   submitBtn.disabled = true;
   giveUpBtn.disabled = true;
   hintBtn.disabled = true;
-  const steps = state.chain.length - 1;
+  const steps = state.chains[playerIdx].length - 1;
   const par = state.dist.get(state.target);
-  let rating;
-  if (state.hintsUsed > 0) rating = "✅ Solved (with hints)!";
-  else if (steps <= par) rating = "🏆 Optimal!";
-  else if (steps <= par + 2) rating = "🎉 Great job!";
-  else rating = "✅ Solved!";
   winBannerEl.style.display = "flex";
-  winBannerEl.innerHTML = `
-    <div class="win-box message">${rating} ${steps} step${steps === 1 ? "" : "s"}</div>
-    <div class="win-box info">Computer's best: ${par} step${par === 1 ? "" : "s"}</div>
-  `;
+  if (state.mode === "2p") {
+    winBannerEl.innerHTML = `
+      <div class="win-box message">🏆 Player ${playerIdx + 1} wins in ${steps} step${steps === 1 ? "" : "s"}!</div>
+      <div class="win-box info">Computer's best: ${par} step${par === 1 ? "" : "s"}</div>
+    `;
+  } else {
+    let rating;
+    if (state.hintsUsed > 0) rating = "✅ Solved (with hints)!";
+    else if (steps <= par) rating = "🏆 Optimal!";
+    else if (steps <= par + 2) rating = "🎉 Great job!";
+    else rating = "✅ Solved!";
+    winBannerEl.innerHTML = `
+      <div class="win-box message">${rating} ${steps} step${steps === 1 ? "" : "s"}</div>
+      <div class="win-box info">Computer's best: ${par} step${par === 1 ? "" : "s"}</div>
+    `;
+  }
   render();
 }
 
 function giveUp() {
-  if (state.finished) return;
+  if (state.finished || state.mode === "2p") return;
   const path = reconstructPath(state.target, state.parent);
-  state.chain = path;
+  state.chains[0] = path;
   state.finished = true;
   inputEl.disabled = true;
   submitBtn.disabled = true;
@@ -551,8 +676,8 @@ function giveUp() {
 }
 
 function giveHint() {
-  if (state.finished) return;
-  const cur = state.chain[state.chain.length - 1];
+  if (state.finished || state.mode === "2p") return;
+  const cur = state.chains[0][state.chains[0].length - 1];
   if (cur === state.target) return;
   const curDist = state.distToTarget.get(cur);
   if (curDist === undefined) {
@@ -573,6 +698,7 @@ function giveHint() {
 document.getElementById("new-game-btn").addEventListener("click", newGame);
 lengthSelect.addEventListener("change", newGame);
 difficultySelect.addEventListener("change", newGame);
+modeSelect.addEventListener("change", newGame);
 submitBtn.addEventListener("click", submitWord);
 giveUpBtn.addEventListener("click", giveUp);
 hintBtn.addEventListener("click", giveHint);
