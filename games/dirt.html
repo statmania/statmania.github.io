@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stat Mania - Dirt Toss</title>
+    <meta name="description" content="Play Dirt Toss: throw dirt at a circular, layered target and rack up points the deeper you hit.">
+    <link rel="canonical" href="https://www.statmania.info/games/dirt.html">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.statmania.info/games/dirt.html">
+    <meta property="og:site_name" content="Stat Mania">
+    <meta property="og:title" content="Stat Mania - Dirt Toss">
+    <meta property="og:description" content="Play Dirt Toss: throw dirt at a circular, layered target and rack up points the deeper you hit.">
+    <meta property="og:image" content="https://www.statmania.info/assets/images/logo.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Stat Mania - Dirt Toss">
+    <meta name="twitter:description" content="Play Dirt Toss: throw dirt at a circular, layered target and rack up points the deeper you hit.">
+    <meta name="twitter:image" content="https://www.statmania.info/assets/images/logo.png">
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Google Fonts - Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/dark-theme.css">
+<style>
+  :root {
+    --card: rgba(255,255,255,0.045); --ink: #e8ecf7; --muted: #9aa4c2;
+    --line: rgba(255,255,255,0.14); --accent: #00e5ff; --accent-dark: #0e7490;
+    --good: #4ade80; --bad: #ff6b6b;
+  }
+  body { font-family: 'Inter', sans-serif; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #0a0f1e; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb { background: #3a4a6b; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: #54688f; }
+
+  .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+             justify-content: space-between; margin-bottom: 20px; }
+  .toolbar-left { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .toolbar-right { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .select-group { display: flex; flex-direction: column; gap: 2px; cursor: pointer; }
+  .select-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+                  letter-spacing: 0.06em; color: var(--muted); padding-left: 2px; }
+  select { background: rgba(255,255,255,0.04); color: var(--ink);
+           border: 1px solid rgba(255,255,255,0.18); border-radius: 999px;
+           padding: 6px 14px; font-size: 0.85rem; font-weight: 600;
+           font-family: inherit; cursor: pointer; }
+  select:hover { border-color: var(--accent); }
+  select option { background: #0a0f1e; color: var(--ink); }
+  button.action { border: none; background: linear-gradient(90deg, var(--accent), #38bdf8);
+           color: #04101c; padding: 8px 14px; border-radius: 999px; font-size: 0.85rem;
+           font-weight: 700; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+           font-family: inherit; box-shadow: 0 0 20px rgba(0,229,255,0.3); }
+  button.action:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(0,229,255,0.5); }
+  button.action:active { transform: scale(0.97); }
+  button.action:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .scoreboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  .score-tile { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 14px; padding: 14px 10px; text-align: center; }
+  .score-tile .label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em;
+                        color: var(--muted); margin-bottom: 4px; }
+  .score-tile .num { font-size: 1.5rem; font-weight: 800; color: var(--ink); font-family: 'Courier New', monospace; }
+  .score-tile.score .num { color: var(--good); }
+  .score-tile.timer .num { color: var(--accent); }
+  .score-tile.timer.low .num { color: var(--bad); }
+  .score-tile.streak .num { color: #f59e0b; }
+  @media (max-width: 560px) { .scoreboard { grid-template-columns: repeat(2, 1fr); } }
+
+  .game-layout { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 760px) { .game-layout { grid-template-columns: 1fr; } }
+
+  .board-wrap { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 14px; padding: 16px; display: flex; justify-content: center; }
+  #targetCanvas { display: block; border-radius: 10px; background: #1a0f07;
+           border: 1px solid rgba(255,255,255,0.1); touch-action: none; cursor: crosshair; }
+  #targetCanvas.locked { cursor: default; opacity: 0.65; }
+
+  .legend { display: flex; flex-direction: column; gap: 8px; margin-bottom: 4px; }
+  .legend-row { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: var(--ink); }
+  .legend-swatch { width: 16px; height: 16px; border-radius: 50%; flex: none; border: 1px solid rgba(255,255,255,0.25); }
+  .legend-row .pts { margin-left: auto; font-family: 'Courier New', monospace; font-weight: 700; color: var(--muted); }
+
+  #end-banner { display: none; flex-wrap: wrap; gap: 12px; justify-content: center;
+                align-items: stretch; margin: 0 0 20px; animation: pop 0.4s ease; }
+  @keyframes pop { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  .win-box { padding: 14px 24px; border-radius: 12px; font-weight: 700; font-size: 1.05rem;
+             display: flex; align-items: center; color: white;
+             box-shadow: 0 6px 20px rgba(34,197,94,0.35); }
+  .win-box.message { background: linear-gradient(135deg, #22c55e, #16a34a); }
+  .win-box.info { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
+                   color: var(--ink); box-shadow: none; }
+
+  .rules-panel { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
+                 border-radius: 14px; padding: 20px 22px; margin-top: 24px; }
+  .rules-panel h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.06em;
+                     color: var(--accent); margin: 0 0 14px; }
+  .rules-panel ul { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 10px; }
+  .rules-panel li { font-size: 1rem; line-height: 1.5; color: var(--ink); }
+  .rules-panel em { color: var(--accent); font-style: normal; font-weight: 700; }
+</style>
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+    <!-- Header/Navbar -->
+    <header class="bg-white shadow-sm py-4">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center space-x-3 no-underline hover:opacity-80 transition-opacity">
+                <img src="../img/statmania_logo.svg" alt="Stat Mania Logo" class="w-10 h-10 rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/40x40/4f46e5/ffffff?text=Logo';">
+                <div>
+                    <div class="text-2xl font-bold text-indigo-600">Stat Mania</div>
+                    <p class="text-sm text-slate-500">Making sense of statistics</p>
+                </div>
+            </a>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="../index.html" class="text-slate-600 hover:text-indigo-600 transition duration-300">Home</a></li>
+                    <li><a href="index.html" class="text-slate-600 hover:text-indigo-600 transition duration-300">All Games</a></li>
+                    <li><a href="#cta" class="text-slate-600 hover:text-indigo-600 transition duration-300">Contact</a></li>
+                </ul>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="../index.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Home</a>
+            <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">All Games</a>
+            <a href="#cta" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Contact</a>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <canvas class="sm-canvas" aria-hidden="true"></canvas>
+        <section class="sm-hero-wrap">
+            <div class="sm-hero-inner">
+                <span class="sm-eyebrow">Stat Mania &middot; Games</span>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-4 flex items-center justify-center gap-4 sm-gradient-text">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-12 h-12 sm-hero-icon">
+                        <circle cx="12" cy="12" r="9" />
+                        <circle cx="12" cy="12" r="6" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                    Dirt Toss
+                </h1>
+                <p class="text-lg sm:text-xl sm-subtitle-sm">Throw dirt at the layered target &mdash; the deeper you hit, the more it's worth</p>
+            </div>
+        </section>
+
+        <!-- Game Section -->
+        <section class="py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
+            <div class="container mx-auto max-w-4xl">
+                <div class="sm-card p-8">
+                    <div class="toolbar">
+                        <div class="toolbar-left">
+                            <div class="select-group">
+                                <span class="select-label">Time</span>
+                                <select id="time-select" aria-label="Time limit">
+                                    <option value="20">20s</option>
+                                    <option value="30" selected>30s</option>
+                                    <option value="45">45s</option>
+                                    <option value="60">60s</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="toolbar-right">
+                            <button id="new-game-btn" class="action">🎯 New Game</button>
+                        </div>
+                    </div>
+
+                    <div class="scoreboard">
+                        <div class="score-tile timer" id="timer-tile">
+                            <div class="label">Time Left</div>
+                            <div class="num" id="timer-value">30</div>
+                        </div>
+                        <div class="score-tile score">
+                            <div class="label">Score</div>
+                            <div class="num" id="score-value">0</div>
+                        </div>
+                        <div class="score-tile streak">
+                            <div class="label">Streak</div>
+                            <div class="num" id="streak-value">0</div>
+                        </div>
+                        <div class="score-tile">
+                            <div class="label">Accuracy</div>
+                            <div class="num" id="accuracy-value">&ndash;</div>
+                        </div>
+                    </div>
+
+                    <div id="end-banner"></div>
+
+                    <div class="game-layout">
+                        <div class="board-wrap">
+                            <canvas id="targetCanvas" width="420" height="420"></canvas>
+                        </div>
+
+                        <div>
+                            <div class="rules-panel" style="margin-top: 0;">
+                                <h3>Layers &amp; Points</h3>
+                                <div class="legend" id="legend"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rules-panel">
+                        <h3>How to Play</h3>
+                        <ul>
+                            <li>The target <em>drifts around</em> the board, curving off in a new direction every second or two &mdash; track it and click (or tap) it to <em>throw a clump of dirt</em>.</li>
+                            <li>Each throw scores based on which <em>layer</em> it lands in &mdash; deeper layers, closer to the core, are worth more.</li>
+                            <li>Land outside every ring and it's a <em>Miss</em> &mdash; no points, and your streak resets.</li>
+                            <li>Chain hits together to build a <em>streak</em>; every 5 in a row adds a small score multiplier.</li>
+                            <li>Score as much as you can before the timer runs out, then hit <em>New Game</em> to try again.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action Section -->
+        <section id="cta" class="sm-section-dark py-16 px-4 sm:px-6 lg:px-8 text-center">
+            <div class="container mx-auto max-w-3xl">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-6" style="color:#fff">Explore Other Games</h2>
+                <p class="text-lg sm:text-xl mb-8 sm-subtitle-sm">Check out all available games</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="index.html" class="sm-btn sm-btn-primary">All Games</a>
+                    <a href="#" class="sm-btn sm-btn-ghost">Back to Top</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-white py-8 px-4 sm:px-6 lg:px-8 text-center mt-auto" style="border-top:1px solid rgba(255,255,255,0.08)">
+        <div class="container mx-auto">
+            <p class="mb-4">&copy; <span id="copyright-year">2026</span> Stat Mania. All rights reserved.</p>
+            <div class="flex justify-center space-x-6">
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Privacy Policy</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Terms of Service</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Sitemap</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>document.getElementById("copyright-year").textContent = new Date().getFullYear();</script>
+
+    <script>
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+    </script>
+    <script src="../starfield.js"></script>
+
+<script>
+/* ============================================================
+   TARGET DEFINITION - concentric "Earth layer" rings, outer to
+   inner. radiusFrac is the ring's outer edge as a fraction of the
+   target's full radius; points is awarded for landing inside that
+   ring but outside the next (smaller) one.
+   ============================================================ */
+const LAYERS = [
+    { name: "Topsoil",  radiusFrac: 1.00, points: 10,  color: "#3d2511" },
+    { name: "Subsoil",  radiusFrac: 0.80, points: 20,  color: "#5a3820" },
+    { name: "Clay",     radiusFrac: 0.60, points: 40,  color: "#7a4a28" },
+    { name: "Bedrock",  radiusFrac: 0.40, points: 60,  color: "#a35a2f" },
+    { name: "Mantle",   radiusFrac: 0.20, points: 100, color: "#c97b3d" },
+    { name: "Core",     radiusFrac: 0.08, points: 250, color: "#ffd166" },
+];
+
+const canvas = document.getElementById("targetCanvas");
+const ctx = canvas.getContext("2d");
+const timeSelect = document.getElementById("time-select");
+const timerTileEl = document.getElementById("timer-tile");
+const timerValueEl = document.getElementById("timer-value");
+const scoreValueEl = document.getElementById("score-value");
+const streakValueEl = document.getElementById("streak-value");
+const accuracyValueEl = document.getElementById("accuracy-value");
+const endBannerEl = document.getElementById("end-banner");
+const legendEl = document.getElementById("legend");
+const newGameBtn = document.getElementById("new-game-btn");
+
+// The target is smaller than the canvas and drifts around within it, so
+// aiming means tracking a moving point rather than clicking a fixed spot.
+const MAX_R = 100;
+const MOVE_MIN_X = MAX_R, MOVE_MAX_X = canvas.width - MAX_R;
+const MOVE_MIN_Y = MAX_R, MOVE_MAX_Y = canvas.height - MAX_R;
+const SPEED = 0.07; // px/ms
+const KICK_MIN_MS = 900, KICK_MAX_MS = 1800; // how often direction randomly shifts
+
+const state = {
+    running: false, timeLeft: 30, timerId: null,
+    score: 0, streak: 0, bestStreak: 0, throws: 0, hits: 0,
+    effects: [], // transient splats + score popups
+    rafId: null, lastFrameTime: null,
+    tx: canvas.width / 2, ty: canvas.height / 2, // current target center
+    vx: 0, vy: 0, nextKickAt: 0,
+};
+
+function randomizeVelocity() {
+    const angle = Math.random() * Math.PI * 2;
+    state.vx = Math.cos(angle) * SPEED;
+    state.vy = Math.sin(angle) * SPEED;
+}
+
+function kickVelocity() {
+    // Rotate the current heading by a random angle instead of picking a
+    // brand new one, so movement curves smoothly rather than snapping.
+    const currentAngle = Math.atan2(state.vy, state.vx);
+    const turn = (Math.random() - 0.5) * (Math.PI * 0.8); // up to ~±72 deg
+    const angle = currentAngle + turn;
+    state.vx = Math.cos(angle) * SPEED;
+    state.vy = Math.sin(angle) * SPEED;
+}
+
+function populateLegend() {
+    legendEl.innerHTML = LAYERS.map(layer => `
+        <div class="legend-row">
+            <span class="legend-swatch" style="background:${layer.color}"></span>
+            <span>${layer.name}</span>
+            <span class="pts">+${layer.points}</span>
+        </div>
+    `).join("");
+}
+
+function drawTarget() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Painter's algorithm: draw largest ring first, smaller ones on top.
+    for (const layer of LAYERS) {
+        ctx.beginPath();
+        ctx.fillStyle = layer.color;
+        ctx.arc(state.tx, state.ty, layer.radiusFrac * MAX_R, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "rgba(255,255,255,0.12)";
+        ctx.stroke();
+    }
+}
+
+function ringAt(distance) {
+    if (distance > MAX_R) return null; // miss
+    // LAYERS is ordered outer-to-inner; walk it inner-to-outer so the
+    // *smallest* (deepest) ring containing this distance wins, not the
+    // first (outermost, since every ring's radius also covers the center).
+    for (let i = LAYERS.length - 1; i >= 0; i--) {
+        if (distance <= LAYERS[i].radiusFrac * MAX_R) return LAYERS[i];
+    }
+    return null;
+}
+
+function multiplierFor(streak) {
+    return 1 + Math.floor(streak / 5) * 0.5;
+}
+
+function spawnSplat(x, y, color) {
+    state.effects.push({ type: "splat", x, y, color, age: 0, duration: 380 });
+}
+function spawnPopup(x, y, text, good) {
+    state.effects.push({ type: "popup", x, y, text, good, age: 0, duration: 700 });
+}
+
+function updateStats() {
+    scoreValueEl.textContent = String(state.score);
+    streakValueEl.textContent = String(state.streak);
+    accuracyValueEl.textContent = state.throws
+        ? `${Math.round((state.hits / state.throws) * 100)}%`
+        : "–";
+}
+
+function handleThrow(x, y) {
+    if (!state.running) return;
+    const dx = x - state.tx, dy = y - state.ty;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    state.throws++;
+    const layer = ringAt(distance);
+
+    if (!layer) {
+        state.streak = 0;
+        spawnSplat(x, y, "#6b4a2f");
+        spawnPopup(x, y, "Miss", false);
+    } else {
+        state.hits++;
+        state.streak++;
+        state.bestStreak = Math.max(state.bestStreak, state.streak);
+        const mult = multiplierFor(state.streak);
+        const gained = Math.round(layer.points * mult);
+        state.score += gained;
+        spawnSplat(x, y, layer.color);
+        spawnPopup(x, y, mult > 1 ? `+${gained} (x${mult})` : `+${gained}`, true);
+    }
+    updateStats();
+}
+
+function updateTargetPosition(dt, now) {
+    if (now >= state.nextKickAt) {
+        kickVelocity();
+        state.nextKickAt = now + KICK_MIN_MS + Math.random() * (KICK_MAX_MS - KICK_MIN_MS);
+    }
+
+    state.tx += state.vx * dt;
+    state.ty += state.vy * dt;
+
+    if (state.tx < MOVE_MIN_X) { state.tx = MOVE_MIN_X; state.vx = Math.abs(state.vx); }
+    else if (state.tx > MOVE_MAX_X) { state.tx = MOVE_MAX_X; state.vx = -Math.abs(state.vx); }
+    if (state.ty < MOVE_MIN_Y) { state.ty = MOVE_MIN_Y; state.vy = Math.abs(state.vy); }
+    else if (state.ty > MOVE_MAX_Y) { state.ty = MOVE_MAX_Y; state.vy = -Math.abs(state.vy); }
+}
+
+function drawEffects() {
+    for (const fx of state.effects) {
+        const t = Math.min(fx.age / fx.duration, 1);
+        if (fx.type === "splat") {
+            const r = 8 + t * 16;
+            ctx.beginPath();
+            ctx.fillStyle = fx.color;
+            ctx.globalAlpha = 1 - t;
+            ctx.arc(fx.x, fx.y, r, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+        } else {
+            ctx.font = "bold 16px 'Inter', sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillStyle = fx.good ? "#4ade80" : "#ff6b6b";
+            ctx.globalAlpha = 1 - t;
+            ctx.fillText(fx.text, fx.x, fx.y - t * 30);
+            ctx.globalAlpha = 1;
+        }
+    }
+}
+
+function gameLoop(now) {
+    const dt = state.lastFrameTime === null ? 16 : now - state.lastFrameTime;
+    state.lastFrameTime = now;
+
+    if (state.running) updateTargetPosition(dt, now);
+
+    drawTarget();
+    for (const fx of state.effects) fx.age += dt;
+    state.effects = state.effects.filter(fx => fx.age < fx.duration);
+    drawEffects();
+
+    if (state.running || state.effects.length) {
+        state.rafId = requestAnimationFrame(gameLoop);
+    } else {
+        state.rafId = null;
+        state.lastFrameTime = null;
+    }
+}
+
+function ensureGameLoop() {
+    if (state.rafId) return;
+    state.lastFrameTime = null;
+    state.rafId = requestAnimationFrame(gameLoop);
+}
+
+function pointerToCanvas(evt) {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+    const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+    return {
+        x: (clientX - rect.left) * (canvas.width / rect.width),
+        y: (clientY - rect.top) * (canvas.height / rect.height),
+    };
+}
+
+canvas.addEventListener("click", (evt) => {
+    const { x, y } = pointerToCanvas(evt);
+    handleThrow(x, y);
+});
+
+function tick() {
+    state.timeLeft--;
+    timerValueEl.textContent = String(state.timeLeft);
+    timerTileEl.classList.toggle("low", state.timeLeft <= 5);
+    if (state.timeLeft <= 0) endRound();
+}
+
+function newGame() {
+    clearInterval(state.timerId);
+    state.running = true;
+    state.score = 0;
+    state.streak = 0;
+    state.bestStreak = 0;
+    state.throws = 0;
+    state.hits = 0;
+    state.effects = [];
+    state.timeLeft = parseInt(timeSelect.value, 10);
+    timerTileEl.classList.remove("low");
+    timerValueEl.textContent = String(state.timeLeft);
+    endBannerEl.style.display = "none";
+    endBannerEl.innerHTML = "";
+    canvas.classList.remove("locked");
+    state.tx = canvas.width / 2;
+    state.ty = canvas.height / 2;
+    randomizeVelocity();
+    state.nextKickAt = performance.now() + KICK_MIN_MS + Math.random() * (KICK_MAX_MS - KICK_MIN_MS);
+    updateStats();
+    ensureGameLoop();
+    state.timerId = setInterval(tick, 1000);
+}
+
+function endRound() {
+    clearInterval(state.timerId);
+    state.running = false;
+    canvas.classList.add("locked");
+    const accuracy = state.throws ? Math.round((state.hits / state.throws) * 100) : 0;
+    endBannerEl.style.display = "flex";
+    endBannerEl.innerHTML = `
+        <div class="win-box message">Final score: ${state.score} pts</div>
+        <div class="win-box info">Best streak: ${state.bestStreak} &middot; Accuracy: ${accuracy}%</div>
+    `;
+}
+
+newGameBtn.addEventListener("click", newGame);
+timeSelect.addEventListener("change", newGame);
+
+populateLegend();
+newGame();
+</script>
+</body>
+</html>
