@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stat Mania - Particle Pop</title>
+    <meta name="description" content="Play Particle Pop: click drifting particles before they vanish - smaller ones are worth more, but harder to catch.">
+    <link rel="canonical" href="https://www.statmania.info/games/particle-pop.html">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.statmania.info/games/particle-pop.html">
+    <meta property="og:site_name" content="Stat Mania">
+    <meta property="og:title" content="Stat Mania - Particle Pop">
+    <meta property="og:description" content="Play Particle Pop: click drifting particles before they vanish - smaller ones are worth more, but harder to catch.">
+    <meta property="og:image" content="https://www.statmania.info/assets/images/logo.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Stat Mania - Particle Pop">
+    <meta name="twitter:description" content="Play Particle Pop: click drifting particles before they vanish - smaller ones are worth more, but harder to catch.">
+    <meta name="twitter:image" content="https://www.statmania.info/assets/images/logo.png">
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Google Fonts - Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/dark-theme.css">
+<style>
+  :root {
+    --card: rgba(255,255,255,0.045); --ink: #e8ecf7; --muted: #9aa4c2;
+    --line: rgba(255,255,255,0.14); --accent: #00e5ff; --accent-dark: #0e7490;
+    --good: #4ade80; --bad: #ff6b6b;
+  }
+  body { font-family: 'Inter', sans-serif; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #0a0f1e; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb { background: #3a4a6b; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: #54688f; }
+
+  .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+             justify-content: space-between; margin-bottom: 20px; }
+  .toolbar-left { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .toolbar-right { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .select-group { display: flex; flex-direction: column; gap: 2px; cursor: pointer; }
+  .select-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+                  letter-spacing: 0.06em; color: var(--muted); padding-left: 2px; }
+  select { background: rgba(255,255,255,0.04); color: var(--ink);
+           border: 1px solid rgba(255,255,255,0.18); border-radius: 999px;
+           padding: 6px 14px; font-size: 0.85rem; font-weight: 600;
+           font-family: inherit; cursor: pointer; }
+  select:hover { border-color: var(--accent); }
+  select option { background: #0a0f1e; color: var(--ink); }
+  button.action { border: none; background: linear-gradient(90deg, var(--accent), #38bdf8);
+           color: #04101c; padding: 8px 14px; border-radius: 999px; font-size: 0.85rem;
+           font-weight: 700; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+           font-family: inherit; box-shadow: 0 0 20px rgba(0,229,255,0.3); }
+  button.action:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(0,229,255,0.5); }
+  button.action:active { transform: scale(0.97); }
+  button.action:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .scoreboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  .score-tile { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 14px; padding: 14px 10px; text-align: center; }
+  .score-tile .label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em;
+                        color: var(--muted); margin-bottom: 4px; }
+  .score-tile .num { font-size: 1.5rem; font-weight: 800; color: var(--ink); font-family: 'Courier New', monospace; }
+  .score-tile.score .num { color: var(--good); }
+  .score-tile.timer .num { color: var(--accent); }
+  .score-tile.timer.low .num { color: var(--bad); }
+  @media (max-width: 560px) { .scoreboard { grid-template-columns: repeat(2, 1fr); } }
+
+  .game-layout { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 760px) { .game-layout { grid-template-columns: 1fr; } }
+
+  .board-wrap { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 14px; padding: 16px; display: flex; justify-content: center; }
+  #particleCanvas { display: block; border-radius: 10px; background: #05070d;
+           border: 1px solid rgba(255,255,255,0.1); touch-action: none; cursor: crosshair; }
+  #particleCanvas.locked { cursor: default; opacity: 0.6; }
+
+  .legend { display: flex; flex-direction: column; gap: 10px; margin-bottom: 4px; }
+  .legend-row { display: flex; align-items: center; gap: 12px; font-size: 0.85rem; color: var(--ink); }
+  .legend-swatch-wrap { width: 34px; display: flex; align-items: center; justify-content: center; flex: none; }
+  .legend-swatch { border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px rgba(0,229,255,0.5); }
+
+  #end-banner { display: none; flex-wrap: wrap; gap: 12px; justify-content: center;
+                align-items: stretch; margin: 0 0 20px; animation: pop 0.4s ease; }
+  @keyframes pop { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  .win-box { padding: 14px 24px; border-radius: 12px; font-weight: 700; font-size: 1.05rem;
+             display: flex; align-items: center; color: white;
+             box-shadow: 0 6px 20px rgba(34,197,94,0.35); }
+  .win-box.message { background: linear-gradient(135deg, #22c55e, #16a34a); }
+  .win-box.info { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
+                   color: var(--ink); box-shadow: none; }
+
+  .rules-panel { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
+                 border-radius: 14px; padding: 20px 22px; margin-top: 24px; }
+  .rules-panel h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.06em;
+                     color: var(--accent); margin: 0 0 14px; }
+  .rules-panel ul { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 10px; }
+  .rules-panel li { font-size: 1rem; line-height: 1.5; color: var(--ink); }
+  .rules-panel em { color: var(--accent); font-style: normal; font-weight: 700; }
+</style>
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+    <!-- Header/Navbar -->
+    <header class="bg-white shadow-sm py-4">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center space-x-3 no-underline hover:opacity-80 transition-opacity">
+                <img src="../img/statmania_logo.svg" alt="Stat Mania Logo" class="w-10 h-10 rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/40x40/4f46e5/ffffff?text=Logo';">
+                <div>
+                    <div class="text-2xl font-bold text-indigo-600">Stat Mania</div>
+                    <p class="text-sm text-slate-500">Making sense of statistics</p>
+                </div>
+            </a>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="../index.html" class="text-slate-600 hover:text-indigo-600 transition duration-300">Home</a></li>
+                    <li><a href="index.html" class="text-slate-600 hover:text-indigo-600 transition duration-300">All Games</a></li>
+                    <li><a href="#cta" class="text-slate-600 hover:text-indigo-600 transition duration-300">Contact</a></li>
+                </ul>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="../index.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Home</a>
+            <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">All Games</a>
+            <a href="#cta" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Contact</a>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <canvas class="sm-canvas" aria-hidden="true"></canvas>
+        <section class="sm-hero-wrap">
+            <div class="sm-hero-inner">
+                <span class="sm-eyebrow">Stat Mania &middot; Games</span>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-4 flex items-center justify-center gap-4 sm-gradient-text">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-12 h-12 sm-hero-icon">
+                        <circle cx="6" cy="7" r="2.5" />
+                        <circle cx="17" cy="6" r="1.6" />
+                        <circle cx="12" cy="13" r="4" />
+                        <circle cx="19" cy="16" r="2.2" />
+                        <circle cx="5" cy="18" r="1.3" />
+                    </svg>
+                    Particle Pop
+                </h1>
+                <p class="text-lg sm:text-xl sm-subtitle-sm">Click the drifting particles before they vanish &mdash; the smaller they are, the more they're worth</p>
+            </div>
+        </section>
+
+        <!-- Game Section -->
+        <section class="py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
+            <div class="container mx-auto max-w-4xl">
+                <div class="sm-card p-8">
+                    <div class="toolbar">
+                        <div class="toolbar-left">
+                            <div class="select-group">
+                                <span class="select-label">Time</span>
+                                <select id="time-select" aria-label="Time limit">
+                                    <option value="20">20s</option>
+                                    <option value="30" selected>30s</option>
+                                    <option value="45">45s</option>
+                                    <option value="60">60s</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="toolbar-right">
+                            <button id="new-game-btn" class="action">✨ New Game</button>
+                        </div>
+                    </div>
+
+                    <div class="scoreboard">
+                        <div class="score-tile timer" id="timer-tile">
+                            <div class="label">Time Left</div>
+                            <div class="num" id="timer-value">30</div>
+                        </div>
+                        <div class="score-tile score">
+                            <div class="label">Score</div>
+                            <div class="num" id="score-value">0</div>
+                        </div>
+                        <div class="score-tile">
+                            <div class="label">Popped</div>
+                            <div class="num" id="popped-value">0</div>
+                        </div>
+                        <div class="score-tile">
+                            <div class="label">Accuracy</div>
+                            <div class="num" id="accuracy-value">&ndash;</div>
+                        </div>
+                    </div>
+
+                    <div id="end-banner"></div>
+
+                    <div class="game-layout">
+                        <div class="board-wrap">
+                            <canvas id="particleCanvas" width="480" height="420"></canvas>
+                        </div>
+
+                        <div>
+                            <div class="rules-panel" style="margin-top: 0;">
+                                <h3>Size &amp; Points</h3>
+                                <div class="legend" id="legend"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rules-panel">
+                        <h3>How to Play</h3>
+                        <ul>
+                            <li>Particles of 20 different sizes drift around, randomly changing direction every second or two.</li>
+                            <li>Click one to pop it and score points &mdash; <em>smaller particles are worth more</em> (1&ndash;20 points), but they're also faster and harder to hit.</li>
+                            <li>Every particle has a lifespan and will <em>fade away on its own</em> if you don't catch it in time &mdash; no points either way, it's just gone.</li>
+                            <li>Clicking empty space scores <em>0 points</em> but still counts toward your accuracy.</li>
+                            <li>A new particle spawns for every one that's popped or fades, so the board stays full until time runs out.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action Section -->
+        <section id="cta" class="sm-section-dark py-16 px-4 sm:px-6 lg:px-8 text-center">
+            <div class="container mx-auto max-w-3xl">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-6" style="color:#fff">Explore Other Games</h2>
+                <p class="text-lg sm:text-xl mb-8 sm-subtitle-sm">Check out all available games</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="index.html" class="sm-btn sm-btn-primary">All Games</a>
+                    <a href="#" class="sm-btn sm-btn-ghost">Back to Top</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-white py-8 px-4 sm:px-6 lg:px-8 text-center mt-auto" style="border-top:1px solid rgba(255,255,255,0.08)">
+        <div class="container mx-auto">
+            <p class="mb-4">&copy; <span id="copyright-year">2026</span> Stat Mania. All rights reserved.</p>
+            <div class="flex justify-center space-x-6">
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Privacy Policy</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Terms of Service</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Sitemap</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>document.getElementById("copyright-year").textContent = new Date().getFullYear();</script>
+
+    <script>
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+    </script>
+    <script src="../starfield.js"></script>
+
+<script>
+/* ============================================================
+   PARTICLE MODEL
+   20 size tiers, 1-20 points. Bigger particles (low tier) are
+   worth fewer points and move slower; smaller ones (high tier)
+   are worth more and move faster - a risk/reward tradeoff.
+   ============================================================ */
+const MAX_TIER = 20;
+const RADIUS_MAX = 32, RADIUS_MIN = 7;
+const TARGET_COUNT = 15;
+const BASE_SPEED = 0.028;     // px/ms at tier 1
+const SPEED_TIER_BONUS = 0.9; // extra fraction of BASE_SPEED added by tier 20
+const KICK_MIN_MS = 700, KICK_MAX_MS = 2200;
+const MIN_LIFE_MS = 4000, MAX_LIFE_MS = 9000;
+const SPAWN_FADE_MS = 250, DEATH_FADE_MS = 450;
+
+function radiusForTier(tier) {
+    return RADIUS_MAX - ((tier - 1) / (MAX_TIER - 1)) * (RADIUS_MAX - RADIUS_MIN);
+}
+
+function randomParticleColor() {
+    const hue = Math.floor(Math.random() * 360);
+    return `hsl(${hue}, 85%, 62%)`;
+}
+
+const canvas = document.getElementById("particleCanvas");
+const ctx = canvas.getContext("2d");
+const timeSelect = document.getElementById("time-select");
+const timerTileEl = document.getElementById("timer-tile");
+const timerValueEl = document.getElementById("timer-value");
+const scoreValueEl = document.getElementById("score-value");
+const poppedValueEl = document.getElementById("popped-value");
+const accuracyValueEl = document.getElementById("accuracy-value");
+const endBannerEl = document.getElementById("end-banner");
+const legendEl = document.getElementById("legend");
+const newGameBtn = document.getElementById("new-game-btn");
+
+const state = {
+    running: false, timeLeft: 30, timerId: null,
+    score: 0, popped: 0, clicks: 0,
+    particles: [], effects: [],
+    rafId: null, lastFrameTime: null,
+    nextId: 1,
+};
+
+function populateLegend() {
+    const sampleTiers = [1, 6, 11, 16, 20];
+    legendEl.innerHTML = sampleTiers.map(tier => {
+        const r = radiusForTier(tier);
+        const label = tier === 20 ? "20 pts (tiny, fast)" :
+                      tier === 1 ? "1 pt (huge, slow)" : `${tier} pts`;
+        return `
+            <div class="legend-row">
+                <span class="legend-swatch-wrap"><span class="legend-swatch" style="width:${r}px;height:${r}px"></span></span>
+                <span>${label}</span>
+            </div>
+        `;
+    }).join("");
+}
+
+function spawnParticle() {
+    const tier = 1 + Math.floor(Math.random() * MAX_TIER);
+    const radius = radiusForTier(tier);
+    const x = radius + Math.random() * (canvas.width - radius * 2);
+    const y = radius + Math.random() * (canvas.height - radius * 2);
+    const angle = Math.random() * Math.PI * 2;
+    const speed = (BASE_SPEED + (tier / MAX_TIER) * BASE_SPEED * SPEED_TIER_BONUS) * (0.7 + Math.random() * 0.6);
+    const now = performance.now();
+    return {
+        id: state.nextId++,
+        tier, radius, points: tier, color: randomParticleColor(),
+        x, y,
+        vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+        nextKickAt: now + KICK_MIN_MS + Math.random() * (KICK_MAX_MS - KICK_MIN_MS),
+        age: 0,
+        lifespan: MIN_LIFE_MS + Math.random() * (MAX_LIFE_MS - MIN_LIFE_MS),
+    };
+}
+
+function alphaFor(particle) {
+    if (particle.age < SPAWN_FADE_MS) return particle.age / SPAWN_FADE_MS;
+    const timeLeftInLife = particle.lifespan - particle.age;
+    if (timeLeftInLife < DEATH_FADE_MS) return Math.max(0, timeLeftInLife / DEATH_FADE_MS);
+    return 1;
+}
+
+function updateStats() {
+    scoreValueEl.textContent = String(state.score);
+    poppedValueEl.textContent = String(state.popped);
+    accuracyValueEl.textContent = state.clicks
+        ? `${Math.round((state.popped / state.clicks) * 100)}%`
+        : "–";
+}
+
+function spawnPopEffect(x, y, color) {
+    state.effects.push({ type: "pop", x, y, color, age: 0, duration: 320 });
+}
+function spawnPopup(x, y, text, good) {
+    state.effects.push({ type: "popup", x, y, text, good, age: 0, duration: 650 });
+}
+
+function handleClick(x, y) {
+    if (!state.running) return;
+    state.clicks++;
+
+    // Check topmost (last-drawn / last-in-array) particles first.
+    let hitIndex = -1;
+    for (let i = state.particles.length - 1; i >= 0; i--) {
+        const p = state.particles[i];
+        const dx = x - p.x, dy = y - p.y;
+        if (Math.sqrt(dx * dx + dy * dy) <= p.radius) { hitIndex = i; break; }
+    }
+
+    if (hitIndex === -1) {
+        spawnPopup(x, y, "0", false);
+    } else {
+        const p = state.particles[hitIndex];
+        state.particles.splice(hitIndex, 1);
+        state.popped++;
+        state.score += p.points;
+        spawnPopEffect(p.x, p.y, p.color);
+        spawnPopup(p.x, p.y, `+${p.points}`, true);
+    }
+    updateStats();
+}
+
+function pointerToCanvas(evt) {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+    const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+    return {
+        x: (clientX - rect.left) * (canvas.width / rect.width),
+        y: (clientY - rect.top) * (canvas.height / rect.height),
+    };
+}
+canvas.addEventListener("click", (evt) => {
+    const { x, y } = pointerToCanvas(evt);
+    handleClick(x, y);
+});
+
+function updateParticle(p, dt, now) {
+    if (now >= p.nextKickAt) {
+        const currentAngle = Math.atan2(p.vy, p.vx);
+        const turn = (Math.random() - 0.5) * (Math.PI * 0.9);
+        const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+        const angle = currentAngle + turn;
+        p.vx = Math.cos(angle) * speed;
+        p.vy = Math.sin(angle) * speed;
+        p.nextKickAt = now + KICK_MIN_MS + Math.random() * (KICK_MAX_MS - KICK_MIN_MS);
+    }
+
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+
+    if (p.x - p.radius < 0) { p.x = p.radius; p.vx = Math.abs(p.vx); }
+    else if (p.x + p.radius > canvas.width) { p.x = canvas.width - p.radius; p.vx = -Math.abs(p.vx); }
+    if (p.y - p.radius < 0) { p.y = p.radius; p.vy = Math.abs(p.vy); }
+    else if (p.y + p.radius > canvas.height) { p.y = canvas.height - p.radius; p.vy = -Math.abs(p.vy); }
+
+    p.age += dt;
+}
+
+function drawParticle(p) {
+    const alpha = alphaFor(p);
+    if (alpha <= 0) return;
+    ctx.beginPath();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = p.color;
+    ctx.shadowColor = p.color;
+    ctx.shadowBlur = 10;
+    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.globalAlpha = 1;
+}
+
+function drawEffects(dt) {
+    for (const fx of state.effects) {
+        const t = Math.min(fx.age / fx.duration, 1);
+        if (fx.type === "pop") {
+            const r = 4 + t * 22;
+            ctx.beginPath();
+            ctx.fillStyle = fx.color;
+            ctx.globalAlpha = 1 - t;
+            ctx.arc(fx.x, fx.y, r, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+        } else {
+            ctx.font = "bold 16px 'Inter', sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillStyle = fx.good ? "#4ade80" : "#9aa4c2";
+            ctx.globalAlpha = 1 - t;
+            ctx.fillText(fx.text, fx.x, fx.y - t * 28);
+            ctx.globalAlpha = 1;
+        }
+    }
+}
+
+function gameLoop(now) {
+    const dt = state.lastFrameTime === null ? 16 : now - state.lastFrameTime;
+    state.lastFrameTime = now;
+
+    if (state.running) {
+        for (const p of state.particles) updateParticle(p, dt, now);
+        state.particles = state.particles.filter(p => p.age < p.lifespan);
+        while (state.particles.length < TARGET_COUNT) state.particles.push(spawnParticle());
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const p of state.particles) drawParticle(p);
+    for (const fx of state.effects) fx.age += dt;
+    state.effects = state.effects.filter(fx => fx.age < fx.duration);
+    drawEffects(dt);
+
+    if (state.running || state.effects.length) {
+        state.rafId = requestAnimationFrame(gameLoop);
+    } else {
+        state.rafId = null;
+        state.lastFrameTime = null;
+    }
+}
+
+function ensureGameLoop() {
+    if (state.rafId) return;
+    state.lastFrameTime = null;
+    state.rafId = requestAnimationFrame(gameLoop);
+}
+
+function tick() {
+    state.timeLeft--;
+    timerValueEl.textContent = String(state.timeLeft);
+    timerTileEl.classList.toggle("low", state.timeLeft <= 5);
+    if (state.timeLeft <= 0) endRound();
+}
+
+function newGame() {
+    clearInterval(state.timerId);
+    state.running = true;
+    state.score = 0;
+    state.popped = 0;
+    state.clicks = 0;
+    state.effects = [];
+    state.particles = [];
+    for (let i = 0; i < TARGET_COUNT; i++) state.particles.push(spawnParticle());
+    state.timeLeft = parseInt(timeSelect.value, 10);
+    timerTileEl.classList.remove("low");
+    timerValueEl.textContent = String(state.timeLeft);
+    endBannerEl.style.display = "none";
+    endBannerEl.innerHTML = "";
+    canvas.classList.remove("locked");
+    updateStats();
+    ensureGameLoop();
+    state.timerId = setInterval(tick, 1000);
+}
+
+function endRound() {
+    clearInterval(state.timerId);
+    state.running = false;
+    canvas.classList.add("locked");
+    const accuracy = state.clicks ? Math.round((state.popped / state.clicks) * 100) : 0;
+    endBannerEl.style.display = "flex";
+    endBannerEl.innerHTML = `
+        <div class="win-box message">Final score: ${state.score} pts</div>
+        <div class="win-box info">Popped: ${state.popped} &middot; Accuracy: ${accuracy}%</div>
+    `;
+}
+
+newGameBtn.addEventListener("click", newGame);
+timeSelect.addEventListener("change", newGame);
+
+populateLegend();
+newGame();
+</script>
+</body>
+</html>
