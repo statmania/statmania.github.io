@@ -201,3 +201,22 @@ top 10 per time limit (delete rows below rank 10 on insert), and reject
 impossible submissions server-side (score ≤ clicks × 20, hits ≤ clicks,
 clicks ≤ a sane per-second cap). Client-side scores can always be faked,
 so treat the board as for-fun, not tamper-proof.
+
+## Next click-style games (ideas, in the spirit of Particle Pop)
+
+Fast, replayable, top-10-board-friendly games that also teach a stats idea.
+Shared top-10/localStorage code from Particle Pop could be factored into
+one reusable file first.
+
+1. **Bias Buster** — dots appear from a hidden distribution; click the
+   ones you think are outliers before they fade. Scores like Particle
+   Pop, teaches z-scores / spotting outliers. *Best fit for the site.*
+2. **Streak Chaser** — rounds of coin flips or dice; click to lock in a
+   "hot hand" before the streak breaks. Shows how streaks appear in pure
+   randomness.
+3. **Whack-a-Mean** — numbers pop up in a grid; tap the ones above the
+   running average before they vanish. The target moves as the average
+   updates.
+4. **Target Tempo** — a shrinking ring; click at the right moment, with
+   points based on timing accuracy. Same top-10 board fits.
+5. **Sequence Sniper** — Simon-style memory game using number patterns.

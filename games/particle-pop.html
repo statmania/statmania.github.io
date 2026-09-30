@@ -93,7 +93,7 @@
                 border-radius: 14px; padding: 16px; display: flex; justify-content: center; }
   #particleCanvas { display: block; width: 100%; max-width: 480px; height: auto; aspect-ratio: 480 / 420; border-radius: 10px; background: #05070d;
            border: 1px solid rgba(255,255,255,0.1); touch-action: none; cursor: crosshair; }
-  #particleCanvas.locked { cursor: default; opacity: 0.6; }
+  #particleCanvas.locked { cursor: pointer; opacity: 0.6; }
 
   .legend { display: flex; flex-direction: column; gap: 10px; margin-bottom: 4px; }
   .legend-row { display: flex; align-items: center; gap: 12px; font-size: 0.85rem; color: var(--ink); }
@@ -349,7 +349,7 @@ const startBtn = document.getElementById("start-btn");
 const newGameBtn = document.getElementById("new-game-btn");
 
 const state = {
-    running: false, idle: true, timeLeft: 30, timerId: null,
+    running: false, idle: true, ended: false, endedAt: 0, timeLeft: 30, timerId: null,
     score: 0, popped: 0, clicks: 0,
     particles: [], effects: [],
     rafId: null, lastFrameTime: null,
@@ -454,6 +454,8 @@ function spawnPopup(x, y, text, good) {
 
 function handleClick(x, y) {
     if (state.idle) { newGame(); return; }   // first click on the idle board starts the round
+    // After time's up, a click starts a fresh round (short guard so end-of-round clicks don't restart it).
+    if (state.ended && performance.now() - state.endedAt > 800) { newGame(); return; }
     if (!state.running) return;
     state.clicks++;
 
@@ -562,12 +564,12 @@ function gameLoop(now) {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (const p of state.particles) drawParticle(p);
-    if (state.idle) drawIdleHint();
+    if (state.idle || state.ended) drawIdleHint();
     for (const fx of state.effects) fx.age += dt;
     state.effects = state.effects.filter(fx => fx.age < fx.duration);
     drawEffects(dt);
 
-    if (state.running || state.effects.length || state.idle) {
+    if (state.running || state.effects.length || state.idle || state.ended) {
         state.rafId = requestAnimationFrame(gameLoop);
     } else {
         state.rafId = null;
@@ -578,7 +580,7 @@ function gameLoop(now) {
 function drawIdleHint() {
     ctx.font = "bold 15px 'Inter', sans-serif";
     ctx.textAlign = "center";
-    const text = "Press Start or click to play", w = ctx.measureText(text).width + 28;
+    const text = state.ended ? "Click to play again" : "Press Start or click to play", w = ctx.measureText(text).width + 28;
     ctx.fillStyle = "rgba(5,7,13,0.7)";
     ctx.beginPath();
     ctx.roundRect(canvas.width / 2 - w / 2, canvas.height - 44, w, 30, 15);
@@ -604,6 +606,7 @@ function newGame() {
     clearInterval(state.timerId);
     state.running = true;
     state.idle = false;
+    state.ended = false;
     startBtn.disabled = true;
     state.score = 0;
     state.popped = 0;
@@ -625,6 +628,8 @@ function newGame() {
 function endRound() {
     clearInterval(state.timerId);
     state.running = false;
+    state.ended = true;
+    state.endedAt = performance.now();
     startBtn.disabled = false;
     canvas.classList.add("locked");
     timerTileEl.classList.remove("low");
@@ -640,6 +645,7 @@ function goIdle() {
     clearInterval(state.timerId);
     state.running = false;
     state.idle = true;
+    state.ended = false;
     startBtn.disabled = false;
     state.score = state.popped = state.clicks = 0;
     state.particles = [];
