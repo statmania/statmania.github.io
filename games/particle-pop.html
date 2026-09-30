@@ -36,6 +36,10 @@
   .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
              justify-content: space-between; margin-bottom: 20px; }
   .toolbar-left { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .start-btn { display: inline-flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.12em;
+           background: linear-gradient(90deg, #a855f7, #ff2fb4) !important; color: #fff !important;
+           box-shadow: 0 0 18px rgba(168,85,247,0.55), inset 0 0 0 1px rgba(255,255,255,0.35) !important; }
+  .start-btn:hover { box-shadow: 0 0 30px rgba(255,47,180,0.7), inset 0 0 0 1px rgba(255,255,255,0.5) !important; }
   .toolbar-right { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   .select-group { display: flex; flex-direction: column; gap: 2px; cursor: pointer; }
   .select-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
@@ -54,23 +58,40 @@
   button.action:active { transform: scale(0.97); }
   button.action:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
 
-  .scoreboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  .scoreboard { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; align-content: start; }
+  .info-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 24px; }
+  .info-grid .rules-panel { margin-top: 0; }
+  @media (max-width: 700px) { .info-grid { grid-template-columns: minmax(0, 1fr); } }
   .score-tile { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
                 border-radius: 14px; padding: 14px 10px; text-align: center; }
   .score-tile .label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em;
                         color: var(--muted); margin-bottom: 4px; }
-  .score-tile .num { font-size: 1.5rem; font-weight: 800; color: var(--ink); font-family: 'Courier New', monospace; }
+  .score-tile .num { font-size: clamp(1.15rem, 4.5vw, 1.5rem); font-weight: 800; color: var(--ink); font-family: 'Courier New', monospace; }
   .score-tile.score .num { color: var(--good); }
   .score-tile.timer .num { color: var(--accent); }
   .score-tile.timer.low .num { color: var(--bad); }
-  @media (max-width: 560px) { .scoreboard { grid-template-columns: repeat(2, 1fr); } }
+  .score-tile.timer.up .num { color: var(--bad); font-size: clamp(0.95rem, 3.6vw, 1.2rem); text-shadow: 0 0 12px rgba(255,107,107,0.7); }
+  .score-tile.index { grid-column: 1 / -1; }
+  .score-tile.index .num { color: #a855f7; }
+  .score-tile .sub { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+  @media (max-width: 560px) {
+    .scoreboard { gap: 10px; }
+    .score-tile { padding: 10px 6px; }
+    .toolbar { flex-wrap: nowrap; gap: 8px; }
+    .toolbar-left { flex-wrap: nowrap; gap: 8px; align-items: flex-end; }
+    .toolbar button.action { padding: 8px 10px; font-size: 0.78rem; white-space: nowrap; }
+    select { padding: 6px 8px; font-size: 0.8rem; }
+    .sm-card.game-card { padding: 16px !important; }
+    .board-wrap { padding: 8px; }
+    .rules-panel { padding: 16px; }
+  }
 
-  .game-layout { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: start; }
-  @media (max-width: 760px) { .game-layout { grid-template-columns: 1fr; } }
+  .game-layout { display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr); gap: 24px; align-items: start; }
+  @media (max-width: 860px) { .game-layout { grid-template-columns: minmax(0, 1fr); } }
 
-  .board-wrap { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
+  .board-wrap { min-width: 0; background: var(--card); border: 1px solid rgba(255,255,255,0.08);
                 border-radius: 14px; padding: 16px; display: flex; justify-content: center; }
-  #particleCanvas { display: block; border-radius: 10px; background: #05070d;
+  #particleCanvas { display: block; width: 100%; max-width: 480px; height: auto; aspect-ratio: 480 / 420; border-radius: 10px; background: #05070d;
            border: 1px solid rgba(255,255,255,0.1); touch-action: none; cursor: crosshair; }
   #particleCanvas.locked { cursor: default; opacity: 0.6; }
 
@@ -89,6 +110,16 @@
   .win-box.info { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
                    color: var(--ink); box-shadow: none; }
 
+  .lb-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .lb-table th { text-align: right; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em;
+                 color: var(--muted); font-weight: 700; padding: 4px 6px; }
+  .lb-table td { text-align: right; padding: 6px; color: var(--ink); border-top: 1px solid rgba(255,255,255,0.06);
+                 font-family: 'Courier New', monospace; }
+  .lb-table th:first-child, .lb-table td:first-child { text-align: left; }
+  .lb-table tr.new td { color: var(--good); font-weight: 700; background: rgba(74,222,128,0.08); }
+  .lb-empty { color: var(--muted); font-size: 0.85rem; }
+  .lb-clear { margin-top: 10px; background: none; border: none; color: var(--muted); font-size: 0.75rem;
+              text-decoration: underline; cursor: pointer; font-family: inherit; }
   .rules-panel { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
                  border-radius: 14px; padding: 20px 22px; margin-top: 24px; }
   .rules-panel h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.06em;
@@ -153,7 +184,7 @@
         <!-- Game Section -->
         <section class="py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
             <div class="container mx-auto max-w-4xl">
-                <div class="sm-card p-8">
+                <div class="sm-card game-card p-8">
                     <div class="toolbar">
                         <div class="toolbar-left">
                             <div class="select-group">
@@ -165,44 +196,63 @@
                                     <option value="60">60s</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="toolbar-right">
+                            <button id="start-btn" class="action start-btn" aria-label="Start game">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
+                                <span>Start</span>
+                            </button>
                             <button id="new-game-btn" class="action">✨ New Game</button>
                         </div>
                     </div>
-
-                    <div class="scoreboard">
-                        <div class="score-tile timer" id="timer-tile">
-                            <div class="label">Time Left</div>
-                            <div class="num" id="timer-value">30</div>
-                        </div>
-                        <div class="score-tile score">
-                            <div class="label">Score</div>
-                            <div class="num" id="score-value">0</div>
-                        </div>
-                        <div class="score-tile">
-                            <div class="label">Popped</div>
-                            <div class="num" id="popped-value">0</div>
-                        </div>
-                        <div class="score-tile">
-                            <div class="label">Accuracy</div>
-                            <div class="num" id="accuracy-value">&ndash;</div>
-                        </div>
-                    </div>
-
-                    <div id="end-banner"></div>
 
                     <div class="game-layout">
                         <div class="board-wrap">
                             <canvas id="particleCanvas" width="480" height="420"></canvas>
                         </div>
 
-                        <div>
-                            <div class="rules-panel" style="margin-top: 0;">
+                        <div class="scoreboard">
+                            <div class="score-tile timer" id="timer-tile">
+                                <div class="label" id="timer-label">Time Left</div>
+                                <div class="num" id="timer-value">30</div>
+                            </div>
+                            <div class="score-tile">
+                                <div class="label">Clicks</div>
+                                <div class="num" id="clicks-value">0</div>
+                            </div>
+                            <div class="score-tile">
+                                <div class="label">Successful</div>
+                                <div class="num" id="popped-value">0</div>
+                            </div>
+                            <div class="score-tile">
+                                <div class="label">Accuracy</div>
+                                <div class="num" id="accuracy-value">&ndash;</div>
+                            </div>
+                            <div class="score-tile">
+                                <div class="label">Target Score</div>
+                                <div class="num" id="max-value">0</div>
+                                <div class="sub">clicks &times; 20</div>
+                            </div>
+                            <div class="score-tile score">
+                                <div class="label">Achieved Score</div>
+                                <div class="num" id="score-value">0</div>
+                            </div>
+                            <div class="score-tile index">
+                                <div class="label">Achievement Index</div>
+                                <div class="num" id="index-value">&ndash;</div>
+                                <div class="sub">achieved &divide; target</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-grid">
+                        <div class="rules-panel" style="margin-top: 0;">
                                 <h3>Size &amp; Points</h3>
                                 <div class="legend" id="legend"></div>
                             </div>
-                        </div>
+                        <div class="rules-panel">
+                                <h3>Top 10 &middot; <span id="lb-time">30s</span></h3>
+                                <div id="leaderboard"></div>
+                                <button class="lb-clear" id="lb-clear" type="button">Clear this board</button>
+                            </div>
                     </div>
 
                     <div class="rules-panel">
@@ -211,7 +261,8 @@
                             <li>Particles of 20 different sizes drift around, randomly changing direction every second or two.</li>
                             <li>Click one to pop it and score points &mdash; <em>smaller particles are worth more</em> (1&ndash;20 points), but they're also faster and harder to hit.</li>
                             <li>Every particle has a lifespan and will <em>fade away on its own</em> if you don't catch it in time &mdash; no points either way, it's just gone.</li>
-                            <li>Clicking empty space scores <em>0 points</em> but still counts toward your accuracy.</li>
+                            <li>Clicking empty space scores <em>0 points</em> but still counts as a click. Every click could have earned 20 points, so <em>Target Score = clicks &times; 20</em> and your <em>Achievement Index = Achieved Score &divide; Target Score</em>.</li>
+                            <li>Your top 10 scores for each time limit are saved in this browser.</li>
                             <li>A new particle spawns for every one that's popped or fades, so the board stays full until time runs out.</li>
                         </ul>
                     </div>
@@ -283,16 +334,22 @@ const canvas = document.getElementById("particleCanvas");
 const ctx = canvas.getContext("2d");
 const timeSelect = document.getElementById("time-select");
 const timerTileEl = document.getElementById("timer-tile");
+const timerLabelEl = document.getElementById("timer-label");
 const timerValueEl = document.getElementById("timer-value");
+const clicksValueEl = document.getElementById("clicks-value");
+const maxValueEl = document.getElementById("max-value");
+const indexValueEl = document.getElementById("index-value");
+const leaderboardEl = document.getElementById("leaderboard");
+const lbTimeEl = document.getElementById("lb-time");
 const scoreValueEl = document.getElementById("score-value");
 const poppedValueEl = document.getElementById("popped-value");
 const accuracyValueEl = document.getElementById("accuracy-value");
-const endBannerEl = document.getElementById("end-banner");
 const legendEl = document.getElementById("legend");
+const startBtn = document.getElementById("start-btn");
 const newGameBtn = document.getElementById("new-game-btn");
 
 const state = {
-    running: false, timeLeft: 30, timerId: null,
+    running: false, idle: true, timeLeft: 30, timerId: null,
     score: 0, popped: 0, clicks: 0,
     particles: [], effects: [],
     rafId: null, lastFrameTime: null,
@@ -340,12 +397,52 @@ function alphaFor(particle) {
     return 1;
 }
 
+function achievementIndex() {
+    return state.clicks ? Math.round((state.score / (state.clicks * MAX_TIER)) * 1000) / 10 : 0;
+}
+
+/* ---------- Top-10 leaderboard (localStorage, one board per time limit) ---------- */
+const LB_SIZE = 10;
+const lbKey = (secs) => `particlePop.top10.${secs}`;
+function loadBoard(secs) {
+    try { const a = JSON.parse(localStorage.getItem(lbKey(secs))); return Array.isArray(a) ? a : []; }
+    catch (e) { return []; }
+}
+function saveBoard(secs, board) {
+    try { localStorage.setItem(lbKey(secs), JSON.stringify(board)); } catch (e) {}
+}
+// Returns the new entry's rank (0-based) or -1 if it didn't make the top 10.
+function submitScore(secs) {
+    if (state.score <= 0) return -1;
+    const entry = { score: state.score, clicks: state.clicks, hits: state.popped,
+                    index: achievementIndex(), t: Date.now() };
+    const board = loadBoard(secs);
+    board.push(entry);
+    // Higher score first; ties: higher index, then the older entry keeps its place.
+    board.sort((a, b) => b.score - a.score || b.index - a.index || a.t - b.t);
+    const kept = board.slice(0, LB_SIZE);   // older/lower scores fall off
+    saveBoard(secs, kept);
+    return kept.indexOf(entry);
+}
+function renderBoard(secs, highlight = -1) {
+    lbTimeEl.textContent = `${secs}s`;
+    const board = loadBoard(secs);
+    if (!board.length) { leaderboardEl.innerHTML = '<div class="lb-empty">No scores yet - pop some particles!</div>'; return; }
+    leaderboardEl.innerHTML = `<table class="lb-table"><thead><tr>
+        <th>#</th><th>Score</th><th>Clicks</th><th>Hits</th><th>Index</th></tr></thead><tbody>` +
+        board.map((e, i) => `<tr class="${i === highlight ? "new" : ""}"><td>${i + 1}</td><td>${e.score}</td>
+        <td>${e.clicks}</td><td>${e.hits}</td><td>${e.index}%</td></tr>`).join("") + "</tbody></table>";
+}
+
 function updateStats() {
     scoreValueEl.textContent = String(state.score);
     poppedValueEl.textContent = String(state.popped);
+    clicksValueEl.textContent = String(state.clicks);
     accuracyValueEl.textContent = state.clicks
         ? `${Math.round((state.popped / state.clicks) * 100)}%`
         : "–";
+    maxValueEl.textContent = String(state.clicks * MAX_TIER);
+    indexValueEl.textContent = state.clicks ? `${achievementIndex()}%` : "–";
 }
 
 function spawnPopEffect(x, y, color) {
@@ -356,6 +453,7 @@ function spawnPopup(x, y, text, good) {
 }
 
 function handleClick(x, y) {
+    if (state.idle) { newGame(); return; }   // first click on the idle board starts the round
     if (!state.running) return;
     state.clicks++;
 
@@ -464,16 +562,29 @@ function gameLoop(now) {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (const p of state.particles) drawParticle(p);
+    if (state.idle) drawIdleHint();
     for (const fx of state.effects) fx.age += dt;
     state.effects = state.effects.filter(fx => fx.age < fx.duration);
     drawEffects(dt);
 
-    if (state.running || state.effects.length) {
+    if (state.running || state.effects.length || state.idle) {
         state.rafId = requestAnimationFrame(gameLoop);
     } else {
         state.rafId = null;
         state.lastFrameTime = null;
     }
+}
+
+function drawIdleHint() {
+    ctx.font = "bold 15px 'Inter', sans-serif";
+    ctx.textAlign = "center";
+    const text = "Press Start or click to play", w = ctx.measureText(text).width + 28;
+    ctx.fillStyle = "rgba(5,7,13,0.7)";
+    ctx.beginPath();
+    ctx.roundRect(canvas.width / 2 - w / 2, canvas.height - 44, w, 30, 15);
+    ctx.fill();
+    ctx.fillStyle = "#e8ecf7";
+    ctx.fillText(text, canvas.width / 2, canvas.height - 24);
 }
 
 function ensureGameLoop() {
@@ -492,6 +603,8 @@ function tick() {
 function newGame() {
     clearInterval(state.timerId);
     state.running = true;
+    state.idle = false;
+    startBtn.disabled = true;
     state.score = 0;
     state.popped = 0;
     state.clicks = 0;
@@ -499,12 +612,12 @@ function newGame() {
     state.particles = [];
     for (let i = 0; i < TARGET_COUNT; i++) state.particles.push(spawnParticle());
     state.timeLeft = parseInt(timeSelect.value, 10);
-    timerTileEl.classList.remove("low");
+    timerTileEl.classList.remove("low", "up");
+    timerLabelEl.style.display = "";
     timerValueEl.textContent = String(state.timeLeft);
-    endBannerEl.style.display = "none";
-    endBannerEl.innerHTML = "";
     canvas.classList.remove("locked");
     updateStats();
+    renderBoard(parseInt(timeSelect.value, 10));
     ensureGameLoop();
     state.timerId = setInterval(tick, 1000);
 }
@@ -512,20 +625,51 @@ function newGame() {
 function endRound() {
     clearInterval(state.timerId);
     state.running = false;
+    startBtn.disabled = false;
     canvas.classList.add("locked");
-    const accuracy = state.clicks ? Math.round((state.popped / state.clicks) * 100) : 0;
-    endBannerEl.style.display = "flex";
-    endBannerEl.innerHTML = `
-        <div class="win-box message">Final score: ${state.score} pts</div>
-        <div class="win-box info">Popped: ${state.popped} &middot; Accuracy: ${accuracy}%</div>
-    `;
+    timerTileEl.classList.remove("low");
+    timerTileEl.classList.add("up");
+    timerLabelEl.style.display = "none";
+    timerValueEl.textContent = "Time's UP!";
+    const secs = parseInt(timeSelect.value, 10);
+    const rank = submitScore(secs);
+    renderBoard(secs, rank);
 }
 
+function goIdle() {
+    clearInterval(state.timerId);
+    state.running = false;
+    state.idle = true;
+    startBtn.disabled = false;
+    state.score = state.popped = state.clicks = 0;
+    state.particles = [];
+    for (let i = 0; i < TARGET_COUNT; i++) {
+        const p = spawnParticle();
+        p.age = SPAWN_FADE_MS;   // skip the fade-in so idle particles are fully visible
+        state.particles.push(p);
+    }
+    state.effects = [];
+    state.timeLeft = parseInt(timeSelect.value, 10);
+    timerValueEl.textContent = String(state.timeLeft);
+    timerTileEl.classList.remove("low", "up");
+    timerLabelEl.style.display = "";
+    canvas.classList.remove("locked");
+    updateStats();
+    renderBoard(state.timeLeft);
+    ensureGameLoop();
+}
+
+startBtn.addEventListener("click", newGame);
 newGameBtn.addEventListener("click", newGame);
-timeSelect.addEventListener("change", newGame);
+timeSelect.addEventListener("change", goIdle);
+document.getElementById("lb-clear").addEventListener("click", () => {
+    const secs = parseInt(timeSelect.value, 10);
+    if (confirm(`Clear the saved ${secs}s Top 10?`)) { saveBoard(secs, []); renderBoard(secs); }
+});
 
 populateLegend();
-newGame();
+goIdle();
 </script>
+<script src="css/nav-hide.js"></script>
 </body>
 </html>

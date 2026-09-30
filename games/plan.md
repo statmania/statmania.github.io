@@ -92,3 +92,112 @@ word list and build pipeline almost as-is) → **Connect Four** (reuses
 the tic-tac-toe minimax pattern, rounds out the board-game shelf) →
 **Mastermind** (novel mechanic, still a small self-contained build) →
 bigger ones (Nonogram, Minesweeper, 2048) as time allows.
+
+## For Understanding Data (ranked by fun)
+
+A handful of number/stats-flavored games would fit this site's "Stat
+Mania" identity nicely (same spirit as the existing Monty Hall
+simulator). Ordered by how fun/replayable each would actually be to
+play, not by build effort or pedagogical value — the two don't always
+line up; a couple of the most pedagogically important ones (Confidence
+Interval Coverage, Simpson's Paradox) are deliberately last because
+they're closer to a watch-it-happen simulator than a scored game.
+
+- **Higher or Lower: Data Edition** — classic "which is bigger" streak
+  game (à la higherlowergame.com), but the trivia deck is real stats
+  (populations, GDPs, record highs, distances). Dead simple to build,
+  a proven-addictive format, and endless replay from just reshuffling
+  the deck.
+- **Monte Carlo Pi Darts** — throw random darts at a square with an
+  inscribed circle to estimate π, racing the clock to land within some
+  tolerance. Same "click and watch it happen" satisfaction as Dirt
+  Toss/Particle Pop, and a genuinely elegant demo of Monte Carlo
+  estimation.
+- **Guess the Correlation** — shown a scatterplot, guess r (score by
+  closeness). The best-known "stats game" format for a reason: fast,
+  satisfying, and builds real intuition for what a given r looks like.
+- **Chart Crimes** — shown a manipulated chart (truncated y-axis, dual
+  axes, cherry-picked range, reversed axis), spot what's wrong. Quiz
+  format with a "gotcha" reveal; doubles as media-literacy content.
+- **Regression Golf** — drag a line through a scatterplot, scored by
+  sum-of-squared-errors against "par" (the true least-squares fit)
+  across a few holes of increasing noise. A more game-shaped version of
+  the original "Fit the Regression Line" idea.
+- **Number Sense Sprint** — Math Challenge's timed rapid-fire format,
+  aimed at data literacy instead of arithmetic: "which is closer to a
+  million," quick percent-of, order-of-magnitude estimates. Cheap to
+  build by reusing the existing Math Challenge scaffolding.
+- **Benford's Law Detective** — shown a dataset's leading-digit
+  distribution, guess whether it's real-world data (which tends to
+  follow Benford's Law) or fabricated. Mystery framing turns an obscure
+  statistical fact into a fun "aha."
+- **Birthday Paradox Roulette** — guess how many people are needed in a
+  room before there's a 50/50 chance two share a birthday, then watch a
+  simulated room fill up and reveal the answer. One classic
+  counterintuitive result, gamified as a bet-then-reveal.
+- **Random Walk Race** — watch a live random walk (stock-price-style)
+  and bet whether it'll be up or down N steps later. Cheap thrill, and
+  a good vehicle for teaching that a pure random walk still "looks"
+  trendy with zero real signal behind it.
+- **Which Average?** — rapid-fire multiple choice: given a weird
+  dataset (skewed, bimodal, categorical, with outliers), pick whichever
+  of mean/median/mode is the least misleading summary. Same fast-quiz
+  shape as Number Sense Sprint.
+- **Distribution Guesser** — shown a histogram or sample, guess which
+  distribution generated it (normal, uniform, exponential, skewed,
+  bimodal). More academic than the above, but a solid visual
+  pattern-matching game.
+- **Data Detective: Correlation vs. Causation** — given a real
+  correlated pair of variables, pick the likeliest explanation (causal,
+  reverse-causal, confounder, coincidence). Quiz format, same
+  media-literacy spirit as Chart Crimes.
+- **Spot the Outlier / Box Plot Hunt** — identify outliers or
+  misleading points in a visualized dataset. Solid but more puzzle than
+  game — lower replay value once you've learned to spot the trick.
+- **Bayesian Update Game** — a repeated decision game on a base-rate
+  scenario (e.g. disease testing): update your probability estimate
+  each round as new evidence arrives, scored against the true
+  posterior. Teaches base-rate neglect well, but more cerebral than fun.
+- **Confidence Interval Coverage** — simulate many random samples and
+  their CIs, watch visually how often they capture the true parameter.
+  Excellent for building intuition for what "95% confidence" actually
+  means, but it's a watch-it-converge simulator (like Monty Hall) more
+  than a scored game.
+- **Simpson's Paradox Explorer** — toggle between aggregated and
+  grouped views of a dataset to watch a correlation reverse. Same
+  category as Confidence Interval Coverage: a great "aha" tool, low on
+  game mechanics.
+
+## Particle Pop — global leaderboard (future)
+
+Current state: the Top 10 is stored per time limit in the browser's
+`localStorage` (`particlePop.top10.<seconds>`), so it is per-device only
+and can be edited by the player. A shared/global board needs a small
+backend. The site is static (GitHub Pages), so the options are:
+
+**Free**
+- **Supabase** (Postgres + auto REST API, free tier ~500 MB). Best fit:
+  one `scores` table, Row Level Security allowing public insert/select,
+  and a `top10` view. Call it from the page with plain `fetch`.
+  Caveat: free projects pause after ~1 week of inactivity.
+- **Firebase Firestore** (Spark plan, generous free quota). Simple JS
+  SDK, security rules can validate score ranges. Client SDK adds weight.
+- **Cloudflare Workers + D1 (or KV)** (free tier, no pausing). A ~30-line
+  Worker exposes `POST /score` and `GET /top10`; validation and rate
+  limiting live server-side. Most robust free option, slightly more setup.
+- **Google Sheets + Apps Script web app** — zero-cost hack; fine for a
+  hobby board but slow and easy to abuse.
+- **GitHub Pages stays as hosting** for the game itself in all cases;
+  only the score API needs a host.
+
+**Paid / scalable**
+- Supabase Pro (~$25/mo), Firebase Blaze (pay-as-you-go), PlanetScale /
+  Neon, or a small VPS (~$4–6/mo) running Node + SQLite. Only worth it
+  if traffic or anti-cheat needs outgrow the free tiers.
+
+**Recommendation:** Cloudflare Worker + D1 (or Supabase for the least
+code). Store `{name, score, clicks, hits, seconds, ts}`, keep only the
+top 10 per time limit (delete rows below rank 10 on insert), and reject
+impossible submissions server-side (score ≤ clicks × 20, hits ≤ clicks,
+clicks ≤ a sane per-second cap). Client-side scores can always be faked,
+so treat the board as for-fun, not tamper-proof.
