@@ -36,6 +36,8 @@
   .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
              justify-content: space-between; margin-bottom: 20px; }
   .toolbar-left { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .mute-btn { background: rgba(255,255,255,0.06) !important; color: var(--ink) !important; box-shadow: none !important;
+           border: 1px solid rgba(255,255,255,0.18) !important; padding: 8px 11px !important; }
   .start-btn { display: inline-flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.12em;
            background: linear-gradient(90deg, #a855f7, #ff2fb4) !important; color: #fff !important;
            box-shadow: 0 0 18px rgba(168,85,247,0.55), inset 0 0 0 1px rgba(255,255,255,0.35) !important; }
@@ -209,6 +211,7 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true });
                                 <span>Start</span>
                             </button>
                             <button id="new-game-btn" class="action">✨ New Game</button>
+                            <button id="mute-btn" class="action mute-btn" type="button" aria-label="Sound on" title="Sound on/off">🔊</button>
                         </div>
                     </div>
 
@@ -365,6 +368,58 @@ const state = {
     nextId: 1,
 };
 
+/* ---------- Sound (Web Audio synth - no files to load) ---------- */
+let audioCtx = null;
+let muted = false;
+try { muted = localStorage.getItem("particlePop.muted") === "1"; } catch (e) {}
+function getAudio() {
+    if (!audioCtx) {
+        try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; }
+    }
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    return audioCtx;
+}
+function tone(freq, dur, { type = "sine", vol = 0.12, slideTo = null, delay = 0 } = {}) {
+    if (muted) return;
+    const ac = getAudio();
+    if (!ac) return;
+    const t0 = ac.currentTime + delay;
+    const osc = ac.createOscillator(), gain = ac.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t0);
+    if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, t0 + dur);
+    gain.gain.setValueAtTime(vol, t0);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.connect(gain).connect(ac.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.02);
+}
+// Smaller (higher-point) particles pop at a higher pitch.
+function soundPop(points) {
+    const f = 380 + points * 45;
+    tone(f, 0.12, { type: "triangle", vol: 0.16, slideTo: f * 0.45 });
+    tone(f * 2, 0.05, { type: "sine", vol: 0.05 });
+}
+function soundMiss() { tone(140, 0.07, { type: "square", vol: 0.04, slideTo: 90 }); }
+function soundWarning() { tone(900, 0.11, { type: "square", vol: 0.07 }); }
+function soundTimeUp() {
+    tone(520, 0.22, { type: "sawtooth", vol: 0.09, slideTo: 300 });
+    tone(330, 0.22, { type: "sawtooth", vol: 0.09, slideTo: 180, delay: 0.24 });
+    tone(200, 0.5, { type: "sawtooth", vol: 0.1, slideTo: 70, delay: 0.48 });
+}
+const muteBtn = document.getElementById("mute-btn");
+function renderMute() {
+    muteBtn.textContent = muted ? "🔇" : "🔊";
+    muteBtn.setAttribute("aria-label", muted ? "Sound off" : "Sound on");
+}
+muteBtn.addEventListener("click", () => {
+    muted = !muted;
+    try { localStorage.setItem("particlePop.muted", muted ? "1" : "0"); } catch (e) {}
+    renderMute();
+    if (!muted) soundPop(10);
+});
+renderMute();
+
 function populateLegend() {
     const sampleTiers = [1, 6, 11, 16, 20];
     legendEl.innerHTML = sampleTiers.map(tier => {
@@ -479,12 +534,14 @@ function handleClick(x, y) {
 
     if (hitIndex === -1) {
         spawnPopup(x, y, "0", false);
+        soundMiss();
     } else {
         const p = state.particles[hitIndex];
         state.particles.splice(hitIndex, 1);
         state.popped++;
         state.score += p.points;
         spawnPopEffect(p.x, p.y, p.color);
+        soundPop(p.points);
         spawnPopup(p.x, p.y, `+${p.points}`, true);
     }
     updateStats();
@@ -672,10 +729,12 @@ function tick() {
     timerValueEl.textContent = String(state.timeLeft);
     timerTileEl.classList.toggle("low", state.timeLeft <= 5);
     if (state.timeLeft <= 0) endRound();
+    else if (state.timeLeft <= 5) soundWarning();
 }
 
 function newGame() {
     clearInterval(state.timerId);
+    if (!muted) getAudio();   // unlock audio inside the user gesture
     state.running = true;
     state.paused = false;
     state.idle = false;
@@ -709,6 +768,7 @@ function endRound() {
     timerTileEl.classList.add("up");
     timerLabelEl.style.display = "none";
     timerValueEl.textContent = "Time's UP!";
+    soundTimeUp();
     const secs = parseInt(timeSelect.value, 10);
     const rank = submitScore(secs);
     renderBoard(secs, rank);
