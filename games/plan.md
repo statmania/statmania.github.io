@@ -220,3 +220,42 @@ one reusable file first.
 4. **Target Tempo** — a shrinking ring; click at the right moment, with
    points based on timing accuracy. Same top-10 board fits.
 5. **Sequence Sniper** — Simon-style memory game using number patterns.
+
+## Hue Hunter (built: games/hue-hunter.html)
+
+Working name was "Color Catch"; renamed **Hue Hunter** because you hunt one
+specific hue among decoys. Particle Pop's engine plus a decision on every click.
+
+**Rules**
+- The player must **explicitly choose** a target color (6 swatches or
+  **?** for random) before starting; nothing is preselected, and Start
+  or a board click just nudges the picker until a color is chosen. The
+  chosen color shows in a "Hunting" tile on the scoreboard. Random is
+  rolled at the start of every round.
+- Balls of six clearly different hues (cyan, magenta, yellow, green,
+  orange, violet) and 20 sizes drift and fade like in Particle Pop.
+- Point value = size tier (1 = biggest, 20 = tiniest, faster). Target
+  color: **+tier**. Any other color: **−⌈tier ÷ 2⌉** (half, rounded up; was
+  full size in the first version). Empty space: 0.
+- About 30% of spawns are the target color, with at least 3 on the board
+  at all times, so the round is always playable.
+- Same shell as Particle Pop: 20/30/45/60s, start/pause/resume, click the
+  board to start or play again, centered neon messages, Time's UP,
+  synthesized sounds (+ a low buzz for wrong hits) and mute.
+
+**Stats:** Clicks, Accuracy (right-color hits ÷ clicks), Right Color,
+Wrong Color, Target Score (clicks × 20), Achieved Score (can go negative,
+shown red), Achievement Index (achieved ÷ target, floored at 0%).
+
+**Top 10:** per time limit, stored in localStorage (`hueHunter.top10.<secs>`),
+with the hunted color shown per entry. Scores ≤ 0 are not saved.
+
+**Accessibility:** an optional "Show symbols" toggle draws a distinct
+glyph (dot, ring, plus, diamond, triangle, square) on each color, for
+color-blind players.
+
+**Decisions / open ideas**
+- A wrong click costs half the ball value (`WRONG_FACTOR = 0.5`).
+- Not built yet: hard mode where the target color changes every ~10 s.
+- Leaderboard is per time limit only (not per color); the colors differ
+  in appearance, not in difficulty.

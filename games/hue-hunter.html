@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stat Mania - Hue Hunter</title>
+    <meta name="description" content="Play Hue Hunter: pick a color and pop only the drifting balls of that hue - wrong colors cost you points.">
+    <link rel="canonical" href="https://www.statmania.info/games/hue-hunter.html">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.statmania.info/games/hue-hunter.html">
+    <meta property="og:site_name" content="Stat Mania">
+    <meta property="og:title" content="Stat Mania - Hue Hunter">
+    <meta property="og:description" content="Play Hue Hunter: pick a color and pop only the drifting balls of that hue - wrong colors cost you points.">
+    <meta property="og:image" content="https://www.statmania.info/assets/images/logo.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Stat Mania - Hue Hunter">
+    <meta name="twitter:description" content="Play Hue Hunter: pick a color and pop only the drifting balls of that hue - wrong colors cost you points.">
+    <meta name="twitter:image" content="https://www.statmania.info/assets/images/logo.png">
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Google Fonts - Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/dark-theme.css">
+<style>
+  :root {
+    --card: rgba(255,255,255,0.045); --ink: #e8ecf7; --muted: #9aa4c2;
+    --line: rgba(255,255,255,0.14); --accent: #00e5ff; --accent-dark: #0e7490;
+    --good: #4ade80; --bad: #ff6b6b;
+  }
+  body { font-family: 'Inter', sans-serif; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #0a0f1e; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb { background: #3a4a6b; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: #54688f; }
+
+  .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+             justify-content: space-between; margin-bottom: 20px; }
+  .toolbar-left { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .mute-btn { background: rgba(255,255,255,0.06) !important; color: var(--ink) !important; box-shadow: none !important;
+           border: 1px solid rgba(255,255,255,0.18) !important; padding: 8px 11px !important; }
+  .start-btn { display: inline-flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.12em;
+           background: linear-gradient(90deg, #a855f7, #ff2fb4) !important; color: #fff !important;
+           box-shadow: 0 0 18px rgba(168,85,247,0.55), inset 0 0 0 1px rgba(255,255,255,0.35) !important; }
+  .start-btn:hover { box-shadow: 0 0 30px rgba(255,47,180,0.7), inset 0 0 0 1px rgba(255,255,255,0.5) !important; }
+  .toolbar-right { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .select-group { display: flex; flex-direction: column; gap: 2px; cursor: pointer; }
+  .select-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+                  letter-spacing: 0.06em; color: var(--muted); padding-left: 2px; }
+  select { background: rgba(255,255,255,0.04); color: var(--ink);
+           border: 1px solid rgba(255,255,255,0.18); border-radius: 999px;
+           padding: 6px 14px; font-size: 0.85rem; font-weight: 600;
+           font-family: inherit; cursor: pointer; }
+  select:hover { border-color: var(--accent); }
+  select option { background: #0a0f1e; color: var(--ink); }
+  button.action { border: none; background: linear-gradient(90deg, var(--accent), #38bdf8);
+           color: #04101c; padding: 8px 14px; border-radius: 999px; font-size: 0.85rem;
+           font-weight: 700; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+           font-family: inherit; box-shadow: 0 0 20px rgba(0,229,255,0.3); }
+  button.action:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(0,229,255,0.5); }
+  button.action:active { transform: scale(0.97); }
+  button.action:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .scoreboard { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; align-content: start; }
+  .info-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 24px; }
+  .info-grid .rules-panel { margin-top: 0; }
+  @media (max-width: 700px) { .info-grid { grid-template-columns: minmax(0, 1fr); } }
+  .score-tile { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 14px; padding: 14px 10px; text-align: center; }
+  .score-tile .label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em;
+                        color: var(--muted); margin-bottom: 4px; }
+  .score-tile .num { font-size: clamp(1.15rem, 4.5vw, 1.5rem); font-weight: 800; color: var(--ink); font-family: 'Courier New', monospace; }
+  .score-tile.score .num { color: var(--good); }
+  .score-tile.timer .num { color: var(--accent); }
+  .score-tile.timer.low .num { color: var(--bad); }
+  .score-tile.timer.up .num { color: var(--bad); font-size: clamp(0.95rem, 3.6vw, 1.2rem); text-shadow: 0 0 12px rgba(255,107,107,0.7); }
+  .score-tile.index { grid-column: 1 / -1; }
+  .score-tile.index .num { color: #a855f7; }
+  .score-tile .sub { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+  @media (max-width: 560px) {
+    .scoreboard { gap: 10px; }
+    .score-tile { padding: 10px 6px; }
+    .toolbar { flex-wrap: nowrap; gap: 8px; }
+    .toolbar-left { flex-wrap: nowrap; gap: 8px; align-items: flex-end; }
+    .toolbar button.action { padding: 8px 10px; font-size: 0.78rem; white-space: nowrap; }
+    select { padding: 6px 8px; font-size: 0.8rem; }
+    .sm-card.game-card { padding: 16px !important; }
+    .board-wrap { padding: 8px; }
+    .rules-panel { padding: 16px; }
+  }
+
+  .game-layout { display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr); gap: 24px; align-items: start; }
+  @media (max-width: 860px) { .game-layout { grid-template-columns: minmax(0, 1fr); } }
+
+  .board-wrap { min-width: 0; background: var(--card); border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 14px; padding: 16px; display: flex; justify-content: center; }
+  #particleCanvas { display: block; width: 100%; max-width: 480px; height: auto; aspect-ratio: 480 / 420; border-radius: 10px; background: #05070d;
+           border: 1px solid rgba(255,255,255,0.1); touch-action: none; cursor: crosshair; }
+  #particleCanvas.locked { cursor: pointer; opacity: 0.6; }
+
+  .legend { display: flex; flex-direction: column; gap: 10px; margin-bottom: 4px; }
+  .legend-row { display: flex; align-items: center; gap: 12px; font-size: 0.85rem; color: var(--ink); }
+  .legend-swatch-wrap { width: 34px; display: flex; align-items: center; justify-content: center; flex: none; }
+  .legend-swatch { border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px rgba(0,229,255,0.5); }
+
+  #end-banner { display: none; flex-wrap: wrap; gap: 12px; justify-content: center;
+                align-items: stretch; margin: 0 0 20px; animation: pop 0.4s ease; }
+  @keyframes pop { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  .win-box { padding: 14px 24px; border-radius: 12px; font-weight: 700; font-size: 1.05rem;
+             display: flex; align-items: center; color: white;
+             box-shadow: 0 6px 20px rgba(34,197,94,0.35); }
+  .win-box.message { background: linear-gradient(135deg, #22c55e, #16a34a); }
+  .win-box.info { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
+                   color: var(--ink); box-shadow: none; }
+
+  .hue-picker { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: -4px 0 20px; }
+  .swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+  .swatch { width: 36px; height: 36px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.18);
+            cursor: pointer; font-size: 15px; font-weight: 800; color: rgba(5,7,13,0.8); line-height: 1;
+            display: flex; align-items: center; justify-content: center; padding: 0;
+            transition: transform 0.15s, box-shadow 0.15s; }
+  .swatch:hover { transform: scale(1.1); }
+  .swatch.sel { border-color: #fff; box-shadow: 0 0 0 3px rgba(255,255,255,0.25), 0 0 18px currentColor; transform: scale(1.12); }
+  .swatch.random { background: conic-gradient(#00e5ff, #a855f7, #ff2fb4, #ffd60a, #4ade80, #00e5ff); color: #fff; text-shadow: 0 0 4px #000; }
+  .hue-picker.nudge { animation: nudge 0.5s ease; }
+  @keyframes nudge { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-8px); } 40%,80% { transform: translateX(8px); } }
+  .hue-picker.nudge .swatch:not(.random) { box-shadow: 0 0 14px currentColor; }
+  .swatches.locked .swatch { opacity: 0.35; pointer-events: none; }
+  .swatches.locked .swatch.sel { opacity: 1; }
+  .sym-toggle { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--muted); cursor: pointer; }
+  .hunt-dot { display: inline-block; width: 0.8em; height: 0.8em; border-radius: 50%; margin-right: 6px; vertical-align: -0.05em; }
+  .score-tile.score.neg .num { color: var(--bad); }
+  .score-tile.hunt .num { font-size: clamp(0.95rem, 3.6vw, 1.2rem); }
+  .lb-dot { display: inline-block; width: 0.8em; height: 0.8em; border-radius: 50%; }
+  .lb-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .lb-table th { text-align: right; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em;
+                 color: var(--muted); font-weight: 700; padding: 4px 6px; }
+  .lb-table td { text-align: right; padding: 6px; color: var(--ink); border-top: 1px solid rgba(255,255,255,0.06);
+                 font-family: 'Courier New', monospace; }
+  .lb-table th:first-child, .lb-table td:first-child { text-align: left; }
+  .lb-table tr.new td { color: var(--good); font-weight: 700; background: rgba(74,222,128,0.08); }
+  .lb-empty { color: var(--muted); font-size: 0.85rem; }
+  .lb-clear { margin-top: 10px; background: none; border: none; color: var(--muted); font-size: 0.75rem;
+              text-decoration: underline; cursor: pointer; font-family: inherit; }
+  .rules-panel { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
+                 border-radius: 14px; padding: 20px 22px; margin-top: 24px; }
+  .rules-panel h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.06em;
+                     color: var(--accent); margin: 0 0 14px; }
+  .rules-panel ul { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 10px; }
+  .rules-panel li { font-size: 1rem; line-height: 1.5; color: var(--ink); }
+  .rules-panel em { color: var(--accent); font-style: normal; font-weight: 700; }
+</style>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BEELJ2ZRED"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true });
+</script>
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+    <!-- Header/Navbar -->
+    <header class="bg-white shadow-sm py-4">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center space-x-3 no-underline hover:opacity-80 transition-opacity">
+                <img src="../img/statmania_logo.svg" alt="Stat Mania Logo" class="w-10 h-10 rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/40x40/4f46e5/ffffff?text=Logo';">
+                <div>
+                    <div class="text-2xl font-bold text-indigo-600">Stat Mania</div>
+                    <p class="text-sm text-slate-500">Making sense of statistics</p>
+                </div>
+            </a>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="../index.html" class="text-slate-600 hover:text-indigo-600 transition duration-300">Home</a></li>
+                    <li><a href="index.html" class="text-slate-600 hover:text-indigo-600 transition duration-300">All Games</a></li>
+                    <li><a href="#cta" class="text-slate-600 hover:text-indigo-600 transition duration-300">Contact</a></li>
+                </ul>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="../index.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Home</a>
+            <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">All Games</a>
+            <a href="#cta" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Contact</a>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <canvas class="sm-canvas" aria-hidden="true"></canvas>
+        <section class="sm-hero-wrap">
+            <div class="sm-hero-inner">
+                <span class="sm-eyebrow">Stat Mania &middot; Games</span>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-4 flex items-center justify-center gap-4 sm-gradient-text">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-12 h-12 sm-hero-icon">
+                        <circle cx="12" cy="12" r="4.5" />
+                        <path d="M12 1.5v5M12 17.5v5M1.5 12h5M17.5 12h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" />
+                    </svg>
+                    Hue Hunter
+                </h1>
+                <p class="text-lg sm:text-xl sm-subtitle-sm">Pick a color, then pop only the balls of that hue &mdash; the wrong color costs you points</p>
+            </div>
+        </section>
+
+        <!-- Game Section -->
+        <section class="py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
+            <div class="container mx-auto max-w-4xl">
+                <div class="sm-card game-card p-8">
+                    <div class="toolbar">
+                        <div class="toolbar-left">
+                            <div class="select-group">
+                                <span class="select-label">Time</span>
+                                <select id="time-select" aria-label="Time limit">
+                                    <option value="20">20s</option>
+                                    <option value="30" selected>30s</option>
+                                    <option value="45">45s</option>
+                                    <option value="60">60s</option>
+                                </select>
+                            </div>
+                            <button id="start-btn" class="action start-btn" aria-label="Start game">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
+                                <span>Start</span>
+                            </button>
+                            <button id="new-game-btn" class="action">✨ New Game</button>
+                            <button id="mute-btn" class="action mute-btn" type="button" aria-label="Sound on" title="Sound on/off">🔊</button>
+                        </div>
+                    </div>
+
+                    <div class="hue-picker">
+                        <span class="select-label">Choose your color</span>
+                        <div class="swatches" id="swatches" role="group" aria-label="Target color"></div>
+                        <label class="sym-toggle"><input type="checkbox" id="sym-toggle"> Show symbols (color-blind help)</label>
+                    </div>
+
+                    <div class="game-layout">
+                        <div class="board-wrap">
+                            <canvas id="particleCanvas" width="480" height="420"></canvas>
+                        </div>
+
+                        <div class="scoreboard">
+                            <div class="score-tile timer" id="timer-tile">
+                                <div class="label" id="timer-label">Time Left</div>
+                                <div class="num" id="timer-value">30</div>
+                            </div>
+                            <div class="score-tile hunt">
+                                <div class="label">Hunting</div>
+                                <div class="num"><span class="hunt-dot" id="hunt-dot"></span><span id="hunt-name">&ndash;</span></div>
+                            </div>
+                            <div class="score-tile">
+                                <div class="label">Clicks</div>
+                                <div class="num" id="clicks-value">0</div>
+                            </div>
+                            <div class="score-tile">
+                                <div class="label">Accuracy</div>
+                                <div class="num" id="accuracy-value">&ndash;</div>
+                            </div>
+                            <div class="score-tile">
+                                <div class="label">Right Color</div>
+                                <div class="num" id="popped-value">0</div>
+                            </div>
+                            <div class="score-tile">
+                                <div class="label">Wrong Color</div>
+                                <div class="num" id="wrong-value">0</div>
+                            </div>
+                            <div class="score-tile">
+                                <div class="label">Target Score</div>
+                                <div class="num" id="max-value">0</div>
+                                <div class="sub">clicks &times; 20</div>
+                            </div>
+                            <div class="score-tile score" id="score-tile">
+                                <div class="label">Achieved Score</div>
+                                <div class="num" id="score-value">0</div>
+                            </div>
+                            <div class="score-tile index">
+                                <div class="label">Achievement Index</div>
+                                <div class="num" id="index-value">&ndash;</div>
+                                <div class="sub">achieved &divide; target (never below 0%)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-grid">
+                        <div class="rules-panel" style="margin-top: 0;">
+                                <h3>Size &amp; Points</h3>
+                                <div class="legend" id="legend"></div>
+                            </div>
+                        <div class="rules-panel">
+                                <h3>Top 10 &middot; <span id="lb-time">30s</span></h3>
+                                <div id="leaderboard"></div>
+                                <button class="lb-clear" id="lb-clear" type="button">Clear this board</button>
+                            </div>
+                    </div>
+
+                    <div class="rules-panel">
+                        <h3>How to Play</h3>
+                        <ul>
+                            <li><em>Choose the color you'll hunt</em> (or pick <em>?</em> for a random one), then press Start or click the board. Balls of six colors and 20 sizes drift around.</li>
+                            <li>Pop a ball of <em>your color</em> to score its size value &mdash; <em>smaller balls are worth more</em> (1&ndash;20 points), but they're faster and harder to hit.</li>
+                            <li>Pop a ball of <em>any other color</em> and you <em>lose half</em> its points (rounded up). Think before you click &mdash; a tiny wrong ball still hurts.</li>
+                            <li>Clicking empty space scores <em>0 points</em> but still counts as a click. Every click could have earned 20 points, so <em>Target Score = clicks &times; 20</em> and <em>Achievement Index = Achieved Score &divide; Target Score</em> (shown as 0% if your score is negative).</li>
+                            <li>Balls fade away on their own after a few seconds, and new ones keep arriving, with about a third of them in your color.</li>
+                            <li>Need a break? Press <em>Pause</em> (or the space bar) &mdash; the timer and balls freeze, and the round also pauses if you switch tabs.</li>
+                            <li>Your top 10 scores for each time limit are saved in this browser.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action Section -->
+        <section id="cta" class="sm-section-dark py-16 px-4 sm:px-6 lg:px-8 text-center">
+            <div class="container mx-auto max-w-3xl">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-6" style="color:#fff">Explore Other Games</h2>
+                <p class="text-lg sm:text-xl mb-8 sm-subtitle-sm">Check out all available games</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="index.html" class="sm-btn sm-btn-primary">All Games</a>
+                    <a href="#" class="sm-btn sm-btn-ghost">Back to Top</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-white py-8 px-4 sm:px-6 lg:px-8 text-center mt-auto" style="border-top:1px solid rgba(255,255,255,0.08)">
+        <div class="container mx-auto">
+            <p class="mb-4">&copy; <span id="copyright-year">2026</span> Stat Mania. All rights reserved.</p>
+            <div class="flex justify-center space-x-6">
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Privacy Policy</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Terms of Service</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Sitemap</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>document.getElementById("copyright-year").textContent = new Date().getFullYear();</script>
+
+    <script>
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+    </script>
+    <script src="../starfield.js"></script>
+
+<script>
+/* ============================================================
+   PARTICLE MODEL
+   20 size tiers, 1-20 points. Bigger particles (low tier) are
+   worth fewer points and move slower; smaller ones (high tier)
+   are worth more and move faster - a risk/reward tradeoff.
+   ============================================================ */
+const MAX_TIER = 20;
+const RADIUS_MAX = 32, RADIUS_MIN = 7;
+const TARGET_COUNT = 15;
+const BASE_SPEED = 0.028;     // px/ms at tier 1
+const SPEED_TIER_BONUS = 0.9; // extra fraction of BASE_SPEED added by tier 20
+const KICK_MIN_MS = 700, KICK_MAX_MS = 2200;
+const MIN_LIFE_MS = 4000, MAX_LIFE_MS = 9000;
+const SPAWN_FADE_MS = 250, DEATH_FADE_MS = 450;
+
+function radiusForTier(tier) {
+    return RADIUS_MAX - ((tier - 1) / (MAX_TIER - 1)) * (RADIUS_MAX - RADIUS_MIN);
+}
+
+// Six clearly different hues, each with a symbol for color-blind players.
+const PALETTE = [
+    { name: "Cyan",    hex: "#00e5ff", glyph: "●" },
+    { name: "Magenta", hex: "#ff2fb4", glyph: "○" },
+    { name: "Yellow",  hex: "#ffd60a", glyph: "+" },
+    { name: "Green",   hex: "#4ade80", glyph: "◆" },
+    { name: "Orange",  hex: "#ff8a1f", glyph: "▲" },
+    { name: "Violet",  hex: "#a855f7", glyph: "■" },
+];
+const TARGET_SHARE = 0.3, MIN_TARGETS = 3;
+const WRONG_FACTOR = 0.5;   // a wrong-color pop costs half the ball's value (rounded up)
+const penaltyFor = (points) => Math.ceil(points * WRONG_FACTOR);
+
+const canvas = document.getElementById("particleCanvas");
+const ctx = canvas.getContext("2d");
+const timeSelect = document.getElementById("time-select");
+const timerTileEl = document.getElementById("timer-tile");
+const timerLabelEl = document.getElementById("timer-label");
+const timerValueEl = document.getElementById("timer-value");
+const clicksValueEl = document.getElementById("clicks-value");
+const maxValueEl = document.getElementById("max-value");
+const indexValueEl = document.getElementById("index-value");
+const leaderboardEl = document.getElementById("leaderboard");
+const lbTimeEl = document.getElementById("lb-time");
+const wrongValueEl = document.getElementById("wrong-value");
+const scoreTileEl = document.getElementById("score-tile");
+const swatchesEl = document.getElementById("swatches");
+const huntDotEl = document.getElementById("hunt-dot");
+const huntNameEl = document.getElementById("hunt-name");
+const symToggle = document.getElementById("sym-toggle");
+const scoreValueEl = document.getElementById("score-value");
+const poppedValueEl = document.getElementById("popped-value");
+const accuracyValueEl = document.getElementById("accuracy-value");
+const legendEl = document.getElementById("legend");
+const startBtn = document.getElementById("start-btn");
+const newGameBtn = document.getElementById("new-game-btn");
+
+const state = {
+    target: null, choice: null, symbols: false, wrong: 0,
+    running: false, idle: true, ended: false, paused: false, endedAt: 0, timeLeft: 30, timerId: null,
+    score: 0, popped: 0, clicks: 0,
+    particles: [], effects: [],
+    rafId: null, lastFrameTime: null,
+    nextId: 1,
+};
+
+/* ---------- Sound (Web Audio synth - no files to load) ---------- */
+let audioCtx = null;
+let muted = false;
+try { muted = localStorage.getItem("hueHunter.muted") === "1"; } catch (e) {}
+function getAudio() {
+    if (!audioCtx) {
+        try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; }
+    }
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    return audioCtx;
+}
+function tone(freq, dur, { type = "sine", vol = 0.12, slideTo = null, delay = 0 } = {}) {
+    if (muted) return;
+    const ac = getAudio();
+    if (!ac) return;
+    const t0 = ac.currentTime + delay;
+    const osc = ac.createOscillator(), gain = ac.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t0);
+    if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, t0 + dur);
+    gain.gain.setValueAtTime(vol, t0);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.connect(gain).connect(ac.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.02);
+}
+// Smaller (higher-point) particles pop at a higher pitch.
+function soundPop(points) {
+    const f = 380 + points * 45;
+    tone(f, 0.12, { type: "triangle", vol: 0.16, slideTo: f * 0.45 });
+    tone(f * 2, 0.05, { type: "sine", vol: 0.05 });
+}
+function soundWrong() {
+    tone(150, 0.28, { type: "sawtooth", vol: 0.1, slideTo: 60 });
+    tone(95, 0.28, { type: "square", vol: 0.05, slideTo: 50 });
+}
+function soundMiss() { tone(140, 0.07, { type: "square", vol: 0.04, slideTo: 90 }); }
+function soundWarning() { tone(900, 0.11, { type: "square", vol: 0.07 }); }
+function soundTimeUp() {
+    tone(520, 0.22, { type: "sawtooth", vol: 0.09, slideTo: 300 });
+    tone(330, 0.22, { type: "sawtooth", vol: 0.09, slideTo: 180, delay: 0.24 });
+    tone(200, 0.5, { type: "sawtooth", vol: 0.1, slideTo: 70, delay: 0.48 });
+}
+const muteBtn = document.getElementById("mute-btn");
+function renderMute() {
+    muteBtn.textContent = muted ? "🔇" : "🔊";
+    muteBtn.setAttribute("aria-label", muted ? "Sound off" : "Sound on");
+}
+muteBtn.addEventListener("click", () => {
+    muted = !muted;
+    try { localStorage.setItem("hueHunter.muted", muted ? "1" : "0"); } catch (e) {}
+    renderMute();
+    if (!muted) soundPop(10);
+});
+renderMute();
+
+function renderHunt() {
+    if (state.choice === null) {
+        huntDotEl.style.background = "rgba(255,255,255,0.18)";
+        huntNameEl.textContent = "Not chosen";
+    } else if (state.target === null) {
+        huntDotEl.style.background = "conic-gradient(#00e5ff, #a855f7, #ff2fb4, #ffd60a, #4ade80, #00e5ff)";
+        huntNameEl.textContent = "Random";
+    } else {
+        huntDotEl.style.background = PALETTE[state.target].hex;
+        huntNameEl.textContent = PALETTE[state.target].name;
+    }
+}
+
+function renderSwatches() {
+    const btns = PALETTE.map((c, i) => `<button type="button" class="swatch${state.choice === i ? " sel" : ""}"
+        data-i="${i}" style="background:${c.hex};color:${c.hex}" aria-label="${c.name}" title="${c.name}"><span style="color:rgba(5,7,13,0.8)">${state.symbols ? c.glyph : ""}</span></button>`);
+    btns.push(`<button type="button" class="swatch random${state.choice === "random" ? " sel" : ""}"
+        data-i="random" aria-label="Random color" title="Random color">?</button>`);
+    swatchesEl.innerHTML = btns.join("");
+}
+swatchesEl.addEventListener("click", (e) => {
+    const b = e.target.closest(".swatch");
+    if (!b || state.running) return;
+    state.choice = b.dataset.i === "random" ? "random" : parseInt(b.dataset.i, 10);
+    renderSwatches();
+    goIdle();
+});
+try {
+    state.symbols = localStorage.getItem("hueHunter.symbols") === "1";
+} catch (e) {}
+symToggle.checked = state.symbols;
+symToggle.addEventListener("change", () => {
+    state.symbols = symToggle.checked;
+    try { localStorage.setItem("hueHunter.symbols", state.symbols ? "1" : "0"); } catch (e) {}
+    renderSwatches();
+});
+renderSwatches();
+
+function populateLegend() {
+    const sampleTiers = [1, 6, 11, 16, 20];
+    legendEl.innerHTML = sampleTiers.map(tier => {
+        const r = radiusForTier(tier);
+        const label = tier === 20 ? "20 pts (tiny, fast)" :
+                      tier === 1 ? "1 pt (huge, slow)" : `${tier} pts`;
+        return `
+            <div class="legend-row">
+                <span class="legend-swatch-wrap"><span class="legend-swatch" style="width:${r}px;height:${r}px"></span></span>
+                <span>${label}</span>
+            </div>
+        `;
+    }).join("");
+}
+
+function pickColorIdx() {
+    const T = state.target;
+    if (T === null) return Math.floor(Math.random() * PALETTE.length);
+    const have = state.particles.filter(p => p.colorIdx === T).length;
+    if (have < MIN_TARGETS || Math.random() < TARGET_SHARE) return T;
+    let i = Math.floor(Math.random() * (PALETTE.length - 1));
+    return i >= T ? i + 1 : i;
+}
+
+function spawnParticle() {
+    const colorIdx = pickColorIdx();
+    const tier = 1 + Math.floor(Math.random() * MAX_TIER);
+    const radius = radiusForTier(tier);
+    const x = radius + Math.random() * (canvas.width - radius * 2);
+    const y = radius + Math.random() * (canvas.height - radius * 2);
+    const angle = Math.random() * Math.PI * 2;
+    const speed = (BASE_SPEED + (tier / MAX_TIER) * BASE_SPEED * SPEED_TIER_BONUS) * (0.7 + Math.random() * 0.6);
+    const now = performance.now();
+    return {
+        id: state.nextId++,
+        tier, radius, points: tier, colorIdx, color: PALETTE[colorIdx].hex,
+        x, y,
+        vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+        nextKickAt: now + KICK_MIN_MS + Math.random() * (KICK_MAX_MS - KICK_MIN_MS),
+        age: 0,
+        lifespan: MIN_LIFE_MS + Math.random() * (MAX_LIFE_MS - MIN_LIFE_MS),
+    };
+}
+
+function alphaFor(particle) {
+    if (particle.age < SPAWN_FADE_MS) return particle.age / SPAWN_FADE_MS;
+    const timeLeftInLife = particle.lifespan - particle.age;
+    if (timeLeftInLife < DEATH_FADE_MS) return Math.max(0, timeLeftInLife / DEATH_FADE_MS);
+    return 1;
+}
+
+function achievementIndex() {
+    return state.clicks ? Math.max(0, Math.round((state.score / (state.clicks * MAX_TIER)) * 1000) / 10) : 0;
+}
+
+/* ---------- Top-10 leaderboard (localStorage, one board per time limit) ---------- */
+const LB_SIZE = 10;
+const lbKey = (secs) => `hueHunter.top10.${secs}`;
+function loadBoard(secs) {
+    try { const a = JSON.parse(localStorage.getItem(lbKey(secs))); return Array.isArray(a) ? a : []; }
+    catch (e) { return []; }
+}
+function saveBoard(secs, board) {
+    try { localStorage.setItem(lbKey(secs), JSON.stringify(board)); } catch (e) {}
+}
+// Returns the new entry's rank (0-based) or -1 if it didn't make the top 10.
+function submitScore(secs) {
+    if (state.score <= 0) return -1;
+    const entry = { score: state.score, clicks: state.clicks, hits: state.popped, color: state.target,
+                    index: achievementIndex(), t: Date.now() };
+    const board = loadBoard(secs);
+    board.push(entry);
+    // Higher score first; ties: higher index, then the older entry keeps its place.
+    board.sort((a, b) => b.score - a.score || b.index - a.index || a.t - b.t);
+    const kept = board.slice(0, LB_SIZE);   // older/lower scores fall off
+    saveBoard(secs, kept);
+    return kept.indexOf(entry);
+}
+function renderBoard(secs, highlight = -1) {
+    lbTimeEl.textContent = `${secs}s`;
+    const board = loadBoard(secs);
+    if (!board.length) { leaderboardEl.innerHTML = '<div class="lb-empty">No scores yet - go hunting!</div>'; return; }
+    leaderboardEl.innerHTML = `<table class="lb-table"><thead><tr>
+        <th>#</th><th>Hue</th><th>Score</th><th>Clicks</th><th>Hits</th><th>Index</th></tr></thead><tbody>` +
+        board.map((e, i) => `<tr class="${i === highlight ? "new" : ""}"><td>${i + 1}</td><td><span class="lb-dot" style="background:${PALETTE[e.color] ? PALETTE[e.color].hex : "#888"}"></span></td><td>${e.score}</td>
+        <td>${e.clicks}</td><td>${e.hits}</td><td>${e.index}%</td></tr>`).join("") + "</tbody></table>";
+}
+
+function updateStats() {
+    scoreValueEl.textContent = String(state.score);
+    poppedValueEl.textContent = String(state.popped);
+    wrongValueEl.textContent = String(state.wrong);
+    scoreTileEl.classList.toggle("neg", state.score < 0);
+    clicksValueEl.textContent = String(state.clicks);
+    accuracyValueEl.textContent = state.clicks
+        ? `${Math.round((state.popped / state.clicks) * 100)}%`
+        : "–";
+    maxValueEl.textContent = String(state.clicks * MAX_TIER);
+    indexValueEl.textContent = state.clicks ? `${achievementIndex()}%` : "–";
+}
+
+function spawnPopEffect(x, y, color) {
+    state.effects.push({ type: "pop", x, y, color, age: 0, duration: 320 });
+}
+function spawnPopup(x, y, text, good, bad = false) {
+    state.effects.push({ type: "popup", x, y, text, good, bad, age: 0, duration: 650 });
+}
+
+function handleClick(x, y) {
+    if (state.paused) { resumeGame(); return; }
+    if (state.idle) { newGame(); return; }   // first click on the idle board starts the round
+    // After time's up, a click starts a fresh round (short guard so end-of-round clicks don't restart it).
+    if (state.ended && performance.now() - state.endedAt > 800) { newGame(); return; }
+    if (!state.running) return;
+    state.clicks++;
+
+    // Check topmost (last-drawn / last-in-array) particles first.
+    let hitIndex = -1;
+    for (let i = state.particles.length - 1; i >= 0; i--) {
+        const p = state.particles[i];
+        const dx = x - p.x, dy = y - p.y;
+        if (Math.sqrt(dx * dx + dy * dy) <= p.radius) { hitIndex = i; break; }
+    }
+
+    if (hitIndex === -1) {
+        spawnPopup(x, y, "0", false);
+        soundMiss();
+    } else {
+        const p = state.particles[hitIndex];
+        state.particles.splice(hitIndex, 1);
+        if (p.colorIdx === state.target) {
+            state.popped++;
+            state.score += p.points;
+            spawnPopEffect(p.x, p.y, p.color);
+            soundPop(p.points);
+            spawnPopup(p.x, p.y, `+${p.points}`, true);
+        } else {
+            const pen = penaltyFor(p.points);
+            state.wrong++;
+            state.score -= pen;
+            spawnPopEffect(p.x, p.y, "#ff6b6b");
+            soundWrong();
+            spawnPopup(p.x, p.y, `\u2212${pen}`, false, true);
+        }
+    }
+    updateStats();
+}
+
+function pointerToCanvas(evt) {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+    const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+    return {
+        x: (clientX - rect.left) * (canvas.width / rect.width),
+        y: (clientY - rect.top) * (canvas.height / rect.height),
+    };
+}
+canvas.addEventListener("click", (evt) => {
+    const { x, y } = pointerToCanvas(evt);
+    handleClick(x, y);
+});
+
+function updateParticle(p, dt, now) {
+    if (now >= p.nextKickAt) {
+        const currentAngle = Math.atan2(p.vy, p.vx);
+        const turn = (Math.random() - 0.5) * (Math.PI * 0.9);
+        const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+        const angle = currentAngle + turn;
+        p.vx = Math.cos(angle) * speed;
+        p.vy = Math.sin(angle) * speed;
+        p.nextKickAt = now + KICK_MIN_MS + Math.random() * (KICK_MAX_MS - KICK_MIN_MS);
+    }
+
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+
+    if (p.x - p.radius < 0) { p.x = p.radius; p.vx = Math.abs(p.vx); }
+    else if (p.x + p.radius > canvas.width) { p.x = canvas.width - p.radius; p.vx = -Math.abs(p.vx); }
+    if (p.y - p.radius < 0) { p.y = p.radius; p.vy = Math.abs(p.vy); }
+    else if (p.y + p.radius > canvas.height) { p.y = canvas.height - p.radius; p.vy = -Math.abs(p.vy); }
+
+    p.age += dt;
+}
+
+function drawParticle(p) {
+    const alpha = alphaFor(p);
+    if (alpha <= 0) return;
+    ctx.beginPath();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = p.color;
+    ctx.shadowColor = p.color;
+    ctx.shadowBlur = 10;
+    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    if (state.symbols) drawSymbol(p, alpha);
+    ctx.globalAlpha = 1;
+}
+
+function drawSymbol(p, alpha) {
+    const r = p.radius * 0.45, x = p.x, y = p.y;
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = ctx.strokeStyle = "rgba(5,7,13,0.8)";
+    ctx.lineWidth = Math.max(1.5, p.radius * 0.14);
+    ctx.beginPath();
+    switch (p.colorIdx) {
+        case 0: ctx.arc(x, y, r * 0.8, 0, Math.PI * 2); ctx.fill(); break;
+        case 1: ctx.arc(x, y, r, 0, Math.PI * 2); ctx.stroke(); break;
+        case 2: ctx.moveTo(x - r, y); ctx.lineTo(x + r, y); ctx.moveTo(x, y - r); ctx.lineTo(x, y + r); ctx.stroke(); break;
+        case 3: ctx.moveTo(x, y - r); ctx.lineTo(x + r, y); ctx.lineTo(x, y + r); ctx.lineTo(x - r, y); ctx.closePath(); ctx.fill(); break;
+        case 4: ctx.moveTo(x, y - r); ctx.lineTo(x + r, y + r * 0.8); ctx.lineTo(x - r, y + r * 0.8); ctx.closePath(); ctx.fill(); break;
+        default: ctx.rect(x - r * 0.8, y - r * 0.8, r * 1.6, r * 1.6); ctx.fill();
+    }
+}
+
+function drawEffects(dt) {
+    for (const fx of state.effects) {
+        const t = Math.min(fx.age / fx.duration, 1);
+        if (fx.type === "pop") {
+            const r = 4 + t * 22;
+            ctx.beginPath();
+            ctx.fillStyle = fx.color;
+            ctx.globalAlpha = 1 - t;
+            ctx.arc(fx.x, fx.y, r, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+        } else {
+            ctx.font = `700 17px ${HUD_FONT}`;
+            ctx.textBaseline = "middle";
+            ctx.textAlign = "center";
+            ctx.fillStyle = fx.good ? "#4ade80" : fx.bad ? "#ff6b6b" : "#9aa4c2";
+            ctx.globalAlpha = 1 - t;
+            ctx.fillText(fx.text, fx.x, fx.y - t * 28);
+            ctx.globalAlpha = 1;
+            ctx.textBaseline = "alphabetic";
+        }
+    }
+}
+
+function gameLoop(now) {
+    const dt = state.lastFrameTime === null ? 16 : now - state.lastFrameTime;
+    state.lastFrameTime = now;
+
+    if (state.running && !state.paused) {
+        for (const p of state.particles) updateParticle(p, dt, now);
+        state.particles = state.particles.filter(p => p.age < p.lifespan);
+        while (state.particles.length < TARGET_COUNT) state.particles.push(spawnParticle());
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const p of state.particles) drawParticle(p);
+    if (state.idle || state.ended || state.paused) drawOverlay();
+    if (!state.paused) for (const fx of state.effects) fx.age += dt;
+    state.effects = state.effects.filter(fx => fx.age < fx.duration);
+    drawEffects(dt);
+
+    if (state.running || state.effects.length || state.idle || state.ended || state.paused) {
+        state.rafId = requestAnimationFrame(gameLoop);
+    } else {
+        state.rafId = null;
+        state.lastFrameTime = null;
+    }
+}
+
+/* Centered, neon "HUD panel" used for every message shown on the board. */
+const HUD_FONT = "'Orbitron', 'Inter', sans-serif";
+function drawPanel(title, sub) {
+    const cx = canvas.width / 2, cy = canvas.height / 2;
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = `900 30px ${HUD_FONT}`;
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "4px";
+    const tw = ctx.measureText(title).width;
+    ctx.font = `500 13px ${HUD_FONT}`;
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "2px";
+    const sw = ctx.measureText(sub).width;
+    const w = Math.min(canvas.width - 24, Math.max(tw, sw) + 64), h = 92;
+    const x = cx - w / 2, y = cy - h / 2;
+
+    ctx.fillStyle = "rgba(5,9,22,0.82)";
+    ctx.beginPath(); ctx.roundRect(x, y, w, h, 18); ctx.fill();
+
+    const g = ctx.createLinearGradient(x, y, x + w, y + h);
+    g.addColorStop(0, "#00e5ff"); g.addColorStop(0.5, "#a855f7"); g.addColorStop(1, "#ff2fb4");
+    ctx.lineWidth = 2; ctx.strokeStyle = g;
+    ctx.shadowColor = "#a855f7"; ctx.shadowBlur = 18;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    ctx.font = `900 30px ${HUD_FONT}`;
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "4px";
+    const tg = ctx.createLinearGradient(cx - tw / 2, 0, cx + tw / 2, 0);
+    tg.addColorStop(0, "#00e5ff"); tg.addColorStop(1, "#ff2fb4");
+    ctx.fillStyle = tg;
+    ctx.shadowColor = "#00e5ff"; ctx.shadowBlur = 12;
+    ctx.fillText(title, cx + 2, cy - 14);   // +2 offsets trailing letter-spacing
+    ctx.shadowBlur = 0;
+
+    ctx.font = `500 13px ${HUD_FONT}`;
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "2px";
+    ctx.fillStyle = "#c5cee8";
+    ctx.fillText(sub, cx + 1, cy + 24);
+    ctx.restore();
+}
+
+function drawOverlay() {
+    if (state.paused) drawPanel("PAUSED", "CLICK OR PRESS SPACE TO RESUME");
+    else if (state.ended) drawPanel("TIME'S UP", "CLICK TO PLAY AGAIN");
+    else if (state.idle && state.choice === null) drawPanel("PICK A COLOR", "CHOOSE A SWATCH ABOVE TO BEGIN");
+    else if (state.idle) drawPanel("READY", "PRESS START OR CLICK TO PLAY");
+}
+
+function setStartButton() {
+    const label = state.paused ? "Resume" : state.running ? "Pause" : "Start";
+    const icon = state.running && !state.paused
+        ? '<path d="M8 5v14M16 5v14"/>'
+        : '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>';
+    startBtn.querySelector("span").textContent = label;
+    startBtn.querySelector("svg").innerHTML = icon;
+    startBtn.setAttribute("aria-label", label + " game");
+}
+
+function pauseGame() {
+    if (!state.running || state.paused) return;
+    state.paused = true;
+    clearInterval(state.timerId);
+    setStartButton();
+}
+function resumeGame() {
+    if (!state.paused) return;
+    state.paused = false;
+    state.timerId = setInterval(tick, 1000);
+    state.lastFrameTime = null;
+    setStartButton();
+}
+
+function ensureGameLoop() {
+    if (state.rafId) return;
+    state.lastFrameTime = null;
+    state.rafId = requestAnimationFrame(gameLoop);
+}
+
+function tick() {
+    state.timeLeft--;
+    timerValueEl.textContent = String(state.timeLeft);
+    timerTileEl.classList.toggle("low", state.timeLeft <= 5);
+    if (state.timeLeft <= 0) endRound();
+    else if (state.timeLeft <= 5) soundWarning();
+}
+
+function nudgePicker() {
+    const picker = document.querySelector(".hue-picker");
+    picker.classList.remove("nudge");
+    void picker.offsetWidth;
+    picker.classList.add("nudge");
+    soundMiss();
+}
+
+function newGame() {
+    if (state.choice === null) { nudgePicker(); return; }   // the player must pick a color first
+    clearInterval(state.timerId);
+    if (!muted) getAudio();   // unlock audio inside the user gesture
+    state.running = true;
+    state.paused = false;
+    state.idle = false;
+    state.ended = false;
+    setStartButton();
+    state.score = 0;
+    state.popped = 0;
+    state.wrong = 0;
+    state.clicks = 0;
+    state.effects = [];
+    state.particles = [];
+    state.target = state.choice === "random" ? Math.floor(Math.random() * PALETTE.length) : state.choice;
+    renderHunt();
+    swatchesEl.classList.add("locked");
+    for (let i = 0; i < TARGET_COUNT; i++) state.particles.push(spawnParticle());
+    state.timeLeft = parseInt(timeSelect.value, 10);
+    timerTileEl.classList.remove("low", "up");
+    timerLabelEl.style.display = "";
+    timerValueEl.textContent = String(state.timeLeft);
+    canvas.classList.remove("locked");
+    updateStats();
+    renderBoard(parseInt(timeSelect.value, 10));
+    ensureGameLoop();
+    state.timerId = setInterval(tick, 1000);
+}
+
+function endRound() {
+    clearInterval(state.timerId);
+    state.running = false;
+    state.ended = true;
+    state.endedAt = performance.now();
+    setStartButton();
+    canvas.classList.add("locked");
+    timerTileEl.classList.remove("low");
+    timerTileEl.classList.add("up");
+    timerLabelEl.style.display = "none";
+    timerValueEl.textContent = "Time's UP!";
+    soundTimeUp();
+    swatchesEl.classList.remove("locked");
+    const secs = parseInt(timeSelect.value, 10);
+    const rank = submitScore(secs);
+    renderBoard(secs, rank);
+}
+
+function goIdle() {
+    clearInterval(state.timerId);
+    state.running = false;
+    state.idle = true;
+    state.paused = false;
+    state.ended = false;
+    setStartButton();
+    state.score = state.popped = state.clicks = state.wrong = 0;
+    state.target = (state.choice === null || state.choice === "random") ? null : state.choice;
+    renderHunt();
+    swatchesEl.classList.remove("locked");
+    state.particles = [];
+    for (let i = 0; i < TARGET_COUNT; i++) {
+        const p = spawnParticle();
+        p.age = SPAWN_FADE_MS;   // skip the fade-in so idle particles are fully visible
+        state.particles.push(p);
+    }
+    state.effects = [];
+    state.timeLeft = parseInt(timeSelect.value, 10);
+    timerValueEl.textContent = String(state.timeLeft);
+    timerTileEl.classList.remove("low", "up");
+    timerLabelEl.style.display = "";
+    canvas.classList.remove("locked");
+    updateStats();
+    renderBoard(state.timeLeft);
+    ensureGameLoop();
+}
+
+startBtn.addEventListener("click", () => {
+    if (state.paused) resumeGame();
+    else if (state.running) pauseGame();
+    else newGame();
+});
+document.addEventListener("keydown", (e) => {
+    if (e.code !== "Space" || /^(SELECT|INPUT|TEXTAREA|BUTTON)$/.test(e.target.tagName)) return;
+    if (state.paused) { e.preventDefault(); resumeGame(); }
+    else if (state.running) { e.preventDefault(); pauseGame(); }
+});
+document.addEventListener("visibilitychange", () => { if (document.hidden) pauseGame(); });
+newGameBtn.addEventListener("click", newGame);
+timeSelect.addEventListener("change", goIdle);
+document.getElementById("lb-clear").addEventListener("click", () => {
+    const secs = parseInt(timeSelect.value, 10);
+    if (confirm(`Clear the saved ${secs}s Top 10?`)) { saveBoard(secs, []); renderBoard(secs); }
+});
+
+populateLegend();
+goIdle();
+</script>
+<script src="css/nav-hide.js"></script>
+</body>
+</html>
