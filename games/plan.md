@@ -259,3 +259,46 @@ color-blind players.
 - Not built yet: hard mode where the target color changes every ~10 s.
 - Leaderboard is per time limit only (not per color); the colors differ
   in appearance, not in difficulty.
+
+## Archery Drift (built: games/archery-drift.html)
+
+Archery game: draw a bow and shoot a visible arrow at a target sliding
+along a vertical rail. The arrow takes ~0.6-1 s to arrive and follows a
+gravity arc, so you must aim above and **lead** the target.
+
+**Controls (mouse and touch):** the crosshair marks where the arrow should
+*land*; the bow angle is solved ballistically so the arc passes through it
+(aiming at the target is not undone by gravity drop - the challenge is
+*leading* the moving target). Hold to draw (power ring fills over 1 s; a
+fuller draw = faster, flatter arrow = less lead), release to shoot. One
+arrow in flight at a time. While drawing, a dotted arc shows the path.
+(First version aimed the bow directly at the pointer, so shots always
+landed low and players over-aimed upward; changed after play-testing.)
+
+**Arrow and target**
+- Arrow is a real object: rotates along its path, fading trail, sticks into
+  the target (and moves with it) or the ground; misses fly on.
+- Side-on target with 10 rings worth 1-10 points; a miss/short = 0.
+  Hit position is measured when the arrow crosses the target plane, so
+  timing matters as much as aim.
+- Target speeds up every 3 arrows and gains a second wobble frequency.
+
+**Round and scoring:** 10 / 15 / 20 arrows, no timer (pause supported).
+Target Score = shots x 10, Achieved Score = points, Achievement Index =
+achieved / target. Scoreboard: Arrows Left, Shots, Hits, Accuracy,
+Bullseyes, Avg Ring, Target Score, Achieved Score, Achievement Index.
+Top 10 per arrow count in localStorage (`archeryDrift.top10.<n>`).
+
+**Statistics hook:** after the round, a "Your shot group" dot plot shows
+each arrow's vertical offset from the bullseye, the mean (dashed) and a
++-1 SD band, with text on **bias** (average offset, in rings) vs
+**precision** (scatter) and a hint on what to fix. Arrows that fell short
+are excluded and counted.
+
+**Shared shell:** same layout/navbar behavior, neon HUD messages, pause
+(button, space, tab switch), click-to-start / play again, Google
+Analytics, mute toggle. New synthesized sounds: bow twang + whoosh on
+release, thunk on hit, chime on bullseye, jingle at round end.
+
+**Ideas not built yet:** wind gauge nudging the arrow sideways, a decoy
+target that costs points, a 2-D (front-view) group plot.
