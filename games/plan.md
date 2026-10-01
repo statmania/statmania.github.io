@@ -289,11 +289,8 @@ achieved / target. Scoreboard: Arrows Left, Shots, Hits, Accuracy,
 Bullseyes, Avg Ring, Target Score, Achieved Score, Achievement Index.
 Top 10 per arrow count in localStorage (`archeryDrift.top10.<n>`).
 
-**Statistics hook:** after the round, a "Your shot group" dot plot shows
-each arrow's vertical offset from the bullseye, the mean (dashed) and a
-+-1 SD band, with text on **bias** (average offset, in rings) vs
-**precision** (scatter) and a hint on what to fix. Arrows that fell short
-are excluded and counted.
+**Removed:** an end-of-round "Your shot group" dot plot (bias vs precision)
+was built first and then dropped as unnecessary.
 
 **Shared shell:** same layout/navbar behavior, neon HUD messages, pause
 (button, space, tab switch), click-to-start / play again, Google
@@ -301,4 +298,4 @@ Analytics, mute toggle. New synthesized sounds: bow twang + whoosh on
 release, thunk on hit, chime on bullseye, jingle at round end.
 
 **Ideas not built yet:** wind gauge nudging the arrow sideways, a decoy
-target that costs points, a 2-D (front-view) group plot.
+target that costs points.

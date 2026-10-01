@@ -131,17 +131,14 @@
   .rules-panel em { color: var(--accent); font-style: normal; font-weight: 700; }
 
   /* ---- Archery Drift ---- */
-  #arrowCanvas { display: block; width: 100%; height: auto; aspect-ratio: 600 / 380; border-radius: 10px; background: #05070d;
+  #arrowCanvas { display: block; width: 100%; height: auto; aspect-ratio: 600 / 480; border-radius: 10px; background: #05070d;
                  border: 1px solid rgba(255,255,255,0.1); touch-action: none; cursor: crosshair; user-select: none; -webkit-user-select: none; }
   #arrowCanvas.locked { cursor: pointer; opacity: 0.6; }
-  .game-layout.wide { grid-template-columns: minmax(0, 1fr) 300px; }
-  .game-layout.wide .board-wrap { justify-content: stretch; }
+  .game-layout.wide { grid-template-columns: minmax(0, 1fr) 300px; align-items: stretch; }
+  .game-layout.wide .board-wrap { justify-content: stretch; align-items: center; }
   @media (max-width: 900px) { .game-layout.wide { grid-template-columns: minmax(0, 1fr); } }
   .ring-row { display: flex; align-items: center; gap: 12px; font-size: 0.85rem; color: var(--ink); }
   .ring-swatch { width: 34px; height: 14px; border-radius: 7px; flex: none; }
-  #group-chart svg { width: 100%; max-width: 520px; height: auto; display: block; margin: 0 auto; }
-  #group-text { margin: 12px 0 0; font-size: 0.95rem; line-height: 1.5; color: var(--ink); }
-  #group-text em { color: var(--accent); font-style: normal; font-weight: 700; }
 </style>
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BEELJ2ZRED"></script>
@@ -228,7 +225,7 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true });
 
                     <div class="game-layout wide">
                         <div class="board-wrap">
-                            <canvas id="arrowCanvas" width="600" height="380"></canvas>
+                            <canvas id="arrowCanvas" width="600" height="480"></canvas>
                         </div>
 
                         <div class="scoreboard">
@@ -274,12 +271,6 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true });
                         </div>
                     </div>
 
-                    <div class="rules-panel" id="group-panel" style="display:none">
-                        <h3>Your shot group</h3>
-                        <div id="group-chart"></div>
-                        <p id="group-text"></p>
-                    </div>
-
                     <div class="info-grid">
                         <div class="rules-panel">
                             <h3>Rings &amp; Points</h3>
@@ -300,7 +291,6 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true });
                             <li>The rings are worth <em>1&ndash;10 points</em>, with the center worth 10. A miss scores 0. Only one arrow can be in flight at a time.</li>
                             <li>The target <em>speeds up</em> every 3 arrows and starts to wobble.</li>
                             <li>Every arrow could have earned 10 points, so <em>Target Score = shots &times; 10</em> and <em>Achievement Index = Achieved Score &divide; Target Score</em>.</li>
-                            <li>When the round ends you see <em>where each arrow landed</em>: your average offset is your <em>bias</em> (aim) and the scatter is your <em>precision</em> (steadiness).</li>
                             <li>Need a break? Press <em>Pause</em> (or the space bar). The round also pauses if you switch tabs. Your top 10 for each arrow count is saved in this browser.</li>
                         </ul>
                     </div>
@@ -350,10 +340,10 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true });
    vertical rail on the right. The arrow follows a gravity arc.
    Units: pixels and seconds. Angles: up = positive.
    ============================================================ */
-const W = 600, H = 380, GROUND = 346;
-const PIVOT = { x: 72, y: 252 };
+const W = 600, H = 480, GROUND = 446;
+const PIVOT = { x: 72, y: 340 };
 const TX = 520, R = 64, RX = 20;           // target plane x, radius (px), perspective half-width
-const CY = 173, SWEEP = 95;                // target centre / sweep amplitude
+const CY = 223, SWEEP = 140;                // target centre / sweep amplitude
 const GRAVITY = 450, VMIN = 600, VMAX = 860, CHARGE_S = 1.0;   // even a quick tap reaches the target; holding makes the arrow faster (less drop, less lead)
 const ANG_MIN = -25 * Math.PI / 180, ANG_MAX = 62 * Math.PI / 180;
 const ARROW_LEN = 40, STUCK_LEN = 28, MAX_POINTS = 10;
@@ -376,9 +366,6 @@ const indexValueEl = document.getElementById("index-value");
 const leaderboardEl = document.getElementById("leaderboard");
 const lbTimeEl = document.getElementById("lb-time");
 const legendEl = document.getElementById("legend");
-const groupPanelEl = document.getElementById("group-panel");
-const groupChartEl = document.getElementById("group-chart");
-const groupTextEl = document.getElementById("group-text");
 const startBtn = document.getElementById("start-btn");
 const newGameBtn = document.getElementById("new-game-btn");
 
@@ -388,7 +375,7 @@ const state = {
     arrowsTotal: 15, arrowsLeft: 15,
     shots: 0, hits: 0, bulls: 0, ringSum: 0, score: 0,
     angle: DEFAULT_ANGLE, aim: { x: TX - 40, y: CY }, charging: false, chargeT: 0,
-    flying: [], stuck: [], ground: [], effects: [], offsets: [],
+    flying: [], stuck: [], ground: [], effects: [],
     phase1: 0, phase2: 0, ty: CY, finishT: 0,
     rafId: null, lastFrameTime: null,
 };
@@ -571,51 +558,6 @@ function updateStats() {
     indexValueEl.textContent = state.shots ? `${achievementIndex()}%` : "–";
 }
 
-/* ---------- shot group (the statistics lesson) ---------- */
-function renderGroup() {
-    const pts = state.offsets.filter(o => o.off !== null);
-    const short = state.offsets.length - pts.length;
-    groupPanelEl.style.display = "block";
-    if (pts.length < 2) {
-        groupChartEl.innerHTML = "";
-        groupTextEl.innerHTML = "Not enough arrows reached the target to analyse your group. Shoot a little harder and try again!";
-        return;
-    }
-    const n = pts.length;
-    const mean = pts.reduce((a, o) => a + o.off, 0) / n;
-    const sd = Math.sqrt(pts.reduce((a, o) => a + (o.off - mean) ** 2, 0) / (n - 1));
-    const bias = Math.abs(mean) * MAX_POINTS, spread = sd * MAX_POINTS;      // in "rings"
-
-    // SVG: vertical axis = offset from the bullseye in target radii (up = high), clamped to +-2.
-    const VW = 360, VH = 230, L = 34, T = 12, B = 14, PW = VW - L - 12, PH = VH - T - B;
-    const yOf = (v) => T + PH / 2 - (Math.max(-2, Math.min(2, v)) / 2) * (PH / 2);
-    const xOf = (i) => L + (state.offsets.length === 1 ? PW / 2 : (i / (state.offsets.length - 1)) * (PW - 16) + 8);
-    let svg = `<svg viewBox="0 0 ${VW} ${VH}" role="img" aria-label="Offset of each arrow from the bullseye">`;
-    svg += `<rect x="${L}" y="${yOf(1)}" width="${PW}" height="${yOf(-1) - yOf(1)}" fill="rgba(0,229,255,0.07)" stroke="rgba(0,229,255,0.35)" stroke-dasharray="3 3"/>`;
-    svg += `<line x1="${L}" x2="${L + PW}" y1="${yOf(0)}" y2="${yOf(0)}" stroke="#ffd60a" stroke-width="1.5"/>`;
-    svg += `<text x="${L - 6}" y="${yOf(0) + 4}" fill="#ffd60a" font-size="10" text-anchor="end">10</text>`;
-    svg += `<text x="${L - 6}" y="${yOf(1) + 4}" fill="#9aa4c2" font-size="10" text-anchor="end">edge</text>`;
-    svg += `<text x="${L - 6}" y="${yOf(-1) + 4}" fill="#9aa4c2" font-size="10" text-anchor="end">edge</text>`;
-    svg += `<rect x="${L}" y="${yOf(mean + sd)}" width="${PW}" height="${Math.max(2, yOf(mean - sd) - yOf(mean + sd))}" fill="rgba(168,85,247,0.22)"/>`;
-    svg += `<line x1="${L}" x2="${L + PW}" y1="${yOf(mean)}" y2="${yOf(mean)}" stroke="#a855f7" stroke-width="2" stroke-dasharray="6 4"/>`;
-    state.offsets.forEach((o, i) => {
-        if (o.off === null) return;
-        const col = Math.abs(o.off) > 1 ? "#ff6b6b" : o.pts === MAX_POINTS ? "#ffd60a" : "#00e5ff";
-        svg += `<circle cx="${xOf(i)}" cy="${yOf(o.off)}" r="5" fill="${col}" stroke="#05070d" stroke-width="1.5"/>`;
-    });
-    svg += `<text x="${L + PW / 2}" y="${VH - 1}" fill="#9aa4c2" font-size="10" text-anchor="middle">arrow 1 &rarr; ${state.offsets.length}</text></svg>`;
-    groupChartEl.innerHTML = svg;
-
-    const side = mean > 0 ? "high" : "low";
-    let verdict;
-    if (bias < 0.5 && spread < 2) verdict = "Centered <em>and</em> tight &mdash; excellent shooting!";
-    else if (bias >= spread) verdict = `Your group is fairly tight but sits off-center &mdash; a <em>bias</em> in your aim. Shift your aim point ${mean > 0 ? "down" : "up"} a little.`;
-    else if (bias < 0.5) verdict = "Centered on average, but scattered &mdash; a <em>precision</em> problem. Steadier timing will tighten the group.";
-    else verdict = "Both off-center and scattered &mdash; fix your aim point first, then work on consistency.";
-    groupTextEl.innerHTML = `On average your arrows landed <em>${bias.toFixed(1)} rings ${side}</em> (bias), with a scatter of <em>&plusmn;${spread.toFixed(1)} rings</em> (precision). ${verdict}`
-        + (short ? ` <span style="color:var(--muted)">${short} arrow${short > 1 ? "s" : ""} fell short and ${short > 1 ? "are" : "is"} not plotted.</span>` : "");
-}
-
 /* ---------- aiming / shooting ---------- */
 function power() { return state.charging ? Math.min(1, state.chargeT / CHARGE_S) : 0; }
 const canShoot = () => state.running && !state.paused && state.arrowsLeft > 0 && !state.flying.some(a => !a.resolved);
@@ -677,18 +619,15 @@ function releaseArrow() {
 function resolveShot(a, type, dy) {
     a.resolved = true;
     if (type === "short") {
-        state.offsets.push({ i: a.idx, off: null, pts: 0 });
         spawnPopup(a.x, GROUND - 14, "SHORT", "#9aa4c2", 14);
         soundGround();
     } else if (type === "miss") {
-        state.offsets.push({ i: a.idx, off: -dy / R, pts: 0 });
         spawnPopup(TX - 50, state.ty + Math.max(-90, Math.min(90, dy)), "MISS", "#ff6b6b", 15);
         soundWhiff();
     } else {
         const r = Math.abs(dy) / R;
         const pts = Math.max(1, MAX_POINTS - Math.floor(r * MAX_POINTS));
         state.hits++; state.score += pts; state.ringSum += pts;
-        state.offsets.push({ i: a.idx, off: -dy / R, pts });
         state.stuck.push({ rel: dy, ang: a.ang });
         if (state.stuck.length > 24) state.stuck.shift();
         spawnRing(TX, state.ty + dy, colorForPoints(pts));
@@ -1002,12 +941,11 @@ function resetRound() {
     state.arrowsTotal = parseInt(arrowsSelect.value, 10);
     state.arrowsLeft = state.arrowsTotal;
     state.shots = state.hits = state.bulls = state.ringSum = state.score = 0;
-    state.flying = []; state.stuck = []; state.ground = []; state.effects = []; state.offsets = [];
+    state.flying = []; state.stuck = []; state.ground = []; state.effects = [];
     state.charging = false; state.chargeT = 0; state.finishT = 0;
     state.phase1 = 0; state.phase2 = 0; state.ty = CY;
     state.aim = { x: TX - 40, y: CY };
     refreshAngle();
-    groupPanelEl.style.display = "none";
     canvas.classList.remove("locked");
     leftTileEl.classList.remove("low");
 }
@@ -1032,7 +970,6 @@ function endRound() {
     soundDone();
     const rank = submitScore(state.arrowsTotal);
     renderBoard(state.arrowsTotal, rank);
-    renderGroup();
     updateStats();
 }
 
