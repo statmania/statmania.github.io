@@ -472,12 +472,25 @@ function soundShoot(power) {
     tone(150, 0.2, { type: "sine", vol: 0.1, slideTo: 80 });
     noiseBurst(0.45, { from: 500 + power * 400, to: 2600, vol: 0.09 });             // whoosh
 }
-function soundThunk() {
-    tone(150, 0.16, { type: "sine", vol: 0.22, slideTo: 50 });
-    noiseBurst(0.09, { from: 500, to: 200, vol: 0.12 });
+// Arrow hits the board: a solid "thwack" - wooden knock + body thud + short rattle.
+function soundHit() {
+    tone(520, 0.07, { type: "triangle", vol: 0.2, slideTo: 260 });
+    tone(150, 0.18, { type: "sine", vol: 0.26, slideTo: 50 });
+    noiseBurst(0.1, { from: 1800, to: 500, vol: 0.16 });
+    tone(330, 0.12, { type: "square", vol: 0.04, slideTo: 300, delay: 0.05 });
+}
+// Arrow flies past the board: a rising-then-fading whistle, nothing solid to hit.
+function soundWhiff() {
+    tone(1500, 0.34, { type: "sine", vol: 0.07, slideTo: 450 });
+    noiseBurst(0.3, { from: 3600, to: 900, vol: 0.08, q: 2 });
+}
+// Arrow falls short and digs into the ground: a dull low thud.
+function soundGround() {
+    tone(85, 0.2, { type: "sine", vol: 0.24, slideTo: 38 });
+    noiseBurst(0.12, { from: 300, to: 120, vol: 0.1 });
 }
 function soundBull() {
-    soundThunk();
+    soundHit();
     tone(880, 0.2, { type: "triangle", vol: 0.12, delay: 0.06 });
     tone(1320, 0.22, { type: "triangle", vol: 0.12, delay: 0.14 });
     tone(1760, 0.34, { type: "triangle", vol: 0.12, delay: 0.22 });
@@ -666,11 +679,11 @@ function resolveShot(a, type, dy) {
     if (type === "short") {
         state.offsets.push({ i: a.idx, off: null, pts: 0 });
         spawnPopup(a.x, GROUND - 14, "SHORT", "#9aa4c2", 14);
-        soundMiss();
+        soundGround();
     } else if (type === "miss") {
         state.offsets.push({ i: a.idx, off: -dy / R, pts: 0 });
         spawnPopup(TX - 50, state.ty + Math.max(-90, Math.min(90, dy)), "MISS", "#ff6b6b", 15);
-        soundMiss();
+        soundWhiff();
     } else {
         const r = Math.abs(dy) / R;
         const pts = Math.max(1, MAX_POINTS - Math.floor(r * MAX_POINTS));
@@ -685,7 +698,7 @@ function resolveShot(a, type, dy) {
             soundBull();
         } else {
             spawnPopup(TX - 56, state.ty + dy - 18, `+${pts}`, "#4ade80");
-            soundThunk();
+            soundHit();
         }
     }
     updateStats();
@@ -1079,5 +1092,6 @@ document.getElementById("lb-clear").addEventListener("click", () => {
 populateLegend();
 goIdle();
 </script>
+<script src="css/nav-hide.js"></script>
 </body>
 </html>
