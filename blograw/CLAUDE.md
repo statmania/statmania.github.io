@@ -31,6 +31,8 @@ Every existing post has been backfilled (2026-09-26); keep tags lowercase and hy
 
 Whenever an edit to a post is sought, check if the post contains an image; if not, add one (follow the following).
 
+Don't geenrate svg if an existing image name (svg or png) matches with the post topic. Generic images like r-shell.jpeg, journal.jpeg can be used in mahy posts. 
+
 - **Inside the post body → SVG**, e.g. `![caption](../img/name.svg){fig-alt="..."}`.
   Sharp at any zoom, small, real text, and it takes alt text. Always add
   `fig-alt` (accessibility and image search) and a short caption.
@@ -76,6 +78,19 @@ The `Refusing to remove directory ... _files` and "path configuration" warnings
 are harmless (the output dir `../blog` is outside the project); ignore them.
 Publish = commit the `.qmd`, `img/` files and the regenerated `blog/` output,
 then push to `master` on GitHub Pages.
+
+## Sidebar: archive + tag cloud
+
+Posts get a margin TOC (`posts/_metadata.yml`: `toc-depth: 3`, since many posts use `###` as their top heading). The blog homepage and posts show Quarto's native **category cloud** (listing
+option `categories: cloud` in `index.qmd`), plus a **post archive** (year →
+month → posts) and a **tag cloud** built from each post's `tags:`.
+`scripts/build_widgets.py` is a project `pre-render` hook (`_quarto.yml`): on
+every `quarto render` it reads post front matter (`title`, `date`, `tags`;
+`draft: true` is skipped) and rewrites the generated `_widgets-body.html`, which
+`_quarto.yml` adds to every page via `include-after-body` (a script moves it into the margin sidebar: below the categories on the homepage, below the TOC on posts, dropped where there is no sidebar), and `tags.qmd` (the `tags.html#tag=<name>` page the tag chips link to). Never hand-edit either generated file. `quarto render posts/x.qmd` refreshes both sources but only re-renders that post and the homepage, so after adding or retagging posts run a full `quarto render` (or `quarto render tags.qmd`) to update `tags.html`. New posts appear
+automatically once they have `title`, `date` and `tags`. It uses no Quarto
+internals, so Quarto upgrades shouldn't affect it; styles are `.sm-widget*`
+in `styles.css`. After upgrading Quarto, re-render and check the homepage.
 
 ## Starfield background
 
