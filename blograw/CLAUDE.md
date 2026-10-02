@@ -29,6 +29,8 @@ Every existing post has been backfilled (2026-09-26); keep tags lowercase and hy
 
 ## Images: SVG in the body, PNG in the front matter
 
+Whenever an edit to a post is sought, check if the post contains an image; if not, add one (follow the following).
+
 - **Inside the post body → SVG**, e.g. `![caption](../img/name.svg){fig-alt="..."}`.
   Sharp at any zoom, small, real text, and it takes alt text. Always add
   `fig-alt` (accessibility and image search) and a short caption.
