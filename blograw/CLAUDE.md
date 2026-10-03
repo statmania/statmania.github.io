@@ -92,6 +92,18 @@ automatically once they have `title`, `date` and `tags`. It uses no Quarto
 internals, so Quarto upgrades shouldn't affect it; styles are `.sm-widget*`
 in `styles.css`. After upgrading Quarto, re-render and check the homepage.
 
+## Authors
+
+Profiles live in `authors.yml` (slug → `name`, `aliases`, `image`, `tagline`, `bio`,
+`links`). Posts keep `author: "Name"` as plain text; a post belongs to the profile
+whose `name`/`aliases` match it, so no post front matter changes are needed.
+`scripts/build_widgets.py` generates `authors/<slug>.qmd` (bio, photo, links and the
+author's posts) and `_authors-body.html`, whose script links bylines (post title
+block and homepage cards) to the author page and adds an author card at the end of
+each post. Add an author = add an entry (and a photo under `img/`), then run a full
+`quarto render`. Never hand-edit `authors/*.qmd` or `_authors-body.html`. Authors not
+in `authors.yml` simply get no link.
+
 ## Starfield background
 
 The blog pages get the site-wide starfield via `../starfield-include.html`
