@@ -92,6 +92,11 @@ automatically once they have `title`, `date` and `tags`. It uses no Quarto
 internals, so Quarto upgrades shouldn't affect it; styles are `.sm-widget*`
 in `styles.css`. After upgrading Quarto, re-render and check the homepage.
 
+On small screens posts get their own sticky "On this page" dropdown (built from
+the post's `#TOC` links by `TOC_JS` in `build_widgets.py`; Quarto's own toggle is
+hidden), and the archive/tag widgets move under the article. Post pages also show
+the post's tags, linked to `tags.html#tag=...`, under the categories.
+
 ## Authors
 
 Profiles live in `authors.yml` (slug → `name`, `aliases`, `image`, `tagline`, `bio`,

@@ -21,19 +21,48 @@ toc: false
 <script>
 (function () {
   var root = document.getElementById('sm-tags-page');
+  var per = 10;
+  var pager = document.createElement('nav');
+  pager.className = 'sm-pager'; pager.setAttribute('aria-label', 'Pagination');
+  root.appendChild(pager);
+  function parse() {
+    var h = new URLSearchParams(location.hash.slice(1));
+    return {tag: h.get('tag') || '', page: +h.get('page') || 1};
+  }
+  function go(tag, page) {
+    var h = new URLSearchParams({tag: tag});
+    if (page > 1) h.set('page', page);
+    location.hash = h.toString();
+  }
   function show() {
-    var m = location.hash.match(/tag=([^&]*)/);
-    var tag = m ? decodeURIComponent(m[1]) : '';
-    var found = false;
+    var st = parse(), found = null;
     root.querySelectorAll('.sm-tag-section').forEach(function (s) {
-      var on = s.dataset.tag === tag;
+      var on = s.dataset.tag === st.tag;
       s.hidden = !on;
-      found = found || on;
+      if (on) found = s;
     });
     document.querySelectorAll('.sm-tags-side .sm-tag').forEach(function (c) {
-      c.classList.toggle('active', c.dataset.tag === tag);
+      c.classList.toggle('active', c.dataset.tag === st.tag);
     });
-    root.querySelector('.sm-tags-hint').hidden = found;
+    root.querySelector('.sm-tags-hint').hidden = !!found;
+    pager.textContent = '';
+    if (!found) { pager.hidden = true; return; }
+    var items = Array.prototype.slice.call(found.querySelectorAll('.sm-post-list > li'));
+    var pages = Math.max(1, Math.ceil(items.length / per));
+    var page = Math.min(Math.max(st.page, 1), pages);
+    items.forEach(function (li, i) { li.hidden = i < (page - 1) * per || i >= page * per; });
+    pager.hidden = pages < 2;
+    function btn(label, n, cur, off) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.textContent = label; b.className = 'sm-page' + (cur ? ' active' : '');
+      b.disabled = !!off;
+      if (cur) b.setAttribute('aria-current', 'page');
+      b.addEventListener('click', function () { go(st.tag, n); });
+      pager.appendChild(b);
+    }
+    btn('‹ Prev', page - 1, false, page === 1);
+    for (var i = 1; i <= pages; i++) btn(String(i), i, i === page, false);
+    btn('Next ›', page + 1, false, page === pages);
   }
   window.addEventListener('hashchange', show);
   show();

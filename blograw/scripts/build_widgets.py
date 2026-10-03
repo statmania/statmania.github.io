@@ -161,19 +161,48 @@ toc: false
 <script>
 (function () {{
   var root = document.getElementById('sm-tags-page');
+  var per = 10;
+  var pager = document.createElement('nav');
+  pager.className = 'sm-pager'; pager.setAttribute('aria-label', 'Pagination');
+  root.appendChild(pager);
+  function parse() {{
+    var h = new URLSearchParams(location.hash.slice(1));
+    return {{tag: h.get('tag') || '', page: +h.get('page') || 1}};
+  }}
+  function go(tag, page) {{
+    var h = new URLSearchParams({{tag: tag}});
+    if (page > 1) h.set('page', page);
+    location.hash = h.toString();
+  }}
   function show() {{
-    var m = location.hash.match(/tag=([^&]*)/);
-    var tag = m ? decodeURIComponent(m[1]) : '';
-    var found = false;
+    var st = parse(), found = null;
     root.querySelectorAll('.sm-tag-section').forEach(function (s) {{
-      var on = s.dataset.tag === tag;
+      var on = s.dataset.tag === st.tag;
       s.hidden = !on;
-      found = found || on;
+      if (on) found = s;
     }});
     document.querySelectorAll('.sm-tags-side .sm-tag').forEach(function (c) {{
-      c.classList.toggle('active', c.dataset.tag === tag);
+      c.classList.toggle('active', c.dataset.tag === st.tag);
     }});
-    root.querySelector('.sm-tags-hint').hidden = found;
+    root.querySelector('.sm-tags-hint').hidden = !!found;
+    pager.textContent = '';
+    if (!found) {{ pager.hidden = true; return; }}
+    var items = Array.prototype.slice.call(found.querySelectorAll('.sm-post-list > li'));
+    var pages = Math.max(1, Math.ceil(items.length / per));
+    var page = Math.min(Math.max(st.page, 1), pages);
+    items.forEach(function (li, i) {{ li.hidden = i < (page - 1) * per || i >= page * per; }});
+    pager.hidden = pages < 2;
+    function btn(label, n, cur, off) {{
+      var b = document.createElement('button');
+      b.type = 'button'; b.textContent = label; b.className = 'sm-page' + (cur ? ' active' : '');
+      b.disabled = !!off;
+      if (cur) b.setAttribute('aria-current', 'page');
+      b.addEventListener('click', function () {{ go(st.tag, n); }});
+      pager.appendChild(b);
+    }}
+    btn('\u2039 Prev', page - 1, false, page === 1);
+    for (var i = 1; i <= pages; i++) btn(String(i), i, i === page, false);
+    btn('Next \u203a', page + 1, false, page === pages);
   }}
   window.addEventListener('hashchange', show);
   show();
@@ -370,23 +399,106 @@ AUTHORS_JS = r"""
 # Pages without a margin sidebar simply drop them.
 MOVE_JS = """<script>
 (function () {
-  var w = document.getElementById('sm-widgets');
-  if (!w) return;
-  var side = document.getElementById('quarto-margin-sidebar');
-  if (!side) { w.remove(); return; }
-  var css = document.querySelector('link[rel="stylesheet"][href$="styles.css"]');
-  var base = css ? css.getAttribute('href').slice(0, -'styles.css'.length) : '';
-  w.querySelectorAll('a[data-h]').forEach(function (a) { a.setAttribute('href', base + a.dataset.h); });
-  side.appendChild(w);
+  var mq = window.matchMedia('(max-width: 991.98px)');
+  function place() {
+    var w = document.getElementById('sm-widgets');
+    if (!w) return;
+    var side = document.getElementById('quarto-margin-sidebar');
+    var main = document.getElementById('quarto-document-content');
+    if (!side) { w.remove(); return; }
+    var css = document.querySelector('link[rel="stylesheet"][href$="styles.css"]');
+    var base = css ? css.getAttribute('href').slice(0, -'styles.css'.length) : '';
+    w.querySelectorAll('a[data-h]').forEach(function (a) { a.setAttribute('href', base + a.dataset.h); });
+    // Posts on small screens: Quarto turns the sidebar into an "On this page"
+    // dropdown, so the widgets go under the article instead.
+    var small = mq.matches && side.querySelector('#TOC') && main;
+    w.classList.toggle('sm-widgets-bottom', !!small);
+    (small ? main : side).appendChild(w);
+  }
+  // Wait for load so Quarto has already copied the TOC into its dropdown.
+  if (document.readyState === 'complete') place();
+  else window.addEventListener('load', place);
+  if (mq.addEventListener) mq.addEventListener('change', place);
 })();
 </script>"""
+
+
+TOC_JS = """<script>
+(function () {
+  // Small-screen table of contents: built from the post's own #TOC links, so it
+  // lists only the post's sections (no archive/tags), with a scroll-spy highlight.
+  var toc = document.querySelector('#quarto-margin-sidebar #TOC');
+  var main = document.getElementById('quarto-document-content');
+  if (!toc || !main || !toc.querySelector('a[href^="#"]')) return;
+  var box = document.createElement('details');
+  box.className = 'sm-toc-mobile';
+  var sum = document.createElement('summary');
+  sum.textContent = 'On this page';
+  var nav = document.createElement('nav');
+  nav.setAttribute('aria-label', 'On this page');
+  var links = [];
+  toc.querySelectorAll('a[href^="#"]').forEach(function (src) {
+    var a = document.createElement('a');
+    a.href = src.getAttribute('href');
+    a.textContent = src.textContent;
+    a.addEventListener('click', function () { box.open = false; });
+    nav.appendChild(a);
+    links.push(a);
+  });
+  box.appendChild(sum);
+  box.appendChild(nav);
+  main.insertBefore(box, main.firstChild);
+  var heads = links.map(function (a) { return document.getElementById(decodeURIComponent(a.hash.slice(1))); });
+  function spy() {
+    var cur = 0;
+    heads.forEach(function (h, i) { if (h && h.getBoundingClientRect().top < 120) cur = i; });
+    links.forEach(function (a, i) { a.classList.toggle('active', i === cur); });
+    sum.textContent = 'On this page \u00b7 ' + (links[cur] ? links[cur].textContent : '');
+  }
+  window.addEventListener('scroll', spy, {passive: true});
+  spy();
+})();
+</script>"""
+
+
+def post_tags_js(posts):
+    """On post pages, show the post's tags (linked to tags.html) beside its categories."""
+    data = {p["href"].split("/")[-1]: p["tags"] for p in posts if p["tags"]}
+    payload = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
+    return """<script>
+(function () {
+  var tags = %s;
+  var file = location.pathname.split('/').pop();
+  if (!/\\/posts\\//.test(location.pathname) || !tags[file]) return;
+  var css = document.querySelector('link[rel="stylesheet"][href$="styles.css"]');
+  var base = css ? css.getAttribute('href').slice(0, -'styles.css'.length) : '';
+  var row = document.createElement('div');
+  row.className = 'sm-post-tags';
+  var label = document.createElement('span');
+  label.className = 'sm-post-tags-label';
+  label.textContent = 'Tags';
+  row.appendChild(label);
+  tags[file].forEach(function (t) {
+    var a = document.createElement('a');
+    a.className = 'sm-tag';
+    a.href = base + 'tags.html#tag=' + encodeURIComponent(t);
+    a.textContent = t;
+    row.appendChild(a);
+  });
+  var cats = document.querySelector('#title-block-header .quarto-categories');
+  var desc = document.querySelector('#title-block-header .description');
+  var anchor = cats || desc;
+  if (anchor) anchor.insertAdjacentElement('afterend', row);
+})();
+</script>""" % payload
 
 
 def main():
     posts = load_posts()
     OUT.write_text(
         "<!-- GENERATED by scripts/build_widgets.py on every render; do not edit. -->\n"
-        "<div id=\"sm-widgets\">\n" + archive(posts) + "\n" + tag_cloud(posts) + "\n</div>\n" + MOVE_JS + "\n",
+        "<div id=\"sm-widgets\">\n" + archive(posts) + "\n" + tag_cloud(posts) + "\n</div>\n" + MOVE_JS + "\n"
+        + post_tags_js(posts) + "\n" + TOC_JS + "\n",
         encoding="utf-8",
     )
     TAGS_PAGE.write_text(tags_page(posts), encoding="utf-8")

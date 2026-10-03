@@ -558,14 +558,88 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
 </div>
 <script>
 (function () {
-  var w = document.getElementById('sm-widgets');
-  if (!w) return;
-  var side = document.getElementById('quarto-margin-sidebar');
-  if (!side) { w.remove(); return; }
+  var mq = window.matchMedia('(max-width: 991.98px)');
+  function place() {
+    var w = document.getElementById('sm-widgets');
+    if (!w) return;
+    var side = document.getElementById('quarto-margin-sidebar');
+    var main = document.getElementById('quarto-document-content');
+    if (!side) { w.remove(); return; }
+    var css = document.querySelector('link[rel="stylesheet"][href$="styles.css"]');
+    var base = css ? css.getAttribute('href').slice(0, -'styles.css'.length) : '';
+    w.querySelectorAll('a[data-h]').forEach(function (a) { a.setAttribute('href', base + a.dataset.h); });
+    // Posts on small screens: Quarto turns the sidebar into an "On this page"
+    // dropdown, so the widgets go under the article instead.
+    var small = mq.matches && side.querySelector('#TOC') && main;
+    w.classList.toggle('sm-widgets-bottom', !!small);
+    (small ? main : side).appendChild(w);
+  }
+  // Wait for load so Quarto has already copied the TOC into its dropdown.
+  if (document.readyState === 'complete') place();
+  else window.addEventListener('load', place);
+  if (mq.addEventListener) mq.addEventListener('change', place);
+})();
+</script>
+<script>
+(function () {
+  var tags = {"c-srand-time-null.html": ["c", "srand", "rand", "time", "random-numbers", "seed", "stdlib"], "c-die-throw.html": ["c", "rand", "arrays", "loops", "frequency-count"], "c-double-vs-float.html": ["c", "float", "double", "floating-point", "precision", "data-types"], "c-switch.html": ["c", "switch", "control-flow", "break", "fall-through", "enum", "conditionals"], "10-short-real-world-c-programming-examples.html": ["c", "if-else", "loops", "control-flow", "examples"], "modulus-vs-remainder.html": ["modulus", "remainder", "operators", "c", "python", "r"], "if-else-in-c-python-R.html": ["if-else", "conditionals", "c", "python", "r", "syntax-comparison"], "running-c-programs-on-linux.html": ["c", "gcc", "makefile", "compiling", "linux"], "probability-4-boys-girls-in-a-row.html": ["binomial", "probability", "combinatorics"], "c-nested-if-explained-with-examples.html": ["c", "nested-if", "if-else", "control-flow"], "paper-writing-sequence.html": ["research", "writing", "academia"], "using-markitdown.html": ["markitdown", "pdf", "markdown", "python", "batch-processing"], "dispersion-vs-central-tendency.html": ["dispersion", "central-tendency", "variance", "standard-deviation", "iqr"], "linux-hung-solution.html": ["linux", "frozen-desktop", "reisub", "troubleshooting"], "make-fish-default-shell.html": ["fish", "shell", "terminal", "linux", "pop-os"], "reading-paper-ai-age.html": ["ai", "research", "reading"], "qdraw-new-features.html": ["qdraw", "quarto", "reveal-js", "slides"], "c-struct.html": ["c", "struct", "typedef", "memory-layout", "data-structures", "python-dict", "r-list"], "python-rstudio.html": ["rstudio", "reticulate", "python", "r"], "10-c-if-else-examples.html": ["c", "if-else", "conditionals", "control-flow", "examples"], "geometric-distribution.html": ["geometric-distribution", "discrete-distributions", "probability", "bernoulli-trials"], "c-hello-world-explained.html": ["c", "hello-world", "printf", "beginners"], "c-do-while.html": ["c", "do-while", "loops", "control-flow", "break", "scanf", "input-validation"], "reset-usb.html": ["linux", "usb", "bootable-drive", "command-line"], "save-git-credentials.html": ["git", "credentials", "credential-helper"], "negative-binomial.html": ["negative-binomial", "discrete-distributions", "probability"], "be-impressive-with-math.html": ["math", "fun", "recreational-math"], "ANN-vs-SVM.html": ["svm", "neural-network", "classification", "machine-learning"], "gitignore-folder.html": ["git", "gitignore"], "poisson-regression-demo.html": ["poisson-regression", "count-data", "regression", "glm"], "hyperspectral-imaging.html": ["hsi", "hyperspectral-imaging", "imaging"], "mass-spectrometry-imaging.html": ["msi", "mass-spectrometry", "imaging"], "micro-XRF.html": ["micro-xrf", "xrf", "imaging"], "regression-interaction.html": ["regression", "interaction-effect", "statistical-modeling"], "z-score.html": ["z-score", "standardization", "normal-distribution"], "a-b-testing.html": ["ab-testing", "hypothesis-testing", "experiment-design"], "iqr.html": ["iqr", "quartiles", "dispersion", "outliers"], "t-test-to-anova.html": ["t-test", "anova", "hypothesis-testing"], "arima-sarima-r.html": ["arima", "sarima", "time-series", "forecasting", "r"], "spatio-temporal.html": ["spatio-temporal", "spatial-statistics", "time-series", "r", "gis"], "clockplot.html": ["r", "r-package", "clockplot", "circular-data", "visualization"], "r-package-submission.html": ["r-package", "cran", "checklist"], "r-package-workflow.html": ["r-package", "devtools", "workflow"], "auto-arima-explanation.html": ["auto-arima", "sarimax", "model-interpretation", "time-series", "r"], "ar-ma-time-series.html": ["ar", "ma", "time-series", "r"], "sarimax-r.html": ["sarimax", "arima", "time-series", "r"]};
+  var file = location.pathname.split('/').pop();
+  if (!/\/posts\//.test(location.pathname) || !tags[file]) return;
   var css = document.querySelector('link[rel="stylesheet"][href$="styles.css"]');
   var base = css ? css.getAttribute('href').slice(0, -'styles.css'.length) : '';
-  w.querySelectorAll('a[data-h]').forEach(function (a) { a.setAttribute('href', base + a.dataset.h); });
-  side.appendChild(w);
+  var row = document.createElement('div');
+  row.className = 'sm-post-tags';
+  var label = document.createElement('span');
+  label.className = 'sm-post-tags-label';
+  label.textContent = 'Tags';
+  row.appendChild(label);
+  tags[file].forEach(function (t) {
+    var a = document.createElement('a');
+    a.className = 'sm-tag';
+    a.href = base + 'tags.html#tag=' + encodeURIComponent(t);
+    a.textContent = t;
+    row.appendChild(a);
+  });
+  var cats = document.querySelector('#title-block-header .quarto-categories');
+  var desc = document.querySelector('#title-block-header .description');
+  var anchor = cats || desc;
+  if (anchor) anchor.insertAdjacentElement('afterend', row);
+})();
+</script>
+<script>
+(function () {
+  // Small-screen table of contents: built from the post's own #TOC links, so it
+  // lists only the post's sections (no archive/tags), with a scroll-spy highlight.
+  var toc = document.querySelector('#quarto-margin-sidebar #TOC');
+  var main = document.getElementById('quarto-document-content');
+  if (!toc || !main || !toc.querySelector('a[href^="#"]')) return;
+  var box = document.createElement('details');
+  box.className = 'sm-toc-mobile';
+  var sum = document.createElement('summary');
+  sum.textContent = 'On this page';
+  var nav = document.createElement('nav');
+  nav.setAttribute('aria-label', 'On this page');
+  var links = [];
+  toc.querySelectorAll('a[href^="#"]').forEach(function (src) {
+    var a = document.createElement('a');
+    a.href = src.getAttribute('href');
+    a.textContent = src.textContent;
+    a.addEventListener('click', function () { box.open = false; });
+    nav.appendChild(a);
+    links.push(a);
+  });
+  box.appendChild(sum);
+  box.appendChild(nav);
+  main.insertBefore(box, main.firstChild);
+  var heads = links.map(function (a) { return document.getElementById(decodeURIComponent(a.hash.slice(1))); });
+  function spy() {
+    var cur = 0;
+    heads.forEach(function (h, i) { if (h && h.getBoundingClientRect().top < 120) cur = i; });
+    links.forEach(function (a, i) { a.classList.toggle('active', i === cur); });
+    sum.textContent = 'On this page · ' + (links[cur] ? links[cur].textContent : '');
+  }
+  window.addEventListener('scroll', spy, {passive: true});
+  spy();
 })();
 </script>
 <!-- GENERATED by scripts/build_widgets.py from authors.yml; do not edit. -->

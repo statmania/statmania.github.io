@@ -505,7 +505,7 @@ a.sm-tag{ text-decoration: none; display: inline-block; }
 /* ---- Small screens: Quarto hides the margin sidebar below 992px; show it as a
    block under the content so categories, archive and tags stay reachable. ---- */
 @media (max-width: 991.98px){
-  #quarto-margin-sidebar{
+  #quarto-margin-sidebar:not(:has(#TOC)){
     display: block !important;
     height: auto !important;
     max-height: none !important;
@@ -518,11 +518,6 @@ a.sm-tag{ text-decoration: none; display: inline-block; }
     border-radius: 14px;
     background: var(--sm-bg2);
   }
-  /* posts already get a collapsible TOC at the top on small screens */
-  #quarto-margin-sidebar #TOC,
-  #quarto-margin-sidebar > nav[role="doc-toc"],
-  #quarto-margin-sidebar > #quarto-toc-title,
-  #quarto-margin-sidebar > h2{ display: none; }
 }
 
 /* ---- Tags page: cloud in the margin ---- */
@@ -569,3 +564,61 @@ a.sm-author-link:hover{ color: var(--sm-cyan); }
 }
 .sm-page:hover:not(:disabled), .sm-page.active{ border-color: var(--sm-cyan); background: rgba(0,229,255,.16); }
 .sm-page:disabled{ opacity: .35; cursor: default; }
+
+/* ---- Small-screen "On this page" (our own dropdown; see build_widgets.py) ---- */
+.sm-toc-mobile{ display: none; }
+@media (max-width: 991.98px){
+  /* Quarto's own small-screen TOC toggle is replaced by .sm-toc-mobile */
+  .quarto-sidebar-toggle, #quarto-toc-toggle{ display: none !important; }
+  .sm-toc-mobile{
+    display: block; position: sticky; top: 3.6rem; z-index: 20;
+    margin: 0 0 1.2rem;
+    background: rgba(10,15,30,.94); backdrop-filter: blur(8px);
+    border: 1px solid var(--sm-line); border-radius: 12px;
+    box-shadow: 0 0 18px rgba(0,229,255,.15);
+  }
+  .sm-toc-mobile summary{
+    cursor: pointer; list-style: none; padding: .6rem 1rem;
+    display: flex; align-items: center; justify-content: space-between;
+    color: var(--sm-cyan); text-transform: uppercase; letter-spacing: .14em; font-size: .72rem;
+  }
+  .sm-toc-mobile summary::-webkit-details-marker{ display: none; }
+  .sm-toc-mobile summary::after{
+    content: ""; width: .5rem; height: .5rem; margin-right: .2rem;
+    border-right: 2px solid var(--sm-cyan); border-bottom: 2px solid var(--sm-cyan);
+    transform: rotate(45deg); transition: transform .2s;
+  }
+  .sm-toc-mobile[open] summary::after{ transform: rotate(-135deg); }
+  .sm-toc-mobile nav{
+    max-height: 55vh; overflow-y: auto; border-top: 1px solid var(--sm-line);
+    scrollbar-width: thin; scrollbar-color: var(--sm-cyan) transparent;
+  }
+  .sm-toc-mobile nav::-webkit-scrollbar{ width: 6px; }
+  .sm-toc-mobile nav::-webkit-scrollbar-thumb{
+    background: linear-gradient(180deg, var(--sm-cyan), var(--sm-purple));
+    border-radius: 6px; box-shadow: 0 0 8px rgba(0,229,255,.7);
+  }
+  .sm-toc-mobile a{
+    display: block; padding: .45rem 1rem; font-size: .9rem;
+    color: var(--sm-text); text-decoration: none; border-left: 2px solid transparent;
+  }
+  .sm-toc-mobile a:hover{ background: rgba(0,229,255,.08); border-left-color: var(--sm-cyan); }
+  .sm-toc-mobile a.active{
+    color: var(--sm-cyan); border-left-color: var(--sm-purple);
+    background: linear-gradient(90deg, rgba(168,85,247,.18), transparent);
+    text-shadow: 0 0 8px rgba(0,229,255,.5);
+  }
+}
+
+/* Widgets placed under the article on small screens (posts) */
+.sm-widgets-bottom{
+  margin: 2rem 0 0; padding: 1rem;
+  border: 1px solid rgba(0,229,255,0.12); border-radius: 14px;
+  background: rgba(5,7,13,.5);
+}
+
+/* Tags row under the categories on post pages */
+.sm-post-tags{ display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; margin: .6rem 0 0; }
+.sm-post-tags-label{ color: var(--sm-muted); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; margin-right: .2rem; }
+.sm-post-tags .sm-tag{ font-size: .75rem; padding: .05rem .6rem; }
+#title-block-header .sm-post-tags .sm-tag{ color: var(--sm-cyan) !important; opacity: 1; }
