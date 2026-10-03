@@ -95,7 +95,7 @@ in `styles.css`. After upgrading Quarto, re-render and check the homepage.
 On small screens posts get their own sticky "On this page" dropdown (built from
 the post's `#TOC` links by `TOC_JS` in `build_widgets.py`; Quarto's own toggle is
 hidden), and the archive/tag widgets move under the article. Post pages also show
-the post's tags, linked to `tags.html#tag=...`, below the article body.
+the post's tags, linked to `tags.html#tag=...`, below the article body, followed by up to 5 related posts (ranked by shared tags/categories, rarer ones weigh more; computed in `related_map()`, so well-tagged posts relate better).
 
 ## Authors
 
