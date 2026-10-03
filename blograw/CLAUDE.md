@@ -79,35 +79,35 @@ are harmless (the output dir `../blog` is outside the project); ignore them.
 Publish = commit the `.qmd`, `img/` files and the regenerated `blog/` output,
 then push to `master` on GitHub Pages.
 
-## Sidebar: archive + tag cloud
+## Dynamic widgets (site.js + site-data.json)
 
-Posts get a margin TOC (`posts/_metadata.yml`: `toc-depth: 3`, since many posts use `###` as their top heading). The blog homepage and posts show Quarto's native **category cloud** (listing
-option `categories: cloud` in `index.qmd`), plus a **post archive** (year →
-month → posts) and a **tag cloud** built from each post's `tags:`.
-`scripts/build_widgets.py` is a project `pre-render` hook (`_quarto.yml`): on
-every `quarto render` it reads post front matter (`title`, `date`, `tags`;
-`draft: true` is skipped) and rewrites the generated `_widgets-body.html`, which
-`_quarto.yml` adds to every page via `include-after-body` (a script moves it into the margin sidebar: below the categories on the homepage, below the TOC on posts, dropped where there is no sidebar), and `tags.qmd` (the `tags.html#tag=<name>` page the tag chips link to). Never hand-edit either generated file. `quarto render posts/x.qmd` refreshes both sources but only re-renders that post and the homepage, so after adding or retagging posts run a full `quarto render` (or `quarto render tags.qmd`) to update `tags.html`. New posts appear
-automatically once they have `title`, `date` and `tags`. It uses no Quarto
-internals, so Quarto upgrades shouldn't affect it; styles are `.sm-widget*`
-in `styles.css`. After upgrading Quarto, re-render and check the homepage.
+Everything cross-post is **dynamic**, so a new post needs no re-render of other pages:
 
-On small screens posts get their own sticky "On this page" dropdown (built from
-the post's `#TOC` links by `TOC_JS` in `build_widgets.py`; Quarto's own toggle is
-hidden), and the archive/tag widgets move under the article. Post pages also show
-the post's tags, linked to `tags.html#tag=...`, below the article body, followed by up to 5 related posts (ranked by shared tags/categories, rarer ones weigh more; computed in `related_map()`, so well-tagged posts relate better).
+- `scripts/build_site_data.py` is the project `pre-render` hook (`_quarto.yml`). On every
+  `quarto render`, even of one post, it reads post front matter (`title`, `description`,
+  `date`, `tags`, `categories`, `author`; `draft: true` is skipped) and `authors.yml`,
+  writes `../blog/site-data.json`, copies `site.js` next to it, and rewrites the small
+  `authors/<slug>.qmd` stubs (never hand-edit those).
+- `site.js` (hand-written, loaded on every page by `_site-include.html`) fetches the JSON
+  and builds: the homepage/post sidebar archive and tag cloud (below the TOC on posts,
+  under the article on small screens), each post's tags row, up to 5 related posts
+  (ranked by shared tags/categories, rarer ones weigh more), the author card and
+  byline links, `tags.html#tag=<name>` (10 per page) and the author pages
+  (category/tag filters, 10 per page), plus the sticky small-screen "On this page" menu.
+- Workflow: write the post, `quarto render posts/<post>.qmd` (~7 s), commit `blog/`.
+  A full `quarto render` (~40 s) is only needed when `site.js`, CSS or `_quarto.yml`
+  change. Browsers may cache `site-data.json` for a few minutes after publishing.
+- Needs `title` and `date` in the front matter; `tags:` (lowercase, hyphenated) drive
+  the tag cloud and related posts.
+- Posts get a margin TOC (`posts/_metadata.yml`: `toc-depth: 3`, since many posts use
+  `###` as their top heading).
 
 ## Authors
 
 Profiles live in `authors.yml` (slug → `name`, `aliases`, `image`, `tagline`, `bio`,
-`links`). Posts keep `author: "Name"` as plain text; a post belongs to the profile
-whose `name`/`aliases` match it, so no post front matter changes are needed.
-`scripts/build_widgets.py` generates `authors/<slug>.qmd` (bio, photo, links and the
-author's posts, with category/tag filters and 10-per-page pagination) and `_authors-body.html`, whose script links bylines (post title
-block and homepage cards) to the author page and adds an author card at the end of
-each post. Add an author = add an entry (and a photo under `img/`), then run a full
-`quarto render`. Never hand-edit `authors/*.qmd` or `_authors-body.html`. Authors not
-in `authors.yml` simply get no link.
+`links`). Posts keep `author: "Name"` as plain text; a post belongs to the profile whose
+`name`/`aliases` match it. Add an author = add an entry (and a photo under `img/`), then
+render; the hook creates `authors/<slug>.qmd`. Authors not in `authors.yml` get no link.
 
 ## Starfield background
 
