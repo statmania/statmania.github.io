@@ -79,6 +79,21 @@ Rendering many posts is only for bulk edits. Because everything cross-post is dy
 
 Code in `{python}`/`{r}` chunks is cached (`freeze: true`). To re-run it, delete `_freeze/posts/<post>/` and render that post.
 
+## Shortcut: `publish.sh`
+
+`blograw/publish.sh` does steps 2/3 and 6 in one go (render, commit `blog/` and `blograw/` only, pull --rebase, push):
+
+```
+./publish.sh posts/my-post.qmd                  # one post
+./publish.sh posts/a.qmd posts/b.qmd            # several posts
+./publish.sh --all                              # full render (site.js / CSS / config changes)
+./publish.sh                                    # no render; commit and push whatever is pending
+./publish.sh -m "Blog: add srand post" posts/c-srand-time-null.qmd
+./publish.sh --no-push posts/x.qmd              # render + commit, check locally, push later
+```
+
+It stops if a render fails, skips the commit when nothing changed, and never touches files outside `blog/` and `blograw/`. Preview first (step 5) with `--no-push` if you want to look before publishing.
+
 ## 5. Check it locally
 
 ```
@@ -105,6 +120,6 @@ GitHub Pages updates in a minute or two. Readers' browsers may keep the old `sit
 - `../blog/` (the whole built site), including `blog/site-data.js` and `blog/site.js`
 - `authors/<slug>.qmd` (from `authors.yml`)
 
-Hand-written: posts, `authors.yml`, `site.js`, `styles.css`, `tags.qmd`, `index.qmd`, `about.qmd`.
+Hand-written: posts, `authors.yml`, `site.js`, `styles.css`, `tags.qmd`, `index.qmd`, `about.qmd`, `publish.sh`.
 
 `CLAUDE.md` has the detailed design notes (images, writing conventions, how the dynamic widgets work).
