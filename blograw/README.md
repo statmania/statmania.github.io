@@ -42,7 +42,7 @@ This takes a few seconds and does everything needed:
 
 - builds `blog/posts/my-post.html` (and copies the images it uses),
 - refreshes the homepage list,
-- refreshes `blog/site-data.json`, so the archive, tag cloud, tags page, related posts and author page include the post automatically. **You do not need to re-render other posts.**
+- refreshes `blog/site-data.js`, so the archive, tag cloud, tags page, related posts and author page include the post automatically. **You do not need to re-render other posts.**
 
 ## 3. Publish SEVERAL posts
 
@@ -86,7 +86,7 @@ cd ../blog
 python3 -m http.server 8000      # then open http://localhost:8000
 ```
 
-Use a hard refresh (Ctrl+Shift+R) so the browser does not show cached CSS or `site-data.json`. Check: the post page, the homepage card, the tags page (`/tags.html#tag=c`) and your author page.
+Use a hard refresh (Ctrl+Shift+R) so the browser does not show cached CSS or `site-data.js`. Check: the post page, the homepage card, the tags page (`/tags.html#tag=c`) and your author page.
 
 ## 6. Publish
 
@@ -98,11 +98,11 @@ git pull --rebase --autostash
 git push
 ```
 
-GitHub Pages updates in a minute or two. Readers' browsers may keep the old `site-data.json` for up to ~10 minutes.
+GitHub Pages updates in a minute or two. Readers' browsers may keep the old `site-data.js` for up to ~10 minutes.
 
 ## What is generated (never hand-edit)
 
-- `../blog/` (the whole built site), including `blog/site-data.json` and `blog/site.js`
+- `../blog/` (the whole built site), including `blog/site-data.js` and `blog/site.js`
 - `authors/<slug>.qmd` (from `authors.yml`)
 
 Hand-written: posts, `authors.yml`, `site.js`, `styles.css`, `tags.qmd`, `index.qmd`, `about.qmd`.

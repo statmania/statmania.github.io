@@ -79,14 +79,14 @@ are harmless (the output dir `../blog` is outside the project); ignore them.
 Publish = commit the `.qmd`, `img/` files and the regenerated `blog/` output,
 then push to `master` on GitHub Pages.
 
-## Dynamic widgets (site.js + site-data.json)
+## Dynamic widgets (site.js + site-data.js)
 
 Everything cross-post is **dynamic**, so a new post needs no re-render of other pages:
 
 - `scripts/build_site_data.py` is the project `pre-render` hook (`_quarto.yml`). On every
   `quarto render`, even of one post, it reads post front matter (`title`, `description`,
   `date`, `tags`, `categories`, `author`; `draft: true` is skipped) and `authors.yml`,
-  writes `../blog/site-data.json`, copies `site.js` next to it, and rewrites the small
+  writes `../blog/site-data.js`, copies `site.js` next to it, and rewrites the small
   `authors/<slug>.qmd` stubs (never hand-edit those).
 - `site.js` (hand-written, loaded on every page by `_site-include.html`) fetches the JSON
   and builds: the homepage/post sidebar archive and tag cloud (below the TOC on posts,
@@ -96,7 +96,7 @@ Everything cross-post is **dynamic**, so a new post needs no re-render of other 
   (category/tag filters, 10 per page), plus the sticky small-screen "On this page" menu.
 - Workflow: write the post, `quarto render posts/<post>.qmd` (~7 s), commit `blog/`.
   A full `quarto render` (~40 s) is only needed when `site.js`, CSS or `_quarto.yml`
-  change. Browsers may cache `site-data.json` for a few minutes after publishing.
+  change. Browsers may cache `site-data.js` for a few minutes after publishing.
 - Needs `title` and `date` in the front matter; `tags:` (lowercase, hyphenated) drive
   the tag cloud and related posts.
 - Posts get a margin TOC (`posts/_metadata.yml`: `toc-depth: 3`, since many posts use

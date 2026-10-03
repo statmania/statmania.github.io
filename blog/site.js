@@ -1,6 +1,7 @@
 /* Stat Mania blog: dynamic sidebar widgets, post extras, tags page and author pages.
  *
- * All data comes from site-data.json, which scripts/build_site_data.py rewrites on
+ * All data comes from site-data.js (a script file, so it also works when a page is
+ * opened straight from disk), which scripts/build_site_data.py rewrites on
  * every `quarto render` (even of a single post). Nothing here is baked into pages,
  * so a new or retagged post shows up everywhere on the next page load.
  * Loaded on every page by _site-include.html. Hand-written: edit freely.
@@ -385,18 +386,23 @@
 
   // ---------- go ----------
   mobileToc();
-  fetch(base + 'site-data.json')
-    .then(function (r) { return r.json(); })
-    .then(function (raw) {
-      var D = prepare(raw);
-      tagsPage(D);
-      authorPage(D);
-      homepageBylines(D);
-      ready(function () {
-        // after load, so Quarto has already copied the TOC into its own structures
-        postExtras(D);
-        sidebarWidgets(D);
-      });
-    })
-    .catch(function (e) { console.warn('site.js: could not load site-data.json', e); });
+  function start(raw) {
+    var D = prepare(raw);
+    tagsPage(D);
+    authorPage(D);
+    homepageBylines(D);
+    ready(function () {
+      // after load, so Quarto has already copied the TOC into its own structures
+      postExtras(D);
+      sidebarWidgets(D);
+    });
+  }
+  if (window.SM_DATA) start(window.SM_DATA);
+  else {
+    var ds = document.createElement('script');
+    ds.src = base + 'site-data.js';
+    ds.onload = function () { start(window.SM_DATA); };
+    ds.onerror = function () { console.warn('site.js: could not load site-data.js'); };
+    document.head.appendChild(ds);
+  }
 })();

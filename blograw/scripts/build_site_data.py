@@ -5,7 +5,7 @@ On every `quarto render` (whole project or a single post) this
   * reads the front matter of posts/*.qmd and posts/*.md (title, description, date,
     tags, categories, author; `draft: true` is skipped),
   * reads authors.yml,
-  * writes ../blog/site-data.json (what site.js loads in the browser),
+  * writes ../blog/site-data.js (what site.js loads in the browser),
   * copies site.js next to it, and
   * (re)writes the small authors/<slug>.qmd stubs (bio and photo are static; the
     post list is filled in by site.js).
@@ -112,14 +112,16 @@ def main():
     posts = load_posts()
     authors = load_authors()
     OUT_DIR.mkdir(exist_ok=True)
-    (OUT_DIR / "site-data.json").write_text(
-        json.dumps({"posts": posts, "authors": authors}, ensure_ascii=False, separators=(",", ":")),
+    # a .js file (not .json) so pages also work when opened straight from disk
+    (OUT_DIR / "site-data.js").write_text(
+        "window.SM_DATA=" + json.dumps({"posts": posts, "authors": authors}, ensure_ascii=False,
+                                       separators=(",", ":")).replace("</", "<\\/") + ";\n",
         encoding="utf-8")
     shutil.copyfile(ROOT / "site.js", OUT_DIR / "site.js")
     (ROOT / "authors").mkdir(exist_ok=True)
     for slug, a in authors.items():
         (ROOT / "authors" / f"{slug}.qmd").write_text(author_stub(slug, a), encoding="utf-8")
-    print(f"build_site_data: {len(posts)} posts, {len(authors)} authors -> blog/site-data.json")
+    print(f"build_site_data: {len(posts)} posts, {len(authors)} authors -> blog/site-data.js")
 
 
 if __name__ == "__main__":
