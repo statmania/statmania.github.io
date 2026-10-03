@@ -10,7 +10,416 @@
 <atom:link href="https://www.statmania.info/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Posts on statistics theory, R &amp; Python, and developer tips from Stat Mania.</description>
 <generator>quarto-1.9.38</generator>
-<lastBuildDate>Thu, 01 Oct 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Fri, 02 Oct 2026 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>srand(time(NULL)) in C: Why Random Numbers Repeat and How to Seed Them</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/c-srand-time-null.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/c-srand-time-null.svg" class="img-fluid figure-img" alt="Flow from time(NULL) to srand(seed) to rand() to a sequence of numbers. The same seed gives the same sequence; a new second gives a new seed and a new sequence."></p>
+<figcaption>srand(time(NULL)) feeds the clock into the generator, and rand() then walks a fixed sequence from that starting point.</figcaption>
+</figure>
+</div>
+<p>The line <code>srand(time(NULL));</code> appears at the top of almost every C program that needs random numbers, such as <a href="../posts/c-die-throw.html">the die-rolling example</a>. It is often copied without explanation. Let’s see what each part does and what happens without it.</p>
+<section id="the-surprise-rand-is-not-random" class="level3">
+<h3 class="anchored" data-anchor-id="the-surprise-rand-is-not-random">The Surprise: <code>rand()</code> Is Not Random</h3>
+<p><code>rand()</code> returns pseudo-random integers. “Pseudo” means they come from a formula: each number is computed from the previous one, starting at a <strong>seed</strong>. Same seed, same sequence, every time.</p>
+<p>Let’s roll five numbers from 1 to 100 without setting a seed:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdio.h&gt;</span></span>
+<span id="cb1-2"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdlib.h&gt;</span></span>
+<span id="cb1-3"></span>
+<span id="cb1-4"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-5">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-6">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> "</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> rand<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">()</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb1-7">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-8">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb1-9">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-10"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>Running it twice:</p>
+<pre><code>84 87 78 16 94
+84 87 78 16 94</code></pre>
+<p>Identical. When we never call <code>srand()</code>, C behaves as if we called <code>srand(1)</code>, so the program starts from the same point on every run.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The exact numbers depend on the C library. The ones in this post come from glibc (gcc on Linux). Another platform gives a different sequence, but it will still repeat from run to run.</p>
+</div>
+</div>
+</section>
+<section id="the-parts-one-at-a-time" class="level3">
+<h3 class="anchored" data-anchor-id="the-parts-one-at-a-time">The Parts, One at a Time</h3>
+<ol type="1">
+<li><strong><code>rand()</code></strong> returns the next number in the sequence. It has no memory of the clock; it only continues from its current state.</li>
+<li><strong><code>srand(seed)</code></strong> sets that starting state. It takes an <code>unsigned int</code>.</li>
+<li><strong><code>time(NULL)</code></strong> (from <code>&lt;time.h&gt;</code>) returns the current time as the number of seconds since 1 January 1970, the Unix epoch. This value changes every second, so each run starts from a different seed.</li>
+</ol>
+<p>Together, <code>srand(time(NULL))</code> means “start the sequence from a point that depends on the clock.”</p>
+</section>
+<section id="a-fixed-seed-is-useful-too" class="level3">
+<h3 class="anchored" data-anchor-id="a-fixed-seed-is-useful-too">A Fixed Seed Is Useful Too</h3>
+<p>Passing a constant makes the sequence repeatable on purpose:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1">srand<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">42</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<p>Every run now prints <code>67 41 82 42 13</code>. That is exactly what we want when <strong>testing or debugging</strong>, or when a simulation must be reproducible. Print the seed, and anyone can replay the same run.</p>
+</section>
+<section id="seeding-with-the-clock" class="level3">
+<h3 class="anchored" data-anchor-id="seeding-with-the-clock">Seeding with the Clock</h3>
+<p>Here is the usual form:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdio.h&gt;</span></span>
+<span id="cb4-2"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdlib.h&gt;</span></span>
+<span id="cb4-3"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;time.h&gt;</span></span>
+<span id="cb4-4"></span>
+<span id="cb4-5"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb4-6">    srand<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">((</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">unsigned</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>time<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>NULL<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">));</span></span>
+<span id="cb4-7"></span>
+<span id="cb4-8">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb4-9">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> "</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> rand<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">()</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb4-10">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb4-11">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb4-12">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb4-13"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>Two runs a second or more apart:</p>
+<pre><code>20 24 59 67 77
+15 82 18 77 34</code></pre>
+<section id="why-the-unsigned-int-cast" class="level4">
+<h4 class="anchored" data-anchor-id="why-the-unsigned-int-cast">Why the <code>(unsigned int)</code> cast?</h4>
+<p><code>time(NULL)</code> returns a <code>time_t</code>, usually a 64-bit integer, while <code>srand()</code> takes a 32-bit <code>unsigned int</code>. Passing one to the other narrows the value. With default warnings gcc stays quiet, but with <code>-Wconversion</code> it says:</p>
+<pre><code>warning: conversion from 'time_t' {aka 'long int'} to 'unsigned int' may change value [-Wconversion]</code></pre>
+<p>The cast says “yes, we know” and silences it. Losing the high bits is harmless here, since all we need is a number that differs from run to run.</p>
+</section>
+</section>
+<section id="pitfall-1-the-same-second-trap" class="level3">
+<h3 class="anchored" data-anchor-id="pitfall-1-the-same-second-trap">Pitfall 1: The Same-Second Trap</h3>
+<p>The clock only changes once per second. Two runs that start within the same second get the same seed, and therefore the same numbers. Running the program twice in a row from a script printed this:</p>
+<pre><code>20 24 59 67 77
+20 24 59 67 77</code></pre>
+<p>For a game or a quick demo this rarely matters. For a program launched many times in a loop (a test harness, a batch job), it does.</p>
+</section>
+<section id="pitfall-2-seeding-inside-a-loop" class="level3">
+<h3 class="anchored" data-anchor-id="pitfall-2-seeding-inside-a-loop">Pitfall 2: Seeding Inside a Loop</h3>
+<p><code>srand()</code> belongs <strong>once</strong>, at the start of <code>main()</code>. Putting it inside the loop re-seeds with the same second again and again:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb8-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb8-2">    srand<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>time<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>NULL<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">));</span>              <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// wrong: restarts the sequence each pass</span></span>
+<span id="cb8-3">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> "</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> rand<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">()</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb8-4"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>Output:</p>
+<pre><code>15 15 15 15 15</code></pre>
+<p>Every pass restarts the sequence from the same seed and takes its first number, so we get the same value five times.</p>
+</section>
+<section id="what-srandtimenull-cannot-do" class="level3">
+<h3 class="anchored" data-anchor-id="what-srandtimenull-cannot-do">What <code>srand(time(NULL))</code> Cannot Do</h3>
+<ul>
+<li><strong>It is not secure.</strong> Anyone who knows roughly when the program ran can guess the seed. Never use <code>rand()</code> for passwords, tokens or cryptography; use the operating system’s secure source instead (for example <code>getrandom()</code> on Linux or <code>arc4random()</code> on BSD and macOS).</li>
+<li><strong>It is not very uniform.</strong> <code>rand() % 100</code> slightly favours small values, because <code>RAND_MAX + 1</code> is rarely a multiple of 100. For teaching and games this is fine.</li>
+<li><strong>In C++</strong>, prefer <code>&lt;random&gt;</code> (<code>std::mt19937</code> with <code>std::random_device</code>) over <code>rand()</code>/<code>srand()</code>.</li>
+</ul>
+</section>
+<section id="quick-summary" class="level3">
+<h3 class="anchored" data-anchor-id="quick-summary">Quick Summary</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Question</th>
+<th style="text-align: left;">Answer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Why does <code>rand()</code> repeat across runs?</td>
+<td style="text-align: left;">No <code>srand()</code> means the default seed 1 every time.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">What does <code>time(NULL)</code> give?</td>
+<td style="text-align: left;">Seconds since 1970, so a new seed each second.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Why cast to <code>unsigned int</code>?</td>
+<td style="text-align: left;"><code>time_t</code> is wider; the cast avoids a <code>-Wconversion</code> warning.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">How often do we call <code>srand()</code>?</td>
+<td style="text-align: left;">Once, at the start of the program.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">When do we use a fixed seed?</td>
+<td style="text-align: left;">Testing, debugging, reproducible simulations.</td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+
+ ]]></description>
+  <category>C</category>
+  <category>Programming</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/c-srand-time-null.html</guid>
+  <pubDate>Fri, 02 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/c-srand-time-null.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
 <item>
   <title>Tossing a Die in C Until We Get a 6</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
@@ -7921,220 +8330,6 @@ font-style: inherit;">}</span></span></code></pre></div></div>
   <guid>https://www.statmania.info/blog/posts/10-c-if-else-examples.html</guid>
   <pubDate>Sun, 09 Aug 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/if-else-flow.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Why Use the Geometric Distribution?</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/geometric-distribution.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="what-is-the-geometric-distribution" class="level2">
-<h2 class="anchored" data-anchor-id="what-is-the-geometric-distribution">What is the Geometric Distribution?</h2>
-<p>The <strong>geometric distribution</strong> models the number of trials needed to get the <strong>first success</strong> in a sequence of independent Bernoulli trials (each with success probability <img src="https://latex.codecogs.com/png.latex?p">).</p>
-<p>It answers questions like: <em>“How many times must we try before we succeed for the first time?”</em></p>
-<hr>
-</section>
-<section id="key-characteristics" class="level2">
-<h2 class="anchored" data-anchor-id="key-characteristics">Key Characteristics</h2>
-<ul>
-<li><p><strong>Memoryless property</strong>: The probability of success in the next trial does not depend on how many failures have already occurred.</p></li>
-<li><p><strong>Two common formulations</strong>:</p></li>
-</ul>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 23%">
-<col style="width: 41%">
-<col style="width: 12%">
-<col style="width: 23%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Version</th>
-<th>What it models</th>
-<th>PMF</th>
-<th>Support</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Type 1</td>
-<td>Number of trials until first success (including the success)</td>
-<td><img src="https://latex.codecogs.com/png.latex?P(X%20=%20k)%20=%20(1-p)%5E%7Bk-1%7Dp"></td>
-<td><img src="https://latex.codecogs.com/png.latex?k%20=%201,%202,%203,%20%5Cdots"></td>
-</tr>
-<tr class="even">
-<td>Type 2</td>
-<td>Number of failures before first success</td>
-<td><img src="https://latex.codecogs.com/png.latex?P(Y%20=%20y)%20=%20(1-p)%5Ey%20p"></td>
-<td><img src="https://latex.codecogs.com/png.latex?y%20=%200,%201,%202,%20%5Cdots"></td>
-</tr>
-</tbody>
-</table>
-<hr>
-</section>
-<section id="real-world-example" class="level2">
-<h2 class="anchored" data-anchor-id="real-world-example">Real-World Example</h2>
-<blockquote class="blockquote">
-<p>A quality control inspector tests items coming off an assembly line. Each item has a 5% chance of being defective. What is the probability that the <strong>first defect</strong> is found on the <strong>5th item</strong> tested?</p>
-</blockquote>
-<p>Here:</p>
-<ul>
-<li><img src="https://latex.codecogs.com/png.latex?p%20=%200.05"></li>
-<li>We want <img src="https://latex.codecogs.com/png.latex?P(X%20=%205)"> with Type 1 formulation.</li>
-</ul>
-<p><img src="https://latex.codecogs.com/png.latex?P(X%20=%205)%20=%20(1%20-%200.05)%5E%7B5-1%7D%20%5Ctimes%200.05"></p>
-<p><img src="https://latex.codecogs.com/png.latex?=%20(0.95)%5E4%20%5Ctimes%200.05%20%5Capprox%200.8145%20%5Ctimes%200.05%20%5Capprox%200.0407"></p>
-<p>So about <strong>4.07%</strong>.</p>
-<hr>
-</section>
-<section id="when-is-the-geometric-distribution-used" class="level2">
-<h2 class="anchored" data-anchor-id="when-is-the-geometric-distribution-used">When Is the Geometric Distribution Used?</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Situation</th>
-<th>Example</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Quality control</td>
-<td>Number of items tested until first defect</td>
-</tr>
-<tr class="even">
-<td>Sports</td>
-<td>Number of shots until first goal</td>
-</tr>
-<tr class="odd">
-<td>Customer behavior</td>
-<td>Number of calls until first sale</td>
-</tr>
-<tr class="even">
-<td>Medicine</td>
-<td>Number of patients until first responder</td>
-</tr>
-<tr class="odd">
-<td>Engineering</td>
-<td>Number of components until first failure</td>
-</tr>
-</tbody>
-</table>
-<hr>
-</section>
-<section id="visualizing-the-geometric-distribution" class="level2">
-<h2 class="anchored" data-anchor-id="visualizing-the-geometric-distribution">Visualizing the Geometric Distribution</h2>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(ggplot2)</span>
-<span id="cb1-2"></span>
-<span id="cb1-3">p <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.05</span></span>
-<span id="cb1-4">x <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span></span>
-<span id="cb1-5">prob <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dgeom</span>(x <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, p)  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Type 1: P(X = k) = (1-p)^(k-1) p</span></span>
-<span id="cb1-6"></span>
-<span id="cb1-7">df <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">Trials =</span> x, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">Probability =</span> prob)</span>
-<span id="cb1-8"></span>
-<span id="cb1-9"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(df, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> Trials, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> Probability)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb1-10">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_col</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"steelblue"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">alpha =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.7</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb1-11">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">title =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Geometric Distribution (p ="</span>, p, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">")"</span>),</span>
-<span id="cb1-12">       <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">subtitle =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Number of trials until first success"</span>,</span>
-<span id="cb1-13">       <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Number of trials"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Probability"</span>)</span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/posts/geometric-distribution_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-
-
-</section>
-
- ]]></description>
-  <category>probability</category>
-  <category>discrete distributions</category>
-  <guid>https://www.statmania.info/blog/posts/geometric-distribution.html</guid>
-  <pubDate>Tue, 04 Aug 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/posts/geometric-distribution_files/figure-html/unnamed-chunk-1-1.png" medium="image" type="image/png"/>
 </item>
 </channel>
 </rss>
