@@ -437,7 +437,7 @@ font-style: inherit;">}</span></span></code></pre></div></div>
 <figcaption>We keep rolling until the die shows 6.</figcaption>
 </figure>
 </div>
-<p>Each program below is hidden by default. Try it yourself first: open <strong>See hint</strong> if we get stuck, and press <strong>Reveal</strong> to check our answer.</p>
+<p>New to <code>srand(time(NULL))</code>? See <a href="../posts/c-srand-time-null.html">why it seeds the generator</a> first. Each program below is hidden by default. Try it yourself first: open <strong>See hint</strong> if we get stuck, and press <strong>Reveal</strong> to check our answer.</p>
 <section id="track-every-roll" class="level3">
 <h3 class="anchored" data-anchor-id="track-every-roll">Track Every Roll</h3>
 <p>The simplest approach is to <strong>print inside the loop</strong>. This shows each roll as it happens:</p>
@@ -1094,41 +1094,8 @@ Total rolls: 5</code></pre>
 <p>The alternative — <code>frequencies[dice - 1]</code> — packs the array to size 6 but means every access has a <code>-1</code> in it. Both are common; I prefer the size-7 version for clarity.</p>
 <hr>
 </section>
-<section id="which-approach-to-choose" class="level3">
-<h3 class="anchored" data-anchor-id="which-approach-to-choose">Which Approach to Choose?</h3>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Goal</th>
-<th style="text-align: left;">Use</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Just see each roll as it happens</td>
-<td style="text-align: left;"><code>printf</code> inside the loop</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Store history to review/analyze later</td>
-<td style="text-align: left;">Array of rolls</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Count how often each face appears</td>
-<td style="text-align: left;">Frequency array</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Both history and frequency</td>
-<td style="text-align: left;">Combine: store rolls in one array, tally in another</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="tracking-which-steps-gave-each-number" class="level3">
-<h3 class="anchored" data-anchor-id="tracking-which-steps-gave-each-number">Tracking Which Steps Gave Each Number</h3>
+<section id="finally-which-steps-gave-each-face" class="level3">
+<h3 class="anchored" data-anchor-id="finally-which-steps-gave-each-face">Finally: Which Steps Gave Each Face?</h3>
 <p>Now we want more than counts: for each face, <strong>which steps</strong> produced it? We store the rolls in an array, then scan the array once per face and print the step numbers that match.</p>
 <div class="reveal-code">
 <div class="hint">
@@ -1395,6 +1362,44 @@ font-style: inherit;">}</span></span></code></pre></div></div>
 6: 6</code></pre>
 <p>Read it as: the first roll was a 5, the second a 1, the third and fourth were 2s, the fifth a 3, and the sixth finally gave the 6. A face that never appeared (here, 4) just gets an empty list.</p>
 <p>The outer loop picks a face and the inner loop scans the history, so the work is <code>6 × count</code> comparisons. That is nothing for a die, but for many categories you would tally in one pass instead, as in the frequency array above.</p>
+<hr>
+</section>
+<section id="which-approach-to-choose" class="level3">
+<h3 class="anchored" data-anchor-id="which-approach-to-choose">Which Approach to Choose?</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Goal</th>
+<th style="text-align: left;">Use</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Just see each roll as it happens</td>
+<td style="text-align: left;"><code>printf</code> inside the loop</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Store history to review/analyze later</td>
+<td style="text-align: left;">Array of rolls</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Count how often each face appears</td>
+<td style="text-align: left;">Frequency array</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Both history and frequency</td>
+<td style="text-align: left;">Combine: store rolls in one array, tally in another</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Which steps produced each face</td>
+<td style="text-align: left;">Store the rolls, then scan once per face</td>
+</tr>
+</tbody>
+</table>
 
 
 </section>

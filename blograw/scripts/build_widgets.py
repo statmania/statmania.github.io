@@ -61,6 +61,7 @@ def load_posts():
         posts.append({
             "title": str(fm["title"]),
             "author": str(fm.get("author") or "").strip(),
+            "cats": [str(c).strip() for c in ([fm["categories"]] if isinstance(fm.get("categories"), str) else fm.get("categories") or []) if str(c).strip()],
             "desc": " ".join(str(fm.get("description") or "").split()),
             "href": f"posts/{path.stem}.html",
             "date": d,
@@ -199,6 +200,20 @@ def author_page(slug, a, mine):
                     for l in a.get("links") or [])
     img = (f'<img class="sm-author-img" src="../{html.escape(a["image"])}" alt="{html.escape(a["name"])}">'
            if a.get("image") else "")
+    cats = Counter(c for p in mine for c in set(p["cats"]))
+    tags = Counter(t for p in mine for t in set(p["tags"]))
+
+    def options(counts, label):
+        return (f'<option value="">{label}</option>' + "".join(
+            f'<option value="{html.escape(k)}">{html.escape(k)} ({counts[k]})</option>'
+            for k in sorted(counts, key=lambda k: (-counts[k], k.lower()))))
+
+    items = "".join(
+        f'<li data-cats="{html.escape("|".join(p["cats"]))}" data-tags="{html.escape("|".join(p["tags"]))}">'
+        f'<a href="../{html.escape(p["href"])}">{html.escape(p["title"])}</a>'
+        f'<span class="sm-tp-date">{p["date"].isoformat()}</span>'
+        + (f'<p>{html.escape(p["desc"])}</p>' if p["desc"] else "") + "</li>"
+        for p in mine)
     return f"""---
 title: "{a["name"]}"
 description: "{" ".join(str(a.get("tagline") or "").split())}"
@@ -213,9 +228,71 @@ toc: false
 <div><p class="sm-author-bio">{html.escape(" ".join(str(a.get("bio") or "").split()))}</p>
 <div class="sm-tag-cloud sm-tag-cloud-all">{links}</div></div>
 </div>
-<h2 class="sm-author-count">{len(mine)} post{"s" if len(mine) != 1 else ""}</h2>
-<ul class="sm-post-list">{post_items(mine)}</ul>
+<div id="sm-author-posts" data-per-page="10">
+<div class="sm-filter-bar">
+<label>Category <select id="sm-f-cat">{options(cats, "All categories")}</select></label>
+<label>Tag <select id="sm-f-tag">{options(tags, "All tags")}</select></label>
+<span class="sm-filter-count" aria-live="polite"></span>
+</div>
+<ul class="sm-post-list">{items}</ul>
+<nav class="sm-pager" aria-label="Pagination"></nav>
+</div>
+<script>
+{AUTHOR_PAGER_JS}
+</script>
 ```
+"""
+
+
+AUTHOR_PAGER_JS = r"""
+(function () {
+  var root = document.getElementById('sm-author-posts');
+  var per = +root.dataset.perPage || 10;
+  var items = Array.prototype.slice.call(root.querySelectorAll('.sm-post-list > li'));
+  var selCat = document.getElementById('sm-f-cat'), selTag = document.getElementById('sm-f-tag');
+  var pager = root.querySelector('.sm-pager'), count = root.querySelector('.sm-filter-count');
+  var state = {cat: '', tag: '', page: 1};
+  function read() {
+    var h = new URLSearchParams(location.hash.slice(1));
+    state.cat = h.get('cat') || ''; state.tag = h.get('tag') || ''; state.page = +h.get('page') || 1;
+    selCat.value = state.cat; selTag.value = state.tag;
+    if (selCat.value !== state.cat) state.cat = '';
+    if (selTag.value !== state.tag) state.tag = '';
+  }
+  function write() {
+    var h = new URLSearchParams();
+    if (state.cat) h.set('cat', state.cat);
+    if (state.tag) h.set('tag', state.tag);
+    if (state.page > 1) h.set('page', state.page);
+    history.replaceState(null, '', location.pathname + (h.toString() ? '#' + h : ''));
+  }
+  function has(li, key, v) { return !v || li.dataset[key].split('|').indexOf(v) > -1; }
+  function render() {
+    var hit = items.filter(function (li) { return has(li, 'cats', state.cat) && has(li, 'tags', state.tag); });
+    var pages = Math.max(1, Math.ceil(hit.length / per));
+    state.page = Math.min(Math.max(state.page, 1), pages);
+    items.forEach(function (li) { li.hidden = true; });
+    hit.slice((state.page - 1) * per, state.page * per).forEach(function (li) { li.hidden = false; });
+    count.textContent = hit.length + ' of ' + items.length + ' posts';
+    pager.textContent = '';
+    pager.hidden = pages < 2;
+    function btn(label, page, cur, off) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.textContent = label; b.className = 'sm-page' + (cur ? ' active' : '');
+      b.disabled = !!off;
+      if (cur) b.setAttribute('aria-current', 'page');
+      b.addEventListener('click', function () { state.page = page; write(); render(); root.scrollIntoView({behavior: 'smooth'}); });
+      pager.appendChild(b);
+    }
+    btn('\u2039 Prev', state.page - 1, false, state.page === 1);
+    for (var i = 1; i <= pages; i++) btn(String(i), i, i === state.page, false);
+    btn('Next \u203a', state.page + 1, false, state.page === pages);
+  }
+  function change() { state.cat = selCat.value; state.tag = selTag.value; state.page = 1; write(); render(); }
+  selCat.addEventListener('change', change); selTag.addEventListener('change', change);
+  window.addEventListener('hashchange', function () { read(); render(); });
+  read(); render();
+})();
 """
 
 

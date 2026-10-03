@@ -98,7 +98,7 @@ Profiles live in `authors.yml` (slug → `name`, `aliases`, `image`, `tagline`, 
 `links`). Posts keep `author: "Name"` as plain text; a post belongs to the profile
 whose `name`/`aliases` match it, so no post front matter changes are needed.
 `scripts/build_widgets.py` generates `authors/<slug>.qmd` (bio, photo, links and the
-author's posts) and `_authors-body.html`, whose script links bylines (post title
+author's posts, with category/tag filters and 10-per-page pagination) and `_authors-body.html`, whose script links bylines (post title
 block and homepage cards) to the author page and adds an author card at the end of
 each post. Add an author = add an entry (and a photo under `img/`), then run a full
 `quarto render`. Never hand-edit `authors/*.qmd` or `_authors-body.html`. Authors not
