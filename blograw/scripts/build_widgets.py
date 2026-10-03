@@ -462,7 +462,7 @@ TOC_JS = """<script>
 
 
 def post_tags_js(posts):
-    """On post pages, show the post's tags (linked to tags.html) beside its categories."""
+    """On post pages, show the post's tags (linked to tags.html) below the article body."""
     data = {p["href"].split("/")[-1]: p["tags"] for p in posts if p["tags"]}
     payload = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
     return """<script>
@@ -485,10 +485,8 @@ def post_tags_js(posts):
     a.textContent = t;
     row.appendChild(a);
   });
-  var cats = document.querySelector('#title-block-header .quarto-categories');
-  var desc = document.querySelector('#title-block-header .description');
-  var anchor = cats || desc;
-  if (anchor) anchor.insertAdjacentElement('afterend', row);
+  var main = document.getElementById('quarto-document-content');
+  if (main) main.appendChild(row);
 })();
 </script>""" % payload
 
