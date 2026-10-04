@@ -863,6 +863,1247 @@ font-style: inherit;">}</span></span></code></pre></div></div>
   <media:content url="https://www.statmania.info/blog/img/c-while-practice.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 <item>
+  <title>How This Blog Is Built: Quarto, One Python Hook and One Shell Command</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/how-this-blog-is-built.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/blog-build-pipeline.svg" class="img-fluid figure-img" alt="Posts and authors.yml feed quarto render and a pre-render hook. Rendering writes blog/*.html, the hook writes site-data.js and site.js. Git push publishes to GitHub Pages and the browser builds the widgets from site-data.js."></p>
+<figcaption>The blog’s chain from Markdown source to published page: Quarto renders the posts, a pre-render hook writes the shared data file, git push publishes, and the browser builds the widgets.</figcaption>
+</figure>
+</div>
+<p>This blog is plain files: Markdown in, HTML out, hosted for free on GitHub Pages. There is no server and no database, yet it has a sidebar archive, a tag cloud, related posts, author pages, a light/dark switch, and a one-command publish. Here is how it fits together, so we can borrow whatever is useful.</p>
+<section id="the-idea-sources-in-built-site-out" class="level3">
+<h3 class="anchored" data-anchor-id="the-idea-sources-in-built-site-out">The Idea: Sources In, Built Site Out</h3>
+<p>Quarto turns <code>.qmd</code> files into HTML. GitHub Pages serves whatever is committed. So we keep two folders side by side:</p>
+<pre><code>blograw/          # sources (what we edit)
+  _quarto.yml     # project config
+  posts/*.qmd     # one file per post
+  styles.css, site.js, authors.yml, publish.sh
+blog/             # built site (generated; committed; served by Pages)</code></pre>
+<p>Nothing is built on GitHub. We render on our own computer and commit the result. The cost is that generated HTML lives in git. The gain is zero build infrastructure and a site that works with any static host.</p>
+<p>The project file points Quarto at the right inputs and output:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">project</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span></span>
+<span id="cb2-2"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">type</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> website</span></span>
+<span id="cb2-3"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">render</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span></span>
+<span id="cb2-4"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">-</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"*.qmd"</span></span>
+<span id="cb2-5"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">-</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"posts/*.qmd"</span></span>
+<span id="cb2-6"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">output-dir</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> ../blog</span></span>
+<span id="cb2-7"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pre-render</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> scripts/build_site_data.py</span></span></code></pre></div></div>
+<p>Each post starts with front matter that everything else reads:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">---</span></span>
+<span id="cb3-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">title</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Descriptive Title"</span></span>
+<span id="cb3-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">description</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"One or two sentences for cards and search results."</span></span>
+<span id="cb3-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2026-10-04"</span></span>
+<span id="cb3-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">categories</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">[</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Tools</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">,</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> Quarto</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">]</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">       # broad</span></span>
+<span id="cb3-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tags</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">[</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">quarto</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">,</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> shell</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">]</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">             # specific</span></span>
+<span id="cb3-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">author</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Abdullah Al Mahmud"</span></span>
+<span id="cb3-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">image</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> ../img/cover.png</span></span>
+<span id="cb3-9"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">---</span></span></code></pre></div></div>
+<p>The homepage is a Quarto <em>listing</em>: a few lines in <code>index.qmd</code> give us a card grid, sorting, filtering, pagination and an RSS feed.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">listing</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span></span>
+<span id="cb4-2"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">contents</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> posts</span></span>
+<span id="cb4-3"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sort</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"date desc"</span></span>
+<span id="cb4-4"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">type</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> grid</span></span>
+<span id="cb4-5"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">categories</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> cloud</span></span>
+<span id="cb4-6"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">page-size</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span></span>
+<span id="cb4-7"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">feed</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">true</span></span></code></pre></div></div>
+</section>
+<section id="the-problem-cross-post-features" class="level3">
+<h3 class="anchored" data-anchor-id="the-problem-cross-post-features">The Problem: Cross-Post Features</h3>
+<p>A listing page knows all the posts. A <strong>post page</strong> only knows itself, so an archive in its sidebar, related posts, or a tag cloud would need data about every other post. If we bake that into each page at render time, adding one post leaves 40 old pages stale until we re-render them all (about a minute here).</p>
+</section>
+<section id="the-fix-one-data-file-rebuilt-on-every-render" class="level3">
+<h3 class="anchored" data-anchor-id="the-fix-one-data-file-rebuilt-on-every-render">The Fix: One Data File, Rebuilt on Every Render</h3>
+<p>Quarto can run a script <strong>before</strong> every render with <code>pre-render:</code>. Ours is about 100 lines of Python. It reads the front matter of every post (and a small <code>authors.yml</code>) and writes one file:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb5-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">window</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">SM_DATA</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> {<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"posts"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>[{<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"href"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"posts/c-struct.html"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"title"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"…"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"date"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2026-08-20"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb5-2">                            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tags"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"c"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"struct"</span>]<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cats"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C"</span>]<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"author"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"…"</span>}<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> …]<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb5-3">                  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"authors"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>{…}}<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span></code></pre></div></div>
+<p>The core of the hook is only this:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> path <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">sorted</span>(POSTS.glob(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"*.qmd"</span>)):</span>
+<span id="cb6-2">    fm <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> front_matter(path)            <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># YAML between the --- lines</span></span>
+<span id="cb6-3">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> fm.get(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"draft"</span>):</span>
+<span id="cb6-4">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">continue</span></span>
+<span id="cb6-5">    posts.append({<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"href"</span>: <span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"posts/</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>path<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>stem<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.html"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"title"</span>: fm[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"title"</span>],</span>
+<span id="cb6-6">                  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"date"</span>: as_date(fm[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"date"</span>]).isoformat(),</span>
+<span id="cb6-7">                  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tags"</span>: as_list(fm.get(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tags"</span>)), …})</span>
+<span id="cb6-8">(OUT_DIR <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"site-data.js"</span>).write_text(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"window.SM_DATA="</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> json.dumps(data) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">";"</span>)</span></code></pre></div></div>
+<p>A small hand-written <code>site.js</code> is loaded on every page. It reads <code>SM_DATA</code> and builds, in the browser:</p>
+<ul>
+<li>the <strong>archive</strong> (year, month, posts) and the <strong>tag cloud</strong> in the sidebar,</li>
+<li>a <strong>Tags</strong> row and up to five <strong>Related posts</strong> under each post,</li>
+<li>the <strong>author card</strong> and clickable author names,</li>
+<li>the <strong>tags page</strong> (<code>tags.html#tag=quarto</code>) and <strong>author pages</strong>, with filters and pagination.</li>
+</ul>
+<p>Because the data file is rewritten by <em>any</em> render, even <code>quarto render posts/new-post.qmd</code> (about seven seconds) updates every widget on every page. No other page is re-rendered.</p>
+<p>Related posts are scored in a few lines. A shared tag counts for more when few posts have it (a rare tag says more than “Tutorial”):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb7-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// df = how many posts carry each tag or category; n = number of posts</span></span>
+<span id="cb7-2">score <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">Math</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">log</span>(n <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> df[feature]) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> (feature<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">startsWith</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'cat:'</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span></code></pre></div></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Why <code>site-data.js</code> and not a JSON file?</strong> Our first version fetched <code>site-data.json</code>. Browsers block <code>fetch()</code> for pages opened straight from disk (<code>file://</code>), so every widget vanished locally. A <code>&lt;script src&gt;</code> works everywhere, so the data became a <code>.js</code> file that sets a global.</p>
+</div>
+</div>
+</section>
+<section id="dark-and-light-theme" class="level3">
+<h3 class="anchored" data-anchor-id="dark-and-light-theme">Dark and Light Theme</h3>
+<p>Quarto adds a navbar toggle when <code>theme:</code> has a <code>light</code> and a <code>dark</code> entry:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb8-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">format</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span></span>
+<span id="cb8-2"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">html</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span></span>
+<span id="cb8-3"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span></span>
+<span id="cb8-4"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">      </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dark</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">[</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">cosmo</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">,</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> theme-dark.scss</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">]</span></span>
+<span id="cb8-5"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">      </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">light</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> cosmo</span></span>
+<span id="cb8-6"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">highlight-style</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">{</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">light</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> github</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">,</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dark</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> dracula</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>Two lessons. Listing <code>dark</code> first makes it the default. And Quarto decides what is dark from the theme’s <strong>background colour</strong>: giving it <code>cosmo</code> twice looked fine but made <em>both</em> modes “light”. The tiny <code>theme-dark.scss</code> only sets <code>$body-bg: #05070d;</code>, which is enough to make Quarto treat it as dark. After that, our stylesheet uses CSS variables (<code>--sm-bg</code>, <code>--sm-text</code>, …) and overrides them under <code>body.quarto-light</code>.</p>
+</section>
+<section id="small-quality-of-life-pieces" class="level3">
+<h3 class="anchored" data-anchor-id="small-quality-of-life-pieces">Small Quality-of-Life Pieces</h3>
+<ul>
+<li><strong>Reveal/Hide code with hints</strong> for exercise posts. In Markdown we write a Pandoc div, and a tiny script adds the “See hint” and “Reveal code” buttons:</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb9-1">::: {.reveal-code}</span>
+<span id="cb9-2">::: {.hint}</span>
+<span id="cb9-3"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">- </span>Start <span class="in" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">`i`</span> at 2</span>
+<span id="cb9-4"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">- </span>Add 2 each pass</span>
+<span id="cb9-5">:::</span>
+<span id="cb9-6"></span>
+<span id="cb9-7"><span class="in" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">```c</span></span>
+<span id="cb9-8"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb9-9"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span> printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> "</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb9-10"><span class="in" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">```</span></span>
+<span id="cb9-11">:::</span></code></pre></div></div>
+<p>Without JavaScript the code and hint simply stay visible.</p>
+<ul>
+<li><strong>Images:</strong> SVG in the post body (sharp, tiny, accessible), PNG in the front matter, because link previews on social sites do not render SVG.</li>
+<li><strong>Authors</strong> live in one <code>authors.yml</code> (name, photo, bio). Posts keep <code>author: "Name"</code> as plain text, so nothing in old posts changes.</li>
+</ul>
+</section>
+<section id="the-publish-script" class="level3">
+<h3 class="anchored" data-anchor-id="the-publish-script">The Publish Script</h3>
+<p>Rendering, committing and pushing is the same every time, so a short shell script does it:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#!/usr/bin/env bash</span></span>
+<span id="cb10-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">set</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-euo</span> pipefail</span>
+<span id="cb10-3"></span>
+<span id="cb10-4"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> f <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${files</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[@]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb10-5">  <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">quarto</span> render <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$f</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>              <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># quarto renders one file per call</span></span>
+<span id="cb10-6"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span>
+<span id="cb10-7"></span>
+<span id="cb10-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> add blog blograw              <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># only the blog; other changes stay untouched</span></span>
+<span id="cb10-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> diff <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--cached</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--quiet</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">&amp;&amp;</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">{</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Nothing to commit."</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">exit</span> 0<span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">}</span></span>
+<span id="cb10-10"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-q</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Blog: update </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$names</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb10-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> pull <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--rebase</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--autostash</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-q</span></span>
+<span id="cb10-12"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> push</span></code></pre></div></div>
+<p>Day to day it is one line:</p>
+<pre><code>./publish.sh posts/my-new-post.qmd</code></pre>
+<p>Useful options: <code>--no-push</code> (commit but look first), <code>--all</code> (full render after changing the theme or config), and <code>-m "message"</code>. The script stops if a render fails, skips empty commits, and refuses to touch files outside the blog folders.</p>
+</section>
+<section id="gotchas-we-hit" class="level3">
+<h3 class="anchored" data-anchor-id="gotchas-we-hit">Gotchas We Hit</h3>
+<ul>
+<li><code>quarto render a.qmd b.qmd</code> does <strong>not</strong> render two files; the second is treated as an option. Loop instead.</li>
+<li>A single-post render re-renders the homepage too (to refresh the listing). That is expected.</li>
+<li><code>freeze: true</code> caches R/Python output; delete <code>_freeze/posts/&lt;post&gt;/</code> to force a re-run.</li>
+<li>GitHub Pages may cache <code>site-data.js</code> for a few minutes after a push.</li>
+<li>Keep generated files generated: edit the <code>.qmd</code>, never the HTML in <code>blog/</code>.</li>
+</ul>
+</section>
+<section id="start-your-own-the-minimum" class="level3">
+<h3 class="anchored" data-anchor-id="start-your-own-the-minimum">Start Your Own: The Minimum</h3>
+<ol type="1">
+<li><code>quarto create project blog</code> (or a website project with a <code>posts/</code> folder).</li>
+<li>Set <code>output-dir:</code> to a folder that is committed, and enable GitHub Pages for it.</li>
+<li>Give every post <code>title</code>, <code>date</code>, <code>categories</code>, <code>tags</code>.</li>
+<li>Add a <code>listing:</code> to <code>index.qmd</code>.</li>
+<li>When it hurts, add a <code>pre-render:</code> script and a <code>publish.sh</code>.</li>
+</ol>
+<p>Everything else here is optional polish, and each piece is small enough to read in one sitting.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>Tools</category>
+  <category>Quarto</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/how-this-blog-is-built.html</guid>
+  <pubDate>Sat, 03 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/blog-build-pipeline.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>How I Make Statistics Lecture Slides with Quarto and reveal.js</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/revealjs-quarto-stat-slides.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/revealjs-stat-slides.svg" class="img-fluid figure-img" alt="A _quarto.yml and a css/styles.css feed a chapter .qmd file, which renders to a reveal.js HTML deck, with the qdraw plugin adding live drawing on top."></p>
+<figcaption>One shared config and stylesheet apply to one .qmd file per chapter; Quarto renders each into a reveal.js deck, and the qdraw plugin adds live drawing.</figcaption>
+</figure>
+</div>
+<p>Statistics slides need three things at once: readable text, real math, and numbers that are actually correct. After trying the usual slide tools, I settled on <strong>Quarto with reveal.js</strong>. Each chapter is one plain-text file; math is LaTeX, tables and plots come from R code, and the result is a web page that opens anywhere. This post shows the setup behind the <a href="https://www.statmania.info/lectures.html">Stat Mania lecture slides</a>, so we can build the same thing.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/stat-slide-function.jpg" class="img-fluid figure-img" alt="A teal lecture slide titled Function showing the binomial formula P(x) = nCx p^x (1-p)^(n-x), and bullets defining p, q, n and x."></p>
+<figcaption>A real slide from the binomial distribution deck: a title, a LaTeX formula, and bullets that appear one by one. The pen icon top left is qdraw.</figcaption>
+</figure>
+</div>
+<section id="why-quarto-reveal.js" class="level3">
+<h3 class="anchored" data-anchor-id="why-quarto-reveal.js">Why Quarto + reveal.js</h3>
+<ul>
+<li><strong>Plain text.</strong> A deck is a <code>.qmd</code> file, so it works with git, diffs and any editor.</li>
+<li><strong>Math just works.</strong> <code>$\binom{n}{x}p^x(1-p)^{n-x}$</code> renders crisply at any size.</li>
+<li><strong>Code lives next to the slide.</strong> An R chunk computes the table, so the numbers cannot drift from the explanation.</li>
+<li><strong>It is a web page.</strong> Students open a link on a phone; nothing to install.</li>
+<li><strong>One look for every deck</strong>, from a single config and stylesheet.</li>
+</ul>
+</section>
+<section id="the-layout-one-config-many-decks" class="level3">
+<h3 class="anchored" data-anchor-id="the-layout-one-config-many-decks">The Layout: One Config, Many Decks</h3>
+<p>All the lecture files sit in one folder that is a small Quarto project:</p>
+<pre><code>slide/
+  _quarto.yml               # shared settings for every deck
+  css/styles.css            # the theme
+  js/starfield-bg.js        # optional animated background
+  01-stat-intro.qmd
+  04-binomial.qmd
+  06-correlation-regression.qmd
+  …</code></pre>
+<p>The shared <code>_quarto.yml</code> holds everything a deck should have in common, so each chapter file stays short:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">project</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span></span>
+<span id="cb2-2"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">type</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> website</span></span>
+<span id="cb2-3"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">output-dir</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> .</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">          # the .html lands next to its .qmd</span></span>
+<span id="cb2-4"></span>
+<span id="cb2-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">format</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span></span>
+<span id="cb2-6"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">revealjs</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span></span>
+<span id="cb2-7"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> sky</span></span>
+<span id="cb2-8"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">transition</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> convex</span></span>
+<span id="cb2-9"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">slide-number</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> c/t</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">        # "current / total"</span></span>
+<span id="cb2-10"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">navigation-mode</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> vertical</span></span>
+<span id="cb2-11"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">incremental</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">true</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">        # bullets appear one at a time</span></span>
+<span id="cb2-12"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">highlight-style</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> dracula</span></span>
+<span id="cb2-13"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">css</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> css/styles.css</span></span>
+<span id="cb2-14"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">footer</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'&lt;a href="https://www.statmania.info"&gt;statmania.info&lt;/a&gt; | Press space or arrow to change slides'</span></span>
+<span id="cb2-15"></span>
+<span id="cb2-16"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">revealjs-plugins</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span></span>
+<span id="cb2-17"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">-</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> qdraw</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">                    # draw on slides while teaching</span></span></code></pre></div></div>
+<p><code>incremental: true</code> is the setting I like most for lectures: every bullet list reveals one point per key press, so students do not read ahead of the explanation.</p>
+<p>A chapter file then needs only a few lines of front matter:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">---</span></span>
+<span id="cb3-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">title</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Binomial Distribution"</span></span>
+<span id="cb3-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">author</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> Your Name</span></span>
+<span id="cb3-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">format</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> revealjs</span></span>
+<span id="cb3-5"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">---</span></span></code></pre></div></div>
+</section>
+<section id="writing-slides" class="level3">
+<h3 class="anchored" data-anchor-id="writing-slides">Writing Slides</h3>
+<p>The structure is just headings: <code>#</code> starts a <strong>section</strong> (a title slide) and <code>##</code> starts a <strong>slide</strong>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"># Concept</span></span>
+<span id="cb4-2"></span>
+<span id="cb4-3"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">- </span>Success or failure</span>
+<span id="cb4-4"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">- </span>Detecting a disease is a success</span>
+<span id="cb4-5"></span>
+<span id="cb4-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">## Function</span></span>
+<span id="cb4-7"></span>
+<span id="cb4-8">$P(x) = \binom{n}{x} p^x (1-p)^{n-x}$</span>
+<span id="cb4-9"></span>
+<span id="cb4-10"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">- </span>$p$: probability of success</span>
+<span id="cb4-11"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">- </span>$n$: number of trials</span></code></pre></div></div>
+<p>A few patterns cover most of what a statistics lecture needs.</p>
+<p><strong>Pause for a question.</strong> <code>. . .</code> (three spaced dots) hides everything below until the next key press. It is perfect for “what is the answer?” slides:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">## Answer on click</span></span>
+<span id="cb5-2"></span>
+<span id="cb5-3">What is P(X = 2) for n = 5, p = 0.3?</span>
+<span id="cb5-4"></span>
+<span id="cb5-5">. . .</span>
+<span id="cb5-6"></span>
+<span id="cb5-7"><span class="in" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">```{r}</span></span>
+<span id="cb5-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dbinom</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.3</span>)</span>
+<span id="cb5-9"><span class="in" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">```</span></span></code></pre></div></div>
+<p><strong>Compute, do not copy.</strong> Mark a chunk <code>echo: false</code> to show only its output. The table on the slide is then produced by the same code that would give the answer in an exam:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><span class="in" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">```{r}</span></span>
+<span id="cb6-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#| echo: false</span></span>
+<span id="cb6-3">x <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span></span>
+<span id="cb6-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dbinom</span>(x, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.3</span>), <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>)</span>
+<span id="cb6-5"><span class="in" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">```</span></span></code></pre></div></div>
+<p><strong>Two columns:</strong> text beside a table or plot.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb7-1">::: {.columns}</span>
+<span id="cb7-2">::: {.column width="45%"}</span>
+<span id="cb7-3">(left: a table or plot)</span>
+<span id="cb7-4">:::</span>
+<span id="cb7-5">::: {.column width="55%"}</span>
+<span id="cb7-6"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">- </span>n = 5, p = 0.3</span>
+<span id="cb7-7"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">- </span>What do we see?</span>
+<span id="cb7-8">:::</span>
+<span id="cb7-9">:::</span></code></pre></div></div>
+<p><strong>Tabs</strong> for R versus Python (or “formula versus code”) on a single slide:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb8-1">::: {.panel-tabset}</span>
+<span id="cb8-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">### R</span></span>
+<span id="cb8-3"><span class="in" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">```r</span></span>
+<span id="cb8-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dbinom</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.3</span>)</span>
+<span id="cb8-5"><span class="in" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">```</span></span>
+<span id="cb8-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">### Python</span></span>
+<span id="cb8-7"><span class="in" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">```python</span></span>
+<span id="cb8-8"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> scipy.stats <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> binom</span>
+<span id="cb8-9">binom.pmf(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.3</span>)</span>
+<span id="cb8-10"><span class="in" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">```</span></span>
+<span id="cb8-11">:::</span></code></pre></div></div>
+<p><strong>Small utilities.</strong> <code>## Title {.smaller}</code> shrinks the text on a crowded slide. <code>## Title {background-color="white"}</code> gives a slide a white background, useful for a plot or an image with its own white page. <code>## Title {visibility="hidden"}</code> keeps a draft slide in the file but leaves it out of the rendered deck, so it never reaches the audience.</p>
+</section>
+<section id="a-theme-that-works-for-teaching" class="level3">
+<h3 class="anchored" data-anchor-id="a-theme-that-works-for-teaching">A Theme That Works for Teaching</h3>
+<p>reveal.js ships with themes (I start from <code>sky</code>), then <code>css/styles.css</code> restyles everything with a handful of CSS variables:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode css code-with-copy"><code class="sourceCode css"><span id="cb9-1"><span class="in" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:root</span>{</span>
+<span id="cb9-2">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">--sm-bg</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">:</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">#0b3d34</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span>      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/* deep teal */</span></span>
+<span id="cb9-3">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">--sm-cyan</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">:</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">#00e5ff</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb9-4">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">--sm-green</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">:</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">#2dd4a7</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb9-5">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">--sm-text</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">:</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">#e6f7f2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb9-6">}</span></code></pre></div></div>
+<p>One decision came from live teaching. The background is a deep <strong>teal rather than near-black</strong>. The qdraw pen (below) draws in black by default, and on a black background the ink was invisible. A dark-but-not-black background keeps the mood and keeps the pen readable. A small script (<code>starfield-bg.js</code>, added with <code>include-after-body:</code>) draws a calm animated starfield behind the slides; it is optional.</p>
+<p>The stylesheet is a <em>linked</em> file, not baked into each deck. So when I only change colours, spacing or table styles, <strong>I do not need to re-render any slides</strong>; a browser refresh shows the change on all decks.</p>
+</section>
+<section id="drawing-on-slides" class="level3">
+<h3 class="anchored" data-anchor-id="drawing-on-slides">Drawing on Slides</h3>
+<p>Circling a term, sketching a normal curve or underlining a step is much of teaching. <a href="https://www.thinkermahmud.com/qdraw/">qdraw</a> is a small Quarto extension that adds a pen, shapes and an eraser on top of any reveal.js slide. It is one line in <code>_quarto.yml</code> (<code>revealjs-plugins: [qdraw]</code>) after installing it with <code>quarto add</code>. I wrote about its newer features in <a href="../posts/qdraw-new-features.html">What’s New in qdraw</a>.</p>
+</section>
+<section id="render-check-publish" class="level3">
+<h3 class="anchored" data-anchor-id="render-check-publish">Render, Check, Publish</h3>
+<p>Rendering one deck is one command from the slides folder:</p>
+<pre><code>quarto render 04-binomial.qmd</code></pre>
+<p>Because <code>output-dir: .</code>, the HTML appears next to the source, ready to commit. Publishing is then the usual: add the files, commit, push, and the static host serves them. While presenting, the built-in keys help: <code>space</code> or the arrow keys to move, <code>o</code> for an overview of all slides, <code>f</code> for full screen, and <code>?</code> for the list of shortcuts. To hand out a PDF, open the deck with <code>?print-pdf</code> added to the address and use the browser’s <em>Print to PDF</em>.</p>
+</section>
+<section id="habits-that-save-time" class="level3">
+<h3 class="anchored" data-anchor-id="habits-that-save-time">Habits That Save Time</h3>
+<ul>
+<li><strong>One chapter, one file.</strong> Short files render in seconds and are easy to reorder.</li>
+<li><strong>Keep shared choices in <code>_quarto.yml</code> and the CSS</strong>, never repeated in decks.</li>
+<li><strong>Use sections</strong> (<code>#</code>) so students can navigate a long chapter by topic.</li>
+<li><strong>Let code produce the numbers.</strong> If an example changes, the slide updates itself.</li>
+<li><strong>Hide drafts</strong> with <code>visibility="hidden"</code> instead of commenting them out.</li>
+</ul>
+</section>
+<section id="start-your-own" class="level3">
+<h3 class="anchored" data-anchor-id="start-your-own">Start Your Own</h3>
+<ol type="1">
+<li>Install Quarto and create a folder with a <code>_quarto.yml</code> like the one above.</li>
+<li>Add <code>01-intro.qmd</code> with <code>format: revealjs</code> and a few <code>##</code> slides.</li>
+<li>Run <code>quarto render 01-intro.qmd</code> and open the HTML.</li>
+<li>Move repeated settings into <code>_quarto.yml</code> and <code>css/styles.css</code> as the second deck shows you what to share.</li>
+</ol>
+<p>Slides stay small and boring in the best way: Markdown for words, LaTeX for math, R for numbers, and one stylesheet for the look.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>Tools</category>
+  <category>Quarto</category>
+  <category>Teaching</category>
+  <guid>https://www.statmania.info/blog/posts/revealjs-quarto-stat-slides.html</guid>
+  <pubDate>Sat, 03 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/revealjs-stat-slides.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
   <title>srand(time(NULL)) in C: Why Random Numbers Repeat and How to Seed Them</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://www.statmania.info/blog/posts/c-srand-time-null.html</link>
@@ -6739,1070 +7980,6 @@ font-style: inherit;">$0</span></span></code></pre></div></div>
   <category>quarto</category>
   <guid>https://www.statmania.info/blog/posts/qdraw-new-features.html</guid>
   <pubDate>Fri, 28 Aug 2026 18:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Structs in C: Grouping Related Data (with Python and R Comparisons)</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/c-struct.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/c-struct-memory.svg" class="img-fluid figure-img" alt="A struct Student occupies 60 bytes: name uses 50, then 2 bytes of padding, then id uses 4 and gpa uses 4."></p>
-<figcaption>A struct is one block of memory holding several fields, with padding between them</figcaption>
-</figure>
-</div>
-<p>A <strong>struct</strong> (short for “structure”) lets us group <strong>related variables of different types</strong> into a single unit. It’s the C way of saying “these pieces of data belong together.”</p>
-<p>This is something used more explicitly in R and Python. In Python, we’d write:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1">student <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> {<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"name"</span>: <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Alice"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"id"</span>: <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">101</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"gpa"</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3.8</span>}</span></code></pre></div></div>
-<p>In R:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">student <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">name =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Alice"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">id =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">101</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">gpa =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3.8</span>)</span></code></pre></div></div>
-<p>In C, we use a <strong>struct</strong> to build this same idea — but with strict typing and a fixed layout.</p>
-<section id="the-problem-structs-solve" class="level3">
-<h3 class="anchored" data-anchor-id="the-problem-structs-solve">The Problem Structs Solve</h3>
-<p>Suppose we want to track a student’s name, ID, and GPA. Without structs, we’d need three separate arrays:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">char</span> names<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">][</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">50</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">];</span></span>
-<span id="cb3-2"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> ids<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">];</span></span>
-<span id="cb3-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">float</span> gpas<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">];</span></span></code></pre></div></div>
-<p>This works, but it has problems: - The data for one student is <strong>scattered</strong> across three arrays. - If we pass a student to a function, we must pass three separate arguments. - If we add a new field (say, <code>email</code>), we must update every function signature. - It’s easy to keep the arrays out of sync — e.g., swap <code>ids[3]</code> with <code>names[3]</code> accidentally.</p>
-<p>A struct fixes all of this by keeping the fields together.</p>
-</section>
-<section id="example-1-a-student-record" class="level3">
-<h3 class="anchored" data-anchor-id="example-1-a-student-record">Example 1: A Student Record</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb4-2"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;string.h&gt;</span></span>
-<span id="cb4-3"></span>
-<span id="cb4-4"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">struct</span> Student <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb4-5">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">char</span> name<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">50</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">];</span></span>
-<span id="cb4-6">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> id<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb4-7">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">float</span> gpa<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb4-8"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">};</span></span>
-<span id="cb4-9"></span>
-<span id="cb4-10"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb4-11">    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// Declare and initialize</span></span>
-<span id="cb4-12">    <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">struct</span> Student s1<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb4-13">    strcpy<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>s1<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>name<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Alice"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb4-14">    s1<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>id <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">101</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb4-15">    s1<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>gpa <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3.8</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb4-16"></span>
-<span id="cb4-17">    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// Access and print</span></span>
-<span id="cb4-18">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Name: </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%s\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> s1<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>name<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb4-19">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ID:   </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> s1<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>id<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb4-20">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"GPA:  </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%.2f\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> s1<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>gpa<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb4-21"></span>
-<span id="cb4-22">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb4-23"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>Key points:</p>
-<ul>
-<li><code>struct Student</code> defines a <strong>new type</strong>. It’s a template — no memory is allocated until we declare a variable of that type.</li>
-<li><code>s1</code> is a variable of type <code>struct Student</code>. It contains all three fields <strong>contiguously in memory</strong>.</li>
-<li>The <code>.</code> (dot) operator accesses individual fields: <code>s1.name</code>, <code>s1.id</code>, <code>s1.gpa</code>.</li>
-<li>The fields add up to <code>50 + 4 + 4 = 58</code> bytes, but <code>sizeof(struct Student)</code> is actually <strong>60</strong> on typical systems because of padding (see the diagram above and the gotchas below).</li>
-</ul>
-</section>
-<section id="example-2-multiple-students-passed-to-a-function" class="level3">
-<h3 class="anchored" data-anchor-id="example-2-multiple-students-passed-to-a-function">Example 2: Multiple Students, Passed to a Function</h3>
-<p>This is where structs really shine: we can pass an entire record as one argument.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb5-2"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;string.h&gt;</span></span>
-<span id="cb5-3"></span>
-<span id="cb5-4"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">struct</span> Student <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb5-5">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">char</span> name<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">50</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">];</span></span>
-<span id="cb5-6">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> id<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb5-7">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">float</span> gpa<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb5-8"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">};</span></span>
-<span id="cb5-9"></span>
-<span id="cb5-10"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span> printStudent<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">struct</span> Student s<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb5-11">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%-10s</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">  ID: </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%3d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">  GPA: </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%.2f\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> s<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>name<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> s<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>id<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> s<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>gpa<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb5-12"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb5-13"></span>
-<span id="cb5-14"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb5-15">    <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">struct</span> Student roster<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb5-16">        <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Alice"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span>   <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">101</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3.8</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">},</span></span>
-<span id="cb5-17">        <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Bob"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span>     <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">102</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3.2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">},</span></span>
-<span id="cb5-18">        <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Charlie"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">103</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3.9</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb5-19">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">};</span></span>
-<span id="cb5-20"></span>
-<span id="cb5-21">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb5-22">        printStudent<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>roster<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]);</span></span>
-<span id="cb5-23">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb5-24"></span>
-<span id="cb5-25">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb5-26"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>Output:</p>
-<pre><code>Alice       ID: 101  GPA: 3.80
-Bob         ID: 102  GPA: 3.20
-Charlie     ID: 103  GPA: 3.90</code></pre>
-<p>Things to notice:</p>
-<ul>
-<li>An <strong>array of structs</strong> (<code>struct Student roster[3]</code>) is how we build a “table” of records. This is the C equivalent of a data frame with 3 rows.</li>
-<li><strong>Initializer syntax</strong>: <code>{"Alice", 101, 3.8}</code> matches the fields in declaration order.</li>
-<li><code>printStudent</code> takes one argument and prints all three fields. Compare this to a function that would need <code>char name[], int id, float gpa</code> as three separate parameters — structs are cleaner.</li>
-</ul>
-</section>
-<section id="example-3-a-point-in-2d-space" class="level3">
-<h3 class="anchored" data-anchor-id="example-3-a-point-in-2d-space">Example 3: A Point in 2D Space</h3>
-<p>A simpler, more geometric example:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb7-2"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;math.h&gt;</span></span>
-<span id="cb7-3"></span>
-<span id="cb7-4"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">struct</span> Point <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb7-5">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">double</span> x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb7-6">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">double</span> y<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb7-7"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">};</span></span>
-<span id="cb7-8"></span>
-<span id="cb7-9"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">double</span> distance<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">struct</span> Point a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">struct</span> Point b<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb7-10">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">double</span> dx <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>x <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> b<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb7-11">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">double</span> dy <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> b<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>y<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb7-12">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> sqrt<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>dx<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>dx <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> dy<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>dy<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb7-13"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb7-14"></span>
-<span id="cb7-15"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb7-16">    <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">struct</span> Point p1 <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">};</span></span>
-<span id="cb7-17">    <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">struct</span> Point p2 <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3.0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4.0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">};</span></span>
-<span id="cb7-18"></span>
-<span id="cb7-19">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Distance = </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%.2f\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> distance<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>p1<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> p2<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">));</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// Distance = 5.00</span></span>
-<span id="cb7-20"></span>
-<span id="cb7-21">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb7-22"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>Compile with <code>gcc point.c -o point -lm</code>: on many systems <code>sqrt</code> lives in the math library, which must be linked explicitly.</p>
-<p>This is a pattern we’ll use constantly in geometry, graphics, and simulation work. The <code>distance</code> function reads as “distance between two points” — much clearer than <code>distance(x1, y1, x2, y2)</code>.</p>
-</section>
-<section id="example-4-a-linked-list-node-preview-of-whats-coming" class="level3">
-<h3 class="anchored" data-anchor-id="example-4-a-linked-list-node-preview-of-whats-coming">Example 4: A Linked List Node (Preview of What’s Coming)</h3>
-<p>Structs become essential when we build data structures. A linked list node in C looks like this:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb8-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">struct</span> Node <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb8-2">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> data<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb8-3">    <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">struct</span> Node <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>next<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// pointer to another Node</span></span>
-<span id="cb8-4"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">};</span></span></code></pre></div></div>
-<p>Notice the struct <strong>contains a pointer to its own type</strong>. This is how linked lists, trees, and graphs are built. We cannot do this with plain arrays. (The field must be a pointer to <code>struct Node</code>: a struct cannot contain itself by value.)</p>
-</section>
-<section id="structs-vs.-arrays" class="level3">
-<h3 class="anchored" data-anchor-id="structs-vs.-arrays">Structs vs.&nbsp;Arrays</h3>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th style="text-align: left;">Feature</th>
-<th style="text-align: left;">Array</th>
-<th style="text-align: left;">Struct</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Holds elements of…</td>
-<td style="text-align: left;">Same type</td>
-<td style="text-align: left;">Different types</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Access by…</td>
-<td style="text-align: left;">Index (<code>arr[0]</code>)</td>
-<td style="text-align: left;">Field name (<code>s.name</code>)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Size</td>
-<td style="text-align: left;">Determined by element count</td>
-<td style="text-align: left;">Sum of all field sizes</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Purpose</td>
-<td style="text-align: left;">List of similar items</td>
-<td style="text-align: left;">One composite item</td>
-</tr>
-</tbody>
-</table>
-<p>A useful way to think about it:</p>
-<blockquote class="blockquote">
-<p><strong>Array = many of the same thing. Struct = one thing made of many parts.</strong></p>
-</blockquote>
-<p>A <code>struct Student roster[30]</code> combines both: an array (many) of structs (composite).</p>
-</section>
-<section id="structs-vs.-python-dicts-r-lists" class="level3">
-<h3 class="anchored" data-anchor-id="structs-vs.-python-dicts-r-lists">Structs vs.&nbsp;Python Dicts / R Lists</h3>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">C struct</th>
-<th style="text-align: left;">Python dict</th>
-<th style="text-align: left;">R list</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Fields fixed at compile time</td>
-<td style="text-align: left;">Keys added at runtime</td>
-<td style="text-align: left;">Names can be added dynamically</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Fields are typed</td>
-<td style="text-align: left;">Values can be any type</td>
-<td style="text-align: left;">Values can be any type</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Access with <code>.</code></td>
-<td style="text-align: left;">Access with <code>[]</code></td>
-<td style="text-align: left;">Access with <code>$</code> or <code>[[]]</code></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Cannot store in a JSON-like flexible way</td>
-<td style="text-align: left;">Very flexible</td>
-<td style="text-align: left;">Very flexible</td>
-</tr>
-</tbody>
-</table>
-<p>The trade-off: structs are <strong>rigid but fast and type-safe</strong>. Python dicts and R lists are <strong>flexible but slower and error-prone</strong>. For performance-critical code (which C is used for), structs win.</p>
-</section>
-<section id="a-few-rules-and-gotchas" class="level3">
-<h3 class="anchored" data-anchor-id="a-few-rules-and-gotchas">A Few Rules and Gotchas</h3>
-<ol type="1">
-<li><p><strong>Always end with a semicolon.</strong> <code>struct Student { ... };</code> — the semicolon after <code>}</code> is mandatory. Forgetting it is a common beginner error.</p></li>
-<li><p><strong>We can use <code>typedef</code> to shorten the name:</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb9-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">typedef</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">struct</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb9-2">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">char</span> name<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">50</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">];</span></span>
-<span id="cb9-3">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> id<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb9-4">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">float</span> gpa<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb9-5"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span> Student<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb9-6"></span>
-<span id="cb9-7">Student s1<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// no "struct" prefix needed</span></span></code></pre></div></div>
-<p>This is very common in modern C code. Most real-world C uses <code>typedef</code>.</p></li>
-<li><p><strong>We cannot compare structs with <code>==</code>.</strong> This won’t work:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb10-1"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>s1 <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> s2<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">...</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// compile error</span></span></code></pre></div></div>
-<p>We must compare field by field, or use <code>memcmp</code> (with caution due to padding).</p></li>
-<li><p><strong>Structs can be passed by value or by pointer.</strong> Passing by value copies the whole struct (potentially many bytes). Passing by pointer avoids the copy:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb11-1"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span> printStudent<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">struct</span> Student <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>s<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb11-2">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%s\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> s<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-&gt;</span>name<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// note the -&gt; operator</span></span>
-<span id="cb11-3"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>The <code>-&gt;</code> operator is shorthand for <code>(*s).name</code>. We’ll see it everywhere once we start using pointers with structs.</p></li>
-<li><p><strong>Memory padding.</strong> The compiler may insert unused bytes between fields to align them properly. Here <code>sizeof(struct Student)</code> is 60 rather than 58: <code>name</code> ends at byte 50, but the <code>int</code> must start at a multiple of 4, so 2 bytes of padding are added (<code>id</code> at offset 52, <code>gpa</code> at 56). This usually doesn’t matter, but it’s why we shouldn’t assume a struct’s size is the sum of its field sizes.</p></li>
-</ol>
-</section>
-<section id="when-should-we-use-a-struct" class="level3">
-<h3 class="anchored" data-anchor-id="when-should-we-use-a-struct">When Should We Use a Struct?</h3>
-<p>We use a struct whenever <strong>two or more pieces of data logically belong together</strong>:</p>
-<ul>
-<li>A point (x, y) or (x, y, z)</li>
-<li>A date (year, month, day)</li>
-<li>A student (name, id, gpa)</li>
-<li>A bank account (number, balance, owner)</li>
-<li>A network packet (source, destination, payload)</li>
-<li>A configuration (width, height, color depth)</li>
-<li>A complex number (real, imaginary)</li>
-</ul>
-<p>If we find ourselves passing the same set of variables to multiple functions, or keeping parallel arrays in sync, that’s a signal to define a struct.</p>
-</section>
-<section id="a-practical-summary" class="level3">
-<h3 class="anchored" data-anchor-id="a-practical-summary">A Practical Summary</h3>
-<p>Let’s start with Example 1 (student record) and Example 3 (point): write them, compile them, run them. Then we can modify them:</p>
-<ul>
-<li>Add a new field to the Student struct (e.g., <code>char email[100]</code>) and update the print function.</li>
-<li>Write a function that takes two points and returns the midpoint (another struct Point).</li>
-<li>Build an array of 5 students and sort them by GPA.</li>
-</ul>
-<p>Once we’re comfortable with these, structs will become a natural tool for organizing our data, and we’ll be ready for pointer-based data structures such as linked lists, trees and hash tables.</p>
-
-
-</section>
-
- ]]></description>
-  <category>C</category>
-  <category>Programming</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/c-struct.html</guid>
-  <pubDate>Wed, 19 Aug 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/c-struct-memory.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>How to Run Python Inside RStudio with reticulate</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/python-rstudio.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<p>You can run Python directly inside RStudio by leveraging the <a href="https://rstudio.github.io/reticulate/articles/calling_python.html">reticulate</a> R package, which bridges the R and Python ecosystems. Here is how to set up and use Python inside the RStudio IDE.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/python-rstudio.jpeg" class="img-fluid figure-img"></p>
-<figcaption>RStudio’s Python interpreter settings panel</figcaption>
-</figure>
-</div>
-<section id="set-up-the-python-interpreter" class="level2">
-<h2 class="anchored" data-anchor-id="set-up-the-python-interpreter">1. Set Up the Python Interpreter</h2>
-<p>Before writing Python code, configure RStudio to recognize your Python installation.</p>
-<ol type="1">
-<li>Open RStudio and navigate to <strong>Tools &gt; Global Options</strong> (or <strong>Preferences</strong> on a Mac).</li>
-<li>Click <strong>Python</strong> in the left menu sidebar.</li>
-<li>Under <strong>Python interpreter</strong>, click <strong>Select…</strong> and choose your preferred environment (e.g., system Python, Anaconda, Miniconda, or a virtual environment).</li>
-</ol>
-</section>
-<section id="install-the-required-r-package" class="level2">
-<h2 class="anchored" data-anchor-id="install-the-required-r-package">2. Install the Required R Package</h2>
-<p>Install and load reticulate within your R console:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">install.packages</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"reticulate"</span>)</span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(reticulate)</span></code></pre></div></div>
-</section>
-<section id="three-ways-to-work-with-python-in-rstudio" class="level2">
-<h2 class="anchored" data-anchor-id="three-ways-to-work-with-python-in-rstudio">3. Three Ways to Work with Python in RStudio</h2>
-<p>Depending on your workflow, you can use Python in RStudio in three main ways.</p>
-<section id="option-a-native-python-scripts" class="level3">
-<h3 class="anchored" data-anchor-id="option-a-native-python-scripts">Option A: Native Python Scripts</h3>
-<p>You can treat RStudio like a standard Python IDE.</p>
-<ul>
-<li>Go to <strong>File &gt; New File &gt; Python Script</strong>.</li>
-<li>Write standard Python code and press <code>Ctrl+Enter</code> (or <code>Cmd+Enter</code> on Mac) to run lines one at a time.</li>
-<li>Interactive plots (like matplotlib or seaborn) will automatically populate in the Viewer pane.</li>
-</ul>
-</section>
-<section id="option-b-mix-r-and-python-in-quarto-or-r-markdown" class="level3">
-<h3 class="anchored" data-anchor-id="option-b-mix-r-and-python-in-quarto-or-r-markdown">Option B: Mix R and Python in Quarto or R Markdown</h3>
-<p>You can build data pipelines where R and Python share data seamlessly in a single document, switching between languages with standard code chunks:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Step 1: Load an R dataset</span></span>
-<span id="cb2-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(reticulate)</span>
-<span id="cb2-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(palmerpenguins)</span>
-<span id="cb2-4">r_data <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> palmerpenguins<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span>penguins</span></code></pre></div></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Step 2: Use the R dataset inside a Python chunk via 'r.'</span></span>
-<span id="cb3-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> pd</span>
-<span id="cb3-3"></span>
-<span id="cb3-4"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># 'r.r_data' fetches the object from the R environment</span></span>
-<span id="cb3-5">py_df <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> pd.DataFrame(r.r_data)</span>
-<span id="cb3-6"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(py_df.describe())</span></code></pre></div></div>
-</section>
-<section id="option-c-call-python-directly-from-an-r-script" class="level3">
-<h3 class="anchored" data-anchor-id="option-c-call-python-directly-from-an-r-script">Option C: Call Python Directly from an R Script</h3>
-<p>You can import Python modules directly into your native R code with <code>import()</code>. Python attributes are accessed with <code>$</code> instead of <code>.</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(reticulate)</span>
-<span id="cb4-2"></span>
-<span id="cb4-3"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Import a Python library</span></span>
-<span id="cb4-4">pd <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">import</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"pandas"</span>)</span>
-<span id="cb4-5"></span>
-<span id="cb4-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Call a Python function using R syntax</span></span>
-<span id="cb4-7">my_data <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> pd<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">read_csv</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"dataset.csv"</span>)</span></code></pre></div></div>
-</section>
-</section>
-<section id="installing-python-libraries" class="level2">
-<h2 class="anchored" data-anchor-id="installing-python-libraries">4. Installing Python Libraries</h2>
-<p>To use tools like numpy or pandas, install them directly through R using reticulate’s helper function:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">reticulate<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">py_install</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"pandas"</span>)</span></code></pre></div></div>
-<p>Alternatively, install them via your system terminal with <code>pip install pandas</code> before starting your RStudio session.</p>
-</section>
-<section id="running-python-line-by-line-repl-console" class="level2">
-<h2 class="anchored" data-anchor-id="running-python-line-by-line-repl-console">5. Running Python Line-by-Line (REPL Console)</h2>
-<p>If you want to run Python code line-by-line exactly like you do with R, send lines from a Python script to an interactive Python REPL console.</p>
-<section id="step-1-open-a-python-script" class="level3">
-<h3 class="anchored" data-anchor-id="step-1-open-a-python-script">Step 1: Open a Python Script</h3>
-<ol type="1">
-<li>Go to <strong>File &gt; New File &gt; Python Script</strong>.</li>
-<li>Save the file with a <code>.py</code> extension (e.g., <code>script.py</code>).</li>
-</ol>
-</section>
-<section id="step-2-launch-the-python-repl-console" class="level3">
-<h3 class="anchored" data-anchor-id="step-2-launch-the-python-repl-console">Step 2: Launch the Python REPL Console</h3>
-<p>Before executing code line-by-line, start the interactive Python environment in your console. Run this single line in your standard R console (bottom-left pane):</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1">reticulate<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">repl_python</span>()</span></code></pre></div></div>
-<p>Your console prompt changes from <code>&gt;</code> (R) to <code>&gt;&gt;&gt;</code> (Python) — the RStudio console is now officially a Python terminal.</p>
-</section>
-<section id="step-3-execute-code-line-by-line" class="level3">
-<h3 class="anchored" data-anchor-id="step-3-execute-code-line-by-line">Step 3: Execute Code Line-by-Line</h3>
-<p>Go back to your <code>.py</code> script editor and use the same keyboard shortcuts you use for R:</p>
-<ul>
-<li><strong>Run a single line</strong>: place your cursor on the line and press <code>Ctrl+Enter</code>.</li>
-<li><strong>Run multiple lines</strong>: highlight the block of code and press <code>Ctrl+Enter</code>.</li>
-</ul>
-<p>The code executes instantly in the <code>&gt;&gt;&gt;</code> console below, and any variables you create show up in the Environment pane.</p>
-<p>To exit the Python environment and go back to R at any point, type <code>exit</code> in the console and hit enter.</p>
-
-
-</section>
-</section>
-
- ]]></description>
-  <category>R</category>
-  <category>Python</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/python-rstudio.html</guid>
-  <pubDate>Mon, 17 Aug 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/python-rstudio.jpeg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
