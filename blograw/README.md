@@ -73,7 +73,7 @@ Rendering many posts is only for bulk edits. Because everything cross-post is dy
 | `authors.yml`: photo, name, tagline, bio, links | `quarto render authors/<slug>.qmd` for the author page header; post cards update from the data file on the next render of anything |
 | a **new author** in `authors.yml` + photo in `img/` | `quarto render` (creates `authors/<slug>.qmd` and builds it) |
 | `about.qmd`, `index.qmd`, `tags.qmd` | `quarto render <that file>` |
-| `_quarto.yml`, `_site-include.html`, `code-reveal.html`, `posts/_metadata.yml` | full `quarto render` (they change every page, ~40 s) |
+| `_quarto.yml`, `theme-dark.scss`, `_site-include.html`, `code-reveal.html`, `posts/_metadata.yml` | full `quarto render` (they change every page, ~40 s) |
 | a **deleted post** | delete `posts/x.qmd`, delete `../blog/posts/x.html` (and `../blog/posts/x_files/` if present), then `quarto render index.qmd` |
 | a new image only | render the post that uses it (images are copied when a page references them) |
 
@@ -114,6 +114,10 @@ git push
 ```
 
 GitHub Pages updates in a minute or two. Readers' browsers may keep the old `site-data.js` for up to ~10 minutes.
+
+## Light / dark theme
+
+The navbar has a sun/moon toggle; dark is the default and the choice is remembered per browser. Quarto does the switching (`theme:` in `_quarto.yml`: `dark: [cosmo, theme-dark.scss]`, `light: cosmo`; code highlighting `dracula` / `github`). The dark look is the base of `styles.css`; the light overrides are in the last section of that file under `body.quarto-light`, and the navbar, post banner and homepage hero stay dark bands in light mode. When you add new components, give them colours through the `--sm-*` CSS variables so both themes work.
 
 ## What is generated (never hand-edit)
 

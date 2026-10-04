@@ -109,6 +109,17 @@ Profiles live in `authors.yml` (slug → `name`, `aliases`, `image`, `tagline`, 
 `name`/`aliases` match it. Add an author = add an entry (and a photo under `img/`), then
 render; the hook creates `authors/<slug>.qmd`. Authors not in `authors.yml` get no link.
 
+## Light / dark theme
+
+`_quarto.yml` has `theme: {dark: [cosmo, theme-dark.scss], light: cosmo}` (dark listed first = default;
+the empty-looking `theme-dark.scss` only exists because Quarto decides dark vs light from `$body-bg`,
+so a dark scheme must actually be dark) and `highlight-style: {light: github, dark: dracula}`.
+Quarto adds a navbar toggle and puts `quarto-light` / `quarto-dark` on `<body>`. `styles.css` is the
+dark design; its final "Light theme" section overrides variables on `:root:has(body.quarto-light)` and
+fixes hardcoded colours under `body.quarto-light`. Navbar, post title banner and homepage hero re-assert
+the dark palette locally (dark bands on a light page); the starfield is hidden in light mode. Use `--sm-*`
+variables, not hex colours, in new CSS.
+
 ## Starfield background
 
 The blog pages get the site-wide starfield via `../starfield-include.html`
