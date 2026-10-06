@@ -1,0 +1,170 @@
+/* Stat Mania data-viz tools — shared UI for bar / hist / pie / scatter /
+   gen-data / viz-corr. Loaded after dark-theme.css (which supplies the
+   hero, .sm-card, .sm-btn, footer and Tailwind colour remaps).
+
+   The old pages used `@apply` inside a plain <style> block, which the
+   Tailwind CDN ignores, so none of those rules ever applied. Everything here
+   is plain CSS. Charts deliberately keep a light "paper" background so the
+   exported PNGs look the same as what is on screen. */
+
+:root{
+  --vt-ink: #e8ecf7;
+  --vt-muted: #9aa4c2;
+  --vt-line: rgba(255,255,255,0.14);
+  --vt-accent: #00e5ff;
+  --vt-panel: rgba(255,255,255,0.045);
+}
+
+body{ font-family: 'Inter', system-ui, sans-serif; }
+
+/* ---------- Layout ---------- */
+.vt-wrap{ max-width: 1400px; margin: 0 auto; }
+.vt-grid{ display: grid; gap: 22px; align-items: start; }
+.vt-grid.cols-3{ grid-template-columns: minmax(240px,1fr) minmax(300px,1.1fr) minmax(240px,1fr); }
+.vt-grid.cols-3-wide{ grid-template-columns: minmax(240px,1fr) minmax(320px,2fr) minmax(240px,1fr); }
+.vt-grid.cols-3-wide[style*="--hc"]{ grid-template-columns: minmax(240px,1fr) minmax(240px,1fr) minmax(360px,1.5fr); }
+.vt-grid.cols-2{ grid-template-columns: minmax(280px,1fr) minmax(320px,1.6fr); }
+@media (max-width: 1100px){
+  .vt-grid.cols-3, .vt-grid.cols-3-wide{ grid-template-columns: 1fr 1fr; }
+  .vt-grid .vt-span-all{ grid-column: 1 / -1; }
+}
+@media (max-width: 720px){
+  .vt-grid.cols-3, .vt-grid.cols-3-wide, .vt-grid.cols-2{ grid-template-columns: 1fr; }
+}
+
+.vt-panel{
+  background: var(--vt-panel);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 20px 22px;
+  min-width: 0;
+}
+.vt-panel > h2, .vt-panel > .vt-title{
+  font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--vt-accent); margin: 0 0 16px; padding: 0; border: 0; text-align: left;
+}
+.vt-panel h3{ font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--vt-muted); margin: 18px 0 10px; }
+.vt-scroll{ max-height: 62vh; overflow-y: auto; padding-right: 4px; }
+.vt-plot{ display: flex; flex-direction: column; align-items: center; gap: 14px; }
+
+/* ---------- Text + Tailwind gray remaps ---------- */
+.text-gray-900, .text-gray-800, .text-gray-700, .text-gray-600{ color: #c7cee6 !important; }
+.text-gray-500, .text-gray-400{ color: var(--vt-muted) !important; }
+.text-indigo-800, .text-indigo-900{ color: #fff !important; }
+.bg-gray-50, .bg-gray-100{ background-color: rgba(255,255,255,0.04) !important; }
+.bg-gray-200{ background-color: rgba(255,255,255,0.1) !important; }
+.border-gray-100, .border-gray-200, .border-gray-300, .border-gray-400, .border-gray-900,
+.divide-gray-200 > :not([hidden]) ~ :not([hidden]){ border-color: var(--vt-line) !important; }
+.hover\:bg-gray-50:hover{ background-color: rgba(0,229,255,0.06) !important; }
+label{ color: #c7cee6; }
+.label, label.block{ font-size: 0.8rem; font-weight: 600; letter-spacing: 0.02em; }
+.vt-hint{ font-size: 0.75rem; color: var(--vt-muted); margin: 6px 0 0; }
+
+/* ---------- Inputs ---------- */
+input[type="text"], input[type="number"], textarea, select{
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  color: var(--vt-ink);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font: inherit; font-size: 0.9rem;
+  box-sizing: border-box;
+  transition: border-color .15s, box-shadow .15s, background .15s;
+}
+input::placeholder, textarea::placeholder{ color: #6f7a9c; }
+input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus{
+  outline: none; border-color: var(--vt-accent);
+  box-shadow: 0 0 0 3px rgba(0,229,255,0.18); background: rgba(255,255,255,0.08);
+}
+input:disabled{ opacity: .45; cursor: not-allowed; }
+select{ appearance: none; -webkit-appearance: none; cursor: pointer; padding-right: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%239aa4c2' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; }
+select option{ background: #0a0f1e; color: var(--vt-ink); }
+textarea{ resize: vertical; font-family: 'Courier New', monospace; }
+
+input[type="range"]{
+  -webkit-appearance: none; appearance: none; width: 100%; height: 6px; padding: 0; border: 0;
+  background: rgba(255,255,255,0.14); border-radius: 999px; outline: none; margin: 8px 0; opacity: 1;
+}
+input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--vt-accent); cursor: pointer; box-shadow: 0 0 10px rgba(0,229,255,0.6); transition: transform .15s;
+}
+input[type="range"]::-webkit-slider-thumb:hover{ transform: scale(1.15); }
+input[type="range"]::-moz-range-thumb{
+  width: 18px; height: 18px; border-radius: 50%; border: 0;
+  background: var(--vt-accent); cursor: pointer; box-shadow: 0 0 10px rgba(0,229,255,0.6);
+}
+
+input[type="radio"], input[type="checkbox"]{ accent-color: var(--vt-accent); width: 16px; height: 16px; cursor: pointer; }
+input[type="color"]{ background: none; border: 1px solid var(--vt-line); border-radius: 8px; height: 34px; width: 48px; padding: 2px; cursor: pointer; }
+
+/* ---------- Buttons ---------- */
+.vt-btn, button.action-button, #downloadPlotBtn, #moreOptionsBtn, #sortAscendingBtn,
+.btn-primary, .btn-secondary, .btn-danger, .add-row-btn, .add-row-button, .add-table-button, #generatePlotBtn{
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 9px 18px; border-radius: 999px; font: inherit; font-size: 0.88rem; font-weight: 600;
+  color: #e8ecf7; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.22);
+  cursor: pointer; box-shadow: none; transition: transform .2s, box-shadow .2s, border-color .2s, background .2s;
+}
+.vt-btn:hover, button.action-button:hover, #moreOptionsBtn:hover, #sortAscendingBtn:hover,
+.btn-secondary:hover, .add-row-btn:hover, .add-row-button:hover, .add-table-button:hover{
+  transform: translateY(-1px); border-color: var(--vt-accent); box-shadow: 0 0 18px rgba(0,229,255,0.25); background: rgba(0,229,255,0.08);
+}
+.vt-btn-primary, #downloadPlotBtn, .btn-primary, #generatePlotBtn{
+  color: #04101c !important; border: 0; background: linear-gradient(90deg, #00e5ff, #38bdf8) !important;
+  box-shadow: 0 0 22px rgba(0,229,255,0.35);
+}
+.vt-btn-primary:hover, #downloadPlotBtn:hover, .btn-primary:hover, #generatePlotBtn:hover{ box-shadow: 0 0 34px rgba(0,229,255,0.6); transform: translateY(-2px); }
+.vt-btn-danger, .btn-danger, button.danger, .delete-row-btn, .remove-row-btn{
+  color: #ff8a93 !important; background: rgba(255,45,57,0.1) !important; border: 1px solid rgba(255,45,57,0.4) !important;
+}
+.btn-danger:hover, button.danger:hover, .delete-row-btn:hover, .remove-row-btn:hover{ background: rgba(255,45,57,0.2) !important; border-color: #ff5560 !important; box-shadow: 0 0 16px rgba(255,45,57,0.3); }
+.delete-row-btn, button.danger, .remove-row-btn{
+  display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 0 !important;
+  border-radius: 8px !important; cursor: pointer; font-size: 0.9rem; line-height: 1;
+}
+.add-table-button{ width: 28px; height: 28px; padding: 0; flex-shrink: 0; }
+.add-row-btn, .add-row-button{ margin-top: 8px; font-size: 0.8rem; padding: 6px 14px; }
+
+/* ---------- Tables ---------- */
+table{ width: 100%; border-collapse: collapse; }
+th, td{ border-bottom: 1px solid rgba(255,255,255,0.08); padding: 6px 8px; text-align: left; color: var(--vt-ink); }
+th{ font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--vt-muted); font-weight: 700; background: rgba(255,255,255,0.03); }
+.input-table th{ width: 90px; }
+.input-table input[type="text"]{ padding: 5px 8px; border-radius: 8px; font-size: 0.85rem; }
+.input-table th input{ background: transparent; border: 0; text-align: center; font-weight: 700; color: var(--vt-muted); text-transform: uppercase; font-size: 0.72rem; padding: 0; box-shadow: none; }
+.data-table-cell, .column-header-input{ text-align: center; }
+.data-table-cell{ width: 60px; padding: 5px 6px; border-radius: 8px; }
+.column-header-input{ font-weight: 700; margin-bottom: 6px; }
+#valuesTable{ border: 1px solid var(--vt-line) !important; border-radius: 12px !important; background: rgba(255,255,255,0.03) !important; }
+.hidden-options{ display: none; }
+.hidden{ display: none; }
+
+/* ---------- Charts: keep a light "paper" so exports match the screen ---------- */
+canvas.vt-chart, #barChartCanvas, #histogramCanvas, #pieChartCanvas, #correlationCanvas{
+  display: block; width: 100%; max-width: 520px; border-radius: 12px; background: #fff;
+  border: 1px solid rgba(0,229,255,0.35); box-shadow: 0 0 30px rgba(0,229,255,0.15);
+}
+#pieChartCanvas{ max-width: 100%; }
+#correlationCanvas{ max-width: 100%; height: 400px; background: #f9fafb; }
+#histogramCanvas{ background: #e6e6e6; }
+
+/* ---------- Message box ---------- */
+#messageBox:not(.vt-toast){ position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; background: rgba(5,7,13,0.75); backdrop-filter: blur(4px); }
+#messageBox.hidden{ display: none; }
+#messageBoxContent{ background: #0f1630; border: 1px solid rgba(0,229,255,0.3); border-radius: 16px; padding: 24px; max-width: 24rem; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 30px rgba(0,229,255,0.12); color: var(--vt-ink); }
+#messageBoxButton{ margin-top: 14px; padding: 8px 22px; border-radius: 999px; border: 0; cursor: pointer; font-weight: 700; color: #04101c; background: linear-gradient(90deg, #00e5ff, #38bdf8); }
+#messageBox.vt-toast{ position: fixed; top: 80px; right: 1rem; z-index: 100; background: #0f1630; color: var(--vt-ink); border: 1px solid rgba(0,229,255,0.35); padding: .75rem 1.25rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.5); opacity: 0; transition: opacity .3s; pointer-events: none; }
+#messageBox.vt-toast.show{ opacity: 1; }
+#messageBox.vt-toast.hidden{ display: block; opacity: 0; }
+#messageBox.vt-toast.show.hidden{ opacity: 1; }
+
+/* ---------- Misc ---------- */
+.vt-stat{ text-align: center; padding: 16px; border-radius: 12px; background: rgba(0,229,255,0.07); border: 1px solid rgba(0,229,255,0.25); }
+.vt-stat .vt-stat-label{ font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--vt-muted); }
+.vt-stat .vt-stat-value{ font-size: 2.2rem; font-weight: 800; color: #fff; text-shadow: 0 0 18px rgba(0,229,255,0.5); margin-top: 4px; }
+.vt-output{ white-space: pre-wrap; word-wrap: break-word; max-height: 460px; overflow-y: auto; background: rgba(0,0,0,0.3); border: 1px solid var(--vt-line); border-radius: 10px; padding: 14px; font-family: 'Courier New', monospace; font-size: .85rem; color: #cfe9ff; }
+.hover-lift{ transition: transform .2s; }

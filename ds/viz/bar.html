@@ -16,122 +16,66 @@
     <meta name="twitter:title" content="Bar Chart Generator - Stat Mania">
     <meta name="twitter:description" content="Create custom bar charts online for free with Stat Mania's Plot Generator.">
     <meta name="twitter:image" content="https://www.statmania.info/assets/images/logo.png">
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome CDN for icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <style>
-        /* Custom styles for a cleaner look */
-        body {
-            font-family: 'Inter', sans-serif;
-            @apply bg-gray-50 text-gray-800;
-        }
-        canvas {
-            display: block; /* Remove extra space below canvas */
-            width: 100%;
-            /* Height will be set by JavaScript to match width for square aspect ratio */
-            /* Adjusted max-width and max-height for a slightly smaller plot */
-            max-width: 500px; /* Reduced from 600px */
-            max-height: 500px; /* Reduced from 600px */
-        }
-        input[type="text"], textarea {
-            /* Changed border-gray-300 to border-gray-900 for black border */
-            @apply w-full p-2 border border-gray-900 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500;
-        }
-        /* Updated button styling for generatePlotBtn */
-        #generatePlotBtn {
-            @apply bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-2 px-6 rounded-lg shadow-lg hover:from-indigo-600 hover:to-purple-700 transition transform duration-200 ease-in-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 border border-indigo-700;
-        }
-        /* Updated button styling for sortAscendingBtn to be a darker gray */
-        #sortAscendingBtn {
-            @apply bg-gray-700 text-white py-2 px-6 rounded-lg shadow-md hover:bg-gray-800 transition transform duration-200 ease-in-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-50 border border-gray-600 flex items-center justify-center gap-2; /* Added flex and gap for icon */
-        }
-        /* Style for the message box */
-        #messageBox {
-            @apply fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50 hidden;
-        }
-        #messageBoxContent {
-            @apply bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center;
-        }
-        #messageBoxButton {
-            @apply mt-4 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700;
-        }
-
-        /* Table styling for input */
-        .input-table {
-            @apply w-full border-collapse;
-        }
-        .input-table th, .input-table td {
-            /* Reduced padding for smaller cells */
-            @apply border border-gray-300 px-1 py-0.5 text-sm;
-        }
-        .input-table th {
-            @apply bg-gray-100 font-semibold text-gray-700;
-            white-space: nowrap; /* Prevent wrapping of column headers */
-            width: 90px; /* Set fixed width for headers */
-            min-width: 90px;
-            max-width: 90px;
-        }
-        /* Specific widths for table headers */
-        /* These rules are now redundant if all th have width: 90px, but kept for clarity if specific widths are needed later */
-        .input-table th:nth-child(1) { /* Category */
-            width: 90px;
-        }
-        .input-table th:nth-child(2) { /* Value */
-            width: 90px;
-        }
-        .input-table th:nth-child(3) { /* Color */
-            width: 90px;
-        }
-        .input-table th:nth-child(4) { /* Width (%) */
-            width: 90px;
-        }
-
-        .input-table input[type="text"] {
-            /* Changed border-gray-200 to border-gray-900 for black border */
-            @apply w-full p-1 border border-gray-900 rounded-sm shadow-sm focus:ring-blue-300 focus:border-blue-300;
-            box-sizing: border-box; /* Include padding and border in the element's total width and height */
-            min-width: 0; /* Allow inputs to shrink */
-            width: 80px; /* Adjusted input width to fit within 90px cell, considering padding/border */
-        }
-        .input-table .delete-row-btn {
-            @apply bg-red-500 text-white p-1 rounded hover:bg-red-600 transition duration-150 ease-in-out;
-            width: 28px; /* Fixed width for consistent button size */
-            height: 28px; /* Fixed height for consistent button size */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9em;
-        }
-        .add-row-btn {
-            @apply bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600 transition duration-150 ease-in-out mt-2;
-        }
-        /* Styling for the download button */
-        #downloadPlotBtn {
-            @apply bg-blue-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition transform duration-200 ease-in-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 border border-blue-700 flex items-center justify-center gap-2; /* Added flex and gap for icon */
-        }
-        /* Styling for the More Options button */
-        #moreOptionsBtn {
-            @apply bg-gray-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-gray-600 transition transform duration-200 ease-in-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50;
-        }
-        /* Initially hidden class */
-        .hidden-options {
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" href="css/dark-theme.css">
+    <link rel="stylesheet" href="css/viz-tool.css">
 </head>
-<body class="p-4 md:p-8">
-    <!-- Main Container -->
-    <div class="flex flex-col md:flex-row gap-6 md:gap-8 max-w-7xl mx-auto">
+<body class="antialiased flex flex-col min-h-screen">
+
+    <!-- Header/Navbar -->
+    <header class="bg-white shadow-sm py-4">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <a href="../../index.html" class="flex items-center space-x-3 no-underline hover:opacity-80 transition-opacity">
+                <img src="../../img/statmania_logo.svg" alt="Stat Mania Logo" class="w-10 h-10 rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/40x40/4f46e5/ffffff?text=Logo';">
+                <div>
+                    <div class="text-2xl font-bold text-indigo-600">Stat Mania</div>
+                    <p class="text-sm text-slate-500">Making sense of statistics</p>
+                </div>
+            </a>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="../../index.html" class="text-slate-600 hover:text-indigo-600 transition duration-300">Home</a></li><li><a href="scatter.html" class="text-slate-600 hover:text-indigo-600 transition duration-300">Data Viz Tools</a></li><li><a href="#cta" class="text-slate-600 hover:text-indigo-600 transition duration-300">More Tools</a></li>
+                </ul>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-label="Menu">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="../../index.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Home</a><a href="scatter.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Data Viz Tools</a><a href="#cta" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">More Tools</a>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <canvas class="sm-canvas" aria-hidden="true"></canvas>
+        <section class="sm-hero-wrap">
+            <div class="sm-hero-inner">
+                <span class="sm-eyebrow">Stat Mania &middot; Data Viz Tools</span>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-4 flex items-center justify-center gap-4 sm-gradient-text">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-12 h-12 sm-hero-icon"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>
+                    Bar Chart Generator
+                </h1>
+                <p class="text-lg sm:text-xl sm-subtitle-sm">Turn a table or a comma-separated list into bar, pie, donut and line charts &mdash; then download the PNG</p>
+            </div>
+        </section>
+
+        <!-- Tool Section -->
+        <section class="py-10 px-4 sm:px-6 lg:px-8 bg-slate-50">
+            <div class="vt-wrap">
+<!-- Main Container -->
+    <div class="vt-grid cols-2">
 
         <!-- Options Panel (Left/Top) -->
-        <div class="flex-shrink-0 w-full md:w-1/3 bg-white p-6 rounded-xl shadow-lg border border-gray-100">
-            <h1 class="text-3xl font-bold text-center mb-6 md:mb-8 text-indigo-700 flex items-center justify-center">
-                Plot Generator
-            </h1>
+        <div class="vt-panel">
+            <h2 class="vt-title">Plot Generator</h2>
             <!-- The scrollable content starts below this title -->
-            <div class="max-h-[calc(100vh-8rem-6rem)] overflow-y-auto pb-4"> <!-- Added pb-4 for spacing before button -->
-                <h2 class="text-xl font-semibold mb-4 text-gray-700">Plot Settings</h2>
+            <div class="vt-scroll"> <!-- Added pb-4 for spacing before button -->
+                
 
                 <!-- Plot Title Input Field (Moved here) -->
                 <div class="mb-4">
@@ -198,7 +142,7 @@
                             <!-- Rows will be added here by JavaScript -->
                         </tbody>
                     </table>
-                    <button type="button" id="addRowBtn" class="add-row-btn">Add Row</button>
+                    <button type="button" id="addRowBtn" class="add-row-btn"><i class="fas fa-plus"></i> Add Row</button>
                     <p class="text-xs text-gray-500 mt-2">You can paste data from Excel (Ctrl+V or Cmd+V) into any cell.</p>
                 </div>
 
@@ -236,9 +180,9 @@
 
         <!-- Chart Container (Right/Bottom) -->
         <!-- Added flex-col to stack canvas and button -->
-        <div class="flex-grow bg-white p-4 rounded-xl shadow-lg border border-gray-100 flex flex-col items-center justify-center min-h-[300px] md:min-h-[500px]">
+        <div class="vt-panel vt-plot">
 
-            <canvas id="barChartCanvas" class="flex-grow"></canvas>
+            <canvas id="barChartCanvas" class="vt-chart"></canvas>
 
             <!-- Moved Chart Type Selection here -->
             <div class="mt-4 w-full flex flex-wrap justify-center gap-4 px-4">
@@ -267,8 +211,43 @@
         </div>
     </div>
 
-    <!-- Message Box for alerts -->
-    <div id="messageBox">
+                </div>
+        </section>
+
+        <!-- Call to Action Section -->
+        <section id="cta" class="sm-section-dark py-16 px-4 sm:px-6 lg:px-8 text-center">
+            <div class="container mx-auto max-w-4xl">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-6" style="color:#fff">Explore More Tools</h2>
+                <p class="text-lg sm:text-xl mb-8 sm-subtitle-sm">Check out the rest of the data viz toolkit</p>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <a href="scatter.html" class="sm-btn sm-btn-ghost">Scatter Plot</a><a href="hist.html" class="sm-btn sm-btn-ghost">Histogram</a><a href="pie.html" class="sm-btn sm-btn-ghost">Pie Chart</a><a href="viz-corr.html" class="sm-btn sm-btn-ghost">Correlation</a><a href="gen-data.html" class="sm-btn sm-btn-ghost">Data Generator</a><a href="aes.html" class="sm-btn sm-btn-ghost">Aesthetic Equations</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-white py-8 px-4 sm:px-6 lg:px-8 text-center mt-auto" style="border-top:1px solid rgba(255,255,255,0.08)">
+        <div class="container mx-auto">
+            <p class="mb-4">&copy; <span id="copyright-year">2026</span> Stat Mania. All rights reserved.</p>
+            <div class="flex justify-center space-x-6">
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Privacy Policy</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Terms of Service</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Sitemap</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>document.getElementById("copyright-year").textContent = new Date().getFullYear();</script>
+    <script>
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+    </script>
+    <script src="../../starfield.js"></script>
+<!-- Message Box for alerts -->
+    <div id="messageBox" class="hidden">
         <div id="messageBoxContent">
             <p id="messageBoxText" class="text-lg font-medium mb-4"></p>
             <button id="messageBoxButton">OK</button>

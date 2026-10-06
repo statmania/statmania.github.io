@@ -16,1311 +16,609 @@
     <meta name="twitter:title" content="Scatter Plot Maker - Stat Mania">
     <meta name="twitter:description" content="Make interactive scatter plots from your own data online for free.">
     <meta name="twitter:image" content="https://www.statmania.info/assets/images/logo.png">
-    <!-- Google Fonts: Roboto, Open Sans, Henny Penny, and Almendra -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Almendra&family=Henny+Penny&family=Open+Sans:wght@400;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="css/dark-theme.css">
+    <link rel="stylesheet" href="css/viz-tool.css">
     <style>
-        body {
-            font-family: 'Roboto', sans-serif; /* Primary font for the body */
-            margin: 0;
-            padding: 20px;
-            background-color: #f0f2f5; /* Light gray background */
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start; /* Align items to the top */
-            min-height: 100vh;
-        }
-
-        .container {
-            display: flex;
-            flex-wrap: wrap; /* Allow wrapping on smaller screens */
-            gap: 25px;
-            max-width: 1700px; /* Increased max-width for better fitting of 4 columns */
-            width: 100%;
-            background-color: #ffffff; /* White container background */
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
-            padding: 25px;
-        }
-
-        .column {
-            background-color: #f9f9f9; /* Off-white for columns */
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Inner shadow for depth */
-            box-sizing: border-box; /* Include padding and border in the element's total width and height */
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Column Layout for Large Screens (Default: >= 992px) */
-        .left-menu-column {
-            flex: 15 1 180px; /* Adjusted flex-grow for rebalancing */
-            min-width: 180px; /* Minimum width for menu readability */
-            max-width: 220px; /* Max width for consistency */
-        }
-
-        .plot-area {
-            flex: 40 1 400px; /* flex-grow flex-shrink flex-basis. User requested 40% and 400px min-width */
-            min-width: 400px; /* Adjusted minimum width for the plot */
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-        }
-
-        .data-input-column {
-            flex: 27 1 280px; /* Decreased width as requested (from 300px min-width) */
-            min-width: 280px; /* Adjusted minimum width */
-        }
-
-        .settings {
-            flex: 18 1 250px; /* Adjusted flex-grow for rebalancing */
-            min-width: 250px; /* Minimum width for settings */
-        }
-
-
-        /* Adjust column widths for Medium Screens (e.g., Tablets and smaller Laptops: 768px to 991px) */
-        @media (max-width: 991px) {
-            /* On medium screens, stack menu/data input (top row), then plot/settings (bottom row) */
-            .left-menu-column {
-                flex-basis: calc(40% - 12.5px); /* Take approx 40% of first row */
-                max-width: unset; /* Remove max-width restriction for flexibility */
-            }
-            .data-input-column {
-                flex-basis: calc(60% - 12.5px); /* Take approx 60% of first row */
-                min-width: unset; /* Remove min-width to allow shrinking */
-            }
-            .plot-area {
-                flex-basis: calc(60% - 12.5px); /* 60% of two-column layout in second row */
-                min-width: unset; /* Remove min-width to allow shrinking */
-            }
-            .settings {
-                flex-basis: calc(40% - 12.5px); /* 40% of two-column layout in second row */
-                min-width: unset; /* Remove min-width to allow shrinking */
-            }
-            .container {
-                gap: 25px; /* Revert to 25px gap for stacked sections, 1 gap for side-by-side */
-            }
-        }
-
-        /* Adjust column widths for Small Screens (e.g., Mobile: <= 767px) */
-        @media (max-width: 767px) {
-            /* On small screens, all columns stack vertically */
-            .column {
-                flex-basis: 100%;
-                min-width: unset;
-                max-width: none;
-            }
-        }
-
-        h2 {
-            font-family: 'Roboto', sans-serif; /* Consistent font for headings */
-            color: #2c3e50;
-            margin-top: 0;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-        }
-
-        /* Specific style for the plot column's H2 */
-        h2.plot-main-title {
-            margin-top: 0;
-            margin-bottom: 15px;
-        }
-
-        /* Data Input Table */
-        #dataTableContainer {
-            overflow-x: auto;
-            max-height: 400px;
-            overflow-y: auto;
-            margin-bottom: 15px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-        }
-
-        #dataTable {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9em;
-            background-color: #fff;
-        }
-
-        #dataTable th, #dataTable td {
-            border: 1px solid #e0e0e0;
-            padding: 7px 10px;
-            text-align: left;
-            white-space: nowrap;
-        }
-
-        #dataTable th {
-            background-color: #fafffa;
-            font-weight: bold;
-            color: #555;
-            cursor: text;
-            position: sticky;
-            top: 0;
-            z-index: 1;
-        }
-
-        #dataTable td {
-            background-color: #ffffff;
-            position: relative;
-        }
-
-        /* Style for editable content */
-        [contenteditable="true"] {
-            outline: none;
-            background-color: #fafffa;
-            border-radius: 4px;
-            padding: 2px 5px;
-            min-width: 50px;
-        }
-
-        #dataTable input[type="number"] {
-            width: 100%;
-            box-sizing: border-box;
-            border: none;
-            background: transparent;
-            font-size: 1em;
-            padding: 0;
-            margin: 0;
-            outline: none;
-        }
-
-        .table-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            margin-bottom: 20px;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 18px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        button:hover {
-            background-color: #45a049;
-            transform: translateY(-1px);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        button.action-button {
-            background-color: #007bff;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        button.action-button:hover {
-            background-color: #0056b3;
-        }
-
-        button.danger {
-            background-color: #dc3545;
-            font-size: 1.2em;
-            padding: 6px 10px;
-            line-height: 1;
-        }
-        button.danger:hover {
-            background-color: #c82333;
-        }
-
-        /* Plot Area */
-        #plotContainer {
-            flex-grow: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            /* Removed fixed height here */
-        }
-
-        #scatter-plot-svg {
-            background-color: #f8f8f8;
-            overflow: visible;
-        }
-
-        /* ggplot2-like axis and gridlines */
-        .axis path {
-            display: none;
-        }
-        .axis line {
-            stroke: #e0e0e0;
-            stroke-dasharray: 2 2;
-            shape-rendering: crispEdges;
-        }
-        .axis .tick line {
-            opacity: 0.7;
-        }
-        .axis text {
-            font-size: 11px;
-            fill: #555;
-        }
-        .plot-title {
-            font-size: 1.2em;
-            font-weight: bold;
-            text-anchor: middle;
-            fill: #333;
-        }
-        .axis-label {
-            font-size: 0.9em;
-            text-anchor: middle;
-            fill: #555;
-        }
-
-        /* Tooltip */
-        .tooltip {
-            position: absolute;
-            text-align: center;
-            width: auto;
-            height: auto;
-            padding: 8px;
-            font: 12px sans-serif;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            border-radius: 4px;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            z-index: 1000;
-        }
-
-        /* Settings Column */
-        .settings .option-group {
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px dashed #e0e0e0;
-        }
-        .settings .option-group:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        /* General label and input styling */
-        .settings label {
-            display: inline-block;
-            margin-bottom: 0;
-            font-weight: bold;
-            color: #555;
-            margin-right: 5px;
-        }
-
-        .settings input[type="radio"] {
-            margin-right: 5px;
-            accent-color: #007bff;
-        }
-        .settings input[type="text"],
-        .settings select {
-            padding: 8px 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 0.9em;
-            box-sizing: border-box;
-        }
-
-        /* Specific single-line option groups */
-        .single-line-option {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .single-line-option input[type="text"],
-        .single-line-option select {
-            flex-grow: 1;
-            width: auto;
-        }
-
-        /* New flex container for color options row */
-        .color-options-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: center;
-        }
-
-        /* Styles for individual radio option groups within the row */
-        .color-single-option,
-        .color-category-option {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin-bottom: 0;
-        }
-
-        /* Adjust width of the color input within its flex container */
-        .color-single-option input[type="text"] {
-            flex-grow: 1;
-            max-width: 120px;
-        }
-
-        /* Specific styles for background color input */
-        #customBackgroundColorInput {
-            margin-left: 5px;
-            flex-grow: 1;
-            max-width: 120px;
-        }
-        .background-color-option {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-
-        /* Adjust width for select dropdowns to prevent excessive shrinking */
-        .settings select {
-            min-width: 120px;
-        }
-
-
-        /* Legend Styling */
-        .legend {
-            font-size: 0.85em;
-            fill: #333;
-        }
-        .legend-item {
-            cursor: pointer;
-        }
-        /* Removed rect specific styles as path will be used */
-        .legend-item path {
-            stroke: #ccc;
-            stroke-width: 0.5px;
-        }
-
-        /* --- Left Menu Specific Styles --- */
-        .left-menu-column {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            background-color: #ffffff; /* Reverted to white background */
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.08); /* More prominent shadow */
-            color: #333; /* Default text color for menu column */
-        }
-
-        .logo-container {
-            margin-bottom: 5px; /* Reduced margin */
-        }
-
-        .logo-image {
-            width: 60px; /* Set fixed width */
-            height: 60px; /* Set fixed height */
-            border-radius: 50%; /* Make it round if it's a square image */
-            object-fit: cover; /* Ensure the image covers the area */
-            box-shadow: 0 0 0 4px #c8d9ff, 0 0 0 6px #a0c4ff; /* Rings around the logo */
-        }
-
-
-        .site-name {
-            font-family: 'Almendra', serif; /* Almendra font for site name */
-            font-size: 2.2em; /* Increased font size */
-            font-weight: 700; /* Bolder */
-            color: #2a52be; /* Reverted to deep blue */
-            margin-bottom: 0px; /* Reduced margin */
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1); /* Subtle text shadow */
-        }
-
-        .slogan {
-            font-family: 'Henny Penny', cursive; /* Henny Penny font for slogan */
-            font-size: 1.2em; /* Slightly larger slogan font */
-            color: #555; /* Reverted to darker gray */
-            margin-top: 0px; /* Reduced margin */
-            margin-bottom: 15px; /* Reduced margin */
-        }
-
-        .menu-list {
-            list-style: none;
-            padding: 0;
-            width: 100%; /* Menu takes full width of its column */
-            text-align: left;
-        }
-
-        .menu-list li {
-            margin-bottom: 8px; /* Increased spacing between items */
-        }
-
-        .menu-list a, .menu-list .menu-toggle {
-            font-family: 'Open Sans', sans-serif; /* Open Sans for menu items */
-            display: block;
-            padding: 12px 18px; /* Increased padding */
-            color: #ffffff; /* White text for contrast on blue background */
-            text-decoration: none;
-            border-radius: 8px; /* More rounded corners */
-            transition: background-color 0.3s ease, color 0.3s ease, font-weight 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.15); /* More pronounced shadow for blue items */
-            background-color: #0099ff; /* Blue background for menu items */
-            border: 1px solid #0088ee; /* Matching border */
-            position: relative; /* For gradient overlay */
-            overflow: hidden; /* For gradient effect */
-            z-index: 1; /* To ensure content is above pseudo-element */
-        }
-
-        /* Modern Gradient Hover Effect */
-        .menu-list a::before, .menu-list .menu-toggle::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255,255,255,0.2); /* Subtle white overlay for hover */
-            z-index: -1; /* Behind the content */
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .menu-list a:hover::before, .menu-list .menu-toggle:hover::before {
-            opacity: 1;
-        }
-
-        .menu-list a:hover, .menu-list .menu-toggle:hover {
-            color: #ffffff; /* Keep text white on hover */
-            font-weight: 600; /* Medium bold on hover */
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* Stronger shadow on hover */
-            transform: translateY(-2px); /* Slight lift effect */
-        }
-        .menu-list a:active, .menu-list .menu-toggle:active {
-            transform: translateY(0); /* Return to original position */
-        }
-
-
-        .menu-list .menu-toggle {
-            font-weight: 600; /* Medium bold */
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #0099ff; /* Default blue for toggles */
-            border: 1px solid #0088ee; /* Matching border */
-            margin-bottom: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.15); /* Consistent shadow for blue */
-            color: #ffffff; /* Text color for menu toggle - white */
-        }
-
-        .menu-list .menu-toggle.expanded {
-             background-color: #0077cc; /* Darker blue when expanded */
-             color: #ffffff; /* Keep text white when expanded */
-             border-color: #0066bb;
-             box-shadow: 0 2px 6px rgba(0,0,0,0.18); /* Slightly stronger shadow */
-        }
-
-
-        .menu-list .sub-menu {
-            list-style: none;
-            padding-left: 15px;
-            max-height: 0; /* Hidden by default */
-            overflow: hidden;
-            transition: max-height 0.3s ease-out; /* Smooth transition */
-            background-color: #fdfdfd;
-            border-left: 3px solid #007bff;
-            margin-top: -5px; /* Overlap with parent slightly */
-            border-radius: 0 0 8px 8px; /* Rounded bottom corners */
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.03); /* Inner shadow for depth */
-        }
-
-        .menu-list .sub-menu.show {
-            max-height: 200px; /* Adjust as needed to show all items, or use JS to calculate */
-            transition: max-height 0.3s ease-in;
-        }
-
-        .menu-list .sub-menu li a {
-            padding: 8px 15px;
-            font-size: 0.95em;
-            color: #555;
-            box-shadow: none; /* Remove shadow for sub-menu items */
-            background-color: transparent; /* Sub-menu items have transparent background by default */
-        }
-
-        .menu-list .sub-menu li a:hover {
-            background-color: #edf2f7;
-            color: #007bff;
-            font-weight: normal; /* Keep normal for sub-menu hover */
-        }
-        .menu-list .sub-menu li a::before {
-            background: none; /* Remove pseudo-element for sub-menu hover */
-            opacity: 0; /* Ensure no overlay on sub-menu items */
-        }
-
-        /* Active menu item styling */
-        .menu-list a.active-page {
-            background-color: #0077cc; /* Deeper blue for active background */
-            color: #ffffff; /* White text for active item */
-            font-weight: bold;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transform: translateY(-1px);
-        }
-        .menu-list a.active-page::before {
-            opacity: 1; /* Keep the gradient visible for active page */
-            background: linear-gradient(to right, #0077cc, #0055aa); /* A more saturated blue gradient */
-        }
-
-
-        /* Arrow for expandable menu - now plus/minus icon */
-        .arrow {
-            display: inline-block;
-            transition: transform 0.2s ease;
-        }
-
-        .menu-toggle.expanded .arrow {
-            transform: rotate(45deg); /* Rotate plus to form an X */
-        }
-
-        /* Style for the download button when placed directly under the plot */
-        .plot-area .action-button {
-            margin-top: 20px; /* Add some space above the button */
-            align-self: center; /* Center the button in the plot area */
-        }
+      .sc-grid{ display:grid; gap:22px; align-items:start; grid-template-columns:minmax(250px,1fr) minmax(420px,2.3fr) minmax(250px,1fr); }
+      @media (max-width:1150px){ .sc-grid{ grid-template-columns:1fr 1fr; } .sc-plot{ grid-column:1/-1; order:-1; } }
+      @media (max-width:720px){ .sc-grid{ grid-template-columns:1fr; } }
+
+      #dataTableContainer{ max-height:430px; overflow:auto; border:1px solid var(--vt-line); border-radius:12px; background:rgba(0,0,0,.18); }
+      #dataTable{ font-size:.85rem; }
+      #dataTable th{ position:sticky; top:0; z-index:1; background:#101830; cursor:text; white-space:nowrap; border-bottom:1px solid var(--vt-line); }
+      #dataTable td{ white-space:nowrap; font-variant-numeric:tabular-nums; cursor:text; }
+      #dataTable td:focus, #dataTable th:focus{ outline:none; background:rgba(0,229,255,.1); box-shadow:inset 0 0 0 1px var(--vt-accent); }
+      #dataTable tbody tr:hover td{ background:rgba(255,255,255,.04); }
+      #dataTable td:last-child{ width:36px; text-align:center; }
+      #dataTable td button.danger{ opacity:.5; }
+      #dataTable tr:hover td button.danger{ opacity:1; }
+      .table-actions{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+
+      #plotContainer{ width:100%; display:flex; justify-content:center; }
+      #scatter-plot-svg{ display:block; max-width:100%; border-radius:12px; border:1px solid rgba(0,229,255,.35); box-shadow:0 0 30px rgba(0,229,255,.15); overflow:hidden; }
+      .sc-stats{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; min-height:34px; }
+      .sc-chip{ font-size:.78rem; padding:5px 12px; border-radius:999px; background:rgba(0,229,255,.08); border:1px solid rgba(0,229,255,.25); color:#cfe9ff; font-variant-numeric:tabular-nums; }
+      .sc-chip b{ color:#fff; font-weight:700; }
+      #error-message{ margin:0; min-height:1.1em; color:#ffb4b9; font-size:.82rem; text-align:center; }
+
+      .sc-field{ margin-bottom:18px; }
+      .sc-field > label{ display:block; margin-bottom:6px; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--vt-muted); }
+      .sc-val{ float:right; color:var(--vt-accent); font-family:'Courier New',monospace; text-transform:none; letter-spacing:0; }
+      .sc-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+      .sc-row select, .sc-row input[type=text]{ flex:1 1 110px; width:auto; min-width:0; }
+      label.sc-radio{ display:inline-flex !important; align-items:center; gap:7px; margin:0 !important; font-size:.88rem !important; font-weight:600 !important; text-transform:none !important; letter-spacing:0 !important; color:var(--vt-ink) !important; cursor:pointer; }
+      .sc-checks{ display:flex; flex-direction:column; gap:10px; }
+
+      .vt-tooltip{ position:fixed; z-index:200; pointer-events:none; opacity:0; transform:translateY(4px); transition:opacity .12s, transform .12s; padding:8px 12px; border-radius:10px; font-size:.78rem; line-height:1.5; color:#e8ecf7; background:rgba(10,15,30,.95); border:1px solid rgba(0,229,255,.4); box-shadow:0 10px 30px rgba(0,0,0,.5); backdrop-filter:blur(6px); }
+      .vt-tooltip.on{ opacity:1; transform:none; }
+      .vt-tooltip .k{ color:var(--vt-muted); }
     </style>
 </head>
-<body>
+<body class="antialiased flex flex-col min-h-screen">
 
-    <div class="container">
-        <!-- Column 1: Left Menu -->
-        <div class="column left-menu-column">
-            <div class="logo-container">
-                <img src="https://avatars.githubusercontent.com/u/80940485" alt="Stat Mania Logo" class="logo-image">
-            </div>
-            <h2 class="site-name">Stat Mania</h2>
-            <p class="slogan">Making Sense of Statistics</p>
-
-            <ul class="menu-list">
-                <li><a href="#">Home</a></li>
-                <li class="has-submenu">
-                    <div class="menu-toggle" data-target="graphs-submenu">
-                        Graphs <i class="fas fa-plus arrow"></i>
-                    </div>
-                    <ul class="sub-menu" id="graphs-submenu">
-                        <li><a href="pie.html">Pie chart</a></li>
-                        <li><a href="bar.html">Bar plot</a></li>
-                        <li><a href="scatter.html" class="active-page">Scatter plot</a></li> <!-- Active page highlight -->
-                        <li><a href="hist.html">Histogram</a></li>
-                    </ul>
-                </li>
-                <li class="has-submenu">
-                    <div class="menu-toggle" data-target="data-analysis-submenu">
-                        Data Analysis <i class="fas fa-plus arrow"></i>
-                    </div>
-                    <ul class="sub-menu" id="data-analysis-submenu">
-                        <li><a href="../analysis/csv-overview.html">Summary</a></li>
-                        <!-- Add more data analysis items here -->
-                    </ul>
-                </li>
-                <!-- Add more top-level menu items here -->
-            </ul>
-        </div>
-
-        <!-- Column 2: Plot Area (now in 2nd position) -->
-        <div class="column plot-area">
-            <!-- Removed the fixed h2 title -->
-            <div id="plotContainer">
-                <svg id="scatter-plot-svg"></svg>
-            </div>
-            <p id="error-message" style="color: red; margin-top: 10px;"></p>
-            <!-- Download Plot button moved here -->
-            <button onclick="downloadPlot()" class="action-button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
+    <!-- Header/Navbar -->
+    <header class="bg-white shadow-sm py-4">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <a href="../../index.html" class="flex items-center space-x-3 no-underline hover:opacity-80 transition-opacity">
+                <img src="../../img/statmania_logo.svg" alt="Stat Mania Logo" class="w-10 h-10 rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/40x40/4f46e5/ffffff?text=Logo';">
+                <div>
+                    <div class="text-2xl font-bold text-indigo-600">Stat Mania</div>
+                    <p class="text-sm text-slate-500">Making sense of statistics</p>
+                </div>
+            </a>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="../../index.html" class="text-slate-600 hover:text-indigo-600 transition duration-300">Home</a></li><li><a href="scatter.html" class="text-slate-600 hover:text-indigo-600 transition duration-300">Data Viz Tools</a></li><li><a href="#cta" class="text-slate-600 hover:text-indigo-600 transition duration-300">More Tools</a></li>
+                </ul>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-label="Menu">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
                 </svg>
-                Download Plot (PNG)
             </button>
         </div>
+        <div id="mobile-menu" class="hidden md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="../../index.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Home</a><a href="scatter.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Data Viz Tools</a><a href="#cta" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">More Tools</a>
+        </div>
+    </header>
 
-        <!-- Column 3: Data Input (now in 3rd position) -->
-        <div class="column data-input-column">
-            <h2>Data Input</h2>
-            <div id="dataTableContainer">
-                <table id="dataTable">
-                    <thead>
-                        <tr>
-                            <th id="header-var1" contenteditable="true">Variable 1</th>
-                            <th id="header-var2" contenteditable="true">Variable 2</th>
-                            <th id="header-category" contenteditable="true">Category</th>
-                            <th></th> <!-- For delete button -->
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Rows will be populated by JavaScript -->
-                    </tbody>
-                </table>
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <canvas class="sm-canvas" aria-hidden="true"></canvas>
+        <section class="sm-hero-wrap">
+            <div class="sm-hero-inner">
+                <span class="sm-eyebrow">Stat Mania &middot; Data Viz Tools</span>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-4 flex items-center justify-center gap-4 sm-gradient-text">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-12 h-12 sm-hero-icon"><circle cx="6" cy="17" r="1.6"/><circle cx="10" cy="11" r="1.6"/><circle cx="14" cy="14" r="1.6"/><circle cx="18" cy="6" r="1.6"/><path d="M3 3v18h18"/></svg>
+                    Scatter Plot Maker
+                </h1>
+                <p class="text-lg sm:text-xl sm-subtitle-sm">Type or paste your data, colour by group, fit a trend line, and download a presentation-ready plot</p>
             </div>
-            <div class="table-actions">
-                <button onclick="addRow()">Add Row</button>
-                <button onclick="clearTable()" class="danger">Clear Data</button>
+        </section>
+
+        <!-- Tool Section -->
+        <section class="py-10 px-4 sm:px-6 lg:px-8 bg-slate-50">
+            <div class="vt-wrap">
+                <div class="sc-grid">
+                    <!-- Data -->
+                    <div class="vt-panel sc-data">
+                        <h2 class="vt-title">Data</h2>
+                        <div id="dataTableContainer">
+                            <table id="dataTable">
+                                <thead>
+                                    <tr>
+                                        <th id="header-var1" contenteditable="true" spellcheck="false">X</th>
+                                        <th id="header-var2" contenteditable="true" spellcheck="false">Y</th>
+                                        <th id="header-category" contenteditable="true" spellcheck="false">Group</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <div class="table-actions">
+                            <button type="button" class="vt-btn" onclick="addRow()"><i class="fas fa-plus"></i> Add row</button>
+                            <button type="button" class="vt-btn vt-btn-danger" onclick="clearTable()"><i class="fas fa-eraser"></i> Clear</button>
+                        </div>
+                        <p class="vt-hint">Click any cell to edit &mdash; headers too. Paste rows from Excel or a CSV into a cell to fill the table.</p>
+                    </div>
+
+                    <!-- Plot -->
+                    <div class="vt-panel vt-plot sc-plot">
+                        <div id="plotContainer"><svg id="scatter-plot-svg" role="img" aria-label="Scatter plot"></svg></div>
+                        <div id="statsRow" class="sc-stats"></div>
+                        <p id="error-message"></p>
+                        <button type="button" id="downloadPlotBtn" onclick="downloadPlot()"><i class="fas fa-download"></i> Download PNG</button>
+                    </div>
+
+                    <!-- Settings -->
+                    <div class="vt-panel sc-settings">
+                        <h2 class="vt-title">Plot Settings</h2>
+
+                        <div class="sc-field">
+                            <label for="plotTitleInput">Title</label>
+                            <input type="text" id="plotTitleInput" placeholder="Enter plot title">
+                        </div>
+
+                        <div class="sc-field">
+                            <label>Colour</label>
+                            <div class="sc-row">
+                                <label class="sc-radio"><input type="radio" id="colorBySingle" name="colorOption" value="single" checked> Single</label>
+                                <input type="color" id="singleColorInput" value="#00e5ff">
+                                <label class="sc-radio"><input type="radio" id="colorByCategory" name="colorOption" value="category"> <span id="colorByCategoryLabel">Group</span></label>
+                            </div>
+                        </div>
+
+                        <div class="sc-field">
+                            <label for="pointTypeSelect">Point shape</label>
+                            <select id="pointTypeSelect">
+                                <option value="circle">Circle</option>
+                                <option value="square">Square</option>
+                                <option value="triangle-up">Triangle</option>
+                                <option value="diamond">Diamond</option>
+                            </select>
+                        </div>
+
+                        <div class="sc-field">
+                            <label for="pointSizeSlider">Point size <span class="sc-val" id="pointSizeVal">6</span></label>
+                            <input type="range" id="pointSizeSlider" min="2" max="14" step="1" value="6">
+                        </div>
+                        <div class="sc-field">
+                            <label for="opacitySlider">Opacity <span class="sc-val" id="opacityVal">0.85</span></label>
+                            <input type="range" id="opacitySlider" min="0.1" max="1" step="0.05" value="0.85">
+                        </div>
+
+                        <div class="sc-field">
+                            <label>Layers</label>
+                            <div class="sc-checks">
+                                <label class="sc-radio"><input type="checkbox" id="trendLineCheckbox"> Trend line</label>
+                                <label class="sc-radio"><input type="checkbox" id="drawLinesCheckbox"> Connect points</label>
+                                <label class="sc-radio"><input type="checkbox" id="hideGridlinesCheckbox"> Hide gridlines</label>
+                            </div>
+                        </div>
+
+                        <div class="sc-field">
+                            <label for="backgroundColorSelect">Background</label>
+                            <div class="sc-row">
+                                <select id="backgroundColorSelect">
+                                    <option value="#0a0f1e">Midnight</option>
+                                    <option value="#ffffff">White</option>
+                                    <option value="#e6e6e6">ggplot Gray</option>
+                                    <option value="#fdf6e3">Paper</option>
+                                    <option value="#000000">Black</option>
+                                </select>
+                                <input type="text" id="customBackgroundColorInput" placeholder="name or hex">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="vt-tooltip" id="vtTooltip" role="status"></div>
+            </div>
+        </section>
+
+        <!-- Call to Action Section -->
+        <section id="cta" class="sm-section-dark py-16 px-4 sm:px-6 lg:px-8 text-center">
+            <div class="container mx-auto max-w-4xl">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-6" style="color:#fff">Explore More Tools</h2>
+                <p class="text-lg sm:text-xl mb-8 sm-subtitle-sm">Check out the rest of the data viz toolkit</p>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <a href="bar.html" class="sm-btn sm-btn-ghost">Bar Chart</a><a href="hist.html" class="sm-btn sm-btn-ghost">Histogram</a><a href="pie.html" class="sm-btn sm-btn-ghost">Pie Chart</a><a href="viz-corr.html" class="sm-btn sm-btn-ghost">Correlation</a><a href="gen-data.html" class="sm-btn sm-btn-ghost">Data Generator</a><a href="aes.html" class="sm-btn sm-btn-ghost">Aesthetic Equations</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-white py-8 px-4 sm:px-6 lg:px-8 text-center mt-auto" style="border-top:1px solid rgba(255,255,255,0.08)">
+        <div class="container mx-auto">
+            <p class="mb-4">&copy; <span id="copyright-year">2026</span> Stat Mania. All rights reserved.</p>
+            <div class="flex justify-center space-x-6">
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Privacy Policy</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Terms of Service</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Sitemap</a>
             </div>
         </div>
+    </footer>
 
-        <!-- Column 4: Plot Settings (remains in 4th position) -->
-        <div class="column settings">
-            <h2>Plot Settings</h2>
-
-            <div class="option-group single-line-option">
-                <label for="plotTitleInput">Plot Title:</label>
-                <input type="text" id="plotTitleInput" placeholder="Enter plot title">
-            </div>
-
-            <div class="option-group single-line-option">
-                <label>Color:</label>
-                <div class="color-options-row">
-                    <div class="color-single-option">
-                        <input type="radio" id="colorBySingle" name="colorOption" value="single" checked>
-                        <label for="colorBySingle"></label>
-                        <input type="text" id="singleColorInput" value="steelblue" placeholder="e.g., #4682B4 or steelblue">
-                    </div>
-                    <div class="color-category-option">
-                        <input type="radio" id="colorByCategory" name="colorOption" value="category">
-                        <label id="colorByCategoryLabel" for="colorByCategory">Category</label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="option-group single-line-option">
-                <label for="pointTypeSelect">Point Type:</label>
-                <select id="pointTypeSelect">
-                    <option value="circle">Circle</option>
-                    <option value="square">Square</option>
-                    <option value="triangle-up">Triangle Up</option>
-                    <option value="diamond">Diamond</option>
-                </select>
-            </div>
-
-            <div class="option-group" style="display: flex; align-items: center; gap: 20px;">
-                <div>
-                    <input type="checkbox" id="drawLinesCheckbox">
-                    <label for="drawLinesCheckbox">Draw Lines</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="hideGridlinesCheckbox">
-                    <label for="hideGridlinesCheckbox">Hide Gridlines</label>
-                </div>
-            </div>
-
-            <div class="option-group single-line-option">
-                <label for="backgroundColorSelect">Background Color:</label>
-                <div class="background-color-option">
-                    <select id="backgroundColorSelect">
-                        <option value="#f8f8f8">Default Gray</option>
-                        <option value="#ffffff">White</option>
-                        <option value="#000000">Black</option>
-                        <option value="#ADD8E6">Light Blue</option>
-                    </select>
-                    <input type="text" id="customBackgroundColorInput" placeholder="color name or hex">
-                </div>
-            </div>
-
-            <!-- Download Plot button moved from here -->
-        </div>
-    </div>
-
+    <script>document.getElementById("copyright-year").textContent = new Date().getFullYear();</script>
+    <script>
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+    </script>
+    <script src="../../starfield.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script>
-        // Debounce function to limit how often a function is called
-        function debounce(func, delay) {
-            let timeout;
-            return function(...args) {
-                const context = this;
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(context, args), delay);
-            };
+        const PALETTE = ['#00e5ff', '#ff2fb4', '#a855f7', '#fbbf24', '#4ade80', '#fb923c', '#60a5fa', '#f87171'];
+        const FONT = "Inter, 'Segoe UI', system-ui, sans-serif";
+
+        function debounce(fn, delay) {
+            let t;
+            return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), delay); };
         }
+        const redraw = debounce(() => generateScatterPlot(), 120);
 
-        // Debounced version of generateScatterPlot
-        const debouncedGenerateScatterPlot = debounce(generateScatterPlot, 150); // Increased debounce to 150ms
-
-        // Initial sample data (now 20 entries for cubic function with larger random deviations)
+        // ---------- Sample data: three loosely separated groups around a trend ----------
         let sampleData = [];
-        for (let i = 0; i < 20; i++) {
-            const x = i * 0.5; // Spread out x values for a smoother curve
-            // Simple cubic function: y = x^3 - 6x^2 + 9x + 5
-            let y = (x * x * x) - (6 * x * x) + (9 * x) + 5;
-
-            // Add a larger random deviation for more scatter, approx 10-20% of the y-range
-            y += (Math.random() - 0.5) * 75; // Multiplier increased to 75
-
-            sampleData.push({
-                var1: parseFloat(x.toFixed(2)), // Keep two decimal places for clarity
-                var2: parseFloat(y.toFixed(2)),
-                category: String.fromCharCode(65 + (i % 4)) // Categories A, B, C, D
-            });
-        }
-
-        // Global D3 color scale (will be initialized later)
-        let colorScale = d3.scaleOrdinal(d3.schemeCategory10);
-
-
-        // --- Data Table Management ---
-
-        /**
-         * Populates the data table with initial or updated data.
-         * @param {Array<Object>} dataArray - Array of data objects.
-         */
-        function populateTable(dataArray) {
-            const tbody = document.querySelector('#dataTable tbody');
-            tbody.innerHTML = ''; // Clear existing rows
-
-            dataArray.forEach((d, index) => {
-                const row = tbody.insertRow();
-                row.dataset.rowIndex = index; // Store index for easier deletion
-
-                // Variable 1 Cell (editable number)
-                const cell1 = row.insertCell();
-                cell1.contentEditable = "true";
-                cell1.textContent = d.var1 !== undefined ? d.var1 : '';
-                cell1.addEventListener('input', (e) => {
-                    sampleData[index].var1 = parseFloat(e.target.textContent) || 0;
-                    debouncedGenerateScatterPlot();
-                });
-
-                // Variable 2 Cell (editable number)
-                const cell2 = row.insertCell();
-                cell2.contentEditable = "true";
-                cell2.textContent = d.var2 !== undefined ? d.var2 : '';
-                cell2.addEventListener('input', (e) => {
-                    sampleData[index].var2 = parseFloat(e.target.textContent) || 0;
-                    debouncedGenerateScatterPlot();
-                });
-
-                // Category Cell (editable text)
-                const cell3 = row.insertCell();
-                cell3.contentEditable = "true";
-                cell3.textContent = d.category !== undefined ? d.category : '';
-                cell3.addEventListener('input', (e) => {
-                    sampleData[index].category = e.target.textContent.trim();
-                    debouncedGenerateScatterPlot();
-                });
-
-                // Delete Button Cell (now with icon)
-                const deleteCell = row.insertCell();
-                const deleteBtn = document.createElement('button');
-                deleteBtn.innerHTML = '&times;'; // Changed to cross symbol
-                deleteBtn.classList.add('danger');
-                deleteBtn.setAttribute('title', 'Delete Row'); // Add tooltip for accessibility
-                deleteBtn.onclick = () => deleteRow(index);
-                deleteCell.appendChild(deleteBtn);
-            });
-        }
-
-        /**
-         * Adds a new empty row to the data table and sampleData.
-         */
-        function addRow() {
-            sampleData.push({ var1: 0, var2: 0, category: "" });
-            populateTable(sampleData); // Re-render table to include new row
-            // Scroll to the bottom of the table
-            const tableContainer = document.getElementById('dataTableContainer');
-            tableContainer.scrollTop = tableContainer.scrollHeight;
-            debouncedGenerateScatterPlot(); // Trigger plot update after adding row
-        }
-
-        /**
-         * Clears all data from the table and redraws an empty plot.
-         */
-        function clearTable() {
-            sampleData = [{ var1: 0, var2: 0, category: "" }]; // Reset to one empty row
-            populateTable(sampleData);
-            debouncedGenerateScatterPlot();
-        }
-
-        /**
-         * Deletes a row from the data table and sampleData.
-         * @param {number} index - The index of the row to delete.
-         */
-        function deleteRow(index) {
-            sampleData.splice(index, 1); // Remove from the array
-            if (sampleData.length === 0) { // Ensure at least one row remains after deletion
-                sampleData.push({ var1: 0, var2: 0, category: "" });
+        (function seed() {
+            const rnd = d3.randomNormal.source(d3.randomLcg(7))(0, 1);
+            const groups = [['A', 0, 0], ['B', 6, 1.4], ['C', -5, 2.8]];
+            for (let i = 0; i < 36; i++) {
+                const [g, off, shift] = groups[i % 3];
+                const x = 1 + shift * 2 + Math.abs(rnd()) * 2.2 + (i / 36) * 3;
+                const y = 3 + 1.6 * x + off + rnd() * 2.2;
+                sampleData.push({ var1: +x.toFixed(2), var2: +y.toFixed(2), category: g });
             }
-            populateTable(sampleData); // Re-render table to reflect deletion
-            debouncedGenerateScatterPlot(); // Update plot after data change
+        })();
+
+        let hiddenCats = new Set();   // categories toggled off via the legend
+        let firstDraw = true;         // animate points in only on the first render
+
+        // ---------- Data table ----------
+        function populateTable(rows) {
+            const tbody = document.querySelector('#dataTable tbody');
+            tbody.innerHTML = '';
+            rows.forEach((d, index) => {
+                const tr = tbody.insertRow();
+                [['var1', true], ['var2', true], ['category', false]].forEach(([key, numeric]) => {
+                    const td = tr.insertCell();
+                    td.contentEditable = 'true';
+                    td.spellcheck = false;
+                    td.textContent = d[key] ?? '';
+                    td.addEventListener('input', e => {
+                        const v = e.target.textContent;
+                        sampleData[index][key] = numeric ? (parseFloat(v) || 0) : v.trim();
+                        redraw();
+                    });
+                    td.addEventListener('paste', e => onPaste(e, index, key));
+                });
+                const del = tr.insertCell();
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'danger';
+                b.innerHTML = '&times;';
+                b.title = 'Delete row';
+                b.onclick = () => deleteRow(index);
+                del.appendChild(b);
+            });
         }
 
-        // --- Point Shape Data ---
-        // Defines SVG path data for various point shapes. Size 's' is half of the desired side/radius.
+        // Pasting tab/comma separated rows (e.g. from Excel) fills the table from the edited cell downwards.
+        function onPaste(e, rowIndex, key) {
+            const text = (e.clipboardData || window.clipboardData).getData('text');
+            if (!/[\n\t,;]/.test(text.trim())) return;      // plain single value: let the browser handle it
+            e.preventDefault();
+            const keys = ['var1', 'var2', 'category'];
+            const startCol = keys.indexOf(key);
+            text.trim().split(/\r?\n/).forEach((line, i) => {
+                const cells = line.split(/\t|,|;/);
+                while (sampleData.length <= rowIndex + i) sampleData.push({ var1: 0, var2: 0, category: '' });
+                cells.forEach((c, j) => {
+                    const k = keys[startCol + j];
+                    if (!k) return;
+                    sampleData[rowIndex + i][k] = k === 'category' ? c.trim() : (parseFloat(c) || 0);
+                });
+            });
+            populateTable(sampleData);
+            generateScatterPlot();
+        }
+
+        function addRow() {
+            sampleData.push({ var1: 0, var2: 0, category: '' });
+            populateTable(sampleData);
+            const c = document.getElementById('dataTableContainer');
+            c.scrollTop = c.scrollHeight;
+            redraw();
+        }
+        function clearTable() {
+            sampleData = [{ var1: 0, var2: 0, category: '' }];
+            hiddenCats.clear();
+            populateTable(sampleData);
+            redraw();
+        }
+        function deleteRow(index) {
+            sampleData.splice(index, 1);
+            if (sampleData.length === 0) sampleData.push({ var1: 0, var2: 0, category: '' });
+            populateTable(sampleData);
+            redraw();
+        }
+
+        // ---------- Helpers ----------
         function getPointPath(type, s) {
             switch (type) {
-                case 'circle': return `M0,0 m-${s},0 a${s},${s} 0 1,0 ${s*2},0 a${s},${s} 0 1,0 -${s*2},0`;
-                case 'square': return `M-${s},-${s}h${s*2}v${s*2}h-${s*2}z`;
-                case 'triangle-up': return `M0,-${s}L${s*Math.sqrt(3)/2},${s/2}L-${s*Math.sqrt(3)/2},${s/2}Z`;
-                case 'diamond': return `M0,-${s}L${s},0L0,${s}L-${s},0Z`;
-                default: return `M0,0 m-${s},0 a${s},${s} 0 1,0 ${s*2},0 a${s},${s} 0 1,0 -${s*2},0`; // Default to circle
+                case 'square': return `M${-s},${-s}h${s * 2}v${s * 2}h${-s * 2}z`;
+                case 'triangle-up': return `M0,${-s}L${s * 0.9},${s * 0.8}L${-s * 0.9},${s * 0.8}Z`;
+                case 'diamond': return `M0,${-s * 1.2}L${s * 1.2},0L0,${s * 1.2}L${-s * 1.2},0Z`;
+                default: return `M${-s},0a${s},${s} 0 1,0 ${s * 2},0a${s},${s} 0 1,0 ${-s * 2},0`;
             }
         }
 
-        // --- Plot Generation ---
+        // Pick readable ink for whatever background the user chose.
+        function themeFor(bg) {
+            const c = d3.color(bg) || d3.color('#0a0f1e');
+            const lum = (0.299 * c.r + 0.587 * c.g + 0.114 * c.b) / 255;
+            const dark = c.opacity === 0 ? false : lum < 0.5;
+            return dark
+                ? { ink: '#e8ecf7', soft: '#9aa4c2', grid: 'rgba(255,255,255,0.09)', axis: 'rgba(255,255,255,0.35)', stroke: 'rgba(255,255,255,0.75)', dark }
+                : { ink: '#1f2937', soft: '#4b5563', grid: 'rgba(0,0,0,0.09)', axis: 'rgba(0,0,0,0.45)', stroke: 'rgba(0,0,0,0.55)', dark };
+        }
 
+        function ols(pts) {
+            const n = pts.length;
+            if (n < 2) return null;
+            const mx = d3.mean(pts, d => d.x), my = d3.mean(pts, d => d.y);
+            const sxx = d3.sum(pts, d => (d.x - mx) ** 2);
+            const syy = d3.sum(pts, d => (d.y - my) ** 2);
+            const sxy = d3.sum(pts, d => (d.x - mx) * (d.y - my));
+            if (sxx === 0) return null;
+            const b = sxy / sxx, a = my - b * mx;
+            const r = syy === 0 ? 0 : sxy / Math.sqrt(sxx * syy);
+            return { a, b, r, r2: r * r, n };
+        }
+        const fmt = v => Math.abs(v) >= 1000 || (Math.abs(v) > 0 && Math.abs(v) < 0.01) ? v.toExponential(2) : (+v.toFixed(3)).toString();
+        const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+        // ---------- Plot ----------
         function generateScatterPlot() {
-            const errorMessageDiv = document.getElementById('error-message');
-            errorMessageDiv.textContent = ''; // Clear previous errors
+            const err = document.getElementById('error-message');
+            err.textContent = '';
 
-            // 1. Read Data and Headers from Table
-            const dataToPlot = [];
-            const tbody = document.querySelector('#dataTable tbody');
-            const rows = tbody.querySelectorAll('tr');
-
-            const var1Header = document.getElementById('header-var1').textContent.trim();
-            const var2Header = document.getElementById('header-var2').textContent.trim();
-            const categoryHeader = document.getElementById('header-category').textContent.trim();
-            const plotTitleInput = document.getElementById('plotTitleInput');
-
-            // Set default plot title if empty or on initial load
-            if (plotTitleInput.value === '' || plotTitleInput.dataset.initialLoad === 'true') {
-                plotTitleInput.value = `Scatter plot`; // Changed default title
-                plotTitleInput.dataset.initialLoad = 'false'; // Mark as not initial load anymore
-            }
-
-            // Update the Category label dynamically
+            const var1Header = document.getElementById('header-var1').textContent.trim() || 'X';
+            const var2Header = document.getElementById('header-var2').textContent.trim() || 'Y';
+            const categoryHeader = document.getElementById('header-category').textContent.trim() || 'Group';
             document.getElementById('colorByCategoryLabel').textContent = categoryHeader;
 
-            rows.forEach((row, rowIndex) => {
-                const cells = row.querySelectorAll('td');
-                const var1Val = parseFloat(cells[0].textContent.trim());
-                const var2Val = parseFloat(cells[1].textContent.trim());
-                const categoryVal = cells[2].textContent.trim();
+            const titleInput = document.getElementById('plotTitleInput');
+            if (titleInput.dataset.touched !== 'true' && titleInput.dataset.auto !== 'false') {
+                titleInput.value = `${var2Header} vs ${var1Header}`;
+            }
 
-                if (isNaN(var1Val) || isNaN(var2Val)) {
-                    // Only display warning if there's actual data in the row, not empty rows
-                    if (cells[0].textContent.trim() !== '' || cells[1].textContent.trim() !== '' || cells[2].textContent.trim() !== '') {
-                        errorMessageDiv.textContent = `Warning: Row ${rowIndex + 1} contains invalid or incomplete data and will be skipped.`;
-                    }
-                    return; // Skip invalid rows
-                }
-                dataToPlot.push({ x: var1Val, y: var2Val, category: categoryVal });
+            const all = [];
+            sampleData.forEach((d, i) => {
+                const x = parseFloat(d.var1), y = parseFloat(d.var2);
+                if (isNaN(x) || isNaN(y)) { err.textContent = `Row ${i + 1} is incomplete and was skipped.`; return; }
+                all.push({ x, y, category: (d.category ?? '').toString().trim() });
             });
 
-            if (dataToPlot.length === 0) {
-                errorMessageDiv.textContent = 'No valid data points to plot.';
-                // Clear SVG if no valid data
-                d3.select("#scatter-plot-svg").selectAll("*").remove();
-                return;
-            }
+            const svg = d3.select('#scatter-plot-svg');
+            svg.selectAll('*').remove();
+            if (all.length === 0) { err.textContent = 'No valid data points to plot.'; return; }
 
-            // Determine coloring option and point type
             const colorOption = document.querySelector('input[name="colorOption"]:checked').value;
-            const singleColor = document.getElementById('singleColorInput').value || "steelblue";
-            const selectedPointType = document.getElementById('pointTypeSelect').value;
-            const pointSize = 6; // Base size for point shapes
-            const drawLines = document.getElementById('drawLinesCheckbox').checked; // Get line drawing state
-            const hideGridlines = document.getElementById('hideGridlinesCheckbox').checked; // Get hide gridlines state
+            const singleColor = document.getElementById('singleColorInput').value || PALETTE[0];
+            const shape = document.getElementById('pointTypeSelect').value;
+            const pointSize = +document.getElementById('pointSizeSlider').value;
+            const opacity = +document.getElementById('opacitySlider').value;
+            const showTrend = document.getElementById('trendLineCheckbox').checked;
+            const drawLines = document.getElementById('drawLinesCheckbox').checked;
+            const hideGrid = document.getElementById('hideGridlinesCheckbox').checked;
+            const bg = document.getElementById('customBackgroundColorInput').value.trim() || '#0a0f1e';
+            const T = themeFor(bg);
 
-            // Get background color from the custom input, falling back to default if empty
-            let backgroundColor = document.getElementById('customBackgroundColorInput').value || '#f8f8f8';
+            const cats = [...new Set(all.map(d => d.category))].filter(c => c !== '');
+            const byCat = colorOption === 'category' && cats.length > 0;
+            const colorOf = c => byCat && c ? PALETTE[cats.indexOf(c) % PALETTE.length] : singleColor;
+            const data = byCat ? all.filter(d => !hiddenCats.has(d.category)) : all;
 
+            // Responsive size: fill the panel, 4:3
+            const avail = document.getElementById('plotContainer').clientWidth || 640;
+            const W = Math.max(300, Math.min(avail, 820));
+            const H = Math.round(W * 0.76);
+            const legendW = byCat ? Math.min(150, 40 + 7 * d3.max(cats, c => c.length)) : 0;
+            const m = { top: 52, right: 26 + legendW, bottom: 62, left: 64 };
+            const w = W - m.left - m.right, h = H - m.top - m.bottom;
 
-            // Clear previous SVG content
-            const svgElement = d3.select("#scatter-plot-svg");
-            svgElement.selectAll("*").remove(); // Remove previous elements inside SVG
-            svgElement.style("background-color", backgroundColor); // Apply background color
+            svg.attr('width', W).attr('height', H).attr('viewBox', `0 0 ${W} ${H}`)
+               .attr('xmlns', 'http://www.w3.org/2000/svg')
+               .style('background', bg);
+            svg.append('rect').attr('width', W).attr('height', H).attr('fill', bg);   // keeps PNG background solid
 
+            const g = svg.append('g').attr('transform', `translate(${m.left},${m.top})`)
+                         .attr('font-family', FONT);
 
-            // Set up SVG dimensions and margins for the inner plot area
-            // Decreased margins for a larger graph area
-            const margin = { top: 30, right: 60, bottom: 60, left: 60 };
+            // Scales (pad the domain 6%, then round to nice ticks)
+            const pad = ext => {
+                let [lo, hi] = ext;
+                if (lo === hi) { lo -= 1; hi += 1; }
+                const p = (hi - lo) * 0.06;
+                return [lo - p, hi + p];
+            };
+            const src = data.length ? data : all;
+            const x = d3.scaleLinear().domain(pad(d3.extent(src, d => d.x))).nice().range([0, w]);
+            const y = d3.scaleLinear().domain(pad(d3.extent(src, d => d.y))).nice().range([h, 0]);
 
-            // Get the actual computed dimensions of the plotContainer
-            const plotContainer = document.getElementById('plotContainer');
-            const containerWidth = plotContainer.clientWidth;
-            const containerHeight = plotContainer.clientHeight;
-
-            // Calculate a square size based on the minimum of current width/height
-            // This ensures the plot remains square regardless of container's aspect ratio.
-            const squareSize = Math.min(containerWidth, containerHeight);
-
-            // Set SVG attributes based on the calculated square size
-            svgElement
-                .attr("width", squareSize)
-                .attr("height", squareSize);
-
-            // Ensure dimensions are positive before calculating inner plot area
-            if (squareSize <= 0) {
-                return;
+            // Grid
+            if (!hideGrid) {
+                g.append('g').attr('transform', `translate(0,${h})`)
+                 .call(d3.axisBottom(x).ticks(Math.max(3, w / 80)).tickSize(-h).tickFormat(''))
+                 .call(a => { a.select('.domain').remove(); a.selectAll('line').attr('stroke', T.grid); });
+                g.append('g')
+                 .call(d3.axisLeft(y).ticks(Math.max(3, h / 55)).tickSize(-w).tickFormat(''))
+                 .call(a => { a.select('.domain').remove(); a.selectAll('line').attr('stroke', T.grid); });
             }
 
-            let width = squareSize - margin.left - margin.right;
-            let height = squareSize - margin.top - margin.bottom;
+            // Axes
+            const styleAxis = a => {
+                a.select('.domain').attr('stroke', T.axis);
+                a.selectAll('.tick line').attr('stroke', T.axis);
+                a.selectAll('text').attr('fill', T.soft).attr('font-size', 11).attr('font-family', FONT);
+            };
+            g.append('g').attr('transform', `translate(0,${h})`)
+             .call(d3.axisBottom(x).ticks(Math.max(3, w / 80)).tickSizeOuter(0)).call(styleAxis);
+            g.append('g').call(d3.axisLeft(y).ticks(Math.max(3, h / 55)).tickSizeOuter(0)).call(styleAxis);
 
-            // Ensure inner plot dimensions are positive after margins
-            width = Math.max(0, width);
-            height = Math.max(0, height);
+            // Labels + title
+            g.append('text').attr('x', w / 2).attr('y', h + 46).attr('text-anchor', 'middle')
+             .attr('fill', T.ink).attr('font-size', 13).attr('font-weight', 600).text(var1Header);
+            g.append('text').attr('transform', 'rotate(-90)').attr('x', -h / 2).attr('y', -48).attr('text-anchor', 'middle')
+             .attr('fill', T.ink).attr('font-size', 13).attr('font-weight', 600).text(var2Header);
+            g.append('text').attr('x', 0).attr('y', -26).attr('text-anchor', 'start')
+             .attr('fill', T.ink).attr('font-size', 17).attr('font-weight', 700).text(titleInput.value);
 
-            const svg = svgElement.append("g")
-                .attr("transform", `translate(${margin.left},${margin.top})`);
+            // Clip so trend line / lines never spill past the axes
+            svg.append('defs').append('clipPath').attr('id', 'plot-clip').append('rect').attr('width', w).attr('height', h);
+            const layer = g.append('g').attr('clip-path', 'url(#plot-clip)');
 
-            // 1. Create Scales with domain padding to ensure full axis span
-            const xExtent = d3.extent(dataToPlot, d => d.x);
-            const yExtent = d3.extent(dataToPlot, d => d.y);
-
-            let xDomainMin = xExtent[0];
-            let xDomainMax = xExtent[1];
-            let yDomainMin = yExtent[0];
-            let yDomainMax = yExtent[1];
-
-            // Add buffer for single-point data or to ensure full visual span
-            if (xDomainMin === xDomainMax) {
-                xDomainMin = xDomainMin === 0 ? -1 : xDomainMin - Math.abs(xDomainMin * 0.1);
-                xDomainMax = xDomainMax === 0 ? 1 : xDomainMax + Math.abs(xDomainMax * 0.1);
-                if (xDomainMin === xDomainMax) { xDomainMin -= 0.1; xDomainMax += 0.1; } // Fallback for zero
-            } else {
-                const xBuffer = (xDomainMax - xDomainMin) * 0.1; // 10% buffer
-                xDomainMin -= xBuffer;
-                xDomainMax += xBuffer;
-            }
-
-            if (yDomainMin === yDomainMax) {
-                yDomainMin = yDomainMin === 0 ? -1 : yDomainMin - Math.abs(yDomainMin * 0.1);
-                yDomainMax = yDomainMax === 0 ? 1 : yDomainMax + Math.abs(yDomainMax * 0.1);
-                 if (yDomainMin === yDomainMax) { yDomainMin -= 0.1; yDomainMax += 0.1; } // Fallback for zero
-            } else {
-                const yBuffer = (yDomainMax - yDomainMin) * 0.1; // 10% buffer
-                yDomainMin -= yBuffer;
-                yDomainMax += yBuffer;
-            }
-
-            const xScale = d3.scaleLinear()
-                .domain([xDomainMin, xDomainMax]).nice() // Added .nice() back for cleaner ticks
-                .range([0, width]);
-
-            const yScale = d3.scaleLinear()
-                .domain([yDomainMin, yDomainMax]).nice() // Added .nice() back for cleaner ticks
-                .range([height, 0]);
-
-            // Determine colors for categories if applicable
-            if (colorOption === 'category') {
-                const uniqueCategories = Array.from(new Set(dataToPlot.map(d => d.category))).filter(c => c !== "");
-                colorScale.domain(uniqueCategories);
-            }
-
-            // Add gridlines (before axes and points so they are in the background)
-            svg.append("g")
-                .attr("class", "grid x-grid")
-                .attr("transform", `translate(0,${height})`)
-                .style("display", hideGridlines ? "none" : "block") // Conditional display
-                .call(d3.axisBottom(xScale)
-                    .ticks(10)
-                    .tickSize(-height)
-                    .tickFormat("")
-                );
-
-            svg.append("g")
-                .attr("class", "grid y-grid")
-                .style("display", hideGridlines ? "none" : "block") // Conditional display
-                .call(d3.axisLeft(yScale)
-                    .ticks(10)
-                    .tickSize(-width)
-                    .tickFormat("")
-                );
-
-            // 2. Add X-axis
-            svg.append("g")
-                .attr("class", "x axis")
-                .attr("transform", `translate(0,${height})`)
-                .call(d3.axisBottom(xScale).ticks(10).tickSizeOuter(0));
-
-            // 3. Add Y-axis
-            svg.append("g")
-                .attr("class", "y axis")
-                .call(d3.axisLeft(yScale).ticks(10).tickSizeOuter(0));
-
-            // 4. Add X-axis label
-            svg.append("text")
-                .attr("class", "axis-label")
-                .attr("transform", `translate(${width / 2}, ${height + margin.bottom - 25})`)
-                .text(var1Header);
-
-            // 5. Add Y-axis label
-            svg.append("text")
-                .attr("class", "axis-label")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 0 - margin.left + 30) /* Adjusted 'y' for label, for new left margin */
-                .attr("x", 0 - (height / 2))
-                .text(var2Header);
-
-            // 6. Add Plot Title (inside the D3 group, positioned relative to its top)
-            svg.append("text")
-                .attr("class", "plot-title")
-                .attr("x", width / 2)
-                .attr("y", 0 - (margin.top / 2) + 8) // Adjusted title Y position
-                .text(plotTitleInput.value);
-
-            // 7. Add lines if option is checked (drawn before points)
+            // Connect points (per category if colouring by category, in x order)
             if (drawLines) {
-                const lineGenerator = d3.line()
-                    .x(d => xScale(d.x))
-                    .y(d => yScale(d.y));
-
-                svg.append("path")
-                    .datum(dataToPlot) // Bind all data to a single path element
-                    .attr("fill", "none")
-                    .attr("stroke", singleColor) // Use the selected single color for lines
-                    .attr("stroke-width", 1.5)
-                    .attr("d", lineGenerator);
+                const line = d3.line().x(d => x(d.x)).y(d => y(d.y)).curve(d3.curveMonotoneX);
+                const groups = byCat ? d3.groups(data, d => d.category) : [['', data]];
+                groups.forEach(([cat, pts]) => {
+                    layer.append('path').datum([...pts].sort((a, b) => a.x - b.x))
+                         .attr('fill', 'none').attr('stroke', colorOf(cat)).attr('stroke-width', 1.8)
+                         .attr('stroke-opacity', 0.7).attr('d', line);
+                });
             }
 
-            // 8. Add points
-            const points = svg.selectAll(".data-point")
-                .data(dataToPlot)
-                .enter()
-                .append("path") // Changed to path for custom shapes
-                .attr("class", "data-point")
-                .attr("transform", d => `translate(${xScale(d.x)},${yScale(d.y)})`)
-                .attr("d", getPointPath(selectedPointType, pointSize)) // Use getPointPath
-                .attr("fill", d => colorOption === 'category' && d.category ? colorScale(d.category) : singleColor)
-                .attr("opacity", 0.8)
-                .attr("stroke", "#333") /* Changed stroke for better contrast with ggplot2 aesthetic */
-                .attr("stroke-width", 0.5)
-                .style("filter", "drop-shadow(0px 1px 2px rgba(0,0,0,0.1))"); /* Lighter shadow */
+            // Trend line (OLS over visible points)
+            const fit = ols(data);
+            if (showTrend && fit) {
+                const [x0, x1] = x.domain();
+                layer.append('line')
+                     .attr('x1', x(x0)).attr('y1', y(fit.a + fit.b * x0)).attr('x2', x(x1)).attr('y2', y(fit.a + fit.b * x1))
+                     .attr('stroke', T.dark ? '#fbbf24' : '#b45309').attr('stroke-width', 2).attr('stroke-dasharray', '7 5');
+            }
 
-            // Optional: Add basic tooltip on hover
-            const tooltip = d3.select("body").append("div")
-                .attr("class", "tooltip");
+            // Points
+            const tip = document.getElementById('vtTooltip');
+            const showTip = (ev, d) => {
+                tip.innerHTML = `<div><span class="k">${esc(var1Header)}</span> <b>${fmt(d.x)}</b></div>` +
+                                `<div><span class="k">${esc(var2Header)}</span> <b>${fmt(d.y)}</b></div>` +
+                                (d.category ? `<div><span class="k">${esc(categoryHeader)}</span> <b>${esc(d.category)}</b></div>` : '');
+                tip.classList.add('on');
+                moveTip(ev);
+            };
+            const moveTip = ev => {
+                const r = tip.getBoundingClientRect();
+                const left = Math.min(ev.clientX + 16, window.innerWidth - r.width - 8);
+                tip.style.left = left + 'px';
+                tip.style.top = Math.max(8, ev.clientY - r.height - 12) + 'px';
+            };
 
-            points.on("mouseover", function(event, d) {
-                    d3.select(this)
-                        .transition().duration(100)
-                        .attr("d", getPointPath(selectedPointType, pointSize * 1.2)) // Enlarge point on hover
-                        .attr("stroke-width", 1.5); // Thicker stroke on hover
+            const pts = layer.selectAll('path.pt').data(data).enter().append('path')
+                .attr('class', 'pt')
+                .attr('transform', d => `translate(${x(d.x)},${y(d.y)})`)
+                .attr('d', getPointPath(shape, pointSize))
+                .attr('fill', d => colorOf(d.category))
+                .attr('fill-opacity', opacity)
+                .attr('stroke', T.stroke).attr('stroke-width', 0.6)
+                .style('cursor', 'pointer');
 
-                    tooltip.style("opacity", 1)
-                           .html(`X: ${d.x}<br>Y: ${d.y}<br>${categoryHeader}: ${d.category || 'N/A'}`)
-                           .style("left", (event.pageX + 15) + "px")
-                           .style("top", (event.pageY - 28) + "px");
+            if (firstDraw) {
+                pts.attr('opacity', 0).transition().delay((d, i) => i * 14).duration(350).attr('opacity', 1);
+                firstDraw = false;
+            }
+
+            pts.on('mouseover', function (ev, d) {
+                    d3.select(this).raise().transition().duration(90)
+                      .attr('d', getPointPath(shape, pointSize * 1.6)).attr('stroke-width', 1.6).attr('fill-opacity', 1);
+                    showTip(ev, d);
                 })
-                .on("mouseout", function() {
-                    d3.select(this)
-                        .transition().duration(100)
-                        .attr("d", getPointPath(selectedPointType, pointSize)) // Revert to original size
-                        .attr("stroke-width", 0.5);
-                    tooltip.style("opacity", 0);
+               .on('mousemove', moveTip)
+               .on('mouseout', function () {
+                    d3.select(this).transition().duration(90)
+                      .attr('d', getPointPath(shape, pointSize)).attr('stroke-width', 0.6).attr('fill-opacity', opacity);
+                    tip.classList.remove('on');
                 });
 
-            // Remove tooltip div after each plot generation to avoid duplicates
-            d3.selectAll(".tooltip").remove();
-
-
-            // 9. Add Legend (always right)
-            if (colorOption === 'category') {
-                // Hardcode position to 'right'
-                addLegend(svg, colorScale, width, height, margin, 'right', selectedPointType);
+            // Legend (click to toggle a category)
+            if (byCat) {
+                const lg = g.append('g').attr('transform', `translate(${w + 22},0)`);
+                lg.append('text').attr('y', -8).attr('fill', T.soft).attr('font-size', 10.5).attr('font-weight', 700)
+                  .attr('letter-spacing', '0.06em').text(categoryHeader.toUpperCase());
+                const items = lg.selectAll('g.lg').data(cats).enter().append('g').attr('class', 'lg')
+                    .attr('transform', (d, i) => `translate(0,${i * 24 + 10})`)
+                    .style('cursor', 'pointer')
+                    .attr('opacity', d => hiddenCats.has(d) ? 0.3 : 1)
+                    .on('click', (ev, d) => { hiddenCats.has(d) ? hiddenCats.delete(d) : hiddenCats.add(d); generateScatterPlot(); });
+                items.append('path').attr('d', getPointPath(shape, 6)).attr('transform', 'translate(6,0)')
+                     .attr('fill', d => colorOf(d)).attr('stroke', T.stroke).attr('stroke-width', 0.6);
+                items.append('text').attr('x', 22).attr('dy', '0.35em').attr('fill', T.ink).attr('font-size', 12).text(d => d);
             }
+
+            // Equation label on the plot (so it lands in the PNG too)
+            if (showTrend && fit) {
+                g.append('text').attr('x', w).attr('y', -26).attr('text-anchor', 'end')
+                 .attr('fill', T.dark ? '#fbbf24' : '#b45309').attr('font-size', 12).attr('font-weight', 600)
+                 .text(`y = ${fmt(fit.a)} ${fit.b < 0 ? '−' : '+'} ${fmt(Math.abs(fit.b))}x   ·   R² = ${fit.r2.toFixed(3)}`);
+            }
+
+            // Stats chips below the plot
+            const chips = [`<span class="sc-chip">n = <b>${data.length}</b></span>`];
+            if (fit) {
+                chips.push(`<span class="sc-chip">Pearson r = <b>${fit.r.toFixed(3)}</b></span>`);
+                chips.push(`<span class="sc-chip">slope = <b>${fmt(fit.b)}</b></span>`);
+                chips.push(`<span class="sc-chip">intercept = <b>${fmt(fit.a)}</b></span>`);
+            }
+            document.getElementById('statsRow').innerHTML = chips.join('');
         }
 
-        /**
-         * Adds a legend to the SVG plot.
-         * @param {d3.Selection} svg - The D3 selection of the main SVG group.
-         * @param {d3.ScaleOrdinal} colorScale - The D3 ordinal color scale.
-         * @param {number} plotWidth - The width of the plotting area.
-         * @param {number} plotHeight - The height of the plotting area.
-         * @param {Object} margin - The margins of the plot.
-         * @param {string} position - The desired position ('right', 'top', 'bottom', 'left'). (Now always 'right' internally)
-         * @param {string} pointType - The type of point shape to use for legend indicators.
-         */
-        function addLegend(svg, colorScale, plotWidth, plotHeight, margin, position, pointType) {
-            const legend = svg.append("g")
-                .attr("class", "legend");
-
-            const legendIconSize = 6; /* Size for the legend icon (equal to plot points) */
-            const legendSpacing = 15; /* Spacing between legend items */
-
-            const legendItems = legend.selectAll(".legend-item")
-                .data(colorScale.domain())
-                .enter()
-                .append("g")
-                .attr("class", "legend-item")
-                .attr("transform", (d, i) => `translate(0, ${i * (legendIconSize * 2 + legendSpacing)})`); /* Adjusted for icon size */
-
-            legendItems.append("path") /* Changed from rect to path */
-                .attr("d", getPointPath(pointType, legendIconSize)) /* Use getPointPath for icon shape */
-                .attr("transform", `translate(${legendIconSize}, ${legendIconSize / 2})`) /* Center the icon */
-                .attr("fill", colorScale)
-                .attr("stroke", "#333")
-                .attr("stroke-width", 0.5);
-
-            legendItems.append("text")
-                .attr("x", legendIconSize * 2 + legendSpacing) /* Adjusted x position */
-                .attr("y", legendIconSize / 2)
-                .attr("dy", "0.35em")
-                .text(d => d);
-
-            // Calculate legend dimensions
-            const legendBBox = legend.node().getBBox();
-            const legendWidth = legendBBox.width;
-            const legendHeight = legendBBox.height;
-
-            // Position the legend group based on selection (now hardcoded to right)
-            let legendX, legendY;
-            // Always position to the right
-            legendX = plotWidth + margin.right - legendWidth - 10;
-            legendY = (plotHeight - legendHeight) / 2;
-
-            legend.attr("transform", `translate(${legendX},${legendY})`);
-        }
-
-        /**
-         * Downloads the current plot as a PNG image.
-         */
+        // ---------- Export: styles are all inline attributes, so the SVG serialises as-is ----------
         function downloadPlot() {
-            const svgElement = document.getElementById('scatter-plot-svg');
-            const svgData = new XMLSerializer().serializeToString(svgElement);
-
-            // Create a temporary canvas
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-
-            // Get the current computed dimensions of the SVG for the canvas
-            const svgRect = svgElement.getBoundingClientRect();
-            canvas.width = svgRect.width;
-            canvas.height = svgRect.height;
-
+            const svgEl = document.getElementById('scatter-plot-svg');
+            const w = +svgEl.getAttribute('width'), h = +svgEl.getAttribute('height');
+            const scale = 2;
+            const xml = new XMLSerializer().serializeToString(svgEl);
             const img = new Image();
-            // Encode SVG data to a valid Data URL
-            img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
-
             img.onload = () => {
-                context.drawImage(img, 0, 0); // Draw the SVG image onto the canvas
-
-                // Create a download link for the PNG
-                const downloadLink = document.createElement('a');
-                downloadLink.href = canvas.toDataURL('image/png'); // Get PNG data URL
-                downloadLink.download = 'scatter-plot.png'; // Default to PNG
-
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
+                const c = document.createElement('canvas');
+                c.width = w * scale; c.height = h * scale;
+                const ctx = c.getContext('2d');
+                ctx.scale(scale, scale);
+                ctx.drawImage(img, 0, 0, w, h);
+                const a = document.createElement('a');
+                a.href = c.toDataURL('image/png');
+                a.download = 'scatter-plot.png';
+                document.body.appendChild(a); a.click(); a.remove();
             };
-
-            img.onerror = (error) => {
-                console.error("Error loading SVG for PNG conversion:", error);
-                // Fallback for download might be needed if direct conversion fails (e.g., security restrictions)
-                // For direct download of SVG:
-                const svgBlob = new Blob([svgData], { type: 'image/svg+xml' });
-                const svgUrl = URL.createObjectURL(svgBlob);
-                const downloadLinkSvg = document.createElement('a');
-                downloadLinkSvg.href = svgUrl;
-                downloadLinkSvg.download = 'scatter-plot.svg';
-                document.body.appendChild(downloadLinkSvg);
-                downloadLinkSvg.click();
-                document.body.removeChild(downloadLinkSvg);
-                URL.revokeObjectURL(svgUrl);
+            img.onerror = () => {
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(new Blob([xml], { type: 'image/svg+xml' }));
+                a.download = 'scatter-plot.svg';
+                document.body.appendChild(a); a.click(); a.remove();
             };
+            img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(xml);
         }
 
-
-        // --- Event Listeners and Initial Setup ---
-
-        // Populate table and set up event listeners on page load
+        // ---------- Wiring ----------
         document.addEventListener('DOMContentLoaded', () => {
             populateTable(sampleData);
-            // Set initial load flag for plot title
-            document.getElementById('plotTitleInput').dataset.initialLoad = 'true';
 
-            // Check if there are valid categories to default to "By category"
-            const uniqueCategories = new Set(sampleData.map(d => d.category)).size;
-            const hasNonEmptyCategories = Array.from(new Set(sampleData.map(d => d.category))).some(c => c !== "");
+            const titleInput = document.getElementById('plotTitleInput');
+            titleInput.addEventListener('input', () => { titleInput.dataset.touched = titleInput.value ? 'true' : 'false'; redraw(); });
 
-            if (hasNonEmptyCategories && uniqueCategories > 1) { // More than 1 unique (non-empty) category
-                document.getElementById('colorByCategory').checked = true;
-                document.getElementById('singleColorInput').disabled = true;
-            } else {
-                document.getElementById('colorBySingle').checked = true;
-                document.getElementById('singleColorInput').disabled = false;
-            }
+            const bgSelect = document.getElementById('backgroundColorSelect');
+            const bgInput = document.getElementById('customBackgroundColorInput');
+            bgInput.value = bgSelect.value;
+            bgSelect.addEventListener('change', () => { bgInput.value = bgSelect.value; redraw(); });
+            bgInput.addEventListener('input', redraw);
 
-            // Event listeners for color options
-            document.querySelectorAll('input[name="colorOption"]').forEach(radio => {
-                radio.addEventListener('change', () => {
-                    // Enable/disable single color input based on radio selection
-                    document.getElementById('singleColorInput').disabled = (radio.value === 'category');
-                    debouncedGenerateScatterPlot();
-                });
-            });
+            const hasCats = new Set(sampleData.map(d => d.category)).size > 1;
+            document.getElementById(hasCats ? 'colorByCategory' : 'colorBySingle').checked = true;
+            const syncColor = () => {
+                document.getElementById('singleColorInput').disabled =
+                    document.querySelector('input[name="colorOption"]:checked').value === 'category';
+            };
+            syncColor();
+            document.querySelectorAll('input[name="colorOption"]').forEach(r => r.addEventListener('change', () => { syncColor(); redraw(); }));
 
-            // Event listener for plot title input
-            document.getElementById('plotTitleInput').addEventListener('input', debouncedGenerateScatterPlot);
+            ['singleColorInput', 'pointTypeSelect', 'trendLineCheckbox', 'drawLinesCheckbox', 'hideGridlinesCheckbox',
+             'header-var1', 'header-var2', 'header-category'].forEach(id =>
+                document.getElementById(id).addEventListener(/select|checkbox|Checkbox/.test(id) ? 'change' : 'input', redraw));
 
-            // Event listener for single color input change
-            document.getElementById('singleColorInput').addEventListener('input', debouncedGenerateScatterPlot);
+            [['pointSizeSlider', 'pointSizeVal'], ['opacitySlider', 'opacityVal']].forEach(([s, l]) =>
+                document.getElementById(s).addEventListener('input', e => {
+                    document.getElementById(l).textContent = e.target.value;
+                    redraw();
+                }));
 
-            // Event listener for point type change
-            document.getElementById('pointTypeSelect').addEventListener('change', debouncedGenerateScatterPlot);
-
-            // Event listener for draw lines checkbox
-            document.getElementById('drawLinesCheckbox').addEventListener('change', debouncedGenerateScatterPlot);
-
-            // Event listener for hide gridlines checkbox
-            document.getElementById('hideGridlinesCheckbox').addEventListener('change', debouncedGenerateScatterPlot);
-
-
-            // Event listeners for background color options
-            const backgroundColorSelect = document.getElementById('backgroundColorSelect');
-            const customBackgroundColorInput = document.getElementById('customBackgroundColorInput');
-
-            // When a predefined color is selected from the dropdown, update the text input field
-            backgroundColorSelect.addEventListener('change', () => {
-                customBackgroundColorInput.value = backgroundColorSelect.value;
-                debouncedGenerateScatterPlot();
-            });
-
-            // The custom input directly triggers plot regeneration on input
-            customBackgroundColorInput.addEventListener('input', debouncedGenerateScatterPlot);
-
-
-            // Add event listener for header edits to update axis labels immediately
-            document.getElementById('header-var1').addEventListener('input', debouncedGenerateScatterPlot);
-            document.getElementById('header-var2').addEventListener('input', debouncedGenerateScatterPlot);
-            document.getElementById('header-category').addEventListener('input', debouncedGenerateScatterPlot);
-
-            // --- Menu Toggle Logic ---
-            document.querySelectorAll('.menu-toggle').forEach(toggle => {
-                toggle.addEventListener('click', function() {
-                    const targetId = this.dataset.target;
-                    const subMenu = document.getElementById(targetId);
-                    if (subMenu) {
-                        this.classList.toggle('expanded');
-                        subMenu.classList.toggle('show');
-                        // Calculate and set max-height for smooth transition
-                        if (subMenu.classList.contains('show')) {
-                            subMenu.style.maxHeight = subMenu.scrollHeight + "px";
-                        } else {
-                            subMenu.style.maxHeight = null; // Reset to allow collapse
-                        }
-                    }
-                });
-            });
-
-            // --- Right-click save image on plot ---
-            // Removed contextmenu event listener from scatterPlotSvg
-            // The download button is now explicitly placed below the plot.
+            generateScatterPlot();
+            new ResizeObserver(redraw).observe(document.getElementById('plotContainer'));
         });
-
-        // Add a resize observer to redraw the plot when the plot container changes size
-        // This ensures the plot remains responsive to column width changes
-        const resizeObserver = new ResizeObserver(entries => {
-            for (let entry of entries) {
-                if (entry.target.id === 'plotContainer') {
-                    debouncedGenerateScatterPlot();
-                }
-            }
-        });
-        resizeObserver.observe(document.getElementById('plotContainer'));
-
-
     </script>
 </body>
 </html>

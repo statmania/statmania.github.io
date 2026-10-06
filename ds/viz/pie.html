@@ -16,179 +16,70 @@
     <meta name="twitter:title" content="Pie Chart Generator - Stat Mania">
     <meta name="twitter:description" content="Create customizable pie charts online for free with Stat Mania.">
     <meta name="twitter:image" content="https://www.statmania.info/assets/images/logo.png">
-    <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Custom styles for the Inter font and overall aesthetics */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5; /* Light grey background */
-        }
-        /* Style for the canvas to ensure it's responsive */
-        canvas {
-            display: block;
-            background-color: #ffffff;
-            border-radius: 0.75rem; /* rounded-xl */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-lg */
-        }
-        /* Style for input fields */
-        input[type="text"], input[type="number"] {
-            border: 1px solid #d1d5db; /* border-gray-300 */
-            border-radius: 0.5rem; /* rounded-md */
-            padding: 0.5rem 0.75rem;
-            transition: all 0.15s ease-in-out;
-        }
-        input[type="text"]:focus, input[type="number"]:focus {
-            outline: none;
-            border-color: #3B82F6; /* blue-500 */
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25); /* ring-2 ring-blue-200 */
-        }
-        /* Style for range input (slider) */
-        input[type="range"] {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 8px; /* Thinner track */
-            background: #d1d5db; /* Light grey track */
-            outline: none;
-            opacity: 0.7;
-            transition: opacity .2s;
-            border-radius: 5px; /* Rounded track */
-        }
-        input[type="range"]:hover {
-            opacity: 1;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: #3B82F6; /* Blue thumb */
-            cursor: pointer;
-            border-radius: 50%; /* Circular thumb */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            background: #3B82F6;
-            cursor: pointer;
-            border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Style for dropdown */
-        select {
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            padding: 0.5rem 0.75rem;
-            width: 100%;
-            background-color: #fff;
-            transition: all 0.15s ease-in-out;
-        }
-        select:focus {
-            outline: none;
-            border-color: #3B82F6;
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
-        }
-
-
-        /* Style for buttons */
-        button {
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem; /* rounded-lg */
-            font-weight: 600; /* font-semibold */
-            transition: all 0.2s ease-in-out;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
-        .btn-primary {
-            background-color: #3B82F6; /* blue-500 */
-            color: #ffffff;
-        }
-        .btn-primary:hover {
-            background-color: #2563EB; /* blue-600 */
-        }
-        .btn-secondary {
-            background-color: #6B7280; /* gray-500 */
-            color: #ffffff;
-        }
-        .btn-secondary:hover {
-            background-color: #4B5563; /* gray-600 */
-        }
-        .btn-danger {
-            background-color: #EF4444; /* red-500 */
-            color: #ffffff;
-        }
-        .btn-danger:hover {
-            background-color: #DC2626; /* red-600 */
-        }
-        /* Table specific styles */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb; /* border-gray-200 */
-        }
-        th {
-            background-color: #f9fafb; /* gray-50 */
-            font-weight: 700;
-        }
-        /* Custom scrollbar for better aesthetics */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-        /* Message box styling */
-        #messageBox {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            background-color: #333;
-            color: white;
-            padding: 0.75rem 1.25rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
-            z-index: 1000;
-        }
-        #messageBox.show {
-            opacity: 1;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/dark-theme.css">
+    <link rel="stylesheet" href="css/viz-tool.css">
 </head>
-<body class="p-6">
-    <div class="container mx-auto p-4 bg-white rounded-xl shadow-lg flex flex-col lg:flex-row gap-8 min-h-[85vh]">
+<body class="antialiased flex flex-col min-h-screen">
+
+    <!-- Header/Navbar -->
+    <header class="bg-white shadow-sm py-4">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <a href="../../index.html" class="flex items-center space-x-3 no-underline hover:opacity-80 transition-opacity">
+                <img src="../../img/statmania_logo.svg" alt="Stat Mania Logo" class="w-10 h-10 rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/40x40/4f46e5/ffffff?text=Logo';">
+                <div>
+                    <div class="text-2xl font-bold text-indigo-600">Stat Mania</div>
+                    <p class="text-sm text-slate-500">Making sense of statistics</p>
+                </div>
+            </a>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="../../index.html" class="text-slate-600 hover:text-indigo-600 transition duration-300">Home</a></li><li><a href="scatter.html" class="text-slate-600 hover:text-indigo-600 transition duration-300">Data Viz Tools</a></li><li><a href="#cta" class="text-slate-600 hover:text-indigo-600 transition duration-300">More Tools</a></li>
+                </ul>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-label="Menu">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="../../index.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Home</a><a href="scatter.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Data Viz Tools</a><a href="#cta" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">More Tools</a>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <canvas class="sm-canvas" aria-hidden="true"></canvas>
+        <section class="sm-hero-wrap">
+            <div class="sm-hero-inner">
+                <span class="sm-eyebrow">Stat Mania &middot; Data Viz Tools</span>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-4 flex items-center justify-center gap-4 sm-gradient-text">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-12 h-12 sm-hero-icon"><path d="M12 3v9h9a9 9 0 1 1-9-9z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15z"/></svg>
+                    Pie Chart Generator
+                </h1>
+                <p class="text-lg sm:text-xl sm-subtitle-sm">Enter categories and values, tune the donut hole and palette, and export a clean pie chart</p>
+            </div>
+        </section>
+
+        <!-- Tool Section -->
+        <section class="py-10 px-4 sm:px-6 lg:px-8 bg-slate-50">
+            <div class="vt-wrap">
+<div class="vt-grid cols-3">
         <!-- Left Column: Input Data -->
-        <div class="w-full lg:w-1/4 p-4 bg-gray-50 rounded-lg shadow-md overflow-y-auto max-h-[80vh]">
-            <h2 class="text-2xl font-bold mb-6 text-gray-800">Input Data</h2>
+        <div class="vt-panel">
+            <h2 class="vt-title">Input Data</h2>
 
             <div class="mb-4">
                 <table id="dataTable" class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-100">
+                    <thead class="">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200" id="dataRows">
+                    <tbody class="divide-y divide-gray-200" id="dataRows">
                         <!-- Sample rows will be inserted here by JavaScript -->
                     </tbody>
                 </table>
@@ -201,17 +92,17 @@
         </div>
 
         <!-- Middle Column: Pie Chart -->
-        <div class="w-full lg:w-7/12 p-2 flex flex-col items-center justify-center bg-gray-50 rounded-lg shadow-md">
+        <div class="vt-panel vt-plot">
             <!-- Removed h2 for displayChartTitle, title will be drawn on canvas -->
             <div class="relative w-full max-w-xl aspect-square flex items-center justify-center">
-                <canvas id="pieChartCanvas" class="w-full h-full"></canvas>
+                <canvas id="pieChartCanvas" class="vt-chart w-full h-full"></canvas>
             </div>
-            <button id="downloadChartBtn" class="btn-primary mt-6">Download Chart</button>
+            <button id="downloadChartBtn" class="btn-primary">Download Chart</button>
         </div>
 
         <!-- Right Column: Color Palette and Chart Options -->
-        <div class="w-full lg:w-1/6 p-4 bg-gray-50 rounded-lg shadow-md">
-            <h2 class="text-2xl font-bold mb-6 text-gray-800">Chart Options</h2>
+        <div class="vt-panel">
+            <h2 class="vt-title">Chart Options</h2>
             <div class="mb-4">
                 <label for="chartTitle" class="block text-sm font-medium text-gray-700 mb-1">Chart Title</label>
                 <input type="text" id="chartTitle" class="w-full mb-4" placeholder="e.g., Monthly Expenses">
@@ -231,8 +122,8 @@
                 <span id="outerRadiusValue" class="text-sm text-gray-600 block text-right">0.50</span>
             </div>
 
-            <div class="mt-8 pt-4 border-t border-gray-200">
-                <h2 class="text-2xl font-bold mb-6 text-gray-800">Color Palette</h2>
+            <div class="mt-6 pt-4 border-t border-gray-200">
+                <h3>Color Palette</h3>
                 <div id="colorPaletteContainer">
                     <select id="colorPaletteSelect" class="w-full mb-4">
                         <!-- Options will be populated by JavaScript -->
@@ -245,8 +136,43 @@
         </div>
     </div>
 
-    <!-- Message Box -->
-    <div id="messageBox" class="hidden"></div>
+                </div>
+        </section>
+
+        <!-- Call to Action Section -->
+        <section id="cta" class="sm-section-dark py-16 px-4 sm:px-6 lg:px-8 text-center">
+            <div class="container mx-auto max-w-4xl">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-6" style="color:#fff">Explore More Tools</h2>
+                <p class="text-lg sm:text-xl mb-8 sm-subtitle-sm">Check out the rest of the data viz toolkit</p>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <a href="scatter.html" class="sm-btn sm-btn-ghost">Scatter Plot</a><a href="bar.html" class="sm-btn sm-btn-ghost">Bar Chart</a><a href="hist.html" class="sm-btn sm-btn-ghost">Histogram</a><a href="viz-corr.html" class="sm-btn sm-btn-ghost">Correlation</a><a href="gen-data.html" class="sm-btn sm-btn-ghost">Data Generator</a><a href="aes.html" class="sm-btn sm-btn-ghost">Aesthetic Equations</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-white py-8 px-4 sm:px-6 lg:px-8 text-center mt-auto" style="border-top:1px solid rgba(255,255,255,0.08)">
+        <div class="container mx-auto">
+            <p class="mb-4">&copy; <span id="copyright-year">2026</span> Stat Mania. All rights reserved.</p>
+            <div class="flex justify-center space-x-6">
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Privacy Policy</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Terms of Service</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Sitemap</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>document.getElementById("copyright-year").textContent = new Date().getFullYear();</script>
+    <script>
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+    </script>
+    <script src="../../starfield.js"></script>
+<!-- Message Box -->
+    <div id="messageBox" class="hidden vt-toast"></div>
 
     <script type="module">
         // Ensure the global variables are defined, falling back to a default if not
