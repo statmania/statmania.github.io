@@ -14,11 +14,19 @@ On Linux laptops, the internal microphone often picks up the sound of the coolin
 
 ### 1. Lower the microphone gain
 
-High input gain overdrives the microphone and amplifies background whirring. Let's lower the internal microphone volume to about 30%–40% using `alsamixer`, `pavucontrol`, or the sound panel of our desktop environment (GNOME, KDE).
+High input gain overdrives the microphone and amplifies background whirring. Let's lower the internal microphone volume using `alsamixer`, `pavucontrol`, or the sound panel of our desktop environment (GNOME, KDE).
 
 ```bash
 alsamixer      # press F4 for capture devices, adjust with the arrow keys
 ```
+
+Lower it only until the fan fades but our voice is still clear. Going too far (we tried 30% and below) makes the recording very quiet. The ALSA `Capture` slider and the desktop's input volume can both change the level, so check both. We can also set it from the terminal:
+
+```bash
+wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 0.8    # 0.0 to 1.0
+```
+
+If the recording is too quiet afterwards, we raise the level again and rely on noise suppression (next step) instead of low gain.
 
 ### 2. Enable noise suppression in PipeWire / PulseAudio
 
