@@ -7,10 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Abdullah Al Mahmud">
-<meta name="dcterms.date" content="2026-10-04">
-<meta name="description" content="A tour of a static Quarto blog on GitHub Pages: the folder layout, a pre-render script that feeds a dynamic archive, tag cloud and related posts, a dark/light toggle, and a publish.sh that renders, commits and pushes.">
+<meta name="dcterms.date" content="2026-10-07">
+<meta name="description" content="Declare a fixed-size array, fill it with a for loop using the loop index, and grow it with malloc() and realloc() when the number of values is not known in advance.">
 
-<title>How This Blog Is Built: Quarto, One Python Hook and One Shell Command – Stat Mania</title>
+<title>How to Save Loop Results in an Array in C – Stat Mania</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -123,15 +123,15 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
 
 
 <link rel="stylesheet" href="../styles.css">
-<meta property="og:title" content="How This Blog Is Built: Quarto, One Python Hook and One Shell Command – Stat Mania">
-<meta property="og:description" content="A tour of a static Quarto blog on GitHub Pages: the folder layout, a pre-render script that feeds a dynamic archive, tag cloud and related posts, a dark/light toggle, and a publish.sh that renders, commits and pushes.">
-<meta property="og:image" content="https://www.statmania.info/blog/img/blog-build-pipeline.png">
+<meta property="og:title" content="How to Save Loop Results in an Array in C – Stat Mania">
+<meta property="og:description" content="Declare a fixed-size array, fill it with a for loop using the loop index, and grow it with malloc() and realloc() when the number of values is not known in advance.">
+<meta property="og:image" content="https://www.statmania.info/blog/img/c-save-loop-in-array.png">
 <meta property="og:site_name" content="Stat Mania">
 <meta property="og:image:height" content="630">
 <meta property="og:image:width" content="1200">
-<meta name="twitter:title" content="How This Blog Is Built: Quarto, One Python Hook and One Shell Command – Stat Mania">
-<meta name="twitter:description" content="A tour of a static Quarto blog on GitHub Pages: the folder layout, a pre-render script that feeds a dynamic archive, tag cloud and related posts, a dark/light toggle, and a publish.sh that renders, commits and pushes.">
-<meta name="twitter:image" content="https://www.statmania.info/blog/img/blog-build-pipeline.png">
+<meta name="twitter:title" content="How to Save Loop Results in an Array in C – Stat Mania">
+<meta name="twitter:description" content="Declare a fixed-size array, fill it with a for loop using the loop index, and grow it with malloc() and realloc() when the number of values is not known in advance.">
+<meta name="twitter:image" content="https://www.statmania.info/blog/img/c-save-loop-in-array.png">
 <meta name="twitter:image-height" content="630">
 <meta name="twitter:image-width" content="1200">
 <meta name="twitter:card" content="summary_large_image">
@@ -349,15 +349,15 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">How This Blog Is Built: Quarto, One Python Hook and One Shell Command</h1>
+      <h1 class="title">How to Save Loop Results in an Array in C</h1>
                   <div>
         <div class="description">
-          A tour of a static Quarto blog on GitHub Pages: the folder layout, a pre-render script that feeds a dynamic archive, tag cloud and related posts, a dark/light toggle, and a publish.sh that renders, commits and pushes.
+          Declare a fixed-size array, fill it with a for loop using the loop index, and grow it with malloc() and realloc() when the number of values is not known in advance.
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">Tools</div>
-                <div class="quarto-category">Quarto</div>
+                <div class="quarto-category">C</div>
+                <div class="quarto-category">Programming</div>
                 <div class="quarto-category">Tutorial</div>
               </div>
                   </div>
@@ -376,7 +376,7 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">October 4, 2026</p>
+        <p class="date">October 7, 2026</p>
       </div>
     </div>
     
@@ -392,14 +392,9 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#the-idea-sources-in-built-site-out" id="toc-the-idea-sources-in-built-site-out" class="nav-link active" data-scroll-target="#the-idea-sources-in-built-site-out">The Idea: Sources In, Built Site Out</a></li>
-  <li><a href="#the-problem-cross-post-features" id="toc-the-problem-cross-post-features" class="nav-link" data-scroll-target="#the-problem-cross-post-features">The Problem: Cross-Post Features</a></li>
-  <li><a href="#the-fix-one-data-file-rebuilt-on-every-render" id="toc-the-fix-one-data-file-rebuilt-on-every-render" class="nav-link" data-scroll-target="#the-fix-one-data-file-rebuilt-on-every-render">The Fix: One Data File, Rebuilt on Every Render</a></li>
-  <li><a href="#dark-and-light-theme" id="toc-dark-and-light-theme" class="nav-link" data-scroll-target="#dark-and-light-theme">Dark and Light Theme</a></li>
-  <li><a href="#small-quality-of-life-pieces" id="toc-small-quality-of-life-pieces" class="nav-link" data-scroll-target="#small-quality-of-life-pieces">Small Quality-of-Life Pieces</a></li>
-  <li><a href="#the-publish-script" id="toc-the-publish-script" class="nav-link" data-scroll-target="#the-publish-script">The Publish Script</a></li>
-  <li><a href="#gotchas-we-hit" id="toc-gotchas-we-hit" class="nav-link" data-scroll-target="#gotchas-we-hit">Gotchas We Hit</a></li>
-  <li><a href="#start-your-own-the-minimum" id="toc-start-your-own-the-minimum" class="nav-link" data-scroll-target="#start-your-own-the-minimum">Start Your Own: The Minimum</a></li>
+  <li><a href="#a-fixed-size-array" id="toc-a-fixed-size-array" class="nav-link active" data-scroll-target="#a-fixed-size-array">A fixed-size array</a></li>
+  <li><a href="#when-the-number-of-values-is-unknown" id="toc-when-the-number-of-values-is-unknown" class="nav-link" data-scroll-target="#when-the-number-of-values-is-unknown">When the number of values is unknown</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
   </ul>
 </nav>
     </div>
@@ -413,163 +408,119 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
 
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../img/blog-build-pipeline.svg" class="img-fluid figure-img" alt="Posts and authors.yml feed quarto render and a pre-render hook. Rendering writes blog/*.html, the hook writes site-data.js and site.js. Git push publishes to GitHub Pages and the browser builds the widgets from site-data.js."></p>
-<figcaption>The blog’s chain from Markdown source to published page: Quarto renders the posts, a pre-render hook writes the shared data file, git push publishes, and the browser builds the widgets.</figcaption>
+<p><img src="../img/c-save-loop-in-array.svg" class="img-fluid figure-img" alt="A for loop with index i from 0 to 4 writes i times i into results[i], filling five boxes with 0, 1, 4, 9 and 16."></p>
+<figcaption>A for loop writes i * i into results[i] on each pass, filling the array one slot at a time.</figcaption>
 </figure>
 </div>
-<p>This blog is plain files: Markdown in, HTML out, hosted for free on GitHub Pages. There is no server and no database, yet it has a sidebar archive, a tag cloud, related posts, author pages, a light/dark switch, and a one-command publish. Here is how it fits together, so we can borrow whatever is useful.</p>
-<section id="the-idea-sources-in-built-site-out" class="level3">
-<h3 class="anchored" data-anchor-id="the-idea-sources-in-built-site-out">The Idea: Sources In, Built Site Out</h3>
-<p>Quarto turns <code>.qmd</code> files into HTML. GitHub Pages serves whatever is committed. So we keep two folders side by side:</p>
-<pre><code>blograw/          # sources (what we edit)
-  _quarto.yml     # project config
-  posts/*.qmd     # one file per post
-  styles.css, site.js, authors.yml, publish.sh
-blog/             # built site (generated; committed; served by Pages)</code></pre>
-<p>Nothing is built on GitHub. We render on our own computer and commit the result. The cost is that generated HTML lives in git. The gain is zero build infrastructure and a site that works with any static host.</p>
-<p>The project file points Quarto at the right inputs and output:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">project</span><span class="kw">:</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">type</span><span class="kw">:</span><span class="at"> website</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">render</span><span class="kw">:</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="st">"*.qmd"</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="st">"posts/*.qmd"</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">output-dir</span><span class="kw">:</span><span class="at"> ../blog</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">pre-render</span><span class="kw">:</span><span class="at"> scripts/build_site_data.py</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Each post starts with front matter that everything else reads:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span><span class="kw">:</span><span class="at"> </span><span class="st">"Descriptive Title"</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">description</span><span class="kw">:</span><span class="at"> </span><span class="st">"One or two sentences for cards and search results."</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">date</span><span class="kw">:</span><span class="at"> </span><span class="st">"2026-10-04"</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">categories</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">Tools</span><span class="kw">,</span><span class="at"> Quarto</span><span class="kw">]</span><span class="co">       # broad</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">tags</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">quarto</span><span class="kw">,</span><span class="at"> shell</span><span class="kw">]</span><span class="co">             # specific</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">author</span><span class="kw">:</span><span class="at"> </span><span class="st">"Abdullah Al Mahmud"</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">image</span><span class="kw">:</span><span class="at"> ../img/cover.png</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The homepage is a Quarto <em>listing</em>: a few lines in <code>index.qmd</code> give us a card grid, sorting, filtering, pagination and an RSS feed.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">listing</span><span class="kw">:</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">contents</span><span class="kw">:</span><span class="at"> posts</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">sort</span><span class="kw">:</span><span class="at"> </span><span class="st">"date desc"</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">type</span><span class="kw">:</span><span class="at"> grid</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">categories</span><span class="kw">:</span><span class="at"> cloud</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">page-size</span><span class="kw">:</span><span class="at"> </span><span class="dv">12</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">feed</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="the-problem-cross-post-features" class="level3">
-<h3 class="anchored" data-anchor-id="the-problem-cross-post-features">The Problem: Cross-Post Features</h3>
-<p>A listing page knows all the posts. A <strong>post page</strong> only knows itself, so an archive in its sidebar, related posts, or a tag cloud would need data about every other post. If we bake that into each page at render time, adding one post leaves 40 old pages stale until we re-render them all (about a minute here).</p>
-</section>
-<section id="the-fix-one-data-file-rebuilt-on-every-render" class="level3">
-<h3 class="anchored" data-anchor-id="the-fix-one-data-file-rebuilt-on-every-render">The Fix: One Data File, Rebuilt on Every Render</h3>
-<p>Quarto can run a script <strong>before</strong> every render with <code>pre-render:</code>. Ours is about 100 lines of Python. It reads the front matter of every post (and a small <code>authors.yml</code>) and writes one file:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">window</span><span class="op">.</span><span class="at">SM_DATA</span> <span class="op">=</span> {<span class="st">"posts"</span><span class="op">:</span>[{<span class="st">"href"</span><span class="op">:</span><span class="st">"posts/c-struct.html"</span><span class="op">,</span><span class="st">"title"</span><span class="op">:</span><span class="st">"…"</span><span class="op">,</span><span class="st">"date"</span><span class="op">:</span><span class="st">"2026-08-20"</span><span class="op">,</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                            <span class="st">"tags"</span><span class="op">:</span>[<span class="st">"c"</span><span class="op">,</span><span class="st">"struct"</span>]<span class="op">,</span><span class="st">"cats"</span><span class="op">:</span>[<span class="st">"C"</span>]<span class="op">,</span><span class="st">"author"</span><span class="op">:</span><span class="st">"…"</span>}<span class="op">,</span> …]<span class="op">,</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"authors"</span><span class="op">:</span>{…}}<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The core of the hook is only this:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> path <span class="kw">in</span> <span class="bu">sorted</span>(POSTS.glob(<span class="st">"*.qmd"</span>)):</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    fm <span class="op">=</span> front_matter(path)            <span class="co"># YAML between the --- lines</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> fm.get(<span class="st">"draft"</span>):</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">continue</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    posts.append({<span class="st">"href"</span>: <span class="ss">f"posts/</span><span class="sc">{</span>path<span class="sc">.</span>stem<span class="sc">}</span><span class="ss">.html"</span>, <span class="st">"title"</span>: fm[<span class="st">"title"</span>],</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"date"</span>: as_date(fm[<span class="st">"date"</span>]).isoformat(),</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"tags"</span>: as_list(fm.get(<span class="st">"tags"</span>)), …})</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>(OUT_DIR <span class="op">/</span> <span class="st">"site-data.js"</span>).write_text(<span class="st">"window.SM_DATA="</span> <span class="op">+</span> json.dumps(data) <span class="op">+</span> <span class="st">";"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>A small hand-written <code>site.js</code> is loaded on every page. It reads <code>SM_DATA</code> and builds, in the browser:</p>
-<ul>
-<li>the <strong>archive</strong> (year, month, posts) and the <strong>tag cloud</strong> in the sidebar,</li>
-<li>a <strong>Tags</strong> row and up to five <strong>Related posts</strong> under each post,</li>
-<li>the <strong>author card</strong> and clickable author names,</li>
-<li>the <strong>tags page</strong> (<code>tags.html#tag=quarto</code>) and <strong>author pages</strong>, with filters and pagination.</li>
-</ul>
-<p>Because the data file is rewritten by <em>any</em> render, even <code>quarto render posts/new-post.qmd</code> (about seven seconds) updates every widget on every page. No other page is re-rendered.</p>
-<p>Related posts are scored in a few lines. A shared tag counts for more when few posts have it (a rare tag says more than “Tutorial”):</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">// df = how many posts carry each tag or category; n = number of posts</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>score <span class="op">+=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">log</span>(n <span class="op">/</span> df[feature]) <span class="op">*</span> (feature<span class="op">.</span><span class="fu">startsWith</span>(<span class="st">'cat:'</span>) <span class="op">?</span> <span class="fl">0.5</span> <span class="op">:</span> <span class="dv">1</span>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="callout callout-style-default callout-note callout-titled">
+<p>To save loop results in an array in C, we declare an array with a fixed size <strong>before</strong> the loop, then use the loop’s index variable to assign a value to each slot.</p>
+<p>Unlike Python, a C array cannot grow with something like <code>append()</code>. We manage the indexing ourselves.</p>
+<section id="a-fixed-size-array" class="level3">
+<h3 class="anchored" data-anchor-id="a-fixed-size-array">A fixed-size array</h3>
+<p>This program squares the numbers 0 to 4 inside a loop and stores each result:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#define SIZE </span><span class="dv">5</span><span class="pp">   </span><span class="co">// fixed size of the array</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">// 1. Declare the array with a predefined size</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> results<span class="op">[</span>SIZE<span class="op">];</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">// 2. Use a loop to populate the array</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> SIZE<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        results<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> i <span class="op">*</span> i<span class="op">;</span>   <span class="co">// save the result at index i</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="co">// 3. Print the saved elements to check</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"Saved results:</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> SIZE<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"results[</span><span class="sc">%d</span><span class="st">] = </span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> i<span class="op">,</span> results<span class="op">[</span>i<span class="op">]);</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Output (compiled with <code>gcc -Wall -Wextra</code>):</p>
+<pre><code>Saved results:
+results[0] = 0
+results[1] = 1
+results[2] = 4
+results[3] = 9
+results[4] = 16</code></pre>
+<div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Note
+Warning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Why <code>site-data.js</code> and not a JSON file?</strong> Our first version fetched <code>site-data.json</code>. Browsers block <code>fetch()</code> for pages opened straight from disk (<code>file://</code>), so every widget vanished locally. A <code>&lt;script src&gt;</code> works everywhere, so the data became a <code>.js</code> file that sets a global.</p>
+<p><strong>Stay inside the array.</strong> Valid indices run from <code>0</code> to <code>SIZE - 1</code>, so the loop condition must be <code>i &lt; SIZE</code>, not <code>i &lt;= SIZE</code>. Writing outside the array is undefined behaviour: it may crash, or silently corrupt other variables.</p>
 </div>
 </div>
 </section>
-<section id="dark-and-light-theme" class="level3">
-<h3 class="anchored" data-anchor-id="dark-and-light-theme">Dark and Light Theme</h3>
-<p>Quarto adds a navbar toggle when <code>theme:</code> has a <code>light</code> and a <code>dark</code> entry:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">format</span><span class="kw">:</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">html</span><span class="kw">:</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">theme</span><span class="kw">:</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">dark</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">cosmo</span><span class="kw">,</span><span class="at"> theme-dark.scss</span><span class="kw">]</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">light</span><span class="kw">:</span><span class="at"> cosmo</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">highlight-style</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">light</span><span class="kw">:</span><span class="at"> github</span><span class="kw">,</span><span class="at"> </span><span class="fu">dark</span><span class="kw">:</span><span class="at"> dracula</span><span class="kw">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Two lessons. Listing <code>dark</code> first makes it the default. And Quarto decides what is dark from the theme’s <strong>background colour</strong>: giving it <code>cosmo</code> twice looked fine but made <em>both</em> modes “light”. The tiny <code>theme-dark.scss</code> only sets <code>$body-bg: #05070d;</code>, which is enough to make Quarto treat it as dark. After that, our stylesheet uses CSS variables (<code>--sm-bg</code>, <code>--sm-text</code>, …) and overrides them under <code>body.quarto-light</code>.</p>
-</section>
-<section id="small-quality-of-life-pieces" class="level3">
-<h3 class="anchored" data-anchor-id="small-quality-of-life-pieces">Small Quality-of-Life Pieces</h3>
+<section id="when-the-number-of-values-is-unknown" class="level3">
+<h3 class="anchored" data-anchor-id="when-the-number-of-values-is-unknown">When the number of values is unknown</h3>
+<p>If we do not know in advance how many times the loop will run (for example, reading numbers until the user types <code>0</code>), a fixed-size array does not work. We allocate memory with <code>malloc()</code> and enlarge it with <code>realloc()</code> when it fills up:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> capacity <span class="op">=</span> <span class="dv">2</span><span class="op">,</span> count <span class="op">=</span> <span class="dv">0</span><span class="op">,</span> x<span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> <span class="op">*</span>data <span class="op">=</span> malloc<span class="op">(</span>capacity <span class="op">*</span> <span class="kw">sizeof</span> <span class="op">*</span>data<span class="op">);</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>data <span class="op">==</span> NULL<span class="op">)</span> <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"Enter numbers (0 to stop): "</span><span class="op">);</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span>scanf<span class="op">(</span><span class="st">"</span><span class="sc">%d</span><span class="st">"</span><span class="op">,</span> <span class="op">&amp;</span>x<span class="op">)</span> <span class="op">==</span> <span class="dv">1</span> <span class="op">&amp;&amp;</span> x <span class="op">!=</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>count <span class="op">==</span> capacity<span class="op">)</span> <span class="op">{</span>          <span class="co">// full: double the space</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>            capacity <span class="op">*=</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>            <span class="dt">int</span> <span class="op">*</span>tmp <span class="op">=</span> realloc<span class="op">(</span>data<span class="op">,</span> capacity <span class="op">*</span> <span class="kw">sizeof</span> <span class="op">*</span>data<span class="op">);</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="op">(</span>tmp <span class="op">==</span> NULL<span class="op">)</span> <span class="op">{</span> free<span class="op">(</span>data<span class="op">);</span> <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span> <span class="op">}</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>            data <span class="op">=</span> tmp<span class="op">;</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        data<span class="op">[</span>count<span class="op">++]</span> <span class="op">=</span> x<span class="op">;</span>                <span class="co">// save, then move to the next slot</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"Saved </span><span class="sc">%d</span><span class="st"> values:"</span><span class="op">,</span> count<span class="op">);</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> count<span class="op">;</span> i<span class="op">++)</span> printf<span class="op">(</span><span class="st">" </span><span class="sc">%d</span><span class="st">"</span><span class="op">,</span> data<span class="op">[</span>i<span class="op">]);</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    free<span class="op">(</span>data<span class="op">);</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Entering <code>4 8 15 16 23 42 0</code> gives:</p>
+<pre><code>Enter numbers (0 to stop): Saved 6 values: 4 8 15 16 23 42</code></pre>
+<p>Three habits to notice:</p>
 <ul>
-<li><strong>Reveal/Hide code with hints</strong> for exercise posts. In Markdown we write a Pandoc div, and a tiny script adds the “See hint” and “Reveal code” buttons:</li>
-</ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>::: {.reveal-code}</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>::: {.hint}</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Start <span class="in">`i`</span> at 2</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Add 2 each pass</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="in">```c</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> i <span class="op">=</span> <span class="dv">2</span><span class="op">;</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="op">(</span>i <span class="op">&lt;=</span> <span class="dv">10</span><span class="op">)</span> <span class="op">{</span> printf<span class="op">(</span><span class="st">"</span><span class="sc">%d</span><span class="st"> "</span><span class="op">,</span> i<span class="op">);</span> i <span class="op">+=</span> <span class="dv">2</span><span class="op">;</span> <span class="op">}</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Without JavaScript the code and hint simply stay visible.</p>
-<ul>
-<li><strong>Images:</strong> SVG in the post body (sharp, tiny, accessible), PNG in the front matter, because link previews on social sites do not render SVG.</li>
-<li><strong>Authors</strong> live in one <code>authors.yml</code> (name, photo, bio). Posts keep <code>author: "Name"</code> as plain text, so nothing in old posts changes.</li>
-</ul>
-</section>
-<section id="the-publish-script" class="level3">
-<h3 class="anchored" data-anchor-id="the-publish-script">The Publish Script</h3>
-<p>Rendering, committing and pushing is the same every time, so a short shell script does it:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/usr/bin/env bash</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> <span class="at">-euo</span> pipefail</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> <span class="st">"</span><span class="va">${files</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span><span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">quarto</span> render <span class="st">"</span><span class="va">$f</span><span class="st">"</span>              <span class="co"># quarto renders one file per call</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add blog blograw              <span class="co"># only the blog; other changes stay untouched</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> diff <span class="at">--cached</span> <span class="at">--quiet</span> <span class="kw">&amp;&amp;</span> <span class="kw">{</span> <span class="bu">echo</span> <span class="st">"Nothing to commit."</span><span class="kw">;</span> <span class="bu">exit</span> 0<span class="kw">;</span> <span class="kw">}</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-q</span> <span class="at">-m</span> <span class="st">"Blog: update </span><span class="va">$names</span><span class="st">"</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> pull <span class="at">--rebase</span> <span class="at">--autostash</span> <span class="at">-q</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Day to day it is one line:</p>
-<pre><code>./publish.sh posts/my-new-post.qmd</code></pre>
-<p>Useful options: <code>--no-push</code> (commit but look first), <code>--all</code> (full render after changing the theme or config), and <code>-m "message"</code>. The script stops if a render fails, skips empty commits, and refuses to touch files outside the blog folders.</p>
-</section>
-<section id="gotchas-we-hit" class="level3">
-<h3 class="anchored" data-anchor-id="gotchas-we-hit">Gotchas We Hit</h3>
-<ul>
-<li><code>quarto render a.qmd b.qmd</code> does <strong>not</strong> render two files; the second is treated as an option. Loop instead.</li>
-<li>A single-post render re-renders the homepage too (to refresh the listing). That is expected.</li>
-<li><code>freeze: true</code> caches R/Python output; delete <code>_freeze/posts/&lt;post&gt;/</code> to force a re-run.</li>
-<li>GitHub Pages may cache <code>site-data.js</code> for a few minutes after a push.</li>
-<li>Keep generated files generated: edit the <code>.qmd</code>, never the HTML in <code>blog/</code>.</li>
+<li><code>count</code> tracks how many slots are used, and doubles as the next index.</li>
+<li><code>realloc()</code> goes into a temporary pointer first, so we do not lose <code>data</code> if it fails.</li>
+<li><code>free()</code> returns the memory when we are done.</li>
 </ul>
 </section>
-<section id="start-your-own-the-minimum" class="level3">
-<h3 class="anchored" data-anchor-id="start-your-own-the-minimum">Start Your Own: The Minimum</h3>
-<ol type="1">
-<li><code>quarto create project blog my-blog</code> (a website project with a <code>posts/</code> folder).</li>
-<li>Set <code>output-dir:</code> to a folder that is committed, and enable GitHub Pages for it.</li>
-<li>Give every post <code>title</code>, <code>date</code>, <code>categories</code>, <code>tags</code>.</li>
-<li>Add a <code>listing:</code> to <code>index.qmd</code>.</li>
-<li>When it hurts, add a <code>pre-render:</code> script and a <code>publish.sh</code>.</li>
-</ol>
-<p>Everything else here is optional polish, and each piece is small enough to read in one sitting.</p>
+<section id="summary" class="level3">
+<h3 class="anchored" data-anchor-id="summary">Summary</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Situation</th>
+<th>Approach</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Number of iterations known</td>
+<td>Fixed array, <code>array[i] = value;</code></td>
+</tr>
+<tr class="even">
+<td>Number of iterations unknown</td>
+<td><code>malloc()</code> + <code>realloc()</code>, track <code>count</code> and <code>capacity</code></td>
+</tr>
+</tbody>
+</table>
 
 
 </section>

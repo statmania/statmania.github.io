@@ -1,0 +1,110 @@
+---
+title: "How to Save Loop Results in an Array in C"
+description: "Declare a fixed-size array, fill it with a for loop using the loop index, and grow it with malloc() and realloc() when the number of values is not known in advance."
+date: "2026-10-07"
+categories: [C, Programming, Tutorial]
+tags: [c, array, for-loop, loops, malloc, realloc, dynamic-memory]
+author: "Abdullah Al Mahmud"
+image: ../img/c-save-loop-in-array.png
+---
+
+![A for loop writes i * i into results[i] on each pass, filling the array one slot at a time.](../img/c-save-loop-in-array.svg){fig-alt="A for loop with index i from 0 to 4 writes i times i into results[i], filling five boxes with 0, 1, 4, 9 and 16."}
+
+To save loop results in an array in C, we declare an array with a fixed size **before** the loop, then use the loop's index variable to assign a value to each slot.
+
+Unlike Python, a C array cannot grow with something like `append()`. We manage the indexing ourselves.
+
+### A fixed-size array
+
+This program squares the numbers 0 to 4 inside a loop and stores each result:
+
+```c
+#include <stdio.h>
+
+#define SIZE 5   // fixed size of the array
+
+int main(void) {
+    // 1. Declare the array with a predefined size
+    int results[SIZE];
+
+    // 2. Use a loop to populate the array
+    for (int i = 0; i < SIZE; i++) {
+        results[i] = i * i;   // save the result at index i
+    }
+
+    // 3. Print the saved elements to check
+    printf("Saved results:\n");
+    for (int i = 0; i < SIZE; i++) {
+        printf("results[%d] = %d\n", i, results[i]);
+    }
+
+    return 0;
+}
+```
+
+Output (compiled with `gcc -Wall -Wextra`):
+
+```
+Saved results:
+results[0] = 0
+results[1] = 1
+results[2] = 4
+results[3] = 9
+results[4] = 16
+```
+
+::: {.callout-warning}
+**Stay inside the array.** Valid indices run from `0` to `SIZE - 1`, so the loop condition must be `i < SIZE`, not `i <= SIZE`. Writing outside the array is undefined behaviour: it may crash, or silently corrupt other variables.
+:::
+
+### When the number of values is unknown
+
+If we do not know in advance how many times the loop will run (for example, reading numbers until the user types `0`), a fixed-size array does not work. We allocate memory with `malloc()` and enlarge it with `realloc()` when it fills up:
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+    int capacity = 2, count = 0, x;
+    int *data = malloc(capacity * sizeof *data);
+    if (data == NULL) return 1;
+
+    printf("Enter numbers (0 to stop): ");
+    while (scanf("%d", &x) == 1 && x != 0) {
+        if (count == capacity) {          // full: double the space
+            capacity *= 2;
+            int *tmp = realloc(data, capacity * sizeof *data);
+            if (tmp == NULL) { free(data); return 1; }
+            data = tmp;
+        }
+        data[count++] = x;                // save, then move to the next slot
+    }
+
+    printf("Saved %d values:", count);
+    for (int i = 0; i < count; i++) printf(" %d", data[i]);
+    printf("\n");
+
+    free(data);
+    return 0;
+}
+```
+
+Entering `4 8 15 16 23 42 0` gives:
+
+```
+Enter numbers (0 to stop): Saved 6 values: 4 8 15 16 23 42
+```
+
+Three habits to notice:
+
+- `count` tracks how many slots are used, and doubles as the next index.
+- `realloc()` goes into a temporary pointer first, so we do not lose `data` if it fails.
+- `free()` returns the memory when we are done.
+
+### Summary
+
+| Situation | Approach |
+|---|---|
+| Number of iterations known | Fixed array, `array[i] = value;` |
+| Number of iterations unknown | `malloc()` + `realloc()`, track `count` and `capacity` |

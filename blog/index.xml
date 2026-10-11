@@ -10,7 +10,876 @@
 <atom:link href="https://www.statmania.info/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Posts on statistics theory, R &amp; Python, and developer tips from Stat Mania.</description>
 <generator>quarto-1.9.38</generator>
-<lastBuildDate>Sat, 03 Oct 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sat, 10 Oct 2026 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>Pre-Increment vs Post-Increment in C: ++i vs i++</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/c-pre-vs-post-increment.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/c-pre-vs-post-increment.svg" class="img-fluid figure-img" alt="Two columns. Pre-increment b = ++a: a goes from 5 to 6, then b is 6. Post-increment y = x++: y gets the old value 5, then x goes from 5 to 6."></p>
+<figcaption>With a = 5, ++a updates a first, so b gets 6. With x = 5, x++ hands over the old value first, so y gets 5.</figcaption>
+</figure>
+</div>
+<p>Both <code>++i</code> and <code>i++</code> add 1 to <code>i</code>. The difference is the <strong>value the expression gives back</strong>, which matters when we use it inside a larger expression:</p>
+<ul>
+<li><strong>Pre-increment (<code>++i</code>)</strong> changes the value first, then returns the <strong>new</strong> value.</li>
+<li><strong>Post-increment (<code>i++</code>)</strong> returns the <strong>original</strong> value first, then changes the value.</li>
+</ul>
+<section id="direct-comparison" class="level3">
+<h3 class="anchored" data-anchor-id="direct-comparison">Direct comparison</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Pre-increment (<code>++i</code>)</th>
+<th>Post-increment (<code>i++</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Syntax</td>
+<td><code>++variable;</code></td>
+<td><code>variable++;</code></td>
+</tr>
+<tr class="even">
+<td>Order</td>
+<td>Increments, then evaluates</td>
+<td>Evaluates, then increments</td>
+</tr>
+<tr class="odd">
+<td>Value returned</td>
+<td>The updated value</td>
+<td>The original value</td>
+</tr>
+<tr class="even">
+<td>Precedence</td>
+<td>Lower (prefix)</td>
+<td>Higher (postfix)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="in-assignments" class="level3">
+<h3 class="anchored" data-anchor-id="in-assignments">1. In assignments</h3>
+<p>When we assign the result to another variable, the order decides the final values:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> a <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> b <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++</span>a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 'a' becomes 6, then 6 is assigned to 'b'</span></span>
+<span id="cb1-3">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"a = </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">, b = </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> b<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb1-4"></span>
+<span id="cb1-5"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> x <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-6"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> y <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++;</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 5 is assigned to 'y', then 'x' becomes 6</span></span>
+<span id="cb1-7">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"x = </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">, y = </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> y<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<p>Output:</p>
+<pre><code>a = 6, b = 6
+x = 6, y = 5</code></pre>
+</section>
+<section id="inside-printf" class="level3">
+<h3 class="anchored" data-anchor-id="inside-printf">2. Inside <code>printf</code></h3>
+<p>The timing changes what appears on the screen:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb3-2">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++</span>i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// increments first, prints 11</span></span>
+<span id="cb3-3"></span>
+<span id="cb3-4"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> j <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb3-5">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> j<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++);</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// prints the old value, 10</span></span>
+<span id="cb3-6">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> j<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>     <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// now j is 11</span></span></code></pre></div></div>
+<p>Output:</p>
+<pre><code>11
+10
+11</code></pre>
+</section>
+<section id="as-a-standalone-statement" class="level3">
+<h3 class="anchored" data-anchor-id="as-a-standalone-statement">3. As a standalone statement</h3>
+<p>When the result is not used, there is no difference. <code>i</code> ends up as <code>i + 1</code> either way. This is why a <code>for</code> loop works the same with <code>i++</code> or <code>++i</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1">i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++;</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// i becomes i + 1</span></span>
+<span id="cb5-2"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++</span>i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// i becomes i + 1</span></span></code></pre></div></div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Don’t change a variable twice in one expression
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Statements such as <code>i = i++;</code> or <code>a[i] = i++;</code> modify and read <code>i</code> without a defined order, so their behaviour is <strong>undefined</strong> in C. We keep <code>++</code> and <code>--</code> to one use per variable in each expression.</p>
+</div>
+</div>
+</section>
+<section id="performance-note" class="level3">
+<h3 class="anchored" data-anchor-id="performance-note">Performance note</h3>
+<p>In C, a compiler produces the same code for a standalone <code>++i</code> and <code>i++</code>. In C++, pre-increment is usually preferred for iterators and other objects, because post-increment must make a temporary copy of the old value. So <code>++i</code> is a good habit to build early.</p>
+</section>
+<section id="summary" class="level3">
+<h3 class="anchored" data-anchor-id="summary">Summary</h3>
+<ul>
+<li><code>++i</code>: update, then use the new value.</li>
+<li><code>i++</code>: use the old value, then update.</li>
+<li>On their own they are identical; the difference shows up only when the result is used.</li>
+</ul>
+</section>
+<section id="references" class="level3">
+<h3 class="anchored" data-anchor-id="references">References</h3>
+<ul>
+<li><a href="https://www.upgrad.com/tutorials/software-engineering/c-tutorial/pre-increment-and-post-increment-in-c/">UpGrad: pre-increment and post-increment in C</a></li>
+<li><a href="https://www.scaler.com/topics/pre-increment-and-post-increment-in-c/">Scaler: pre-increment and post-increment in C</a></li>
+<li><a href="https://www.reddit.com/r/C_Programming/comments/m1f5kq/pre_vs_post_increment/">Reddit r/C_Programming: pre vs post increment</a></li>
+<li><a href="https://dev.to/galaxy233/unmasking-the-difference-pre-increment-i-vs-post-increment-i-in-c-39ok">DEV: unmasking the difference between ++i and i++</a></li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>C</category>
+  <category>Programming</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/c-pre-vs-post-increment.html</guid>
+  <pubDate>Sat, 10 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/c-pre-vs-post-increment.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>How to Reduce Fan Noise in a Linux Laptop Microphone</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/linux-mic-fan-noise.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/linux-mic-fan-noise.svg" class="img-fluid figure-img" alt="A fan emits noise waves into the internal microphone. Three fixes are listed: lower mic gain, noise suppression, and an external mic."></p>
+<figcaption>The fan’s noise reaches the internal microphone; we can reduce it with lower gain, a noise-suppression filter, or an external microphone.</figcaption>
+</figure>
+</div>
+<p>On Linux laptops, the internal microphone often picks up the sound of the cooling fan. The mic sits close to the heat pipes and fan assembly, or the input gain is set too high. Users on Reddit report the same thing: built-in laptop mics commonly capture loud fan noise and internal speaker bleed.</p>
+<section id="lower-the-microphone-gain" class="level3">
+<h3 class="anchored" data-anchor-id="lower-the-microphone-gain">1. Lower the microphone gain</h3>
+<p>High input gain overdrives the microphone and amplifies background whirring. Let’s lower the internal microphone volume using <code>alsamixer</code>, <code>pavucontrol</code>, or the sound panel of our desktop environment (GNOME, KDE).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">alsamixer</span>      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># press F4 for capture devices, adjust with the arrow keys</span></span></code></pre></div></div>
+<p>Lower it only until the fan fades but our voice is still clear. Going too far (we tried 30% and below) makes the recording very quiet. The ALSA <code>Capture</code> slider and the desktop’s input volume can both change the level, so check both. We can also set it from the terminal:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">wpctl</span> set-volume @DEFAULT_AUDIO_SOURCE@ 0.8    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 0.0 to 1.0</span></span></code></pre></div></div>
+<p>If the recording is too quiet afterwards, we raise the level again and rely on noise suppression (next step) instead of low gain.</p>
+</section>
+<section id="enable-noise-suppression-in-pipewire-pulseaudio" class="level3">
+<h3 class="anchored" data-anchor-id="enable-noise-suppression-in-pipewire-pulseaudio">2. Enable noise suppression in PipeWire / PulseAudio</h3>
+<p>Modern distributions using PipeWire or PulseAudio support echo cancellation and noise suppression. We can enable a noise-reduction filter, or use tools such as NoiseTorch or a PipeWire noise-canceling source, to filter out the steady hum of a fan.</p>
+</section>
+<section id="stop-the-fan-from-running-constantly" class="level3">
+<h3 class="anchored" data-anchor-id="stop-the-fan-from-running-constantly">3. Stop the fan from running constantly</h3>
+<p>Overlapping power tools (for example TLP, <code>power-profiles-daemon</code> and <code>cpupower</code>) can lock the CPU in high-frequency states and keep the fan spinning. We should make sure only one power-profile daemon is active, set to a balanced or power-saving mode.</p>
+</section>
+<section id="clean-the-vents-and-check-the-thermal-paste" class="level3">
+<h3 class="anchored" data-anchor-id="clean-the-vents-and-check-the-thermal-paste">4. Clean the vents and check the thermal paste</h3>
+<p>If the fan runs at full speed all the time, we clear dust from the intake and exhaust vents with compressed air. On older machines, dried-out thermal paste can also force the fan to spin fast even under light load.</p>
+</section>
+<section id="use-an-external-microphone" class="level3">
+<h3 class="anchored" data-anchor-id="use-an-external-microphone">5. Use an external microphone</h3>
+<p>If the internal mic capsule sits too close to the fan duct, software fixes may not be enough. Switching to a USB or headset microphone and disabling the internal one is the most reliable workaround.</p>
+</section>
+<section id="references" class="level3">
+<h3 class="anchored" data-anchor-id="references">References</h3>
+<ul>
+<li><a href="https://www.reddit.com/r/linuxquestions/comments/1sx4fgk/laptop_internal_microphone_picks_up_loud_fan_and/">Reddit: laptop internal microphone picks up loud fan</a></li>
+<li><a href="https://community.frame.work/t/terrible-noise-on-the-internal-microphone/12259">Framework Community: terrible noise on the internal microphone</a></li>
+<li><a href="https://bbs.archlinux.org/viewtopic.php?id=293880">Arch Linux forum thread</a></li>
+<li><a href="https://askubuntu.com/questions/961200/internal-mic-only-capturing-static-noise-in-asus-laptop-ubuntu-16-04">Ask Ubuntu: internal mic only capturing static noise</a></li>
+<li><a href="https://www.makeuseof.com/finally-fixed-linux-laptops-constant-fan-noise-it-wasnt-hardware/">MakeUseOf: fixing constant Linux laptop fan noise</a></li>
+<li><a href="https://system76.com/support/fan-noise/">System76: fan noise</a></li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>Linux</category>
+  <category>Troubleshooting</category>
+  <guid>https://www.statmania.info/blog/posts/linux-mic-fan-noise.html</guid>
+  <pubDate>Fri, 09 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/linux-mic-fan-noise.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>How to Save Loop Results in an Array in C</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/c-save-loop-in-array.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/c-save-loop-in-array.svg" class="img-fluid figure-img" alt="A for loop with index i from 0 to 4 writes i times i into results[i], filling five boxes with 0, 1, 4, 9 and 16."></p>
+<figcaption>A for loop writes i * i into results[i] on each pass, filling the array one slot at a time.</figcaption>
+</figure>
+</div>
+<p>To save loop results in an array in C, we declare an array with a fixed size <strong>before</strong> the loop, then use the loop’s index variable to assign a value to each slot.</p>
+<p>Unlike Python, a C array cannot grow with something like <code>append()</code>. We manage the indexing ourselves.</p>
+<section id="a-fixed-size-array" class="level3">
+<h3 class="anchored" data-anchor-id="a-fixed-size-array">A fixed-size array</h3>
+<p>This program squares the numbers 0 to 4 inside a loop and stores each result:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdio.h&gt;</span></span>
+<span id="cb1-2"></span>
+<span id="cb1-3"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#define SIZE </span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">   </span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// fixed size of the array</span></span>
+<span id="cb1-4"></span>
+<span id="cb1-5"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-6">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 1. Declare the array with a predefined size</span></span>
+<span id="cb1-7">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> results<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>SIZE<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">];</span></span>
+<span id="cb1-8"></span>
+<span id="cb1-9">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 2. Use a loop to populate the array</span></span>
+<span id="cb1-10">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> SIZE<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-11">        results<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// save the result at index i</span></span>
+<span id="cb1-12">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-13"></span>
+<span id="cb1-14">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 3. Print the saved elements to check</span></span>
+<span id="cb1-15">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Saved results:</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb1-16">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> SIZE<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-17">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"results[</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">] = </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> results<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]);</span></span>
+<span id="cb1-18">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-19"></span>
+<span id="cb1-20">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-21"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>Output (compiled with <code>gcc -Wall -Wextra</code>):</p>
+<pre><code>Saved results:
+results[0] = 0
+results[1] = 1
+results[2] = 4
+results[3] = 9
+results[4] = 16</code></pre>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Stay inside the array.</strong> Valid indices run from <code>0</code> to <code>SIZE - 1</code>, so the loop condition must be <code>i &lt; SIZE</code>, not <code>i &lt;= SIZE</code>. Writing outside the array is undefined behaviour: it may crash, or silently corrupt other variables.</p>
+</div>
+</div>
+</section>
+<section id="when-the-number-of-values-is-unknown" class="level3">
+<h3 class="anchored" data-anchor-id="when-the-number-of-values-is-unknown">When the number of values is unknown</h3>
+<p>If we do not know in advance how many times the loop will run (for example, reading numbers until the user types <code>0</code>), a fixed-size array does not work. We allocate memory with <code>malloc()</code> and enlarge it with <code>realloc()</code> when it fills up:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdio.h&gt;</span></span>
+<span id="cb3-2"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdlib.h&gt;</span></span>
+<span id="cb3-3"></span>
+<span id="cb3-4"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb3-5">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> capacity <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> count <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb3-6">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>data <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> malloc<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>capacity <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">sizeof</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>data<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb3-7">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>data <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> NULL<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb3-8"></span>
+<span id="cb3-9">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Enter numbers (0 to stop): "</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb3-10">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>scanf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span>x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;&amp;</span> x <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb3-11">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>count <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> capacity<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>          <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// full: double the space</span></span>
+<span id="cb3-12">            capacity <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb3-13">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>tmp <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> realloc<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>data<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> capacity <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">sizeof</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>data<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb3-14">            <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>tmp <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> NULL<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span> free<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>data<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb3-15">            data <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> tmp<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb3-16">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb3-17">        data<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>count<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span>                <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// save, then move to the next slot</span></span>
+<span id="cb3-18">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb3-19"></span>
+<span id="cb3-20">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Saved </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> values:"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> count<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb3-21">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> count<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">" </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> data<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]);</span></span>
+<span id="cb3-22">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb3-23"></span>
+<span id="cb3-24">    free<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>data<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb3-25">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb3-26"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>Entering <code>4 8 15 16 23 42 0</code> gives:</p>
+<pre><code>Enter numbers (0 to stop): Saved 6 values: 4 8 15 16 23 42</code></pre>
+<p>Three habits to notice:</p>
+<ul>
+<li><code>count</code> tracks how many slots are used, and doubles as the next index.</li>
+<li><code>realloc()</code> goes into a temporary pointer first, so we do not lose <code>data</code> if it fails.</li>
+<li><code>free()</code> returns the memory when we are done.</li>
+</ul>
+</section>
+<section id="summary" class="level3">
+<h3 class="anchored" data-anchor-id="summary">Summary</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Situation</th>
+<th>Approach</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Number of iterations known</td>
+<td>Fixed array, <code>array[i] = value;</code></td>
+</tr>
+<tr class="even">
+<td>Number of iterations unknown</td>
+<td><code>malloc()</code> + <code>realloc()</code>, track <code>count</code> and <code>capacity</code></td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+
+ ]]></description>
+  <category>C</category>
+  <category>Programming</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/c-save-loop-in-array.html</guid>
+  <pubDate>Tue, 06 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/c-save-loop-in-array.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
 <item>
   <title>5 while Loop Practice Problems in C (with Hints and Solutions)</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
@@ -1627,7 +2496,7 @@ font-style: inherit;">git</span> push</span></code></pre></div></div>
 <section id="start-your-own-the-minimum" class="level3">
 <h3 class="anchored" data-anchor-id="start-your-own-the-minimum">Start Your Own: The Minimum</h3>
 <ol type="1">
-<li><code>quarto create project blog</code> (or a website project with a <code>posts/</code> folder).</li>
+<li><code>quarto create project blog my-blog</code> (a website project with a <code>posts/</code> folder).</li>
 <li>Set <code>output-dir:</code> to a folder that is committed, and enable GitHub Pages for it.</li>
 <li>Give every post <code>title</code>, <code>date</code>, <code>categories</code>, <code>tags</code>.</li>
 <li>Add a <code>listing:</code> to <code>index.qmd</code>.</li>
@@ -7712,274 +8581,6 @@ font-style: inherit;">"</span>)</span></code></pre></div></div>
   <guid>https://www.statmania.info/blog/posts/linux-hung-solution.html</guid>
   <pubDate>Tue, 08 Sep 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/linux-hung.jpeg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>The Ultimate Guide to Making Fish Your Default Shell</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/make-fish-default-shell.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<p>By default, most Linux distributions come with Bash or Zsh. <a href="https://fishshell.com/">Fish</a> (the <strong>F</strong>riendly <strong>I</strong>nteractive <strong>SH</strong>ell) is a popular alternative with sane defaults, autosuggestions, and syntax highlighting out of the box. Because different distributions handle terminal environments and user profiles differently, there are two ways to switch: the <strong>System-Wide Method</strong> (works for most distros like Ubuntu, Fedora, Arch) and the <strong>Terminal Profile Override</strong> (required for Pop!_OS and some GNOME-based setups).</p>
-<p><img src="https://www.statmania.info/blog/img/fish-shell.jpeg" class="img-fluid"></p>
-<section id="step-1-install-fish" class="level2">
-<h2 class="anchored" data-anchor-id="step-1-install-fish">Step 1: Install Fish</h2>
-<p>Before changing your default shell, ensure Fish is installed for your distribution.</p>
-<ul>
-<li>Ubuntu / Debian / Pop!_OS:</li>
-</ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sudo</span> apt update <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">&amp;&amp;</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sudo</span> apt install fish <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-y</span></span></code></pre></div></div>
-<ul>
-<li>Fedora / RHEL:</li>
-</ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sudo</span> dnf install fish <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-y</span></span></code></pre></div></div>
-<ul>
-<li>Arch Linux / Manjaro:</li>
-</ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sudo</span> pacman <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-S</span> fish <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--noconfirm</span></span></code></pre></div></div>
-<p>See the official <a href="https://fishshell.com/docs/current/index.html#installation">Fish installation docs</a> for other package managers and platforms.</p>
-</section>
-<section id="method-1-the-standard-system-wide-method" class="level2">
-<h2 class="anchored" data-anchor-id="method-1-the-standard-system-wide-method">Method 1: The Standard System-Wide Method</h2>
-<p>Best for: Ubuntu, Fedora, Arch Linux, Debian, openSUSE, and SSH/remote servers.</p>
-<p>This method uses <a href="https://man7.org/linux/man-pages/man1/chsh.1.html"><code>chsh</code></a> to tell the operating system itself to assign Fish to your user account across all environments, including virtual consoles and SSH.</p>
-<section id="find-fishs-path-and-change-your-shell" class="level3">
-<h3 class="anchored" data-anchor-id="find-fishs-path-and-change-your-shell">1. Find Fish’s path and change your shell</h3>
-<p>If you are currently running Bash or Zsh, use this command:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">chsh</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-s</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">which</span> fish<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div></div>
-<p>If you are already inside a temporary Fish session, the syntax changes slightly, because Fish uses plain parentheses <code>()</code> for command substitution instead of <code>$()</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">chsh</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-s</span> <span class="er" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">which</span> fish<span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">)</span></span></code></pre></div></div>
-<p>You will be prompted to enter your account password.</p>
-</section>
-<section id="apply-the-changes" class="level3">
-<h3 class="anchored" data-anchor-id="apply-the-changes">2. Apply the changes</h3>
-<p>The operating system caches your shell configuration when you log in. To apply the change, log out of your desktop environment (or reboot), then log back in.</p>
-</section>
-</section>
-<section id="method-2-the-terminal-profile-override" class="level2">
-<h2 class="anchored" data-anchor-id="method-2-the-terminal-profile-override">Method 2: The Terminal Profile Override</h2>
-<p>Required for: Pop!_OS, or any distro using <a href="https://help.gnome.org/users/gnome-terminal/stable/">GNOME Terminal</a> where Method 1 fails.</p>
-<p>Distributions like Pop!_OS use a heavily customized GNOME Terminal setup that often forces Bash to load, overriding the system-level <code>chsh</code> command. The fix is to force the terminal app itself to launch Fish.</p>
-<section id="step-by-step-instructions" class="level3">
-<h3 class="anchored" data-anchor-id="step-by-step-instructions">Step-by-step instructions</h3>
-<ol type="1">
-<li>Open your terminal application.</li>
-<li>Click the menu icon (three horizontal lines) in the top-right corner.</li>
-<li>Select <strong>Preferences</strong>.</li>
-<li>In the left sidebar under <strong>Profiles</strong>, click your active profile (usually named “Unnamed” or “Default”).</li>
-<li>Open the <strong>Command</strong> tab.</li>
-<li>Check the box for <strong>“Run a custom command instead of my shell”</strong>.</li>
-<li>In the <strong>Custom command</strong> box, type exactly: <code>fish</code></li>
-<li>Close the Preferences window.</li>
-<li>Completely close all terminal windows and open a new one.</li>
-</ol>
-</section>
-</section>
-<section id="step-3-verify-your-shell" class="level2">
-<h2 class="anchored" data-anchor-id="step-3-verify-your-shell">Step 3: Verify Your Shell</h2>
-<p>To confirm you’re running inside the Fish environment, open a new terminal window and run:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$0</span></span></code></pre></div></div>
-<ul>
-<li>If it outputs <code>fish</code>, the change was successful.</li>
-<li>If it still outputs <code>bash</code>, double-check that your terminal application’s profile settings are properly saved (Method 2).</li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>CLI</category>
-  <category>Linux</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/make-fish-default-shell.html</guid>
-  <pubDate>Sun, 06 Sep 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/fish-shell.jpeg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Reading Papers in the AI Age: A Hybrid Workflow</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/reading-paper-ai-age.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<p>In the AI age, the strategy isn’t “either/or”—it’s a <strong>strategic hybrid workflow</strong>. Here is the breakdown of why, along with a practical system for how to read in the AI age.</p>
-<p><img src="https://www.statmania.info/blog/img/journal.jpeg" class="img-fluid"></p>
-<hr>
-<section id="the-case-for-ai-summaries-notebooklm-chatgpt-etc." class="level3">
-<h3 class="anchored" data-anchor-id="the-case-for-ai-summaries-notebooklm-chatgpt-etc.">1. The Case for AI Summaries (<a href="https://notebooklm.google/">NotebookLM</a>, <a href="https://chatgpt.com/">ChatGPT</a>, etc.)</h3>
-<p><strong>AI shines at the “80% level”</strong>: triage, context, and cross-pollination.</p>
-<ul>
-<li><strong>Massive Triage</strong>: You cannot read 50 papers a week. AI can ingest an entire corpus, map out debates, and tell you <em>which</em> 2 or 3 papers are actually worth your time.</li>
-<li><strong>Context Switching</strong>: If you are moving between fields (e.g., from NLP to computational biology), AI breaks down the jargon so you can understand the high-level problem immediately.</li>
-<li><strong>Cross-Referencing</strong>: Tools like NotebookLM are amazing at connecting disparate ideas across multiple PDFs that you wouldn’t have linked mentally.</li>
-</ul>
-<hr>
-</section>
-<section id="the-case-for-reading-the-full-paper-human" class="level3">
-<h3 class="anchored" data-anchor-id="the-case-for-reading-the-full-paper-human">2. The Case for Reading the Full Paper (Human)</h3>
-<p><strong>The AI summary is a “map”—but you need to walk the terrain.</strong></p>
-<ul>
-<li><strong>The Methodology Trap</strong>: LLMs are notoriously bad at catching flawed experimental design. They summarize <em>what</em> the authors did, but they rarely flag <em>why</em> the methodology is wrong (e.g., data leakage, improper baselines). Only you, reading the methodology, will catch that the “state-of-the-art” result is actually cheating.</li>
-<li><strong>The “Why” is lost</strong>: Summaries tell you the <em>finding</em> (e.g., “Model X achieves 95% accuracy”). They often omit the <em>assumptions</em> (e.g., “This only works if your data is perfectly balanced”).</li>
-<li><strong>False Hallucinations</strong>: NotebookLM is heavily grounded in your uploaded text, but it still invents connections. If you don’t read the original, you will cite false claims that don’t actually exist in the paper.</li>
-<li><strong>Mathematical Nuance</strong>: AI struggles with complex equations. If you skim over a loss function, you might miss the core architectural insight that makes the paper special.</li>
-</ul>
-<hr>
-</section>
-<section id="the-optimal-hybrid-workflow-the-3-pass-method" class="level3">
-<h3 class="anchored" data-anchor-id="the-optimal-hybrid-workflow-the-3-pass-method">3. The Optimal Hybrid Workflow (The “3-Pass” Method)</h3>
-<p>Adopt this pipeline to save time <em>and</em> retain depth:</p>
-<ul>
-<li><strong>Pass 1 (AI Screening)</strong>:
-<ul>
-<li>Feed the paper to NotebookLM/Claude.</li>
-<li>Ask: <em>“What is the core problem, the proposed solution, and the key result in layman’s terms?”</em></li>
-<li>Ask: <em>“What are the main limitations mentioned?”</em></li>
-<li><strong>Decision</strong>: If it’s not relevant, <strong>delete it</strong>. If it is relevant, proceed.</li>
-</ul></li>
-<li><strong>Pass 2 (Human Abstract + Figures)</strong>:
-<ul>
-<li>Open the PDF and read the <strong>Abstract</strong>, <strong>Conclusion</strong>, and look at <strong>every figure/table</strong>.</li>
-<li>Do not read the body yet. Ask yourself: <em>“Does the data actually support their claim visually?”</em> If the charts look shaky, you can stop here.</li>
-</ul></li>
-<li><strong>Pass 3 (Human Deep Dive)</strong>:
-<ul>
-<li><em>Only</em> read the <strong>Methodology</strong> and <strong>Results</strong> sections for the 2–3 papers that passed Pass 2.</li>
-<li><strong>Crucial step</strong>: Use AI <em>during</em> this deep read. When you hit a confusing equation, copy it into ChatGPT and say: <em>“Explain this equation step-by-step and translate it into plain English.”</em> (This gives you the depth without getting bogged down by notation).</li>
-</ul></li>
-</ul>
-<hr>
-</section>
-<section id="the-golden-rule-of-ai-reading" class="level3">
-<h3 class="anchored" data-anchor-id="the-golden-rule-of-ai-reading">4. The Golden Rule of AI Reading</h3>
-<blockquote class="blockquote">
-<p><strong>“AI for the forest; Human for the trees.”</strong></p>
-</blockquote>
-<p>Use AI to understand the <strong>story</strong> of the paper (the narrative). Keep the human brain strictly for the <strong>skepticism</strong> and <strong>logic</strong>.</p>
-<p><strong>Warning</strong>: If you only read summaries, you will eventually absorb a “hallucinated consensus” that doesn’t exist. Research is messy; papers often disagree. AI smooths over these disagreements to give you one neat answer. Reading the original lets you hear the actual argument.</p>
-<p><strong>Conclusion</strong>: Embrace NotebookLM as your <strong>Research Assistant</strong>, not your <strong>Research Replacement</strong>. Use it to generate questions about the paper, not to replace the paper itself.</p>
-
-
-</section>
-
- ]]></description>
-  <category>research</category>
-  <category>reading</category>
-  <guid>https://www.statmania.info/blog/posts/reading-paper-ai-age.html</guid>
-  <pubDate>Fri, 04 Sep 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/journal.jpeg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>What’s New in qdraw: Shapes, Pages, and a Smarter Eraser</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/qdraw-new-features.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<p><a href="https://www.thinkermahmud.com/qdraw">qdraw</a> is a small Quarto extension that adds a drawing layer on top of any <code>revealjs</code> presentation — handy for circling a formula, sketching a diagram, or annotating a plot live while teaching. It’s the annotation tool behind the <a href="https://www.statmania.info/lectures.html">Stat Mania lecture slides</a>. The extension recently jumped from v1.0.0 to <strong>v1.5.2</strong>, and it’s a much more capable tool now. Here’s what’s new.</p>
-<section id="shapes-not-just-freehand-lines" class="level2">
-<h2 class="anchored" data-anchor-id="shapes-not-just-freehand-lines">Shapes, not just freehand lines</h2>
-<p>Next to the pen tool there’s now a <strong>shape tool</strong> with its own popover:</p>
-<ul>
-<li>Line, rectangle, triangle, ellipse, and circle</li>
-<li>A fill toggle, for solid shapes instead of just outlines</li>
-<li>Circle drags from the center outward (so the radius stays equal in every direction), while the other shapes drag corner-to-corner</li>
-</ul>
-<p>The shape preview redraws live as you drag, so you see exactly what you’ll get before releasing.</p>
-</section>
-<section id="multi-page-canvas" class="level2">
-<h2 class="anchored" data-anchor-id="multi-page-canvas">Multi-page canvas</h2>
-<p>Annotations used to live on a single canvas for the whole deck. Now there’s a <strong>Pages</strong> tool that lets you add new blank pages and flip between them with previous/next buttons — useful if you want a fresh canvas for each slide, or a scratch page, without erasing earlier work. Each page keeps its own undo history, so switching pages doesn’t interfere with undoing on another.</p>
-</section>
-<section id="a-proper-eraser-menu" class="level2">
-<h2 class="anchored" data-anchor-id="a-proper-eraser-menu">A proper eraser menu</h2>
-<p>The eraser used to just be “on” or “off.” It now opens a small menu with three modes:</p>
-<ul>
-<li><strong>Eraser</strong> — the classic drag-to-erase, with an adjustable brush size</li>
-<li><strong>Select area to erase</strong> — drag a rectangle and release to erase everything inside it</li>
-<li><strong>Clear all</strong> — wipe the current page’s drawing in one click</li>
-</ul>
-</section>
-<section id="background-color" class="level2">
-<h2 class="anchored" data-anchor-id="background-color">Background color</h2>
-<p>A <strong>Canvas Background</strong> tool lets you tint the drawing surface with a color picker, and reset it back to transparent with one click — useful for highlighting a region behind your annotations.</p>
-</section>
-<section id="toolbar-that-moves-out-of-your-way" class="level2">
-<h2 class="anchored" data-anchor-id="toolbar-that-moves-out-of-your-way">Toolbar that moves out of your way</h2>
-<p>If the toolbar is covering something you need to point at, click the move icon to flip it to the opposite edge of the screen.</p>
-</section>
-<section id="under-the-hood-more-accurate-on-touch" class="level2">
-<h2 class="anchored" data-anchor-id="under-the-hood-more-accurate-on-touch">Under the hood: more accurate on touch</h2>
-<p>Pointer coordinates are now mapped through the canvas’s actual rendered size instead of assumed to match the window size. On mobile, where the browser’s address bar can show or hide and shift the canvas’s rendered box, this fixes drawings landing away from where you actually touched.</p>
-</section>
-<section id="where-to-find-it" class="level2">
-<h2 class="anchored" data-anchor-id="where-to-find-it">Where to find it</h2>
-<p>qdraw ships as a standard Quarto extension (<code>_extensions/mahmudstat/qdraw</code>) and is enabled on this site’s lecture decks via <code>revealjs-plugins: [qdraw]</code> in <code>slide/_quarto.yml</code>. Open any <a href="https://www.statmania.info/lectures.html">lecture slide</a>, click the pen icon in the corner, and try it out — the <strong>About</strong> button in the toolbar links back to the <a href="https://www.thinkermahmud.com/qdraw">qdraw homepage</a> for the full docs.</p>
-
-
-</section>
-
- ]]></description>
-  <category>Tools</category>
-  <category>quarto</category>
-  <guid>https://www.statmania.info/blog/posts/qdraw-new-features.html</guid>
-  <pubDate>Fri, 28 Aug 2026 18:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
