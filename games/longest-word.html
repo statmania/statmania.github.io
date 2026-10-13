@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stat Mania - Longest Word</title>
+    <meta name="description" content="Words flash randomly inside a box. Click the longest one before the timer runs out.">
+    <link rel="canonical" href="https://www.statmania.info/games/longest-word.html">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.statmania.info/games/longest-word.html">
+    <meta property="og:site_name" content="Stat Mania">
+    <meta property="og:title" content="Stat Mania - Longest Word">
+    <meta property="og:description" content="Words flash randomly inside a box. Click the longest one before the timer runs out.">
+    <meta property="og:image" content="https://www.statmania.info/assets/images/logo.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Stat Mania - Longest Word">
+    <meta name="twitter:description" content="Words flash randomly inside a box. Click the longest one before the timer runs out.">
+    <meta name="twitter:image" content="https://www.statmania.info/assets/images/logo.png">
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Google Fonts - Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/dark-theme.css">
+<style>
+  :root {
+    --card: rgba(255,255,255,0.045); --ink: #e8ecf7; --muted: #9aa4c2;
+    --line: rgba(255,255,255,0.14); --accent: #00e5ff; --accent-dark: #0e7490;
+    --good: #4ade80; --bad: #ff6b6b;
+  }
+  body { font-family: 'Inter', sans-serif; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #0a0f1e; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb { background: #3a4a6b; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: #54688f; }
+
+  .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+             justify-content: space-between; margin-bottom: 20px; }
+  .toolbar-left { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .mute-btn { background: rgba(255,255,255,0.06) !important; color: var(--ink) !important; box-shadow: none !important;
+           border: 1px solid rgba(255,255,255,0.18) !important; padding: 8px 11px !important; }
+  .start-btn { display: inline-flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.12em;
+           background: linear-gradient(90deg, #a855f7, #ff2fb4) !important; color: #fff !important;
+           box-shadow: 0 0 18px rgba(168,85,247,0.55), inset 0 0 0 1px rgba(255,255,255,0.35) !important; }
+  .start-btn:hover { box-shadow: 0 0 30px rgba(255,47,180,0.7), inset 0 0 0 1px rgba(255,255,255,0.5) !important; }
+  .toolbar-right { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .select-group { display: flex; flex-direction: column; gap: 2px; cursor: pointer; }
+  .select-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+                  letter-spacing: 0.06em; color: var(--muted); padding-left: 2px; }
+  select { background: rgba(255,255,255,0.04); color: var(--ink);
+           border: 1px solid rgba(255,255,255,0.18); border-radius: 999px;
+           padding: 6px 14px; font-size: 0.85rem; font-weight: 600;
+           font-family: inherit; cursor: pointer; }
+  select:hover { border-color: var(--accent); }
+  select option { background: #0a0f1e; color: var(--ink); }
+  button.action { border: none; background: linear-gradient(90deg, var(--accent), #38bdf8);
+           color: #04101c; padding: 8px 14px; border-radius: 999px; font-size: 0.85rem;
+           font-weight: 700; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+           font-family: inherit; box-shadow: 0 0 20px rgba(0,229,255,0.3); }
+  button.action:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(0,229,255,0.5); }
+  button.action:active { transform: scale(0.97); }
+  button.action:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .scoreboard { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; align-content: start; }
+  .info-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 24px; }
+  .info-grid .rules-panel { margin-top: 0; }
+  @media (max-width: 700px) { .info-grid { grid-template-columns: minmax(0, 1fr); } }
+  .score-tile { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 14px; padding: 14px 10px; text-align: center; }
+  .score-tile .label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em;
+                        color: var(--muted); margin-bottom: 4px; }
+  .score-tile .num { font-size: clamp(1.15rem, 4.5vw, 1.5rem); font-weight: 800; color: var(--ink); font-family: 'Courier New', monospace; }
+  .score-tile.score .num { color: var(--good); }
+  .score-tile.timer .num { color: var(--accent); }
+  .score-tile.timer.low .num { color: var(--bad); }
+  .score-tile.timer.up .num { color: var(--bad); font-size: clamp(0.95rem, 3.6vw, 1.2rem); text-shadow: 0 0 12px rgba(255,107,107,0.7); }
+  .score-tile.index { grid-column: 1 / -1; }
+  .score-tile.index .num { color: #a855f7; }
+  .score-tile .sub { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+  @media (max-width: 560px) {
+    .scoreboard { gap: 10px; }
+    .score-tile { padding: 10px 6px; }
+    .toolbar { flex-wrap: nowrap; gap: 8px; }
+    .toolbar-left { flex-wrap: nowrap; gap: 8px; align-items: flex-end; }
+    .toolbar button.action { padding: 8px 10px; font-size: 0.78rem; white-space: nowrap; }
+    select { padding: 6px 8px; font-size: 0.8rem; }
+    .sm-card.game-card { padding: 16px !important; }
+    .board-wrap { padding: 8px; }
+    .rules-panel { padding: 16px; }
+  }
+
+  .game-layout { display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr); gap: 24px; align-items: start; }
+  @media (max-width: 860px) { .game-layout { grid-template-columns: minmax(0, 1fr); } }
+
+  .board-wrap { min-width: 0; background: var(--card); border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 14px; padding: 16px; display: flex; justify-content: center; }
+
+
+  #end-banner { display: none; flex-wrap: wrap; gap: 12px; justify-content: center;
+                align-items: stretch; margin: 0 0 20px; animation: pop 0.4s ease; }
+  @keyframes pop { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  .win-box { padding: 14px 24px; border-radius: 12px; font-weight: 700; font-size: 1.05rem;
+             display: flex; align-items: center; color: white;
+             box-shadow: 0 6px 20px rgba(34,197,94,0.35); }
+  .win-box.message { background: linear-gradient(135deg, #22c55e, #16a34a); }
+  .win-box.info { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
+                   color: var(--ink); box-shadow: none; }
+
+  .lb-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .lb-table th { text-align: right; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em;
+                 color: var(--muted); font-weight: 700; padding: 4px 6px; }
+  .lb-table td { text-align: right; padding: 6px; color: var(--ink); border-top: 1px solid rgba(255,255,255,0.06);
+                 font-family: 'Courier New', monospace; }
+  .lb-table th:first-child, .lb-table td:first-child { text-align: left; }
+  .lb-table tr.new td { color: var(--good); font-weight: 700; background: rgba(74,222,128,0.08); }
+  .lb-empty { color: var(--muted); font-size: 0.85rem; }
+  .lb-clear { margin-top: 10px; background: none; border: none; color: var(--muted); font-size: 0.75rem;
+              text-decoration: underline; cursor: pointer; font-family: inherit; }
+  .rules-panel { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
+                 border-radius: 14px; padding: 20px 22px; margin-top: 24px; }
+  .rules-panel h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.06em;
+                     color: var(--accent); margin: 0 0 14px; }
+  .rules-panel ul { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 10px; }
+  .rules-panel li { font-size: 1rem; line-height: 1.5; color: var(--ink); }
+  .rules-panel em { color: var(--accent); font-style: normal; font-weight: 700; }
+
+  .board-col { width: 480px; max-width: 100%; min-width: 0; }
+  .timer-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .timer-bar { flex: 1; height: 14px; border-radius: 999px; background: rgba(255,255,255,0.08);
+               overflow: hidden; border: 1px solid rgba(255,255,255,0.12); }
+  .timer-fill { height: 100%; width: 100%; background: linear-gradient(90deg, #00e5ff, #a855f7); transform-origin: left; }
+  .timer-fill.low { background: linear-gradient(90deg, #ff2fb4, var(--bad)); }
+
+  #box { position: relative; width: 100%; aspect-ratio: 480 / 420; border-radius: 10px;
+         background: radial-gradient(circle at 50% 45%, rgba(168,85,247,0.16), transparent 60%),
+                      radial-gradient(circle at 15% 85%, rgba(0,229,255,0.12), transparent 45%),
+                      radial-gradient(circle at 88% 12%, rgba(255,47,180,0.10), transparent 40%), #05070d;
+         border: 1px solid rgba(255,255,255,0.1); overflow: hidden; margin: 0 auto; }
+  .ghost { position: absolute; transform: translate(-50%, -50%); pointer-events: none; user-select: none;
+           font: 800 1.05rem 'Courier New', monospace; color: rgba(0,229,255,0.16); text-transform: uppercase;
+           padding: 6px 16px; border-radius: 999px; border: 2px solid rgba(0,229,255,0.1);
+           display: flex; align-items: center; justify-content: center; animation: drift 6s ease-in-out infinite alternate; }
+  @keyframes drift { to { transform: translate(-50%, -62%); } }
+  @media (prefers-reduced-motion: reduce) { .ghost { animation: none; } }
+  .play-icon { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px;
+               border-radius: 50%; background: linear-gradient(135deg, #a855f7, #ff2fb4); color: #fff; font-size: 0.6rem;
+               vertical-align: middle; margin: 0 4px; padding-left: 2px; }
+  .n { position: absolute; transform: translate(-50%, -50%) rotate(var(--a, 0deg)); padding: 0; margin: 0;
+       background: none; border: none; display: flex; gap: 3px; cursor: pointer;
+       animation: popin 0.18s ease-out; }
+  .n .l { display: flex; align-items: center; justify-content: center; border-radius: 6px;
+          border: 2px solid rgba(0,229,255,0.6); background: rgba(255,255,255,0.07);
+          color: var(--ink); font: 800 14px 'Courier New', monospace; text-transform: uppercase;
+          box-shadow: 0 0 10px rgba(0,229,255,0.2); transition: background 0.15s, border-color 0.15s; }
+  .n:hover .l { border-color: var(--accent); background: rgba(0,229,255,0.16); }
+  @keyframes popin { from { transform: translate(-50%, -50%) rotate(var(--a, 0deg)) scale(0.4); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .n { animation: none; } }
+
+  .overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+             padding: 12px; background: rgba(5,7,13,0.55); z-index: 5; cursor: pointer; }
+  #paused { background: #05070d; }
+  .overlay .panel { background: rgba(5,9,22,0.82); border: 2px solid transparent; border-radius: 18px;
+             background-image: linear-gradient(rgba(5,9,22,0.92), rgba(5,9,22,0.92)), linear-gradient(135deg, #00e5ff, #a855f7, #ff2fb4);
+             background-origin: border-box; background-clip: padding-box, border-box;
+             box-shadow: 0 0 18px rgba(168,85,247,0.55); padding: 20px 32px; text-align: center; max-width: 100%; }
+  .overlay .panel h2 { margin: 0 0 8px; font-size: 1.9rem; font-weight: 900; letter-spacing: 0.15em; padding-left: 0.15em;
+             background: linear-gradient(90deg, #00e5ff, #ff2fb4); -webkit-background-clip: text; background-clip: text;
+             color: transparent; filter: drop-shadow(0 0 8px rgba(0,229,255,0.6)); }
+  .overlay .panel p { margin: 0; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #c5cee8; }
+  .overlay.off { display: none; }
+  .msg { text-align: center; min-height: 1.6em; margin-top: 12px; font-weight: 700; font-size: 0.95rem; }
+  .msg.good { color: var(--good); } .msg.bad { color: var(--bad); }
+  .score-tile.miss .num { color: #ff2fb4; }
+  .score-tile.index .num { color: #f59e0b; }
+</style>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BEELJ2ZRED"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true });
+</script>
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+    <!-- Header/Navbar -->
+    <header class="bg-white shadow-sm py-4">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center space-x-3 no-underline hover:opacity-80 transition-opacity">
+                <img src="../img/statmania_logo.svg" alt="Stat Mania Logo" class="w-10 h-10 rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/40x40/4f46e5/ffffff?text=Logo';">
+                <div>
+                    <div class="text-2xl font-bold text-indigo-600">Stat Mania</div>
+                    <p class="text-sm text-slate-500">Making sense of statistics</p>
+                </div>
+            </a>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="../index.html" class="text-slate-600 hover:text-indigo-600 transition duration-300">Home</a></li>
+                    <li><a href="index.html" class="text-slate-600 hover:text-indigo-600 transition duration-300">All Games</a></li>
+                    <li><a href="#cta" class="text-slate-600 hover:text-indigo-600 transition duration-300">Contact</a></li>
+                </ul>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="../index.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Home</a>
+            <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">All Games</a>
+            <a href="#cta" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Contact</a>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <canvas class="sm-canvas" aria-hidden="true"></canvas>
+        <section class="sm-hero-wrap">
+            <div class="sm-hero-inner">
+                <span class="sm-eyebrow">Stat Mania &middot; Games</span>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-4 flex items-center justify-center gap-4 sm-gradient-text">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-12 h-12 sm-hero-icon">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h10M4 18h13" />
+                    </svg>
+                    Longest Word
+                </h1>
+                <p class="text-lg sm:text-xl sm-subtitle-sm">Words flash in the box &mdash; spot the longest one before the timer runs out</p>
+            </div>
+        </section>
+
+        <section class="py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
+            <div class="container mx-auto max-w-4xl">
+                <div class="sm-card game-card p-8">
+                    <div class="toolbar">
+                        <div class="toolbar-left">
+                            <button id="start-btn" class="action start-btn" aria-label="Start game">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
+                                <span>Start</span>
+                            </button>
+                            <button id="new-game-btn" class="action">✨ New Game</button>
+                        </div>
+                    </div>
+
+                    <div class="game-layout">
+                        <div class="board-wrap">
+                            <div class="board-col">
+                                <div class="timer-wrap"><div class="timer-bar"><div class="timer-fill" id="fill"></div></div></div>
+                                <div id="box">
+                                    <div class="overlay" id="intro">
+                                        <div class="panel"><h2>READY</h2><p><span class="play-icon">&#9654;</span> Start Game</p></div>
+                                    </div>
+                                    <div class="overlay off" id="paused">
+                                        <div class="panel"><h2>PAUSED</h2><p>Click or press space to resume</p></div>
+                                    </div>
+                                    <div class="overlay off" id="over">
+                                        <div class="panel"><h2>GAME OVER</h2><p>Click to play again</p></div>
+                                    </div>
+                                </div>
+                                <div class="msg" id="msg"></div>
+                            </div>
+                        </div>
+
+                        <div class="scoreboard">
+                            <div class="score-tile timer" id="timer-tile">
+                                <div class="label">Time Left</div>
+                                <div class="num" id="time">&ndash;</div>
+                            </div>
+                            <div class="score-tile miss">
+                                <div class="label">Mistakes</div>
+                                <div class="num" id="mistakes">0 / 5</div>
+                            </div>
+                            <div class="score-tile">
+                                <div class="label">Round</div>
+                                <div class="num" id="round">0</div>
+                            </div>
+                            <div class="score-tile">
+                                <div class="label">Correct</div>
+                                <div class="num" id="correct">0</div>
+                            </div>
+                            <div class="score-tile">
+                                <div class="label">Accuracy</div>
+                                <div class="num" id="accuracy">&ndash;</div>
+                            </div>
+                            <div class="score-tile score">
+                                <div class="label">Score</div>
+                                <div class="num" id="score">0</div>
+                            </div>
+                            <div class="score-tile index">
+                                <div class="label">Best Score</div>
+                                <div class="num" id="best">0</div>
+                                <div class="sub">top of your leaderboard</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-grid">
+                        <div class="rules-panel" style="margin-top: 0;">
+                            <h3>Scoring &amp; Levels</h3>
+                            <ul>
+                                <li><em>Correct pick:</em> 10 points + 5 per second left on the clock.</li>
+                                <li><em>Wrong pick or timeout:</em> one mistake, no points.</li>
+                                <li><em>Rounds 1&ndash;3:</em> the longest word beats the rest by 3+ letters; <em>4&ndash;7:</em> by 2+; <em>8+:</em> by just 1.</li>
+                                <li>Words get longer, more of them appear (up to 8) and the time shrinks (down to 3.5s).</li>
+                            </ul>
+                        </div>
+                        <div class="rules-panel">
+                            <h3>Top 10</h3>
+                            <div id="leaderboard"></div>
+                            <button class="lb-clear" id="lb-clear" type="button">Clear this board</button>
+                        </div>
+                    </div>
+
+                    <div class="rules-panel">
+                        <h3>How to Play</h3>
+                        <ul>
+                            <li>Each round, several words appear at random spots inside the box and stay until the visible timer runs out.</li>
+                            <li>Click the <em>longest</em> word (most letters). The next round starts the moment you pick, and the result of the last round shows under the box.</li>
+                            <li>A wrong pick, or letting the timer reach zero, is a <em>mistake</em>. Make <em>5 mistakes</em> and the game ends.</li>
+                            <li>Need a break? Press <em>Pause</em> (or the space bar) &mdash; the words hide and the timer freezes. The game also pauses if you switch tabs.</li>
+                            <li>Your top 10 scores are saved in this browser.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action Section -->
+        <section id="cta" class="sm-section-dark py-16 px-4 sm:px-6 lg:px-8 text-center">
+            <div class="container mx-auto max-w-3xl">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-6" style="color:#fff">Explore Other Games</h2>
+                <p class="text-lg sm:text-xl mb-8 sm-subtitle-sm">Check out all available games</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="index.html" class="sm-btn sm-btn-primary">All Games</a>
+                    <a href="#" class="sm-btn sm-btn-ghost">Back to Top</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-white py-8 px-4 sm:px-6 lg:px-8 text-center mt-auto" style="border-top:1px solid rgba(255,255,255,0.08)">
+        <div class="container mx-auto">
+            <p class="mb-4">&copy; <span id="copyright-year">2026</span> Stat Mania. All rights reserved.</p>
+            <div class="flex justify-center space-x-6">
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Privacy Policy</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Terms of Service</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Sitemap</a>
+            </div>
+        </div>
+    </footer>
+
+        <script>document.getElementById("copyright-year").textContent = new Date().getFullYear();</script>
+
+    <script>
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+    </script>
+    <script src="../starfield.js"></script>
+
+<script>
+(function () {
+  var MAX_MISTAKES = 5, LB_SIZE = 10, LB_KEY = 'longestWord.top10';
+  var box = document.getElementById('box'), fill = document.getElementById('fill'),
+      timeEl = document.getElementById('time'), timerTile = document.getElementById('timer-tile'),
+      msg = document.getElementById('msg'), startBtn = document.getElementById('start-btn'),
+      intro = document.getElementById('intro'), over = document.getElementById('over'),
+      pausedEl = document.getElementById('paused'), lbEl = document.getElementById('leaderboard');
+  var el = {}; ['round','score','best','mistakes','correct','accuracy'].forEach(function (k) { el[k] = document.getElementById(k); });
+
+  var round = 0, score = 0, mistakes = 0, correct = 0, duration, endAt, remaining, raf,
+      active = false, paused = false, playing = false, buttons = [];
+
+  function rnd(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+  function clearNums() { Array.prototype.slice.call(box.querySelectorAll('.n')).forEach(function (n) { n.remove(); }); }
+  function setMsg(t, c) { msg.textContent = t; msg.className = 'msg ' + (c || ''); }
+  var WORDS = {"3":"tot cad bar gad fad roe ani fro our zen imp yea rap ran lid tat his hag zip ego lee yet air meh kin say ply owe ism tee ohm eye out rye ken oil nag pat hew gnu gap rho fan cop ice ops law jar guy ten cod egg soy gin ado era sir inn dub won tor ivy maw got god fez tun amp meg tux art sit mix now ski end yon bin odd yup hum yam lib nth shy tip sup doc fee asp rim lop mew has nut fry mum awl zit sag fax rut gig yaw hod sow sat dot ant ham tab sec oar aft etc lay pup viz rag hug pox act hep all lea sum aha for err elm eel gab bud log emo jut pap rot ape tog sty eve ebb yip hay gut keg ass ere oaf too bug you any pot bob arm hid gym yum own ode cat coy sad mil dim eke mar adz fun app zap pet wot dab use cum son day fix via boa max min don cud apt pry vol vow rod pie non fen fat sim aye was jab ref big kit dam ilk few and cam rue men nix wow auk wed moo oak poi nun rid sap her urn get wok dug mpg wit pee pit duh toy ill eta pub dew alt sox mod she lam hue die peg arc gag lap sky bed wry key mph woo rev tho yap tea jot jib man led bur yew pep the ump pug aid ink lei sue sis gun ore hey tap put ugh rug mow fed dog icy eon raw dud let dad mop off yep jag zoo ago ail brr wiz joy top fit paw rum tow pod mud boy cis can pen try him gee ban fer hah col hoe wig gal wax owl sax orb pol row map pad cup fey cub hit sic ova den sot pay fir xor fig lob new dun hob elk mug ale sip tad nub cue dig pwn doe web low nor med tub ifs job jaw did fly sop fop irk duo nit bat met erg oho ray jog rob buy wet jam wen tax ire cap nil pal ear one fie orc pop bus bah ewe hot hog hip vex tag thy hoc pip lit fin due tug bye wee pin pun awe alb lox foo bet jet toe lad ace bib are vat fib bit wan hat cut ate cox ask sol may yen bid gay gem spy spa kid pig ton pea hex ark sub nab mob lye ion rep nib way far","4":"epic morn loam agar club bill clod futz wiki hobo reel lice shed boot sake each hoed meat seem perk boil told soil cusp shag suet drab line upon slim look rest limb trot trio tern evil helm rasp darn ovum snit stat oxen cede peso shim quad spay limy eddy went oleo wind foxy roar coma cage coin scat goad drug scum wale warn yowl spin node wing yell tape four arid pied xref duet pawl iced lurk berm asst lorn pave frog weir nape rook demo what cowl mite tony mono cove dray veld sign dive slay duct neon mica bony weld tent rise writ give beck horn unit babe peel bath runt itch bean else wane veto spun rush kale deft deer dear scud cloy dunk yoke wipe bait espy bran knee jibe maid myth peer load fawn jinn sway ache tsar thus nark feed rink stow ibis gang fled beat fuse nosy hang whit puff wont rehi fund gulp ball snub rave zebu clew ante dept trip area host camp vols hail been gout boom gunk warp dory cagy snug sung slob none turd team bear fool push puke twee waxy coup noun fain tint poem fume blog mitt dumb woof crop yups maul sumo plea haze deal side scad bide taut jeer wilt wist bile sham gram nuke foci pert tale doze food alto fake oval moor secy gold brat jilt ruse dawn coax cost avdp loft thug mall pend away sewn husk floe fora clam cyst bani koan smit yock wick hint fife corp orgy cite lane muff mule doom iamb race move lath this newt girt made papa opus cart yuks ides rely loge chad kiss coal twig brig amir lord pate whir fury nerd vamp flew even eyed bled lama awol drub dram wear vain wand path kick prow cosy stop mess tiff mesa kilt icky pine loci read axis rope grit firm tang frat gook duly knot goal gust brew nous grew calf goof urge stir poll daze loss join puss took mass hula oust busy mime rank spar typo bane grad purr fuze sane ruff fuel link doff well math afar shop yuck main seer glen hike reis cult dink gape kill cuss nice dado ekes incs wrap moth lacy brad core navy noel pose moll sped holy herd rock text hoof mote laze held coke clop weft swag dded gala gear pang slaw earl woke lope pour data hiss mink menu assn sill sale gate grep over flea bike gamy bole verb vein fort boon flue sock null airy fist flit pore tech levy pail wily moan tile used gash fart hour odds cube solo melt halt plop sync","5":"fests topic terse yuppy cower stile cause heist pushy error xenon shard snowy pekoe aloud quake folio gouge begat tromp daily trend mound given baize widow wiper merge vetch clunk pixel usage hings glide radio crank dilly glare gnawn moire mimic fever vulva dowry vague macro again vised crush inlay scaly amaze stilt panty gelid finny rares unset shaky fiend decry xrefs preen whose koala merit horny stock famed anise stoop relax polka furze pecan slick vodka wader sepal glaze alien hoard clank spike pence steer gnome angst cuing puree nasty smart renal prowl edify surge ounce conga chaos japan swirl teach adorn gleam diver borne blimp whirr toxin sound bulge burnt aloft talon wager lager brier orbit kinky ocean drink laity mince jimmy bride tilde logic axiom moose compo butte avian dirge fancy nadir rugby depth milky humus joint cumin forge arson howdy sharp sling rogue serve retch licit style yeahs shout livid curve boggy oxbow piked mixer feast spiny woody thank astir apply jinni dogma omega briar bowel croon crest strut rupee humid labia about ashen testy perch relay stony nacho shell beach gamey eking shush nutty reran stdio entry teeth bingo bares icing ioctl loath bract gusty chomp onion gross green sauna alpha grill busby uncut stoic bloat bosom plunk silly stood veeps ethic swift crash curvy ovary dhoti birch ruing snail under choir tumid japed vouch yours scone taker kicky dream jewel barge thyme virus woven hiker truly essay rajah bench rodeo junta bides chewy trice round movie hunch fusty match pansy xterm siege refer topaz itchy bevel nudge wiled plonk djinn elite tweed toffy brand ember lefty pride actor agism ratty llama ulcer spare press screw flung skimp batty weary jinns lunar blurb syrup mossy sieve crude paean stead kooky sinus liter tepid foray reach penal quiet payee wheel stalk caste stunt bushy urine saver deter rouse evoke guava apron otter throb quick plane crazy quoth bobby hound honor snare matte torus miner noose spume admin cocoa beady armor divan offal stats drool endow mason honey jerky curie byway pinch spoil chase vasts avert sport prude nabob chino unwed spurt group rally acorn smurf porch graft genie kudzu munch schwa stuck franc tight petal leafy sigma cluck comfy piety felon rocky hooey snout bumpy trade blood tying toddy vying knell plaza jihad quoit arose binge mouth mummy lying chafe pagan booby banns cabal cruel loyal camel caulk laser swill rigor impel spoof stool tramp whack credo debit demon roman vault pokey china spiky scarf lever messy outdo cheat lanky wrong ether spoor blown toque bilge scold swipe husky bribe hazel exact drift claim bravo larva unfit build erode allot miked flout celli yeast await enjoy","6":"outrun dismay patina mallow careen isobar snobby nuzzle oblige hookup suffix titter writer lockup kosher ballet sombre womble street afghan hasted impale otiose attune loafer seethe convex mangle plasma caucus bridal wooded height famish gotcha should preset lesson laxity bitmap guzzle diadem splice zircon pwning rookie hostel jetsam choler rapine equity tandem boodle floral belfry stymie cosier normal entity spouse sneeze expose yipped forger ormolu azalea annual jitney consed junior injury scrawl fracas encamp icecap galaxy murmur indict arroyo armful wisher supple rename assure markup peeper exhort remake retain maraca incite propel arcked corona fringe somber marlin doming enrage wriest recess cutups unrest intone greasy rafter redden senior lolcat goalie tablet suitor spleen shrink survey barley rocker insole geisha shiner octane bobcat sample vetoes regent morbid diddle vizier pardon treble tumult ascent proper pilaff fuzing femora bemoan fallen caliph totter noggin beaten teensy shifty gibber vulvae impute squint blowsy renown aslant assent lessor morgue giggle gibbet netter tryout taxies schist hockey poetic madcap spinal bobble enamor allege raster flukey almost gazers spring civics shovel enmity soccer jurist mosaic abbrev minima spirit cowboy actual steely stater stocky powwow python piglet celery devise torpid octave absurd paunch squirt astern assort copeck fatten misery faunae revise winter saliva garote mumble hussar parcel rotate homier gusted carrot walrus homeys fetish blanch saucer surfer squash dentin unload pillow sugary fillip pampas ravage fliest scythe fervor reales hiatus poseur osprey cherub rarefy myopic canopy mulish lessee anklet citric treaty lychee disuse cordon deckle finder presto bidder pullet cahoot worthy oaring excuse galore hotkey rental minute lathed gossip parred mister mingle nimble locale doctor despot pistol reborn useful debase chilly bygone fealty jalopy bleary forgot pogrom tannin system chisel airier virgin gayety hurtle angler refuse barium haunch muffin lavish welder modish ensure anoint miasma busboy callow gullet pushup kilter dormer danger option warble clayey engage cadger usable vermin shrove retina tinkle curfew pickup hazard repast breeze stifle degree twenty lunacy salute consul woofed drench trashy unease mouser menses plague mutant sumach recant badder devote bounty coital synchs suffer unhook foible ragtag bigamy loosen lactic device refuel brogue border galley unwary guitar retire league locust finish smidge recede knotty carrel silken feisty medium ranger aboard hydrae dogies surrey blower pokier stodgy embryo furrow bodkin simian region wanton photon limpid radius origin oppose unveil feudal abrupt lament notice wiggle demote maraud chorus review candor armpit crotch uglier whence enrich swirly compel cantor sucker ravine unruly lurker yeoman girted phylum advice snooty mettle iffier brunet bereft anneal course unstop hazmat pelves strode caster unlace ampere dugout unwell thirty waddle gibbon purity weevil unpick cipher mitten confab pallor banter typist cruddy valved waggle remiss turbot wigwag deejay gerbil feebly hernia mutual","7":"attract scatter pontoon upfront aquifer lasagne cursory washtub realist apprize glorify montage outstay pageant equator aerator shuffle compare wonkier erosion grepped speedup saunter moocher keyhole rivulet scalene puerile chervil contest pigskin newsboy genetic durably gambler angular untruth bicycle whiling reddish upraise mustang malaria whippet buckler friable nullify cattier endemic zealous conform liefest twelfth hayseed headway smokier glazier deviant porcine verbose avarice papyrus milkman kneader rambler expiate piranha expound legless wartier notable lathing kinsman schmalz drainer erratum passage goodbye warlike saguaro chorale noonday climber birther drinker miracle retrain attempt charity drizzly campier iciness geekier overuse readout outgrow nonskid herring purloin chalice rhubarb ruffian earmuff regalia lineage sunless obvious kiloton soluble dillies majesty goofier sootier debauch shakier ukulele pathway foremen shallow cambium cigaret cowhand abetter recital modding plating eminent minaret rehired dinkier liturgy upgrade urethra subject cargoes haddock goddess edition rehires impulse bladder sheller colicky towhead redraws pothole overall karaoke ricksha condemn roister thiamin teacher profuse perkier thirsty justify leopard diagram slavish methane linemen roweled carnage nirvana diamond amoebae giggler teargas relearn cuckold skeptic generic wannabe newsier reviler granary magenta gastric reffing sheriff voucher grannie prithee toehold intense because snowmen comfier reenter outwear jubilee wetback aconite haziest furtive avenger ritzier curtsey cornice convent chemise confide liquify aplenty palatal oregano wearier hormone bawdier humdrum opossum rivalry gloving styptic vibrant traitor gherkin theatre pulpier penalty saviour trammel defunct bruiser milkmen inflict blanket tribune tearoom hokiest epsilon lamprey bleeder burglar barmaid mannish realism alumnae outgrew geegaws spumone dullard droplet gutless retouch ascribe amateur gymnast tension wolfish prosody average specced fuzzing prudish hostage birdied enquire prickle updraft untamed forearm referee laxness freeman sweater undying dentine elevate cyclone caesura emptier plectra babysit arousal prevent prefect penguin pension dwarves regular copycat reactor cabbage lunatic extrude florist soprano headier lingual imagine tourist photoed intrude bribery giraffe scarify airfare element fulness milksop trisect dogfish hopeful swaddle exploit profile swindle aliased caracul academy mushier cranium sandman hepatic niftier soupier flapper quarter riotous duteous corsair payment bobtail takeout osmotic uterine wastrel grinder scrawny delight pajamas surfeit bookish servile seasick grandad kingdom awkward tumbrel verdant hasting reelect furrier emanate deadpan western harpoon stiffen eyebrow roadway recount loyalty tidings parolee empathy shamble patient gleeful thrower fashion sorghum faction jazzier bitcoin patella pontiff contend collect neither frappes enthuse ammeter handcar snapper racquet kitschy flatten brutish finicky synagog autopsy tackier hafnium admiral mustier merrier mercury default carfare educate turmoil tasered sausage foxhole abandon yummier jugular shotgun jonquil shaykhs urinary cagiest licence condole formula crunchy redneck peasant possess raccoon plusses jumpier hangmen unlatch gawkier delimit bulimia virtual menorah bathtub bricked stomach saunaed tugboat sketchy apparel jitters torqued forsook carrier parboil massive encrust blaster garotte wealthy femoral betwixt castoff tackler chignon assault prudent custody boozier leprous millage beeline","8":"unafraid ionizers dribbler convince redesign skirmish hijacker appeaser unstable reimpose banditry foreseen aardvark damndest cohesion swizzled strident downiest disquiet toreador geodesic medicine hardball colloquy masseuse shinbone narcotic sunshine misjudge steerage warranty bookcase dramatic tailgate methinks prohibit slattern minutiae talented foxhound purebred mistrial retainer clueless password mastodon overbook exorcism neonatal actuator ladyship noodling anathema phoneyed phoniest flippest juncture serenade huntress partaker concerto stockier kielbasa anarchic unusable horrific dextrose scarcity overshoe draftier baluster overcast lifelike overdrew furriest marathon captious decanter episodic fiendish milkweed eviction feminism shameful bondsman crumbier thesauri nonfatal incubate freakish chewiest reindeer wimpling selvedge disusing cleavage heritage withheld conserve overseer bullhorn acquaint laughter sulfuric lengthen undulate monoxide backache downsize pedicure keepsake gelatine negation bondsmen contrary anorexia herewith satanism arranger scramble embolism spacious bespoken backfire nebulous homeland probably immobile videotex tropical pretties filmiest starrier shopworn patchier burnouts encroach cornball pantsuit fugitive phantasm prioress misapply unionize headiest familiar returnee noblemen paramour peppiest dumpiest lecturer function infusion guerilla monetize scariest colossal flamingo fishhook cruddier clerical musketry overhear tillable newlines stubbier betrayal coercive woodwork sibilant increase trashcan nerviest datatype bookworm blizzard beginner oxymoron tinniest debonair graffiti overlain disunity entreaty cheerier mazourka vibrancy lifeboat westward backwash possible repeater theorize drollery umbilici graphite linoleum seasonal ciabatta stuccoes pursuant eastward emphases chainsaw examiner perforce stallion unbutton gauntlet overdose courtesy sometime ringtone martinet resupply dormouse inkiness deserter retailer fullback pediment employee piebalds snakiest nappiest leftover deforest calamity roadwork inbreeds adhesion perilled clavicle deadbolt glaucoma messiest knickers quibbler relative fearless disabuse emblazon didactic minicams bodywork asteroid campfire sweetish fuselage dieresis followup switcher detritus windburn reoccupy gusseted carnival energize heavyset headlock notional littoral pastoral ideology heaviest futurity diabetes venality regicide petition shredder specimen kerchief whackier fraction asperity postcard hawthorn rockiest wittiest forklift badmouth gimcrack monotony diligent overpass validity offshoot lushness foregone womanish medieval washbowl thatcher cookbook wormwood loyalist physical synopsis horniest sorehead preterit mealiest prologue softball riddance accredit seascape surround prostate gangland dishonor forgiven maneuver goatherd footnote wishbone oilcloth solecism firewood skylight priciest weariest vendetta obituary sidewalk heliport bellyful soupiest headlong escarole linchpin neckline infinity marinade straiten babysits spitball flexible cemetery peculiar sensibly pedantry hedgerow misspend clemency handcart neediest misspell issuance colonial subclass dwarfish unopened cutesier nonunion medullae immodest cratered pheasant dilatory retweets windowed residual kangaroo filament pretence wireless folksier freebase appraise discolor sameness variance foremost funereal selfless homeless physique transact droopier equipage youngish facetted shantung gangster thriller elegiacs tasseled snowplow duckbill quotable idealist doggoned musician historic yearbook lobbyist barberry toboggan humanity thoracic aspirate sorority sanctity rogering reaffirm unburden pitiably populate mattress capacity judicial footrest stancher slangier footwork alkaline chickpea clammier delusion unformed formless landfall muskiest futility seaboard movement blowsier lifetime pinafore gaslight organist travesty pushover overshot flounder buncombe tenoning scuzzier synapses catchier porthole subplots partaken acrimony downwind abutment tailwind","9":"admixture ceasefire insinuate wearisome herbivore implicate overwhelm lethargic suffragan wholesale clinician guesswork servitude birdhouse statewide crossbeam unbeknown eldercare permeable despotism cattleman westbound discovery dissipate aerospace ambulance serviette ventilate privilege malignant implosion exception scrimmage histamine stepchild improvise migration somnolent minefield turboprop extensive dalliance resurrect coruscate arthritic multitude malleable palpitate sartorial worksheet boardwalk nailbrush stringent placentae abatement extrovert catchment notoriety headboard psychical heuristic bamboozle bombastic storeroom publicize neuralgia croquette outspread animation periphery astronaut microloan handlebar sanitaria organelle nightfall diastolic overdraft pompadour patrician renascent deformity excretion underline litterbug citizenry roughneck vulgarism intrusion monastery womanhood prevalent constrict elemental inaudible marsupial undersize halfpenny reimburse habitable spearmint corrugate jocundity extempore tightrope masochism proofread counselor palpation consonant insulator fanatical chaperone crinoline elaborate desperado nonexempt undersign operation cosmogony dirigible freelance asthmatic embellish peninsula unwritten polyhedra spellbind aquaplane mishandle favorable precocity continuum apologize novelette godparent isometric injustice chaparral catechism gaberdine temporize sensation alienable portrayal intensity reappoint perihelia onslaught potassium premature chamomile intercede mannerism matrimony motorbike culminate socialism renewable anchorite incubator bifurcate earthworm criticize schoolboy bazillion chromatic repackage pasturage homicidal continent preschool lunchroom coagulate collocate gentility barbarity fornicate undertake protozoon briefcase gazillion stairwell burlesque stalemate reticence videotape vehemence heartsick statesman afterglow autograph eloquence ejaculate rejection bandstand gladiator algorithm confluent signatory postnatal millennia pregnancy wristband swordfish anthology communism harmonica adherence underwent dietitian germicide cattlemen dispersal transpose reinforce solicitor officiate cartwheel persevere quicksand docudrama traceable infirmary piecework workhouse vindicate repudiate routinize keystroke overprint backstory carrousel extremism deprecate badminton cognition overthrew succotash patriotic forgetful sentience desperate earthwork treadmill transpire impedance available hypocrisy billboard intrinsic medicinal typewrote sultanate socialite hereabout cyberpunk triennial pizzicato suffusion refashion personage quadratic castigate saltpetre commodity paramedic militancy drainpipe profanity deferment philology effective pertinent detergent therefrom anchorage milligram hopscotch outspoken inebriate ketogenic forestall vitiation detection scallywag flavorful grubstake dramatize nectarine adventure fumigator emolument hailstorm temperate nostalgia thumbnail vertebrae prejudice foresworn polyphony speedboat backpedal incumbent broadside criterion ordinance uppercase mentality cigarillo soliloquy copyright overnight pedagogic baptistry extravert abundance undermost proscribe crankcase resurgent roadhouse inculcate stevedore reluctant protozoan patronize drumstick punchline mortality partridge sugarcane meteoroid magnetize selection structure threshold recondite recursion repayable cameramen floodgate northeast squeamish authorize nightmare shoreline rhapsodic devilment immersion frigidity explicate calibrate heartland speakeasy truckload pitchfork vestigial dreamland lachrymal expulsion stimulate technical eradicate depletion splenetic evaporate subscribe transform declivity italicize turpitude masculine cormorant shortfall misdirect pantyhose washcloth harlequin nightgown slingshot alcoholic layperson mechanism snowdrift hostility importune pneumatic librarian workbench diffusion anatomist posterity surrogate diacritic resentful incentive paperback obscurity judgement interment scarecrow imitative profusion firmament shellfish emergency antipasti insensate stopwatch desertion introvert pollution mismanage existence visualize allergist morbidity segregate firebreak disfigure corrector certitude undertook olfactory velveteen timetable persimmon fairyland bedspread deceptive initiator honoraria refurbish foretaste intestine piecemeal conjugate commingle artichoke dissolute reprehend definable referenda waistband horseshoe indemnify intention arrogance infection","10":"appointive expiration conductive redemption mackintosh dedication complexity subculture inequality convulsive cellophane expatriate sweatshirt insightful circumvent overshadow parenthood superhuman epistolary inadequate peroration fatalistic semicircle toothbrush provincial curriculum paintbrush politician antebellum stationary liturgical hypotenuse vegetative obligatory comparable incredible electrical prepackage leadership devolution editorship cognizance systematic alcoholism understand carburetor machinable screenshot deescalate cumbersome narcissist lawrencium psychiatry salivation applesauce stigmatize watertight marginalia maceration sisterhood inquietude prediction discontent understate distillery adjustment dependency instrument inundation brainstorm asceticism persiflage antisocial wanderlust divisional prosperity earthquake remarriage ecumenical enthusiasm blockchain executable assortment standstill primordial chairwoman schoolbook transition rubberneck brigandage predestine remortgage militiaman stringency gonorrhoea equatorial breathable topography digression prehistory cerebellum conscience dissimilar knockwurst conspiracy disputable aboriginal pressurize investment stentorian arborvitae demography oligarchic coincident conjecture discomfort telepathic emaciation chairwomen quadrangle dipsomania enlistment ascendency masturbate letterbomb subversion afterbirth phenomenal undershirt overspread denotation homophobia refinement widescreen eighteenth concession confidante mastermind immobilize smokehouse compliance negligence relocation pillowcase mercantile forecastle laundromat prudential heathenish expandable imbecility generative benefactor impeccable septicemia telescopic abominable indistinct irresolute midshipmen cultivator reallocate irrational detestable blackberry durability planetaria turnaround noticeable impatience decoration pianissimo federalism changeable turpentine foursquare censorship henceforth diminutive subjection abstinence bluejacket functional immoderate repairable jinrikisha ideologist wheelchair disruptive propellent unilateral mechanical extendable outperform middlebrow abhorrence compulsory federation similarity militiamen corrective antagonism continuity aboveboard integrator usurpation agronomist impressive distraught modifiable hysterical methodical aggression asymptotic immorality cartoonist affordable radicalism postmortem biomedical sportswear matchstick impossible troubadour applicator astigmatic filterable levitation debauchery abnegation concoction metallurgy cyberspace fraternity difference successive immaturity fatherhood descendent summertime autoimmune moralistic hobbyhorse nomination archdeacon vegetation kettledrum infinitude underworld perishable minimalism supplicant procurator registrant equivocate servicemen percussion egocentric inconstant persuasion instigator amateurish unscramble modulation unicameral aftershock watercraft fratricide confiscate attainable unknowable integument streetwise fingernail tubercular interstate dependence centigrade sacerdotal workaholic regimental accusative podiatrist conformity penicillin maidenhair ascendancy pocketbook lithograph abdication elderberry nightshirt quadrature measurable accountant chinchilla cloverleaf turtledove derogatory possessive commitment profligate greenhouse impoverish invigorate nonpayment snapdragon internment detonation disconnect classicism abbreviate anatomical predecease protection connective polyphonic punishment countryman separatism volatility devotional defacement annexation biological gravestone legibility millennial refraction minimalist insentient immobility sandalwood equability serpentine aberration recitative imaginable relaxation attachment pertinence capitalist abstention respirator ingredient banishment sidesaddle charitable expression screenplay putrescent complacent guillotine invalidate clerestory eulogistic formidable interwoven basketball poinsettia penmanship mastectomy complicate foreground noblewomen referendum numerology groundwork indicative angiosperm connivance sidestroke subsequent particular dissuasion malcontent boondoggle meditative congregate munificent condescend horsewomen discordant lumberyard xenophobia redistrict intolerant fellowship motherland rejuvenate electorate hovercraft intermezzi noteworthy honorarium strychnine sufficient statehouse substation antagonist underwrite midshipman puzzlement balderdash countrymen prioritize acquirable collegiate defamation remunerate declassify premarital divergence assignable accomplish flagellate proverbial disarrange fluoridate nontaxable indication misfortune repugnance tambourine wraparound technician vocational malevolent metatarsal pagination deportment disembowel negotiator motorcycle tenderloin accumulate delinquent consonance budgerigar governable immunology managerial roundhouse contraband desiderata chauvinist aquamarine unsanitary proficient weathermen","11":"compression purgatorial dereliction greasepaint unshakeable exoneration congressmen sportswomen incoherence embarkation conjugation countermand fascination tangibility supportable disablement falsifiable masterpiece venturesome hyphenation soliloquize displeasure heartbroken misbegotten latticework furthermost instructive infanticide instability motherboard underexpose comradeship acclimation diametrical secretarial quarterdeck territorial preparatory elimination repudiation battlefield magnanimity retributive coordinator guesstimate barbiturate benefaction aquaculture assignation implausible obstetrical xylophonist collaborate designation algorithmic delinquency reciprocate suffragette sensitivity overwrought archipelago silversmith prohibitive incongruity distressful anarchistic discernment malapropism periodontal inoffensive rationalize inscription ideological commentator suggestible hippopotami bulletproof omnipotence irreverence extravagant adjournment feudalistic infomercial optometrist muskellunge commonplace astigmatism overindulge transfusion advancement internalize appropriate tyrannosaur hypermarket equidistant malevolence expenditure publishable respiratory infiltrator voyeuristic tobacconist anesthetize pollination precipitant frustration vaccination romanticist resourceful declamation collectable philodendra choreograph conceivable implication hospitality grammatical inhabitable recognition intentional hooliganism demonstrate attestation unpalatable defoliation abracadabra intermingle restructure vichyssoise ethnologist reciprocity countersank restatement enforcement allegorical impeachment colonoscopy corrugation malfeasance blameworthy consultancy fashionable conjectural controversy intercourse reapportion archdiocese residential miniaturize origination puritanical cottonmouth multiracial presumptive chiropodist aphrodisiac explanatory comeuppance macroscopic orthopedist destination cosmologist superiority rhetorician ineffectual parturition necrophilia transfigure ventricular conjuncture electrician anchorwoman portability phonologist enumeration salespeople delectation portmanteau predicative determinate assassinate vivisection envelopment inattention manufacture workmanlike irrevocable lamentation syndication subjunctive consistency etymologist rectifiable cosignatory anaesthetic geometrical godchildren hundredfold description homeopathic approximate continuance nonphysical improvement absenteeism physiognomy inalienable redirection forethought circumspect clothesline downtrodden expostulate amicability progressive psychedelic reinterpret uncertainty preposition credibility objectivity cheesecloth penultimate backstretch predictable ingratitude methodology springboard declaration incorporate premonition impregnable synchronize commendable stewardship humiliation premeditate hemispheric formulation unemotional atmospheric opportunist nickelodeon scholarship infertility conditional serviceable corroborate discernible mistrustful underweight circulation recantation dimensional combustible addressable prostration abstraction punctuality anthologize dreadnought emplacement disillusion termination coalescence grandparent radiologist restitution concatenate persecution forestation syncopation patriarchal consumptive commutative susceptible accumulator frostbitten resignation orchestrate centenarian outdistance systematize crystallize dysfunction transfinite crestfallen misidentify catholicity mantelpiece feasibility inexcusable countersign peculiarity transphobia groundswell immortalize irradiation evangelical cancelation constrictor substandard permissible merchandize legislative musculature nutritional opportunism clarinetist haemophilia interpolate euphemistic bombardment patrimonial consignment connotation backslidden haemorrhage incarcerate attributive sponsorship refrigerant nationalize restriction provocation mockingbird superfluity penetration communistic misjudgment eclecticism functionary suffocation acclamation microsecond indigestion protraction suburbanite erythrocyte extemporize concurrence instigation retaliation singularity distributor lightweight disorganize supervision wintergreen indignation troubleshot pertinacity modernistic impersonate gentlewomen merchandise inoperative hallucinate overbalance containment prohibition imprecision polymorphic procreation reconfigure fashionista inquisitive continental thunderhead matrimonial convocation creationism unsubscribe herringbone confinement symmetrical computerize catchphrase extensional exclusivity celebratory contingency millionaire inseparable acknowledge materialize standoffish indomitable econometric importation immortality reappraisal stipulation equilibrium salesperson expurgation incontinent affectation violoncello exterminate excrescence suppression audiovisual certifiable perfunctory conurbation accountable impertinent shirtsleeve renegotiate pulchritude imaginative persnickety preventable adversarial qualitative dislocation inadvertent omniscience unoffensive informative improvident parachutist affirmative dipsomaniac townspeople concealment affirmation academician clergywomen nightingale proliferate washerwomen stomachache supercharge restoration discourtesy pathologist environment lubrication coffeehouse scintillate obstructive requirement quarrelsome assemblyman xerographic disturbance unreachable permutation","12":"connectivity veterinarian newspaperman commencement factionalism constrictive straightedge interpretive nonbreakable nutritionist frankincense characterize encrustation authenticate availability protestation perseverance elocutionist unobtainable misinterpret interrogator neurosurgery biophysicist interdiction reassessment confirmatory paleontology regeneration entomologist pacification hydrotherapy vociferation astronomical malnutrition coordination preventative pumpernickel tautological aeronautical relationship conviviality discriminant satisfaction contemptible deliberation superstition unremarkable psychologist confirmation preferential paradigmatic subservience acquiescence disestablish encyclopedic misjudgement adulteration omnipresence contrariwise reinitialize circumstance conformation nonpolitical dilettantism intermittent preservation hypocritical exterminator companionway dishonorable progesterone weatherproof unmistakable breaststroke irredeemable relativistic condensation municipality battleground teaspoonsful recollection anthropology transitional confiscation degenerative marksmanship menstruation constriction idiosyncrasy panchromatic nonflammable liquefaction unemployment frontiersmen hematologist transgressor controllable radioisotope salesmanship annihilation multiplicand conversation afterthought overreaction incapability emancipation unassailable surveillance undemocratic thermostatic aristocratic unacceptable blackcurrant conscription etymological irresistible announcement impregnation departmental constituency unfathomable commensurate conquistador exasperation unnoticeable shatterproof counterpoint infringement subcommittee marriageable discomposure disciplinary polysyllable melodramatic unseasonable steeplechase astonishment equestrienne kindergarten consecration infotainment monotheistic magnificence interconnect independence inflammation asphyxiation misanthropic inflationary parenthesize parochialism protuberance microbiology presentiment scatterbrain destructible quadrangular anchorpeople geopolitical regenerative butterscotch recapitulate inflammatory antiaircraft bibliography unreasonable orthopaedist outmanoeuvre perpetuation ossification gamesmanship probationary gynecologist proscription pharmacopeia sophisticate inconclusive irrespective intimidation segmentation spectroscope interstellar epigrammatic excitability paramilitary nonconductor recuperation conservatism resurrection incineration neighborhood translucence consummation perambulator intermediary mademoiselle disagreement collectivist diagrammatic antediluvian navigability philological inarticulate southwestern dethronement jurisdiction journalistic whippoorwill incontinence promulgation northwestern confessional unresponsive reconstitute humanization delicatessen intervention antipathetic reconcilable happenstance maximization alphabetical horticulture hypochondria multilateral disquisition contributory subscription malformation deregulation collectivism commonwealth philanthropy extortionist microsurgery countrywoman technicality clarinettist incalculable dispensation intransitive hypertension extrasensory maneuverable neurological hierarchical arithmetical oxyacetylene propagandize onomatopoeic metropolitan occupational expatriation administrate conservatory underachieve digitization indefensible plasterboard intermission nomenclature obstetrician stenographic monosyllabic interception ministration philodendron exploitative misalignment motivational biochemistry interruption inconvenient disadvantage differential immutability portmanteaux apprehension rejuvenation counterclaim hypoglycemic somnambulist alliterative carbohydrate permeability repossession longshoreman deceleration caricaturist inconsistent conglomerate transmigrate councilwomen denomination unattractive governmental expansionist canonization instrumental commissariat pharmacology unmanageable impenetrable inexperience inaccessible shuffleboard identifiable northeastern misadventure exploitation optimization scatological naturalistic vituperative contemporary streptococci acquaintance rhododendron coincidental misstatement quantitative discriminate philosophize totalitarian recalcitrant prophylactic unimaginable substructure carcinogenic accumulative disincentive perspiration proportional oversimplify manipulative vilification prolongation hallucinogen prescriptive chauvinistic quadriplegia appreciative inconsolable illegitimacy questionable recuperative nonagenarian perturbation participator intellectual invigoration redistribute unregenerate troubleshoot outplacement cancellation blandishment middleweight reactivation theoretician imponderable manipulation kleptomaniac semifinalist resuscitator proclamation spokesperson accumulation postgraduate intersection countertenor antithetical appurtenance octogenarian isolationism disreputable encyclopedia solicitation hysterectomy significance amortization unquenchable constabulary bicentennial decentralize downloadable protectorate pathological mathematical unpopularity exhilaration unsuccessful debilitation appreciation attributable ghostwritten pediatrician investigator intemperance unproductive irremediable obliteration impersonator displacement polyethylene anaesthetist gladiatorial principality eccentricity antagonistic superannuate dissertation irregularity premenstrual undetectable multipurpose bacteriology reproduction demilitarize approachable indiscretion impermanence genealogical correctional nonsectarian illegibility bloodthirsty kaleidoscope directorship consultation imprisonment commendation polytheistic modification penitentiary obsolescence nonabsorbent transmission subterranean immeasurable divisibility glockenspiel continuation denouncement nonrenewable disobedience recognizable incandescent depoliticize countrywomen","13":"intransigence domestication southeastward unpredictable restauranteur psychosomatic transpiration overabundance modernization expressionism instructional perfectionist encapsulation misunderstood irretrievable decomposition circumvention imperturbable hallucination symbolization mismanagement mathematician individualize schizophrenia unforeseeable physiological embarrassment streptococcal stabilization discoloration coeducational replenishment seismographic choreographic ineligibility gravitational featherweight gubernatorial conceptualize documentation reverberation collaborative transnational reappointment interpolation deterministic contemplative multicultural sedimentation architectural peregrination propositional customization multinational laughingstock correspondent implementable probabilistic irrationality ornamentation provincialism semiautomatic improvisation corroboration inflorescence transmittable boustrophedon grandiloquent upperclassman introspection functionality prevarication misunderstand decontaminate industrialist pulverization congresswoman uncooperative untrustworthy consternation chronological topographical proportionate interpersonal nonproductive recrimination petrochemical victimization insensitivity paraphernalia exhibitionist electrostatic inconceivable autobiography consanguinity interposition steppingstone applicability thermoplastic improbability qualification counteraction disengagement maladjustment nonnegotiable effervescence scintillation cosmetologist marketability indefatigable objectionable assemblywomen prognosticate transatlantic archaeologist nullification hermaphrodite mystification preternatural preconception mortification unenforceable afforestation introspective mummification thunderstruck intermarriage impeccability grandchildren overstatement temperamental manageability comprehensive unmentionable recrudescence acceptability adventuresome authoritative sensitization kaleidoscopic interrogative encouragement admissibility inconsiderate expostulation misanthropist meteorologist hypochondriac approximation acetaminophen antihistamine statesmanlike vulcanization agglutination irrecoverable revolutionist valedictorian unintentional ventriloquist interlocutory concatenation tablespoonful consequential photoelectric imperceptible pronouncement refurbishment excommunicate draftsmanship unsympathetic statesmanship disappearance inappropriate unreliability observational pusillanimity confectionery unaccountable circumference pedestrianize undergraduate contravention congressional hundredweight gastronomical argumentative confrontation impersonation incrimination unfashionable administrator magnification foreknowledge normalization technological southwestward dermatologist expectoration inexhaustible reforestation accompaniment mechanization disconnection transliterate environmental transcendence unpreventable superabundant transmissible staphylococci questionnaire indisposition undercarriage individualist nonrefundable configuration insupportable ungrammatical rearrangement boardinghouse transportable northwestward supranational biotechnology extermination computational constellation discreditable northeastward insubordinate supplementary desegregation ophthalmology businesswoman bidirectional dependability transcription materialistic recompilation expressionist regimentation radioactivity demonstrative incredibility apportionment developmental companionable entomological supernumerary knowledgeable proliferation pronunciation generalissimo decriminalize recombination exceptionable reprehensible encyclopaedia videocassette incandescence inviolability uncomfortable dismemberment hemispherical impermissible concentration tonsillectomy projectionist interrogation individuality acupuncturist insufficiency formalization versification incorporation procrastinate establishment deterioration dispossession inspirational anticlockwise sportsmanship businesswomen diagnostician subordination pronounceable incriminatory noncompliance underclassmen argumentation compassionate incombustible beatification accommodation nonrefillable phenobarbital parliamentary anticlimactic factorization geostationary reinstatement insensibility agglomeration disfigurement acculturation contraceptive professorship overemphasize invincibility underclassman fertilization dissimulation expeditionary preponderance reunification privatization manifestation noncommercial artificiality commemorative congresswomen unforgettable gesticulation primogeniture parenthetical nonconformity regurgitation philanthropic resuscitation precipitation entertainment impressionist retrogression discontinuity disproportion prepositional investigative transgression expropriation inevitability indeterminacy implacability gynecological semipermeable irrepressible uninstallable unintelligent differentiate dispassionate contemplation spectroscopic monocotyledon industrialism hypercritical overconfident amplification structuralist vulnerability antipersonnel colloquialism fragmentation orthogonality sportsmanlike particularize quadrilateral jurisprudence complimentary postoperative investigation counterweight rapprochement uninformative physiotherapy reciprocation determination triangulation justification tortoiseshell criminologist metallurgical imperialistic enlightenment perpendicular reinforcement transmutation retrospective vulgarization visualization biodegradable contortionist baccalaureate bouillabaisse percussionist semiconductor nonjudgmental contamination perfectionism comparability subsidization industrialize contraception nondeductible hallucinatory falsification schizophrenic actualization oleomargarine communicative reincarnation mollification incorruptible precautionary individualism rationalistic hyperactivity conflagration horticultural indiscernible commercialize impossibility psychotherapy indispensable unsentimental participatory ornithologist premeditation deforestation contradiction authorization neoclassicism rectification serialization informational infallibility electromagnet institutional dramatization clearinghouse participation comprehension pharmacopoeia certification sterilization extrapolation unimpeachable inexpressible decompression preoccupation revolutionary chrysanthemum"};
+  var POOL = {}; Object.keys(WORDS).forEach(function (k) { POOL[k] = WORDS[k].split(' '); });
+  function pick(len) { var p = POOL[len]; return p[rnd(0, p.length - 1)]; }
+  function topVal() { return buttons.map(function (b) { return b.dataset.v; }).sort(function (a, b) { return b.length - a.length; })[0]; }
+  function acc() { return round > 0 ? Math.round(correct / round * 100) : null; }
+
+  /* ---------- Top-10 leaderboard (localStorage) ---------- */
+  function loadBoard() {
+    try { var a = JSON.parse(localStorage.getItem(LB_KEY)); return Array.isArray(a) ? a : []; } catch (e) { return []; }
+  }
+  function saveBoard(b) { try { localStorage.setItem(LB_KEY, JSON.stringify(b)); } catch (e) {} }
+  function submitScore() {
+    if (score <= 0) return -1;
+    var entry = { score: score, round: round, correct: correct, acc: acc(), t: Date.now() };
+    var board = loadBoard(); board.push(entry);
+    board.sort(function (a, b) { return b.score - a.score || b.round - a.round || a.t - b.t; });
+    var kept = board.slice(0, LB_SIZE); saveBoard(kept);
+    return kept.indexOf(entry);
+  }
+  function renderBoard(hl) {
+    var board = loadBoard();
+    el.best.textContent = board.length ? board[0].score : 0;
+    if (!board.length) { lbEl.innerHTML = '<div class="lb-empty">No scores yet - play a game!</div>'; return; }
+    lbEl.innerHTML = '<table class="lb-table"><thead><tr><th>#</th><th>Score</th><th>Round</th><th>Correct</th><th>Acc</th></tr></thead><tbody>' +
+      board.map(function (e, i) {
+        return '<tr class="' + (i === hl ? 'new' : '') + '"><td>' + (i + 1) + '</td><td>' + e.score + '</td><td>' + e.round +
+               '</td><td>' + e.correct + '</td><td>' + e.acc + '%</td></tr>';
+      }).join('') + '</tbody></table>';
+  }
+
+  function updateHud() {
+    el.round.textContent = round; el.score.textContent = score; el.correct.textContent = correct;
+    el.mistakes.textContent = mistakes + ' / ' + MAX_MISTAKES;
+    el.accuracy.textContent = round > 0 ? acc() + '%' : '–';
+  }
+  function updateStartBtn() {
+    var label = paused ? 'Resume' : (playing ? 'Pause' : 'Start');
+    startBtn.querySelector('span').textContent = label;
+    startBtn.querySelector('svg').innerHTML = (playing && !paused) ? '<path d="M8 5v14M16 5v14"/>' : '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>';
+    startBtn.setAttribute('aria-label', label + ' game');
+  }
+
+  function showGhosts() {
+    clearGhosts();
+    for (var i = 0; i < 7; i++) {
+      var g = document.createElement('div'); g.className = 'ghost'; g.textContent = pick(rnd(3, 6));
+      g.style.left = rnd(18, 82) + '%'; g.style.top = rnd(14, 86) + '%'; g.style.animationDelay = (-Math.random() * 6) + 's';
+      box.insertBefore(g, box.firstChild);
+    }
+  }
+  function clearGhosts() { Array.prototype.slice.call(box.querySelectorAll('.ghost')).forEach(function (g) { g.remove(); }); }
+
+  // New Game: back to the READY screen; the player confirms by clicking Start.
+  function resetToReady() {
+    cancelAnimationFrame(raf); active = false; paused = false;
+    if (playing) submitScore();
+    playing = false; round = 0; score = 0; mistakes = 0; correct = 0; clearNums();
+    fill.style.transform = 'scaleX(0)'; timeEl.textContent = '\u2013'; timerTile.classList.remove('low');
+    over.classList.add('off'); pausedEl.classList.add('off'); intro.classList.remove('off');
+    setMsg(''); renderBoard(-1); updateHud(); updateStartBtn(); showGhosts();
+  }
+
+  function newGame() {
+    clearGhosts();
+    cancelAnimationFrame(raf); active = false; paused = false;
+    if (playing) submitScore();
+    round = 0; score = 0; mistakes = 0; correct = 0; playing = true; clearNums();
+    intro.classList.add('off'); over.classList.add('off'); pausedEl.classList.add('off');
+    setMsg(''); renderBoard(-1); updateStartBtn(); nextRound();
+  }
+
+  function nextRound() {
+    round++; updateHud();
+    var count = Math.min(4 + Math.floor(round / 3), 8);
+    duration = Math.max(3.5, 7 - round * 0.25);
+    var gap = round < 4 ? 3 : round < 8 ? 2 : 1;
+    var lo = round < 4 ? 6 : round < 8 ? 7 : 8, hi = round < 4 ? 9 : round < 8 ? 11 : 13;
+    var longLen = rnd(lo, hi), vals = [pick(longLen)];
+    while (vals.length < count) { var w = pick(rnd(3, longLen - gap)); if (vals.indexOf(w) < 0) vals.push(w); }
+
+    clearNums(); buttons = [];
+    var bw = box.clientWidth, bh = box.clientHeight, T = Math.max(15, Math.round(bw / 20)), GAP = 3, STEP = T + GAP,
+        R = T * 0.75 + 2, placed = [];
+    // Place the longest words first (hardest to fit); each word is a rotated row of letter boxes.
+    vals.sort(function (a, b) { return b.length - a.length; });
+    vals.forEach(function (v) {
+      var n = v.length, half = (n - 1) / 2, best = null, tries = 0;
+      while (!best && tries < 400) {
+        tries++;
+        var deg = tries > 300 ? 0 : rnd(-65, 65), th = deg * Math.PI / 180, c = Math.cos(th), sn = Math.sin(th);
+        var cx = rnd(R, bw - R), cy = rnd(R, bh - R), pts = [], ok = true;
+        for (var i = 0; i < n && ok; i++) {
+          var o = (i - half) * STEP, px = cx + o * c, py = cy + o * sn;
+          if (px < R || px > bw - R || py < R || py > bh - R) { ok = false; break; }
+          pts.push([px, py]);
+        }
+        if (ok) ok = !placed.some(function (q) { return q[2].some(function (a) {
+          return pts.some(function (b) { return Math.hypot(a[0] - b[0], a[1] - b[1]) < 2 * R; }); }); });
+        if (ok) best = { cx: cx, cy: cy, deg: deg, pts: pts };
+      }
+      if (!best) { best = { cx: bw / 2, cy: bh / 2, deg: 0, pts: [] }; }   // practically unreachable
+      placed.push([best.cx, best.cy, best.pts]);
+      var b = document.createElement('button');
+      b.className = 'n'; b.dataset.v = v; b.setAttribute('aria-label', v);
+      b.style.left = (best.cx / bw * 100) + '%'; b.style.top = (best.cy / bh * 100) + '%';
+      b.style.setProperty('--a', best.deg + 'deg');
+      v.split('').forEach(function (ch) {
+        var l = document.createElement('span'); l.className = 'l'; l.textContent = ch;
+        l.style.width = l.style.height = T + 'px'; l.style.fontSize = Math.round(T * 0.62) + 'px'; b.appendChild(l);
+      });
+      b.addEventListener('click', function () { if (active) finish(v); });
+      box.appendChild(b); buttons.push(b);
+    });
+    active = true;
+    endAt = performance.now() + duration * 1000;
+    cancelAnimationFrame(raf); raf = requestAnimationFrame(tick);
+  }
+
+  function tick(now) {
+    var left = Math.max(0, endAt - now), frac = left / (duration * 1000);
+    fill.style.transform = 'scaleX(' + frac + ')';
+    timeEl.textContent = (left / 1000).toFixed(1) + 's';
+    var low = frac < 0.3;
+    fill.classList.toggle('low', low); timerTile.classList.toggle('low', low);
+    if (left <= 0) { finish(null); return; }
+    raf = requestAnimationFrame(tick);
+  }
+
+  // Resolve the round and go straight to the next one.
+  function finish(picked) {
+    if (!active) return;
+    active = false; cancelAnimationFrame(raf);
+    var top = topVal(), timeLeft = Math.max(0, endAt - performance.now()) / 1000;
+    if (picked === top) {
+      var pts = 10 + Math.round(timeLeft * 5);
+      score += pts; correct++;
+      setMsg('Round ' + round + ': correct! +' + pts + ' points', 'good');
+    } else {
+      mistakes++;
+      setMsg('Round ' + round + (picked === null ? ": time's up" : ': wrong') + ' \u2014 the longest was ' + top.toUpperCase() + ' (' + top.length + ' letters)', 'bad');
+    }
+    updateHud();
+    if (mistakes < MAX_MISTAKES) nextRound(); else gameOver();
+  }
+
+  function gameOver() {
+    clearNums(); fill.style.transform = 'scaleX(0)'; timeEl.textContent = '–';
+    timerTile.classList.remove('low');
+    var rank = submitScore(); playing = false; renderBoard(rank);
+    setMsg('You made ' + MAX_MISTAKES + ' mistakes. Reached round ' + round +
+      ' with ' + score + ' points' + (rank === 0 ? ' — a new best!' : rank > 0 ? ' — #' + (rank + 1) + ' on your Top 10.' : '.') +
+      '', 'bad');
+    over.classList.remove('off'); updateStartBtn(); showGhosts();
+  }
+
+  function pause() {
+    if (!active || paused) return;
+    paused = true; cancelAnimationFrame(raf);
+    remaining = Math.max(0, endAt - performance.now());
+    pausedEl.classList.remove('off'); updateStartBtn();
+  }
+  function resume() {
+    if (!paused) return;
+    paused = false; endAt = performance.now() + remaining;
+    pausedEl.classList.add('off'); updateStartBtn();
+    raf = requestAnimationFrame(tick);
+  }
+  function toggle() { if (paused) resume(); else if (active) pause(); else newGame(); }
+
+  startBtn.addEventListener('click', toggle);
+  document.getElementById('new-game-btn').addEventListener('click', resetToReady);
+  pausedEl.addEventListener('click', resume);
+  intro.addEventListener('click', newGame);
+  over.addEventListener('click', newGame);
+  document.getElementById('lb-clear').addEventListener('click', function () {
+    try { localStorage.removeItem(LB_KEY); } catch (e) {} renderBoard(-1);
+  });
+  document.addEventListener('visibilitychange', function () { if (document.hidden) pause(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.code !== 'Space' || /^(BUTTON|SELECT|A|INPUT)$/.test(e.target.tagName)) return;
+    e.preventDefault(); toggle();
+  });
+  fill.style.transform = 'scaleX(0)';
+  renderBoard(-1); updateHud(); updateStartBtn(); showGhosts();
+})();
+</script>
+</body>
+</html>
