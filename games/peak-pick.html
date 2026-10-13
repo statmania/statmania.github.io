@@ -131,7 +131,19 @@
   .timer-fill.low { background: linear-gradient(90deg, #ff2fb4, var(--bad)); }
 
   #box { position: relative; width: 100%; aspect-ratio: 480 / 420; border-radius: 10px;
-         background: #05070d; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; margin: 0 auto; }
+         background: radial-gradient(circle at 50% 45%, rgba(168,85,247,0.16), transparent 60%),
+                      radial-gradient(circle at 15% 85%, rgba(0,229,255,0.12), transparent 45%),
+                      radial-gradient(circle at 88% 12%, rgba(255,47,180,0.10), transparent 40%), #05070d;
+         border: 1px solid rgba(255,255,255,0.1); overflow: hidden; margin: 0 auto; }
+  .ghost { position: absolute; transform: translate(-50%, -50%); pointer-events: none; user-select: none;
+           font: 800 1.4rem 'Courier New', monospace; color: rgba(0,229,255,0.16);
+           width: 62px; height: 62px; border-radius: 50%; border: 2px solid rgba(0,229,255,0.1);
+           display: flex; align-items: center; justify-content: center; animation: drift 6s ease-in-out infinite alternate; }
+  @keyframes drift { to { transform: translate(-50%, -62%); } }
+  @media (prefers-reduced-motion: reduce) { .ghost { animation: none; } }
+  .play-icon { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px;
+               border-radius: 50%; background: linear-gradient(135deg, #a855f7, #ff2fb4); color: #fff; font-size: 0.6rem;
+               vertical-align: middle; margin: 0 4px; padding-left: 2px; }
   .n { position: absolute; transform: translate(-50%, -50%); width: 66px; height: 66px; padding: 0;
        border-radius: 50%; border: 2px solid rgba(0,229,255,0.6); background: rgba(255,255,255,0.07);
        color: var(--ink); font: 800 1.2rem 'Courier New', monospace; cursor: pointer;
@@ -235,7 +247,7 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true });
                                 <div class="timer-wrap"><div class="timer-bar"><div class="timer-fill" id="fill"></div></div></div>
                                 <div id="box">
                                     <div class="overlay" id="intro">
-                                        <div class="panel"><h2>READY</h2><p>Press Start or click to play</p></div>
+                                        <div class="panel"><h2>READY</h2><p><span class="play-icon">&#9654;</span> Start Game</p></div>
                                     </div>
                                     <div class="overlay off" id="paused">
                                         <div class="panel"><h2>PAUSED</h2><p>Click or press space to resume</p></div>
@@ -402,7 +414,28 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true });
     startBtn.setAttribute('aria-label', label + ' game');
   }
 
+  function showGhosts() {
+    clearGhosts();
+    for (var i = 0; i < 9; i++) {
+      var g = document.createElement('div'); g.className = 'ghost'; g.textContent = rnd(1, 99);
+      g.style.left = rnd(10, 90) + '%'; g.style.top = rnd(14, 86) + '%'; g.style.animationDelay = (-Math.random() * 6) + 's';
+      box.insertBefore(g, box.firstChild);
+    }
+  }
+  function clearGhosts() { Array.prototype.slice.call(box.querySelectorAll('.ghost')).forEach(function (g) { g.remove(); }); }
+
+  // New Game: back to the READY screen; the player confirms by clicking Start.
+  function resetToReady() {
+    cancelAnimationFrame(raf); active = false; paused = false;
+    if (playing) submitScore();
+    playing = false; round = 0; score = 0; mistakes = 0; correct = 0; clearNums();
+    fill.style.transform = 'scaleX(0)'; timeEl.textContent = '\u2013'; timerTile.classList.remove('low');
+    over.classList.add('off'); pausedEl.classList.add('off'); intro.classList.remove('off');
+    setMsg(''); renderBoard(-1); updateHud(); updateStartBtn(); showGhosts();
+  }
+
   function newGame() {
+    clearGhosts();
     cancelAnimationFrame(raf); active = false; paused = false;
     if (playing) submitScore();
     round = 0; score = 0; mistakes = 0; correct = 0; playing = true; clearNums();
@@ -469,7 +502,7 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true });
     setMsg('You made ' + MAX_MISTAKES + ' mistakes. Reached round ' + round +
       ' with ' + score + ' points' + (rank === 0 ? ' — a new best!' : rank > 0 ? ' — #' + (rank + 1) + ' on your Top 10.' : '.') +
       '', 'bad');
-    over.classList.remove('off'); updateStartBtn();
+    over.classList.remove('off'); updateStartBtn(); showGhosts();
   }
 
   function pause() {
@@ -487,7 +520,7 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true });
   function toggle() { if (paused) resume(); else if (active) pause(); else newGame(); }
 
   startBtn.addEventListener('click', toggle);
-  document.getElementById('new-game-btn').addEventListener('click', newGame);
+  document.getElementById('new-game-btn').addEventListener('click', resetToReady);
   pausedEl.addEventListener('click', resume);
   intro.addEventListener('click', newGame);
   over.addEventListener('click', newGame);
@@ -500,7 +533,7 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true });
     e.preventDefault(); toggle();
   });
   fill.style.transform = 'scaleX(0)';
-  renderBoard(-1); updateHud(); updateStartBtn();
+  renderBoard(-1); updateHud(); updateStartBtn(); showGhosts();
 })();
 </script>
 </body>
