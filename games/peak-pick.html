@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stat Mania - Peak Pick</title>
+    <meta name="description" content="Numbers flash randomly inside a box. Click the highest one before the timer runs out.">
+    <link rel="canonical" href="https://www.statmania.info/games/peak-pick.html">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.statmania.info/games/peak-pick.html">
+    <meta property="og:site_name" content="Stat Mania">
+    <meta property="og:title" content="Stat Mania - Peak Pick">
+    <meta property="og:description" content="Numbers flash randomly inside a box. Click the highest one before the timer runs out.">
+    <meta property="og:image" content="https://www.statmania.info/assets/images/logo.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Stat Mania - Peak Pick">
+    <meta name="twitter:description" content="Numbers flash randomly inside a box. Click the highest one before the timer runs out.">
+    <meta name="twitter:image" content="https://www.statmania.info/assets/images/logo.png">
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Google Fonts - Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/dark-theme.css">
+<style>
+  :root {
+    --card: rgba(255,255,255,0.045); --ink: #e8ecf7; --muted: #9aa4c2;
+    --line: rgba(255,255,255,0.14); --accent: #00e5ff; --accent-dark: #0e7490;
+    --good: #4ade80; --bad: #ff6b6b;
+  }
+  body { font-family: 'Inter', sans-serif; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #0a0f1e; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb { background: #3a4a6b; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: #54688f; }
+
+  .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+             justify-content: space-between; margin-bottom: 20px; }
+  .toolbar-left { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .mute-btn { background: rgba(255,255,255,0.06) !important; color: var(--ink) !important; box-shadow: none !important;
+           border: 1px solid rgba(255,255,255,0.18) !important; padding: 8px 11px !important; }
+  .start-btn { display: inline-flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.12em;
+           background: linear-gradient(90deg, #a855f7, #ff2fb4) !important; color: #fff !important;
+           box-shadow: 0 0 18px rgba(168,85,247,0.55), inset 0 0 0 1px rgba(255,255,255,0.35) !important; }
+  .start-btn:hover { box-shadow: 0 0 30px rgba(255,47,180,0.7), inset 0 0 0 1px rgba(255,255,255,0.5) !important; }
+  .toolbar-right { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .select-group { display: flex; flex-direction: column; gap: 2px; cursor: pointer; }
+  .select-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+                  letter-spacing: 0.06em; color: var(--muted); padding-left: 2px; }
+  select { background: rgba(255,255,255,0.04); color: var(--ink);
+           border: 1px solid rgba(255,255,255,0.18); border-radius: 999px;
+           padding: 6px 14px; font-size: 0.85rem; font-weight: 600;
+           font-family: inherit; cursor: pointer; }
+  select:hover { border-color: var(--accent); }
+  select option { background: #0a0f1e; color: var(--ink); }
+  button.action { border: none; background: linear-gradient(90deg, var(--accent), #38bdf8);
+           color: #04101c; padding: 8px 14px; border-radius: 999px; font-size: 0.85rem;
+           font-weight: 700; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+           font-family: inherit; box-shadow: 0 0 20px rgba(0,229,255,0.3); }
+  button.action:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(0,229,255,0.5); }
+  button.action:active { transform: scale(0.97); }
+  button.action:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .scoreboard { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; align-content: start; }
+  .info-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 24px; }
+  .info-grid .rules-panel { margin-top: 0; }
+  @media (max-width: 700px) { .info-grid { grid-template-columns: minmax(0, 1fr); } }
+  .score-tile { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 14px; padding: 14px 10px; text-align: center; }
+  .score-tile .label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em;
+                        color: var(--muted); margin-bottom: 4px; }
+  .score-tile .num { font-size: clamp(1.15rem, 4.5vw, 1.5rem); font-weight: 800; color: var(--ink); font-family: 'Courier New', monospace; }
+  .score-tile.score .num { color: var(--good); }
+  .score-tile.timer .num { color: var(--accent); }
+  .score-tile.timer.low .num { color: var(--bad); }
+  .score-tile.timer.up .num { color: var(--bad); font-size: clamp(0.95rem, 3.6vw, 1.2rem); text-shadow: 0 0 12px rgba(255,107,107,0.7); }
+  .score-tile.index { grid-column: 1 / -1; }
+  .score-tile.index .num { color: #a855f7; }
+  .score-tile .sub { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+  @media (max-width: 560px) {
+    .scoreboard { gap: 10px; }
+    .score-tile { padding: 10px 6px; }
+    .toolbar { flex-wrap: nowrap; gap: 8px; }
+    .toolbar-left { flex-wrap: nowrap; gap: 8px; align-items: flex-end; }
+    .toolbar button.action { padding: 8px 10px; font-size: 0.78rem; white-space: nowrap; }
+    select { padding: 6px 8px; font-size: 0.8rem; }
+    .sm-card.game-card { padding: 16px !important; }
+    .board-wrap { padding: 8px; }
+    .rules-panel { padding: 16px; }
+  }
+
+  .game-layout { display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr); gap: 24px; align-items: start; }
+  @media (max-width: 860px) { .game-layout { grid-template-columns: minmax(0, 1fr); } }
+
+  .board-wrap { min-width: 0; background: var(--card); border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 14px; padding: 16px; display: flex; justify-content: center; }
+
+
+  #end-banner { display: none; flex-wrap: wrap; gap: 12px; justify-content: center;
+                align-items: stretch; margin: 0 0 20px; animation: pop 0.4s ease; }
+  @keyframes pop { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  .win-box { padding: 14px 24px; border-radius: 12px; font-weight: 700; font-size: 1.05rem;
+             display: flex; align-items: center; color: white;
+             box-shadow: 0 6px 20px rgba(34,197,94,0.35); }
+  .win-box.message { background: linear-gradient(135deg, #22c55e, #16a34a); }
+  .win-box.info { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
+                   color: var(--ink); box-shadow: none; }
+
+  .lb-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .lb-table th { text-align: right; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em;
+                 color: var(--muted); font-weight: 700; padding: 4px 6px; }
+  .lb-table td { text-align: right; padding: 6px; color: var(--ink); border-top: 1px solid rgba(255,255,255,0.06);
+                 font-family: 'Courier New', monospace; }
+  .lb-table th:first-child, .lb-table td:first-child { text-align: left; }
+  .lb-table tr.new td { color: var(--good); font-weight: 700; background: rgba(74,222,128,0.08); }
+  .lb-empty { color: var(--muted); font-size: 0.85rem; }
+  .lb-clear { margin-top: 10px; background: none; border: none; color: var(--muted); font-size: 0.75rem;
+              text-decoration: underline; cursor: pointer; font-family: inherit; }
+  .rules-panel { background: var(--card); border: 1px solid rgba(255,255,255,0.08);
+                 border-radius: 14px; padding: 20px 22px; margin-top: 24px; }
+  .rules-panel h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.06em;
+                     color: var(--accent); margin: 0 0 14px; }
+  .rules-panel ul { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 10px; }
+  .rules-panel li { font-size: 1rem; line-height: 1.5; color: var(--ink); }
+  .rules-panel em { color: var(--accent); font-style: normal; font-weight: 700; }
+
+  .board-col { width: 480px; max-width: 100%; min-width: 0; }
+  .timer-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .timer-bar { flex: 1; height: 14px; border-radius: 999px; background: rgba(255,255,255,0.08);
+               overflow: hidden; border: 1px solid rgba(255,255,255,0.12); }
+  .timer-fill { height: 100%; width: 100%; background: linear-gradient(90deg, #00e5ff, #a855f7); transform-origin: left; }
+  .timer-fill.low { background: linear-gradient(90deg, #ff2fb4, var(--bad)); }
+
+  #box { position: relative; width: 100%; aspect-ratio: 480 / 420; border-radius: 10px;
+         background: #05070d; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; margin: 0 auto; }
+  .n { position: absolute; transform: translate(-50%, -50%); width: 66px; height: 66px; padding: 0;
+       border-radius: 50%; border: 2px solid rgba(0,229,255,0.6); background: rgba(255,255,255,0.07);
+       color: var(--ink); font: 800 1.2rem 'Courier New', monospace; cursor: pointer;
+       display: flex; align-items: center; justify-content: center;
+       box-shadow: 0 0 14px rgba(0,229,255,0.2); animation: popin 0.18s ease-out;
+       transition: background 0.15s, border-color 0.15s; }
+  .n:hover { border-color: var(--accent); background: rgba(0,229,255,0.14); }
+  @media (max-width: 560px) { .n { width: 52px; height: 52px; font-size: 0.95rem; } }
+  @keyframes popin { from { transform: translate(-50%, -50%) scale(0.4); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .n { animation: none; } }
+
+  .overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+             padding: 12px; background: rgba(5,7,13,0.55); z-index: 5; cursor: pointer; }
+  #paused { background: #05070d; }
+  .overlay .panel { background: rgba(5,9,22,0.82); border: 2px solid transparent; border-radius: 18px;
+             background-image: linear-gradient(rgba(5,9,22,0.92), rgba(5,9,22,0.92)), linear-gradient(135deg, #00e5ff, #a855f7, #ff2fb4);
+             background-origin: border-box; background-clip: padding-box, border-box;
+             box-shadow: 0 0 18px rgba(168,85,247,0.55); padding: 20px 32px; text-align: center; max-width: 100%; }
+  .overlay .panel h2 { margin: 0 0 8px; font-size: 1.9rem; font-weight: 900; letter-spacing: 0.15em; padding-left: 0.15em;
+             background: linear-gradient(90deg, #00e5ff, #ff2fb4); -webkit-background-clip: text; background-clip: text;
+             color: transparent; filter: drop-shadow(0 0 8px rgba(0,229,255,0.6)); }
+  .overlay .panel p { margin: 0; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #c5cee8; }
+  .overlay.off { display: none; }
+  .msg { text-align: center; min-height: 1.6em; margin-top: 12px; font-weight: 700; font-size: 0.95rem; }
+  .msg.good { color: var(--good); } .msg.bad { color: var(--bad); }
+  .score-tile.miss .num { color: #ff2fb4; }
+  .score-tile.index .num { color: #f59e0b; }
+</style>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BEELJ2ZRED"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true });
+</script>
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+    <!-- Header/Navbar -->
+    <header class="bg-white shadow-sm py-4">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center space-x-3 no-underline hover:opacity-80 transition-opacity">
+                <img src="../img/statmania_logo.svg" alt="Stat Mania Logo" class="w-10 h-10 rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/40x40/4f46e5/ffffff?text=Logo';">
+                <div>
+                    <div class="text-2xl font-bold text-indigo-600">Stat Mania</div>
+                    <p class="text-sm text-slate-500">Making sense of statistics</p>
+                </div>
+            </a>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="../index.html" class="text-slate-600 hover:text-indigo-600 transition duration-300">Home</a></li>
+                    <li><a href="index.html" class="text-slate-600 hover:text-indigo-600 transition duration-300">All Games</a></li>
+                    <li><a href="#cta" class="text-slate-600 hover:text-indigo-600 transition duration-300">Contact</a></li>
+                </ul>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="../index.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Home</a>
+            <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">All Games</a>
+            <a href="#cta" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 hover:text-indigo-600">Contact</a>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <canvas class="sm-canvas" aria-hidden="true"></canvas>
+        <section class="sm-hero-wrap">
+            <div class="sm-hero-inner">
+                <span class="sm-eyebrow">Stat Mania &middot; Games</span>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-4 flex items-center justify-center gap-4 sm-gradient-text">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-12 h-12 sm-hero-icon">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 20V4m0 0-6 6m6-6 6 6" />
+                    </svg>
+                    Peak Pick
+                </h1>
+                <p class="text-lg sm:text-xl sm-subtitle-sm">Numbers flash in the box &mdash; spot the biggest one before the timer runs out</p>
+            </div>
+        </section>
+
+        <section class="py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
+            <div class="container mx-auto max-w-4xl">
+                <div class="sm-card game-card p-8">
+                    <div class="toolbar">
+                        <div class="toolbar-left">
+                            <button id="start-btn" class="action start-btn" aria-label="Start game">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
+                                <span>Start</span>
+                            </button>
+                            <button id="new-game-btn" class="action">✨ New Game</button>
+                        </div>
+                    </div>
+
+                    <div class="game-layout">
+                        <div class="board-wrap">
+                            <div class="board-col">
+                                <div class="timer-wrap"><div class="timer-bar"><div class="timer-fill" id="fill"></div></div></div>
+                                <div id="box">
+                                    <div class="overlay" id="intro">
+                                        <div class="panel"><h2>READY</h2><p>Press Start or click to play</p></div>
+                                    </div>
+                                    <div class="overlay off" id="paused">
+                                        <div class="panel"><h2>PAUSED</h2><p>Click or press space to resume</p></div>
+                                    </div>
+                                    <div class="overlay off" id="over">
+                                        <div class="panel"><h2>GAME OVER</h2><p>Click to play again</p></div>
+                                    </div>
+                                </div>
+                                <div class="msg" id="msg"></div>
+                            </div>
+                        </div>
+
+                        <div class="scoreboard">
+                            <div class="score-tile timer" id="timer-tile">
+                                <div class="label">Time Left</div>
+                                <div class="num" id="time">&ndash;</div>
+                            </div>
+                            <div class="score-tile miss">
+                                <div class="label">Mistakes</div>
+                                <div class="num" id="mistakes">0 / 5</div>
+                            </div>
+                            <div class="score-tile">
+                                <div class="label">Round</div>
+                                <div class="num" id="round">0</div>
+                            </div>
+                            <div class="score-tile">
+                                <div class="label">Correct</div>
+                                <div class="num" id="correct">0</div>
+                            </div>
+                            <div class="score-tile">
+                                <div class="label">Accuracy</div>
+                                <div class="num" id="accuracy">&ndash;</div>
+                            </div>
+                            <div class="score-tile score">
+                                <div class="label">Score</div>
+                                <div class="num" id="score">0</div>
+                            </div>
+                            <div class="score-tile index">
+                                <div class="label">Best Score</div>
+                                <div class="num" id="best">0</div>
+                                <div class="sub">top of your leaderboard</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-grid">
+                        <div class="rules-panel" style="margin-top: 0;">
+                            <h3>Scoring &amp; Levels</h3>
+                            <ul>
+                                <li><em>Correct pick:</em> 10 points + 5 per second left on the clock.</li>
+                                <li><em>Wrong pick or timeout:</em> one mistake, no points.</li>
+                                <li><em>Rounds 1&ndash;4:</em> numbers up to 99; <em>5&ndash;9:</em> up to 999; <em>10+:</em> up to 9999.</li>
+                                <li>Each round adds numbers (up to 12) and trims the time (down to 2.2s).</li>
+                            </ul>
+                        </div>
+                        <div class="rules-panel">
+                            <h3>Top 10</h3>
+                            <div id="leaderboard"></div>
+                            <button class="lb-clear" id="lb-clear" type="button">Clear this board</button>
+                        </div>
+                    </div>
+
+                    <div class="rules-panel">
+                        <h3>How to Play</h3>
+                        <ul>
+                            <li>Each round, several numbers appear at random spots inside the box and stay until the visible timer runs out.</li>
+                            <li>Click the <em>highest</em> number. The next round starts the moment you pick, and the result of the last round shows under the box.</li>
+                            <li>A wrong pick, or letting the timer reach zero, is a <em>mistake</em>. Make <em>5 mistakes</em> and the game ends.</li>
+                            <li>Need a break? Press <em>Pause</em> (or the space bar) &mdash; the numbers hide and the timer freezes. The game also pauses if you switch tabs.</li>
+                            <li>Your top 10 scores are saved in this browser.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action Section -->
+        <section id="cta" class="sm-section-dark py-16 px-4 sm:px-6 lg:px-8 text-center">
+            <div class="container mx-auto max-w-3xl">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-6" style="color:#fff">Explore Other Games</h2>
+                <p class="text-lg sm:text-xl mb-8 sm-subtitle-sm">Check out all available games</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="index.html" class="sm-btn sm-btn-primary">All Games</a>
+                    <a href="#" class="sm-btn sm-btn-ghost">Back to Top</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-white py-8 px-4 sm:px-6 lg:px-8 text-center mt-auto" style="border-top:1px solid rgba(255,255,255,0.08)">
+        <div class="container mx-auto">
+            <p class="mb-4">&copy; <span id="copyright-year">2026</span> Stat Mania. All rights reserved.</p>
+            <div class="flex justify-center space-x-6">
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Privacy Policy</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Terms of Service</a>
+                <a href="#" class="text-slate-300 hover:text-white transition duration-300">Sitemap</a>
+            </div>
+        </div>
+    </footer>
+
+        <script>document.getElementById("copyright-year").textContent = new Date().getFullYear();</script>
+
+    <script>
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+    </script>
+    <script src="../starfield.js"></script>
+
+<script>
+(function () {
+  var MAX_MISTAKES = 5, LB_SIZE = 10, LB_KEY = 'peakPick.top10';
+  var box = document.getElementById('box'), fill = document.getElementById('fill'),
+      timeEl = document.getElementById('time'), timerTile = document.getElementById('timer-tile'),
+      msg = document.getElementById('msg'), startBtn = document.getElementById('start-btn'),
+      intro = document.getElementById('intro'), over = document.getElementById('over'),
+      pausedEl = document.getElementById('paused'), lbEl = document.getElementById('leaderboard');
+  var el = {}; ['round','score','best','mistakes','correct','accuracy'].forEach(function (k) { el[k] = document.getElementById(k); });
+
+  var round = 0, score = 0, mistakes = 0, correct = 0, duration, endAt, remaining, raf,
+      active = false, paused = false, playing = false, buttons = [];
+
+  function rnd(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+  function clearNums() { Array.prototype.slice.call(box.querySelectorAll('.n')).forEach(function (n) { n.remove(); }); }
+  function setMsg(t, c) { msg.textContent = t; msg.className = 'msg ' + (c || ''); }
+  function topVal() { return Math.max.apply(null, buttons.map(function (b) { return +b.dataset.v; })); }
+  function acc() { return round > 0 ? Math.round(correct / round * 100) : null; }
+
+  /* ---------- Top-10 leaderboard (localStorage) ---------- */
+  function loadBoard() {
+    try { var a = JSON.parse(localStorage.getItem(LB_KEY)); return Array.isArray(a) ? a : []; } catch (e) { return []; }
+  }
+  function saveBoard(b) { try { localStorage.setItem(LB_KEY, JSON.stringify(b)); } catch (e) {} }
+  function submitScore() {
+    if (score <= 0) return -1;
+    var entry = { score: score, round: round, correct: correct, acc: acc(), t: Date.now() };
+    var board = loadBoard(); board.push(entry);
+    board.sort(function (a, b) { return b.score - a.score || b.round - a.round || a.t - b.t; });
+    var kept = board.slice(0, LB_SIZE); saveBoard(kept);
+    return kept.indexOf(entry);
+  }
+  function renderBoard(hl) {
+    var board = loadBoard();
+    el.best.textContent = board.length ? board[0].score : 0;
+    if (!board.length) { lbEl.innerHTML = '<div class="lb-empty">No scores yet - play a game!</div>'; return; }
+    lbEl.innerHTML = '<table class="lb-table"><thead><tr><th>#</th><th>Score</th><th>Round</th><th>Correct</th><th>Acc</th></tr></thead><tbody>' +
+      board.map(function (e, i) {
+        return '<tr class="' + (i === hl ? 'new' : '') + '"><td>' + (i + 1) + '</td><td>' + e.score + '</td><td>' + e.round +
+               '</td><td>' + e.correct + '</td><td>' + e.acc + '%</td></tr>';
+      }).join('') + '</tbody></table>';
+  }
+
+  function updateHud() {
+    el.round.textContent = round; el.score.textContent = score; el.correct.textContent = correct;
+    el.mistakes.textContent = mistakes + ' / ' + MAX_MISTAKES;
+    el.accuracy.textContent = round > 0 ? acc() + '%' : '–';
+  }
+  function updateStartBtn() {
+    var label = paused ? 'Resume' : (playing ? 'Pause' : 'Start');
+    startBtn.querySelector('span').textContent = label;
+    startBtn.querySelector('svg').innerHTML = (playing && !paused) ? '<path d="M8 5v14M16 5v14"/>' : '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>';
+    startBtn.setAttribute('aria-label', label + ' game');
+  }
+
+  function newGame() {
+    cancelAnimationFrame(raf); active = false; paused = false;
+    if (playing) submitScore();
+    round = 0; score = 0; mistakes = 0; correct = 0; playing = true; clearNums();
+    intro.classList.add('off'); over.classList.add('off'); pausedEl.classList.add('off');
+    setMsg(''); renderBoard(-1); updateStartBtn(); nextRound();
+  }
+
+  function nextRound() {
+    round++; updateHud();
+    var count = Math.min(4 + Math.floor(round / 2), 12);
+    duration = Math.max(2.2, 5 - round * 0.2);
+    var maxVal = round < 5 ? 99 : round < 10 ? 999 : 9999;
+    var lo = Math.max(1, Math.floor(maxVal / 10));
+    var vals = [];
+    while (vals.length < count) { var v = rnd(lo, maxVal); if (vals.indexOf(v) < 0) vals.push(v); }
+
+    clearNums(); buttons = []; var placed = [];
+    vals.forEach(function (v) {
+      var x, y, tries = 0;
+      do { x = rnd(10, 90); y = rnd(12, 88); tries++; }
+      while (tries < 80 && placed.some(function (p) { return Math.abs(p[0] - x) < 16 && Math.abs(p[1] - y) < 19; }));
+      placed.push([x, y]);
+      var b = document.createElement('button');
+      b.className = 'n'; b.textContent = v; b.style.left = x + '%'; b.style.top = y + '%'; b.dataset.v = v;
+      b.addEventListener('click', function () { if (active) finish(v); });
+      box.appendChild(b); buttons.push(b);
+    });
+    active = true;
+    endAt = performance.now() + duration * 1000;
+    cancelAnimationFrame(raf); raf = requestAnimationFrame(tick);
+  }
+
+  function tick(now) {
+    var left = Math.max(0, endAt - now), frac = left / (duration * 1000);
+    fill.style.transform = 'scaleX(' + frac + ')';
+    timeEl.textContent = (left / 1000).toFixed(1) + 's';
+    var low = frac < 0.3;
+    fill.classList.toggle('low', low); timerTile.classList.toggle('low', low);
+    if (left <= 0) { finish(null); return; }
+    raf = requestAnimationFrame(tick);
+  }
+
+  // Resolve the round and go straight to the next one.
+  function finish(picked) {
+    if (!active) return;
+    active = false; cancelAnimationFrame(raf);
+    var top = topVal(), timeLeft = Math.max(0, endAt - performance.now()) / 1000;
+    if (picked === top) {
+      var pts = 10 + Math.round(timeLeft * 5);
+      score += pts; correct++;
+      setMsg('Round ' + round + ': correct! +' + pts + ' points', 'good');
+    } else {
+      mistakes++;
+      setMsg('Round ' + round + (picked === null ? ": time's up" : ': wrong') + ' — the highest was ' + top, 'bad');
+    }
+    updateHud();
+    if (mistakes < MAX_MISTAKES) nextRound(); else gameOver();
+  }
+
+  function gameOver() {
+    clearNums(); fill.style.transform = 'scaleX(0)'; timeEl.textContent = '–';
+    timerTile.classList.remove('low');
+    var rank = submitScore(); playing = false; renderBoard(rank);
+    setMsg('You made ' + MAX_MISTAKES + ' mistakes. Reached round ' + round +
+      ' with ' + score + ' points' + (rank === 0 ? ' — a new best!' : rank > 0 ? ' — #' + (rank + 1) + ' on your Top 10.' : '.') +
+      '', 'bad');
+    over.classList.remove('off'); updateStartBtn();
+  }
+
+  function pause() {
+    if (!active || paused) return;
+    paused = true; cancelAnimationFrame(raf);
+    remaining = Math.max(0, endAt - performance.now());
+    pausedEl.classList.remove('off'); updateStartBtn();
+  }
+  function resume() {
+    if (!paused) return;
+    paused = false; endAt = performance.now() + remaining;
+    pausedEl.classList.add('off'); updateStartBtn();
+    raf = requestAnimationFrame(tick);
+  }
+  function toggle() { if (paused) resume(); else if (active) pause(); else newGame(); }
+
+  startBtn.addEventListener('click', toggle);
+  document.getElementById('new-game-btn').addEventListener('click', newGame);
+  pausedEl.addEventListener('click', resume);
+  intro.addEventListener('click', newGame);
+  over.addEventListener('click', newGame);
+  document.getElementById('lb-clear').addEventListener('click', function () {
+    try { localStorage.removeItem(LB_KEY); } catch (e) {} renderBoard(-1);
+  });
+  document.addEventListener('visibilitychange', function () { if (document.hidden) pause(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.code !== 'Space' || /^(BUTTON|SELECT|A|INPUT)$/.test(e.target.tagName)) return;
+    e.preventDefault(); toggle();
+  });
+  fill.style.transform = 'scaleX(0)';
+  renderBoard(-1); updateHud(); updateStartBtn();
+})();
+</script>
+</body>
+</html>

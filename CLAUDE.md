@@ -24,7 +24,7 @@ Because the rendered HTML is committed, **most of the actual page content on the
 
 | Source dir | `_quarto.yml` output-dir | Renders to |
 |---|---|---|
-| `raw/` | `../` (repo root) | `index.html`, `snippets.html`, `resources.html`, `games.html`, `lectures.html`, `404.html`, `games/index.html`, `utility/index.html`, `courses/index.html` |
+| `raw/` | `../` (repo root) | `index.html`, `snippets.html`, `resources.html`, `games.html`, `lectures.html`, `404.html`, `games/index.html`, `utility/index.html` |
 | `blograw/` | `../blog` | `blog/` |
 | `gre/` | `.` (in place) | `gre/*.html` |
 | `ielts/` | `.` (in place) | `ielts/*.html` |
@@ -33,7 +33,9 @@ Because the rendered HTML is committed, **most of the actual page content on the
 
 To rebuild a section, `cd` into its source dir and run `quarto render` (requires the Quarto CLI). Example: editing the homepage means editing `raw/index.qmd`, then `quarto render` from `raw/`, which regenerates `index.html` at the repo root.
 
-The **hub/index pages** `games/index.html`, `utility/index.html`, and `courses/index.html` are Quarto-rendered from `raw/games/index.qmd`, `raw/utility/index.qmd`, and `raw/courses/index.qmd` respectively (part of the `raw/` project, so `quarto render` from `raw/` regenerates them too). They use the shared site navbar/theme (`raw/styles.css`) and the `.sm-*` card/hero/footer component classes defined there — edit the `.qmd`, not the generated `.html`.
+The **hub/index pages** `games/index.html` and `utility/index.html` are Quarto-rendered from `raw/games/index.qmd` and `raw/utility/index.qmd` respectively (part of the `raw/` project, so `quarto render` from `raw/` regenerates them too). They use the shared site navbar/theme (`raw/styles.css`) and the `.sm-*` card/hero/footer component classes defined there — edit the `.qmd`, not the generated `.html`.
+
+**`courses/` is a separate repo** (`statmania/courses`, symlinked here and gitignored — see README "Courses"). Its hub page is hand-maintained there, not rendered from `raw/`; quiz banks are picked up by `question/discover_quiz_banks.py`.
 
 Every **other** page under `ds/`, `games/`, `utility/` (e.g. `games/sudoku.html`, `utility/bmi.html`) is **not** Quarto-rendered — hand-written static HTML (self-contained with inline `<style>`/`<script>`, no shared build step, still using the per-directory `css/dark-theme.css` + the shared root `starfield.js`). Edit those `.html` files directly.
 
@@ -48,6 +50,15 @@ There is **one** starfield script: `/starfield.js` in the repo root (not generat
 Newer pages (games, utility, the redesigned homepage) share a "futuristic dark" visual language: dark navy/black background (`#05070d`/`#0a0f1e`), cyan/purple/pink accent gradient (`#00e5ff`, `#a855f7`, `#ff2fb4`), animated canvas backgrounds, card-grid layouts. When adding new utility or game pages, match this look rather than the older Bootstrap/bootswatch ("united" theme) styling used by the Jekyll-rendered pages — check a recent file like `utility/timer.html` or `games/index.html` as a reference, and keep new pages self-contained (inline CSS/JS) consistent with the existing ones rather than pulling in the Jekyll asset pipeline.
 
 Site-wide nav/branding conventions used across utility and game pages: logo/title links back to the homepage, and any "back" or CTA link points to that section's own index page (e.g. `utility/*.html` → `utility/index.html`).
+
+## New games: match the existing games
+
+Whenever a new game is created in `games/`, make it look and behave like the existing games — don't invent a new page shell.
+
+- **Menu/shell:** copy the structure of `games/higher-lower.html`: the Tailwind-CDN head (`css/dark-theme.css`, Inter font, Google Analytics snippet, canonical/og/twitter meta), the sticky header with logo + nav (Home / All Games / Contact) and mobile menu, the `sm-hero-wrap` hero with icon and gradient title, the `sm-card` game container with a `.toolbar` (incl. a **New Game** `button.action`), the "How to Play" `.rules-panel`, the "Explore Other Games" CTA section, the footer, and `../starfield.js`.
+- **Scores:** use the `.scoreboard` / `.score-tile` tiles (label above a monospace number; accent colour for the main stat, amber `.best` tile for the best score saved in `localStorage`) rather than a custom score style. Reuse the same wording where it fits (Streak, Best Streak, Score, Best Score, Rounds Played).
+- **Games with scores / levels / rounds:** use the `games/particle-pop.html` layout (see `games/peak-pick.html` for a worked example): toolbar with a purple-pink **Start / Pause / Resume** toggle (bolt/pause icon, space bar also toggles) + New Game; `.game-layout` with the board (fixed 480px-wide, 480:420 box inside `.board-wrap`) on the left and a `.scoreboard` of `.score-tile`s on the right (timer/lives or mistakes, round/level, score, accuracy, best score); below it an `.info-grid` with a scoring/levels panel next to a **Top 10** leaderboard (`localStorage`, `.lb-table`, "Clear this board"), then "How to Play". Ready / Paused / Game Over states use the centered gradient-bordered panel (big spaced title + small caps hint, click to start/resume/restart), and the game auto-pauses when the tab is hidden.
+- **Wiring up:** add a card to `raw/games/index.qmd` (then render from `raw/`, and revert unrelated pages that `quarto render` regenerates), and list the page in `sitemap-tools.xml` via `scripts/gen_sitemap_tools.py`.
 
 ## Jekyll development
 
