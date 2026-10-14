@@ -49,11 +49,23 @@ Don't geenrate svg if an existing image name (svg or png) matches with the post 
   (needs `pip install cairosvg pillow`; it centres the figure on the site's
   dark background at 1200×630.) Check the PNG before publishing, since
   cairosvg ignores SVG filters (glow) and substitutes fonts.
-- Draw figures in the site's dark theme: background `#05070d`→`#0a0f1e`,
+- Draw figures in the site's dark theme: background dark (default `#05070d`→`#0a0f1e`),
   accents cyan `#00e5ff`, purple `#a855f7`, pink `#ff2fb4`, monospace text
   (`'JetBrains Mono','Fira Code',Consolas,monospace`); include `<title>` and
   `<desc>`. Existing figures (`img/if-else-flow.svg`, `img/c-struct-memory.svg`)
   are good starting points.
+- **Vary the colours between posts.** Don't reuse the cyan/purple/pink palette on every
+  figure: it makes all post thumbnails look alike. Pick a different accent set per post
+  (e.g. green + amber, orange + teal, blue + yellow, red + lime) and tint the dark
+  background to match (deep green, navy, warm brown, plum). Check the recent figures in
+  `img/` and choose something that isn't used by the latest few posts.
+- **Not every figure is a flowchart.** For many posts a themed illustration works better:
+  a relevant logo (e.g. a hexagonal C logo, a Python snake, an R mark) blended with related
+  elements such as scraps of code floating around, a monitor or terminal, a person at a
+  computer. Simple, sketch-like and stylised is fine; it need not look realistic. Use a
+  flowchart/diagram only when the post is about a process or structure. Keep the same SVG
+  rules (dark tinted background, `<title>`/`<desc>`, varied palette). Examples:
+  `img/c-test-code-quickly.svg`, `img/c-die-throw.svg`, `img/c-while-practice.svg`.
 - Photos/screenshots stay JPEG/PNG as usual.
 
 ## Writing conventions
