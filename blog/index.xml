@@ -12,6 +12,641 @@
 <generator>quarto-1.9.38</generator>
 <lastBuildDate>Wed, 14 Oct 2026 18:00:00 GMT</lastBuildDate>
 <item>
+  <title>Declaring Multiple Variables in One Line in C</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/c-declare-multiple-variables-in-one-line.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/c-declare-multiple-variables.svg" class="img-fluid figure-img" alt="A code editor shows int a, b, c; int x = 5, y = 10; and int *p, q;. Beside it, one int tag is connected to three boxes a, b and c. Below, p is shown as an int pointer and q as a plain int."></p>
+<figcaption>One type name can declare many variables, but the asterisk of a pointer belongs to a single variable.</figcaption>
+</figure>
+</div>
+<p>In C we can declare several variables in one statement by separating their names with commas. The only rule is that they <strong>share one type</strong>. All the code below was compiled with <code>gcc -Wall -Wextra</code> and the outputs are real.</p>
+<section id="declare-without-initialising" class="level2">
+<h2 class="anchored" data-anchor-id="declare-without-initialising">1. Declare without initialising</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> b<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> c<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span></code></pre></div></div>
+<p>This creates three <code>int</code> variables. Their values are <strong>not defined yet</strong>, so we assign them before we read them:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdio.h&gt;</span></span>
+<span id="cb2-2"></span>
+<span id="cb2-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb2-4">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> b<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> c<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb2-5">    a <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> b <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> c <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb2-6">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"a=</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> b=</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> c=</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> b<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> c<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb2-7">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb2-8"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<pre><code>a=1 b=2 c=3</code></pre>
+</section>
+<section id="declare-and-initialise-each-one" class="level2">
+<h2 class="anchored" data-anchor-id="declare-and-initialise-each-one">2. Declare and initialise each one</h2>
+<p>Every variable can get its own starting value, and a later one may use an earlier one in the same line:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> x <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> y <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> z <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> x <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> y<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb4-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">double</span> price <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">9.99</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> tax <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.15</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> total <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> price <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> tax<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb4-3">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"x=</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> y=</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> z=</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> y<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> z<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb4-4">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"total=</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%.2f\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> total<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<pre><code>x=10 y=20 z=30
+total=11.49</code></pre>
+<p><code>z = x + y</code> works because <code>x</code> and <code>y</code> are already declared (and given values) by the time the compiler reaches <code>z</code>.</p>
+</section>
+<section id="give-several-variables-the-same-value" class="level2">
+<h2 class="anchored" data-anchor-id="give-several-variables-the-same-value">3. Give several variables the same value</h2>
+<p>Declare them first, then chain the assignment on the next line:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> j<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> k<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb6-2">i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> j <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> k <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb6-3">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"i=</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> j=</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> k=</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> j<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> k<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<pre><code>i=0 j=0 k=0</code></pre>
+<p>The assignment runs right to left: <code>k = 0</code>, then <code>j = k</code>, then <code>i = j</code>.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Writing it all in the declaration, <code>int a = b = 5;</code>, does not work. When the compiler reads <code>b</code>, it has not been declared yet:</p>
+<pre><code>error: 'b' undeclared (first use in this function)</code></pre>
+<p>The valid forms are <code>int a = 5, b = 5;</code> or the two-line version above.</p>
+</div>
+</div>
+</section>
+<section id="the-traps" class="level2">
+<h2 class="anchored" data-anchor-id="the-traps">The traps</h2>
+<section id="partial-initialisation" class="level3">
+<h3 class="anchored" data-anchor-id="partial-initialisation">Partial initialisation</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb9-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> b <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span></code></pre></div></div>
+<p>Only <code>b</code> is set to 5. The <code>=</code> belongs to one variable, not to the whole line. <code>a</code> holds whatever was in that memory before, and the compiler warns when we read it:</p>
+<pre><code>warning: 'a' is used uninitialized [-Wuninitialized]</code></pre>
+<p>A common and harmless use is a loop counter, because the loop itself gives <code>i</code> its first value:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb11-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> sum <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb11-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb11-3">    sum <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb11-4"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb11-5">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"sum = </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> sum<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<pre><code>sum = 45</code></pre>
+</section>
+<section id="the-asterisk-belongs-to-the-variable" class="level3">
+<h3 class="anchored" data-anchor-id="the-asterisk-belongs-to-the-variable">The asterisk belongs to the variable</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb13-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>r<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span></code></pre></div></div>
+<p>Here <code>r</code> is a pointer to <code>int</code>, but <code>s</code> is a plain <code>int</code>. We can see the difference in their sizes:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb14-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>r<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb14-2">s <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> r <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span>s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb14-3">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"sizeof(r)=</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%zu</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> sizeof(s)=</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%zu\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">sizeof</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>r<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">),</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">sizeof</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">));</span></span></code></pre></div></div>
+<pre><code>sizeof(r)=8 sizeof(s)=4</code></pre>
+<p>(8 bytes is a pointer on a 64-bit machine.) Writing <code>int* r, s;</code> looks as if both are pointers, but it means exactly the same thing: only <code>r</code> is. To make both pointers we repeat the asterisk:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb16-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>r<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span></code></pre></div></div>
+<p>If we later write <code>p = q;</code> with <code>int *p, q;</code>, gcc complains: <em>assignment to ‘int *’ from ‘int’ makes pointer from integer without a cast</em>. That message often means the asterisk trap.</p>
+<p>Declarations can also mix a plain variable, an array and a pointer, since the extra symbols attach to each name:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb17-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> n <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> arr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">},</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>ptr <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span>n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb17-2">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"n=</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> arr[1]=</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> *ptr=</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> arr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">],</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>ptr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<pre><code>n=7 arr[1]=2 *ptr=7</code></pre>
+<p>That compiles, but it is a good example of a line we would rather split.</p>
+</section>
+<section id="you-cannot-mix-base-types" class="level3">
+<h3 class="anchored" data-anchor-id="you-cannot-mix-base-types">You cannot mix base types</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb19-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">float</span> b<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span></code></pre></div></div>
+<pre><code>error: expected identifier or '(' before 'float'</code></pre>
+<p>Each statement has one base type. Use two statements: <code>int a; float b;</code>.</p>
+</section>
+</section>
+<section id="should-we-do-it" class="level2">
+<h2 class="anchored" data-anchor-id="should-we-do-it">Should we do it?</h2>
+<p>Both styles are correct. Many programmers keep <strong>one variable per line</strong>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb21-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> count <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb21-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> total <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span></code></pre></div></div>
+<p>It is easier to comment each variable, simpler to read in a diff under version control, and it avoids the pointer and partial-initialisation traps. A single line is fine for closely related values of the same kind, such as <code>int row, col;</code> or <code>double x = 0, y = 0;</code>.</p>
+</section>
+<section id="a-modern-alternative-declare-in-the-loop" class="level2">
+<h2 class="anchored" data-anchor-id="a-modern-alternative-declare-in-the-loop">A modern alternative: declare in the loop</h2>
+<p>Since C99, a loop counter can be declared inside the <code>for</code> itself. It then exists only inside the loop and cannot leak out:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb22-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> sum <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb22-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb22-3">    sum <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb22-4"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+</section>
+<section id="quick-summary" class="level2">
+<h2 class="anchored" data-anchor-id="quick-summary">Quick summary</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>We want</th>
+<th>Write</th>
+<th>Remember</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Several variables, no values</td>
+<td><code>int a, b, c;</code></td>
+<td>Values are undefined until assigned</td>
+</tr>
+<tr class="even">
+<td>Different starting values</td>
+<td><code>int x = 1, y = 2;</code></td>
+<td>Each <code>=</code> applies to one variable</td>
+</tr>
+<tr class="odd">
+<td>Same starting value</td>
+<td><code>int a = 0, b = 0;</code> or <code>int a, b; a = b = 0;</code></td>
+<td><code>int a = b = 0;</code> is an error</td>
+</tr>
+<tr class="even">
+<td>Several pointers</td>
+<td><code>int *p, *q;</code></td>
+<td>The <code>*</code> belongs to each name</td>
+</tr>
+<tr class="odd">
+<td>Different types</td>
+<td>Separate statements</td>
+<td>One base type per declaration</td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+
+ ]]></description>
+  <category>C</category>
+  <category>Programming</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/c-declare-multiple-variables-in-one-line.html</guid>
+  <pubDate>Wed, 14 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/c-declare-multiple-variables.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
   <title>Why Programming Counts from Zero (and Why R Counts from One)</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://www.statmania.info/blog/posts/zero-based-indexing-vs-r.html</link>
@@ -9733,83 +10368,6 @@ font-style: inherit;">-run</span> program.c</span></code></pre></div></div>
   <guid>https://www.statmania.info/blog/posts/running-c-programs-on-linux.html</guid>
   <pubDate>Sat, 19 Sep 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/linux-prog.jpeg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>The Probability of Having Four Babies of the Same Sex</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/probability-4-boys-girls-in-a-row.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<p>Let’s say a family has 4 children. What’s the probability all four are the same sex — either 4 girls or 4 boys?</p>
-<p>We can find this using the <strong>binomial distribution</strong>, treating each birth as an independent event (the successive births are unrelated) with two possible outcomes: a boy or a girl.</p>
-<section id="direct-solution" class="level2">
-<h2 class="anchored" data-anchor-id="direct-solution">Direct Solution</h2>
-<p>There are 4 babies. We need to count how many of the possible birth sequences have all four babies the same sex.</p>
-<p>Since there are 4 babies, the size of the sample space is <img src="https://latex.codecogs.com/png.latex?2%5E4%20=%2016">.</p>
-<p>To mention a few, the babies can be like</p>
-<p>BBGB, GBGG, GGGB, and so on.</p>
-<p>And 4 children out of 4 can be selected in <img src="https://latex.codecogs.com/png.latex?%5Cbinom%7B4%7D%7B4%7D=1"> way.</p>
-<p>Therefore the probability of choosing 4 girls or boys = <img src="https://latex.codecogs.com/png.latex?P(4G%20%5Ccup%204B)%20=%20P(4G)%20+%20P(4B)%20=%20%5Cfrac%7B%5Cbinom%7B4%7D%7B4%7D%7D%7B2%5E4%7D+%5Cfrac%7B%5Cbinom%7B4%7D%7B4%7D%7D%7B2%5E4%7D%20=%20%5Cfrac%7B1%7D%7B16%7D%20+%20%5Cfrac%7B1%7D%7B16%7D%20=%20%5Cfrac%7B1%7D%7B8%7D=0.125"></p>
-</section>
-<section id="solution-with-binomial-distribution" class="level2">
-<h2 class="anchored" data-anchor-id="solution-with-binomial-distribution">Solution with Binomial Distribution</h2>
-<section id="the-mathematical-assumptions" class="level3">
-<h3 class="anchored" data-anchor-id="the-mathematical-assumptions">1. The Mathematical Assumptions</h3>
-<ul>
-<li>Let the probability of having a girl (<img src="https://latex.codecogs.com/png.latex?G">) be <img src="https://latex.codecogs.com/png.latex?p%20=%200.5">.</li>
-<li>Let the probability of having a boy (<img src="https://latex.codecogs.com/png.latex?B">) be <img src="https://latex.codecogs.com/png.latex?q%20=%201%20-%20p%20=%200.5">.</li>
-<li>Let the total number of trials (births) be <img src="https://latex.codecogs.com/png.latex?n%20=%204">.</li>
-</ul>
-<p>The probability of getting exactly <img src="https://latex.codecogs.com/png.latex?k"> successes in <img src="https://latex.codecogs.com/png.latex?n"> trials is given by the binomial formula: <img src="https://latex.codecogs.com/png.latex?P(X%20=%20k)%20=%20%5Cbinom%7Bn%7D%7Bk%7D%20%5Ccdot%20p%5Ek%20%5Ccdot%20q%5E%7Bn-k%7D"></p>
-<hr>
-</section>
-<section id="proving-4-girls-in-a-row-k-4" class="level3">
-<h3 class="anchored" data-anchor-id="proving-4-girls-in-a-row-k-4">2. Proving 4 Girls in a Row (<img src="https://latex.codecogs.com/png.latex?k%20=%204">)</h3>
-<p>To find the probability of a family having exactly 4 girls out of 4 children: <img src="https://latex.codecogs.com/png.latex?P(%5Ctext%7B4%20Girls%7D)%20=%20%5Cbinom%7B4%7D%7B4%7D%20%5Ccdot%20(0.5)%5E4%20%5Ccdot%20(0.5)%5E%7B4-4%7D"></p>
-<ul>
-<li><img src="https://latex.codecogs.com/png.latex?%5Cbinom%7B4%7D%7B4%7D%20=%201"> (there is only 1 unique way to have 4 girls: <img src="https://latex.codecogs.com/png.latex?GGGG">)</li>
-<li><img src="https://latex.codecogs.com/png.latex?(0.5)%5E4%20=%200.0625"></li>
-<li><img src="https://latex.codecogs.com/png.latex?(0.5)%5E0%20=%201"></li>
-</ul>
-<p><img src="https://latex.codecogs.com/png.latex?P(%5Ctext%7B4%20Girls%7D)%20=%201%20%5Ccdot%200.0625%20%5Ccdot%201%20=%20%5Cmathbf%7B0.0625%20%5Ctext%7B%20(or%20%7D%206.25%5C%25)%7D"></p>
-<hr>
-</section>
-<section id="proving-4-boys-in-a-row-k-0" class="level3">
-<h3 class="anchored" data-anchor-id="proving-4-boys-in-a-row-k-0">3. Proving 4 Boys in a Row (<img src="https://latex.codecogs.com/png.latex?k%20=%200">)</h3>
-<p>Using the same formula, the probability of having 0 girls (which means exactly 4 boys, <img src="https://latex.codecogs.com/png.latex?BBBB">) is: <img src="https://latex.codecogs.com/png.latex?P(%5Ctext%7B4%20Boys%7D)%20=%20%5Cbinom%7B4%7D%7B0%7D%20%5Ccdot%20(0.5)%5E0%20%5Ccdot%20(0.5)%5E%7B4-0%7D"></p>
-<ul>
-<li><img src="https://latex.codecogs.com/png.latex?%5Cbinom%7B4%7D%7B0%7D%20=%201"></li>
-<li><img src="https://latex.codecogs.com/png.latex?(0.5)%5E0%20=%201"></li>
-<li><img src="https://latex.codecogs.com/png.latex?(0.5)%5E4%20=%200.0625"></li>
-</ul>
-<p><img src="https://latex.codecogs.com/png.latex?P(%5Ctext%7B4%20Boys%7D)%20=%201%20%5Ccdot%201%20%5Ccdot%200.0625%20=%20%5Cmathbf%7B0.0625%20%5Ctext%7B%20(or%20%7D%206.25%5C%25)%7D"></p>
-<hr>
-</section>
-<section id="the-final-proof-same-sex" class="level3">
-<h3 class="anchored" data-anchor-id="the-final-proof-same-sex">4. The Final Proof: “Same Sex”</h3>
-<p>Because a family can have either all girls OR all boys, and these two outcomes are mutually exclusive, we add their individual binomial probabilities together: <img src="https://latex.codecogs.com/png.latex?P(%5Ctext%7BSame%20Sex%7D)%20=%20P(%5Ctext%7B4%20Girls%7D)%20+%20P(%5Ctext%7B4%20Boys%7D)"> <img src="https://latex.codecogs.com/png.latex?P(%5Ctext%7BSame%20Sex%7D)%20=%200.0625%20+%200.0625%20=%20%5Cmathbf%7B0.125%7D"></p>
-<p>Converting <img src="https://latex.codecogs.com/png.latex?0.125"> to a percentage gives <strong>12.5%</strong>. As a fraction, <img src="https://latex.codecogs.com/png.latex?0.125%20=%20%5Cfrac%7B1%7D%7B8%7D"> — so roughly <strong>1 family in 8</strong> with four children will have them all the same sex.</p>
-<hr>
-</section>
-</section>
-<section id="a-note-on-the-assumption" class="level2">
-<h2 class="anchored" data-anchor-id="a-note-on-the-assumption">A Note on the Assumption</h2>
-<p>This proof relies on <img src="https://latex.codecogs.com/png.latex?p%20=%200.5"> for a clean, exact result. In reality, the sex ratio at birth is closer to 105 boys per 100 girls (<img src="https://latex.codecogs.com/png.latex?p%20%5Capprox%200.512"> for a boy), which shifts the “4 boys” probability slightly higher than “4 girls.” The gap is small enough that <img src="https://latex.codecogs.com/png.latex?%5Cfrac%7B1%7D%7B8%7D"> remains an excellent approximation for four children.</p>
-
-
-</section>
-
- ]]></description>
-  <category>statistics</category>
-  <category>probability</category>
-  <guid>https://www.statmania.info/blog/posts/probability-4-boys-girls-in-a-row.html</guid>
-  <pubDate>Tue, 15 Sep 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/binom.jpeg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
