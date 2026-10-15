@@ -10,7 +10,1063 @@
 <atom:link href="https://www.statmania.info/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Posts on statistics theory, R &amp; Python, and developer tips from Stat Mania.</description>
 <generator>quarto-1.9.38</generator>
-<lastBuildDate>Tue, 13 Oct 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Wed, 14 Oct 2026 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>Why Programming Counts from Zero (and Why R Counts from One)</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/zero-based-indexing-vs-r.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/zero-based-indexing.svg" class="img-fluid figure-img" alt="Left, letters A to E stand on a ruler marked 0 to 4 beside x[0], showing the index as distance from the start. Right, five people in a queue wear badges 1 to 5 beside x[1], showing the index as position in the line."></p>
+<figcaption>Left: letters standing on a ruler that starts at 0. Right: people in a queue numbered from 1.</figcaption>
+</figure>
+</div>
+<p>Every beginner trips on it once. In C and Python the first element of a list is <code>x[0]</code>. In R it is <code>x[1]</code>. Neither side is being silly: they answer two slightly different questions. Let’s see what those questions are.</p>
+<section id="two-questions-two-numbers" class="level2">
+<h2 class="anchored" data-anchor-id="two-questions-two-numbers">Two questions, two numbers</h2>
+<p>When we say “the third item”, we can mean either of these:</p>
+<ul>
+<li><strong>Position:</strong> <em>which one in the line is it?</em> Counting from one, it is number 3.</li>
+<li><strong>Offset:</strong> <em>how far is it from the start?</em> Two steps away.</li>
+</ul>
+<p>Zero-based indexing stores the <strong>offset</strong>. One-based indexing stores the <strong>position</strong>. The first item is zero steps from the start, but it is also the first one in the line. Both statements are true, and that is the whole disagreement.</p>
+</section>
+<section id="everyday-analogies" class="level2">
+<h2 class="anchored" data-anchor-id="everyday-analogies">Everyday analogies</h2>
+<section id="zero-based-things-that-measure-distance" class="level3">
+<h3 class="anchored" data-anchor-id="zero-based-things-that-measure-distance">Zero-based: things that measure distance</h3>
+<ul>
+<li><strong>A ruler.</strong> The scale starts at 0 cm, not 1 cm. The first centimetre box lies <em>between</em> 0 and 1. A mark’s label tells us how far it is from the edge.</li>
+<li><strong>Age.</strong> A newborn is 0 years old. At “age 1” a full year has already gone by.</li>
+<li><strong>A clock.</strong> Minutes run from 00 to 59 and the hour restarts at 0. Nobody writes 60 minutes past; it rolls over to 0.</li>
+<li><strong>Floors in many countries.</strong> The ground floor is floor 0, and the first floor is one flight of stairs up. The number counts the stairs we climbed.</li>
+<li><strong>Mile markers.</strong> The marker at the start of a highway says 0. A marker reading 5 means 5 miles travelled.</li>
+</ul>
+<p>An array works the same way. The computer keeps the address where the array begins, and <code>x[i]</code> means “start there, then move <code>i</code> slots forward.”</p>
+</section>
+<section id="one-based-things-that-count-members" class="level3">
+<h3 class="anchored" data-anchor-id="one-based-things-that-count-members">One-based: things that count members</h3>
+<ul>
+<li><strong>A queue.</strong> The person at the front is the 1st person. Nobody says “person number zero.”</li>
+<li><strong>Book pages and chapters.</strong> Chapter 1 is the first chapter.</li>
+<li><strong>Spreadsheet rows.</strong> Row 1 is the top row, and column 1 is column A.</li>
+<li><strong>Seat numbers, rank in a race, house numbers.</strong> All of them start at 1 because they label <em>members of a set</em>.</li>
+</ul>
+<p>A statistician talks like this naturally: the observations are <img src="https://latex.codecogs.com/png.latex?x_1,%20x_2,%20%5Cdots,%20x_n">, and <img src="https://latex.codecogs.com/png.latex?x_n"> is the last of <img src="https://latex.codecogs.com/png.latex?n"> values. That habit is the reason R looks the way it does.</p>
+</section>
+</section>
+<section id="why-programming-languages-chose-zero" class="level2">
+<h2 class="anchored" data-anchor-id="why-programming-languages-chose-zero">Why programming languages chose zero</h2>
+<section id="the-index-really-is-an-offset" class="level3">
+<h3 class="anchored" data-anchor-id="the-index-really-is-an-offset">1. The index really is an offset</h3>
+<p>In C, an array name is the address of its first element, and <code>a[i]</code> is defined as <code>*(a + i)</code>: go <code>i</code> elements past the start, then read. For the first element we move nowhere, so the index must be 0. Let’s check this with real addresses.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdio.h&gt;</span></span>
+<span id="cb1-2"></span>
+<span id="cb1-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-4">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">};</span></span>
+<span id="cb1-5">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span></span>
+<span id="cb1-6">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"a[</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">] = </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">   address = </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%p</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">   offset = </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%td</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> bytes</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb1-7">               i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">],</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*)&amp;</span>a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">],</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">char</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*)&amp;</span>a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">char</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*)&amp;</span>a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]);</span></span>
+<span id="cb1-8">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"*(a + 2) = </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*(</span>a <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">));</span></span>
+<span id="cb1-9">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-10"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<pre><code>a[0] = 10   address = 0x7fff874b6ca0   offset = 0 bytes
+a[1] = 20   address = 0x7fff874b6ca4   offset = 4 bytes
+a[2] = 30   address = 0x7fff874b6ca8   offset = 8 bytes
+a[3] = 40   address = 0x7fff874b6cac   offset = 12 bytes
+*(a + 2) = 30</code></pre>
+<p>(The addresses change from run to run; the offsets do not.) Each <code>int</code> takes 4 bytes, so element <code>i</code> sits <code>4 * i</code> bytes from the start. With zero-based indexing the address is just <code>start + i * size</code>. With one-based indexing the compiler would have to compute <code>start + (i - 1) * size</code>, an extra subtraction hidden in every access. Early machines were slow and small, so C’s ancestors (BCPL, and then C itself) kept the index equal to the offset and avoided that cost.</p>
+</section>
+<section id="half-open-ranges-are-tidy" class="level3">
+<h3 class="anchored" data-anchor-id="half-open-ranges-are-tidy">2. Half-open ranges are tidy</h3>
+<p>The computer scientist Edsger Dijkstra made a famous argument in a 1982 note, <em>Why numbering should start at zero</em>. To describe a run of elements, the neatest convention is “from <code>a</code>, up to but <strong>not including</strong> <code>b</code>”. Then:</p>
+<ul>
+<li>the number of elements is simply <code>b - a</code>;</li>
+<li>two neighbouring ranges share a boundary: <code>[0, 3)</code> and <code>[3, 5)</code> join with no gap and no overlap;</li>
+<li>the whole array of <code>n</code> elements is <code>[0, n)</code>, which needs no <code>+ 1</code> or <code>- 1</code>.</li>
+</ul>
+<p>Python slicing follows this rule:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">x <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">50</span>]</span>
+<span id="cb3-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(x[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>], x[<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>])         <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># first and last</span></span>
+<span id="cb3-3"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(x[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>:<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>])              <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># elements 1 and 2, stop *before* 3</span></span>
+<span id="cb3-4"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(x[:<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> x[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>:])       <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># split anywhere, glue back together</span></span>
+<span id="cb3-5"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(x[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>:<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>]))         <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 4 - 1</span></span></code></pre></div></div>
+<pre><code>10 50
+[20, 30]
+[10, 20, 30, 40, 50]
+3</code></pre>
+<p>Think of fence posts. A slice <code>x[1:3]</code> is described by the <em>posts</em> (the boundaries at 1 and 3), and the length is the gap between them, 3 - 1 = 2 panels. Zero-based indices label the posts, which is why the arithmetic is clean.</p>
+</section>
+<section id="loops-and-wrap-around-are-neat" class="level3">
+<h3 class="anchored" data-anchor-id="loops-and-wrap-around-are-neat">3. Loops and wrap-around are neat</h3>
+<p>Looping over <code>n</code> items is <code>for (i = 0; i &lt; n; i++)</code>. Cycling through them is <code>i % n</code>, which gives exactly <code>0, 1, ..., n-1</code> and then restarts. A clock face, a circular buffer, a hash table bucket and a pixel in a row of an image are all handled by <code>%</code> with no adjustment. With one-based numbering, wrap-around needs <code>(i - 1) % n + 1</code>.</p>
+</section>
+</section>
+<section id="why-r-starts-at-one" class="level2">
+<h2 class="anchored" data-anchor-id="why-r-starts-at-one">Why R starts at one</h2>
+<p>R did not appear from nowhere. It is a free implementation of the <strong>S</strong> language, designed at Bell Labs for data analysis. Its design was driven by what statisticians and mathematicians already write on paper, and not by how memory is laid out.</p>
+<ul>
+<li><strong>Mathematical notation.</strong> Vectors are <img src="https://latex.codecogs.com/png.latex?x_1,%20%5Cdots,%20x_n"> and matrices have entries <img src="https://latex.codecogs.com/png.latex?a_%7Bij%7D"> with <img src="https://latex.codecogs.com/png.latex?i"> from 1 to the number of rows. R code can look the same as the formula in a textbook.</li>
+<li><strong>Heritage.</strong> S borrowed from Fortran-style numerical computing, which counts from one. MATLAB, Julia, Lua and Fortran are one-based too.</li>
+<li><strong>Vectors, not addresses.</strong> R users rarely think about memory. A vector is “a list of values”, and the first value is the first value.</li>
+<li><strong>Length equals last index.</strong> In R, <code>x[length(x)]</code> is the last element, and <code>x[n]</code> is the <em>n</em>th element. The words and the numbers agree.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">x <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">50</span>)</span>
+<span id="cb5-2">x[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]               <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># first element</span></span>
+<span id="cb5-3">x[<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(x)]       <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># last element</span></span>
+<span id="cb5-4">x[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>]             <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># elements 2, 3 and 4: both ends included</span></span>
+<span id="cb5-5">m <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">nrow =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)</span>
+<span id="cb5-6">m[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>]            <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># row 2, column 3</span></span></code></pre></div></div>
+<pre><code>[1] 10
+[1] 50
+[1] 20 30 40
+[1] 6</code></pre>
+<p>Notice that R ranges are <strong>closed</strong>: <code>2:4</code> includes both 2 and 4, so “elements 2 to 4” means what it says. That is natural for human counting, even though it loses Dijkstra’s tidy arithmetic.</p>
+</section>
+<section id="careful-where-each-convention-bites" class="level2">
+<h2 class="anchored" data-anchor-id="careful-where-each-convention-bites">Careful: where each convention bites</h2>
+<p>Both conventions have a famous trap.</p>
+<p><strong>R: index 0 is not an error, it is silently empty.</strong> And a negative index means <em>drop</em>, not “count from the end”:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">x <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">50</span>)</span>
+<span id="cb7-2">x[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>]      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># numeric(0): an empty result, no warning</span></span>
+<span id="cb7-3">x[<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]     <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># everything except the first element</span></span>
+<span id="cb7-4">x[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>]      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># NA: out of range, still no error</span></span></code></pre></div></div>
+<pre><code>numeric(0)
+[1] 20 30 40 50
+[1] NA</code></pre>
+<p>In Python <code>x[-1]</code> is the <em>last</em> element, and <code>x[5]</code> on a five-element list raises an <code>IndexError</code>. The same-looking code means different things.</p>
+<p><strong>R: <code>1:length(y)</code> is dangerous for empty vectors.</strong> If <code>y</code> is empty, <code>1:0</code> is the sequence <code>1, 0</code>, so a loop runs twice, with nonsense indices:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">y <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">integer</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb9-2"><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(y)       <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># counts down!</span></span>
+<span id="cb9-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq_along</span>(y)      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># safe: gives nothing</span></span></code></pre></div></div>
+<pre><code>[1] 1 0
+integer(0)</code></pre>
+<p>Use <code>seq_along(y)</code> in loops. It is also the idiomatic R way to say “for each index”.</p>
+<p><strong>C and Python: the off-by-one error.</strong> Because the last valid index is <code>n - 1</code>, writing <code>i &lt;= n</code> instead of <code>i &lt; n</code> reads one element past the end. In C that is undefined behaviour and no error is raised: the program may crash, print garbage, or seem to work. This family of bugs is so common it has a name, the <em>off-by-one error</em> or fencepost error.</p>
+</section>
+<section id="advantages-and-disadvantages" class="level2">
+<h2 class="anchored" data-anchor-id="advantages-and-disadvantages">Advantages and disadvantages</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Zero-based</strong> (C, Python, Java, JavaScript)</th>
+<th><strong>One-based</strong> (R, Fortran, MATLAB, Julia)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Meaning of the index</strong></td>
+<td>Offset from the start</td>
+<td>Position in the line</td>
+</tr>
+<tr class="even">
+<td><strong>Machine cost</strong></td>
+<td>Address is <code>start + i * size</code>, no adjustment</td>
+<td>Needs <code>i - 1</code> (compilers hide it, but it is there)</td>
+</tr>
+<tr class="odd">
+<td><strong>Ranges</strong></td>
+<td>Half-open <code>[a, b)</code>: length is <code>b - a</code>, neighbours join cleanly</td>
+<td>Closed <code>a:b</code>: matches how we speak, length is <code>b - a + 1</code></td>
+</tr>
+<tr class="even">
+<td><strong>Wrap-around (<code>%</code>)</strong></td>
+<td>Direct: <code>i % n</code></td>
+<td>Needs <code>(i - 1) %% n + 1</code></td>
+</tr>
+<tr class="odd">
+<td><strong>Last element</strong></td>
+<td><code>x[n - 1]</code> (or <code>x[-1]</code> in Python)</td>
+<td><code>x[n]</code>, matches “the <em>n</em>th item”</td>
+</tr>
+<tr class="even">
+<td><strong>Maths and statistics</strong></td>
+<td>Formulas need translating (<img src="https://latex.codecogs.com/png.latex?x_1"> becomes <code>x[0]</code>)</td>
+<td>Code mirrors the formula</td>
+</tr>
+<tr class="odd">
+<td><strong>Beginner friendliness</strong></td>
+<td>“Why is the first one 0?” is a hurdle</td>
+<td>Matches everyday counting</td>
+</tr>
+<tr class="even">
+<td><strong>Typical bug</strong></td>
+<td>Off-by-one at the end of loops</td>
+<td>Off-by-one when porting zero-based code; <code>1:0</code> loops</td>
+</tr>
+<tr class="odd">
+<td><strong>Typical strength</strong></td>
+<td>Low-level control, array arithmetic, slicing</td>
+<td>Readable data analysis</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Moving between languages
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When translating code from Python to R, add 1 to every index. Going from R to Python, subtract 1. Also remember that Python’s <code>x[a:b]</code> has <code>b - a</code> elements, while R’s <code>x[a:b]</code> has <code>b - a + 1</code>. Write a tiny test with a 5-element vector before trusting a conversion.</p>
+</div>
+</div>
+</section>
+<section id="so-who-is-right" class="level2">
+<h2 class="anchored" data-anchor-id="so-who-is-right">So who is right?</h2>
+<p>Neither. Zero-based indexing is the right choice for a language that sits close to memory, because the index is literally a distance. One-based indexing is the right choice for a language that sits close to mathematics, because the index is literally a label. C was built to write operating systems and R was built to analyse data, so each picked the convention that suited its users.</p>
+<p>What matters in practice is to <strong>know which question the index answers</strong> in the language we are using: <em>how far from the start?</em> or <em>which one in the line?</em> Once that is clear, the off-by-one mistakes become much easier to spot.</p>
+</section>
+<section id="reference" class="level2">
+<h2 class="anchored" data-anchor-id="reference">Reference</h2>
+<ul>
+<li>E. W. Dijkstra, <em>Why numbering should start at zero</em>, EWD831 (1982).</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>Programming</category>
+  <category>C</category>
+  <category>Python</category>
+  <category>R</category>
+  <category>Explainer</category>
+  <guid>https://www.statmania.info/blog/posts/zero-based-indexing-vs-r.html</guid>
+  <pubDate>Wed, 14 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/zero-based-indexing.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>Handy Linux Shell One-Liners for Everyday File Tasks</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/linux-shell-one-liners.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/linux-shell-one-liners.svg" class="img-fluid figure-img" alt="A terminal window shows an ls command, a for loop over mp4 files, and find piped to wc -l. Beside it, three messy file names are renamed to 1.jpg, 2.jpg and 3.png."></p>
+<figcaption>Short shell loops can rename, convert and count many files at once.</figcaption>
+</figure>
+</div>
+<p>These are small commands we keep coming back to. Each one was run in Bash before we wrote it down here, and the outputs are real.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Bulk renaming and in-place editing change files for good. Try each command in a scratch folder first, or on a copy.</p>
+</div>
+</div>
+<section id="where-are-we" class="level2">
+<h2 class="anchored" data-anchor-id="where-are-we">Where are we?</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">pwd</span></span></code></pre></div></div>
+<p><code>pwd</code> prints the current working directory.</p>
+</section>
+<section id="open-a-file-with-its-default-application" class="level2">
+<h2 class="anchored" data-anchor-id="open-a-file-with-its-default-application">Open a file with its default application</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">xdg-open</span> filename</span></code></pre></div></div>
+<p><code>xdg-open</code> uses the application the desktop has chosen for that file type, so a PDF opens in the PDF viewer and a folder opens in the file manager.</p>
+</section>
+<section id="look-inside-protected-system-folders" class="level2">
+<h2 class="anchored" data-anchor-id="look-inside-protected-system-folders">Look inside protected system folders</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sudo</span> nautilus    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># or dolphin, thunar</span></span></code></pre></div></div>
+<p>This opens the file manager with administrator rights. Use it only to look. Anything we create or change this way can end up owned by root, and then our normal user cannot edit it. Close it when we are done.</p>
+</section>
+<section id="clean-up-text-with-sed" class="level2">
+<h2 class="anchored" data-anchor-id="clean-up-text-with-sed">Clean up text with <code>sed</code></h2>
+<p>We will use a small file in which blank lines separate the lines:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">printf</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'a\n\nb\n\n\nc\n'</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> file.txt</span></code></pre></div></div>
+<section id="remove-blank-lines" class="level3">
+<h3 class="anchored" data-anchor-id="remove-blank-lines">Remove blank lines</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sed</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'/^$/d'</span> file.txt</span></code></pre></div></div>
+<pre><code>a
+b
+c</code></pre>
+</section>
+<section id="add-a-hyphen-before-each-line" class="level3">
+<h3 class="anchored" data-anchor-id="add-a-hyphen-before-each-line">Add a hyphen before each line</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sed</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'s/^/-/'</span> file.txt</span></code></pre></div></div>
+<pre><code>-a
+-
+-b
+-
+-
+-c</code></pre>
+<p>Blank lines get a hyphen too. To skip them, run the blank-line removal first, or use <code>sed '/./s/^/-/' file.txt</code>.</p>
+</section>
+<section id="put-a-blank-line-after-every-line" class="level3">
+<h3 class="anchored" data-anchor-id="put-a-blank-line-after-every-line">Put a blank line after every line</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sed</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-i</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'s/$/\n/'</span> file.txt</span></code></pre></div></div>
+<p>With GNU <code>sed</code> (the one on most Linux systems), this turns every newline into a double newline. The <code>-i</code> option edits the file in place. To keep a backup, write <code>-i.bak</code> instead. We get the original as <code>file.txt.bak</code>.</p>
+</section>
+</section>
+<section id="count-files" class="level2">
+<h2 class="anchored" data-anchor-id="count-files">Count files</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">find</span> . <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-type</span> f <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">wc</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-l</span></span></code></pre></div></div>
+<p><code>find</code> lists every regular file below the current folder, including subfolders, and <code>wc -l</code> counts the lines. In a test folder with two files and one more inside a subfolder, it printed <code>3</code>. To count only the files directly in the folder, limit the depth:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">find</span> . <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-maxdepth</span> 1 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-type</span> f <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">wc</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-l</span></span></code></pre></div></div>
+<p>That printed <code>2</code> for the same folder.</p>
+</section>
+<section id="rename-many-files" class="level2">
+<h2 class="anchored" data-anchor-id="rename-many-files">Rename many files</h2>
+<section id="number-files-in-order" class="level3">
+<h3 class="anchored" data-anchor-id="number-files-in-order">Number files in order</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ls</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-v</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-n</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">read</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">n</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">f</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mv</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-n</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$f</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.jpg"</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span></code></pre></div></div>
+<p>Here <code>ls -v</code> sorts names in natural order (<code>z2</code> before <code>z10</code>), <code>cat -n</code> puts a number in front of each name, and the loop renames each file to that number. The example renames everything to <code>.jpg</code>, so change the extension to suit. The <code>-n</code> option stops <code>mv</code> from overwriting an existing file.</p>
+<p>On six files (<code>a.jpg</code>, <code>b.jpg</code>, <code>c.jpg</code>, <code>my pic.jpg</code>, <code>z2.jpg</code>, <code>z10.jpg</code>) this gave <code>1.jpg</code> to <code>6.jpg</code>, and the name with a space worked too.</p>
+</section>
+<section id="number-files-from-a-chosen-start-with-the-same-extension" class="level3">
+<h3 class="anchored" data-anchor-id="number-files-from-a-chosen-start-with-the-same-extension">Number files from a chosen start, with the same extension</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">num</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>0<span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> i <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mv</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$i</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">printf</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'%04d'</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$num)</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${i</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">##</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>.<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">((</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">num</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">));</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span></code></pre></div></div>
+<p>This pads the number to four digits and keeps each file’s own extension. Set <code>num=10</code> to start at 10. Three files named <code>a.jpg</code>, <code>b.jpg</code> and <code>c.jpg</code> became <code>0010.jpg</code>, <code>0011.jpg</code> and <code>0012.jpg</code>.</p>
+<p>We use <code>${i##*.}</code> (the part after the last dot), so a name such as <code>my.photo.jpg</code> keeps <code>jpg</code>. The <code>*</code> also matches folders, so run this where only the files to rename are present.</p>
+<p>For a longer discussion of the numbering approach, see <a href="https://stackoverflow.com/questions/3211595/renaming-files-in-a-folder-to-sequential-numbers">this Stack Overflow answer</a>.</p>
+</section>
+<section id="replace-underscores-with-hyphens" class="level3">
+<h3 class="anchored" data-anchor-id="replace-underscores-with-hyphens">Replace underscores with hyphens</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> f <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>_<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mv</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$f</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${f</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">//</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">_</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>-<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span></code></pre></div></div>
+<p><code>${f//_/-}</code> replaces every <code>_</code> in the name. Starting from <code>Report_Final_v2.TXT</code>, we got <code>Report-Final-v2.TXT</code>.</p>
+</section>
+<section id="replace-spaces-with-hyphens" class="level3">
+<h3 class="anchored" data-anchor-id="replace-spaces-with-hyphens">Replace spaces with hyphens</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> file <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">' '</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mv</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$file</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${file</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">//</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> </span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>-<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span></code></pre></div></div>
+<p><code>My Photo One.JPG</code> became <code>My-Photo-One.JPG</code>.</p>
+</section>
+<section id="rename-to-lowercase" class="level3">
+<h3 class="anchored" data-anchor-id="rename-to-lowercase">Rename to lowercase</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> f <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mv</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-n</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$f</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${f</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,,</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span></code></pre></div></div>
+<p><code>${f,,}</code> lowercases the name. Together, the three steps above turned <code>My Photo One.JPG</code> into <code>my-photo-one.jpg</code> and <code>Report_Final_v2.TXT</code> into <code>report-final-v2.txt</code>.</p>
+</section>
+<section id="the-same-with-perl-rename" class="level3">
+<h3 class="anchored" data-anchor-id="the-same-with-perl-rename">The same with Perl <code>rename</code></h3>
+<p>Many systems also have a <code>rename</code> command that takes a Perl expression (on Debian and Ubuntu, <code>sudo apt install rename</code>). These forms do the same jobs:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">rename</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'s/_/-/g'</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>         <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># underscores to hyphens</span></span>
+<span id="cb17-2"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">rename</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'y/A-Z/a-z/'</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># to lowercase</span></span></code></pre></div></div>
+<p>We did not have this <code>rename</code> installed here, so we only tested the expressions themselves in Perl. <code>My_File_Name_v2.JPG</code> became <code>My-File-Name-v2.JPG</code> with <code>s/_/-/g</code>, and <code>My_File.JPG</code> became <code>my_file.jpg</code> with <code>y/A-Z/a-z/</code>. Note the <code>g</code>: without it, only the first underscore changes (<code>a_b_c</code> became <code>a-b_c</code>).</p>
+</section>
+</section>
+<section id="convert-all-mp4-files-to-mp3" class="level2">
+<h2 class="anchored" data-anchor-id="convert-all-mp4-files-to-mp3">Convert all mp4 files to mp3</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> f <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>.mp4<span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb18-2">  <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">ffmpeg</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-i</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$f</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-b:a</span> 192K <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-vn</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${f</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%</span>.mp4<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.mp3"</span></span>
+<span id="cb18-3"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span></code></pre></div></div>
+<p><code>-vn</code> drops the video, <code>-b:a 192K</code> sets the audio bitrate, and <code>${f%.mp4}</code> removes the <code>.mp4</code> ending from the name. Because <code>"$f"</code> is in quotes, names with spaces work. A test folder with <code>clip one.mp4</code> and <code>second.mp4</code> ended up with <code>clip one.mp3</code> and <code>second.mp3</code> next to them.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>An older version of this script looped over <code>ls . | grep .mp4</code> and changed <code>IFS</code>. That breaks on names with spaces and also matches any name with “mp4” inside it. A plain <code>for f in *.mp4</code> loop avoids both problems.</p>
+</div>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>Linux</category>
+  <category>Shell</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/linux-shell-one-liners.html</guid>
+  <pubDate>Tue, 13 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/linux-shell-one-liners.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
 <item>
   <title>Recursion in R: Functions That Call Themselves</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
@@ -8754,582 +9810,6 @@ font-style: inherit;">-run</span> program.c</span></code></pre></div></div>
   <guid>https://www.statmania.info/blog/posts/probability-4-boys-girls-in-a-row.html</guid>
   <pubDate>Tue, 15 Sep 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/binom.jpeg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Nested if in C, Explained with Real-Life Examples</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/c-nested-if-explained-with-examples.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/c-nested-if-flow.svg" class="img-fluid figure-img"></p>
-<figcaption>Nested <code>if</code>: the inner check runs only when the outer condition is true</figcaption>
-</figure>
-</div>
-<p>A nested <code>if</code> statement in C is simply an <code>if</code> statement placed inside another <code>if</code> statement. It lets you test conditions that depend on one another: the inner condition is evaluated only if the outer condition is true.</p>
-<section id="example-1-e-commerce-discount-eligibility" class="level2">
-<h2 class="anchored" data-anchor-id="example-1-e-commerce-discount-eligibility">Example 1: E-commerce discount eligibility</h2>
-<p>Imagine an online store running a promotion:</p>
-<ol type="1">
-<li><strong>Outer condition:</strong> is the customer a premium member?</li>
-<li><strong>Inner condition:</strong> only if they are, check the purchase amount. Over $1,000 earns a 20% discount; otherwise 10%.</li>
-<li>Non-members get no discount at all.</li>
-</ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb1-2"></span>
-<span id="cb1-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">()</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb1-4">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> isMember <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>              <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// 1 for yes, 0 for no</span></span>
-<span id="cb1-5">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">double</span> purchaseAmount <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1250.00</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb1-6"></span>
-<span id="cb1-7">    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// Outer if: is the user a premium member?</span></span>
-<span id="cb1-8">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>isMember <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb1-9">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Membership verified.</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb1-10"></span>
-<span id="cb1-11">        <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// Inner (nested) if: the order total decides the discount</span></span>
-<span id="cb1-12">        <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>purchaseAmount <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000.0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb1-13">            printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Success: You qualify for a 20</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%%</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> VIP discount!</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb1-14">        <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">else</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb1-15">            printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Success: You qualify for a 10</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%%</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> Standard Member discount.</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb1-16">        <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb1-17"></span>
-<span id="cb1-18">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">else</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb1-19">        <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// Runs if the outer condition (isMember == 1) is false</span></span>
-<span id="cb1-20">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Standard account: No discount available for non-members.</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb1-21">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb1-22"></span>
-<span id="cb1-23">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb1-24"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>Output:</p>
-<pre><code>Membership verified.
-Success: You qualify for a 20% VIP discount!</code></pre>
-<p>Note <code>%%</code> in <code>printf</code>: a single <code>%</code> starts a format specifier, so a literal percent sign must be written twice.</p>
-<p>The flowchart at the top of this post shows the same logic. If <code>isMember</code> were <code>0</code>, the computer would skip the inner <code>purchaseAmount</code> check entirely and jump straight to the outer <code>else</code>.</p>
-</section>
-<section id="example-2-atm-withdrawal" class="level2">
-<h2 class="anchored" data-anchor-id="example-2-atm-withdrawal">Example 2: ATM withdrawal</h2>
-<p>Here is another common scenario:</p>
-<ol type="1">
-<li><strong>Outer condition:</strong> did the user enter the correct PIN?</li>
-<li><strong>Inner condition:</strong> only if so, does the account have enough balance for the withdrawal?</li>
-</ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb3-2"></span>
-<span id="cb3-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">()</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb3-4">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> enteredPin <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1234</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb3-5">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> correctPin <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1234</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb3-6">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">double</span> accountBalance <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5000.00</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb3-7">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">double</span> withdrawalAmount <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">6000.00</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb3-8"></span>
-<span id="cb3-9">    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// Outer if: security check for the PIN</span></span>
-<span id="cb3-10">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>enteredPin <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> correctPin<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb3-11">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"PIN verified successfully.</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb3-12"></span>
-<span id="cb3-13">        <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// Inner (nested) if: financial check for sufficient funds</span></span>
-<span id="cb3-14">        <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>withdrawalAmount <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> accountBalance<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb3-15">            printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Transaction approved. Please collect your cash.</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb3-16">        <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">else</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb3-17">            printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Transaction denied: Insufficient funds in your account.</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb3-18">        <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb3-19"></span>
-<span id="cb3-20">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">else</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb3-21">        <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// Runs if the outer condition (enteredPin == correctPin) is false</span></span>
-<span id="cb3-22">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Transaction denied: Invalid PIN entered.</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb3-23">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb3-24"></span>
-<span id="cb3-25">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb3-26"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>Output (the withdrawal exceeds the balance):</p>
-<pre><code>PIN verified successfully.
-Transaction denied: Insufficient funds in your account.</code></pre>
-<p>The logic as a text flowchart:</p>
-<pre><code>[Is the PIN correct?]
-       │
-       ├──► YES ──► [Is there enough cash in the account?]
-       │                   │
-       │                   ├──► YES ──► Dispense cash
-       │                   └──► NO  ──► Show "Insufficient funds"
-       │
-       └──► NO  ──────────────────────► Show "Invalid PIN"</code></pre>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Why this must be nested
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>You must not check the account balance before verifying the user’s identity. Nesting keeps the balance logic locked behind a successful PIN check, so it can never run when the PIN is wrong.</p>
-</div>
-</div>
-</section>
-<section id="nested-if-or" class="level2">
-<h2 class="anchored" data-anchor-id="nested-if-or">Nested <code>if</code> or <code>&amp;&amp;</code>?</h2>
-<p>If the outer check has <strong>no <code>else</code> of its own</strong> and you only want to know whether <em>both</em> conditions hold, a single <code>if</code> with <code>&amp;&amp;</code> is shorter:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>isMember <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;&amp;</span> purchaseAmount <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000.0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb6-2">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"20</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%%</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> discount</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb6-3"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>Use nesting when each level needs its <strong>own different outcome</strong> (as in both examples above, where “not a member” and “member but small purchase” give different results).</p>
-</section>
-<section id="common-pitfalls" class="level2">
-<h2 class="anchored" data-anchor-id="common-pitfalls">Common pitfalls</h2>
-<ul>
-<li><strong>Dangling <code>else</code>:</strong> an <code>else</code> always belongs to the nearest unmatched <code>if</code>. Without braces, the compiler pairs it differently from what the indentation suggests. Always use braces <code>{ }</code>.</li>
-<li><strong>Too deep:</strong> more than two or three levels becomes hard to read. Flatten with <code>&amp;&amp;</code>, an early <code>return</code>, or a helper function.</li>
-<li><strong><code>=</code> instead of <code>==</code>:</strong> <code>if (isMember = 1)</code> assigns and is always true. Compile with <code>-Wall</code> to catch it.</li>
-</ul>
-</section>
-<section id="key-takeaway" class="level2">
-<h2 class="anchored" data-anchor-id="key-takeaway">Key takeaway</h2>
-<p>The inner <code>if</code> is evaluated only when the outer condition is true. This makes the program efficient and lets you express steps that must happen in order, such as verifying identity before touching money.</p>
-</section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<ol type="1">
-<li><a href="https://www.w3schools.com/c/c_conditions_nested.php">C nested if (W3Schools)</a></li>
-<li><a href="https://uncodemy.com/blog/nested-if-statement-in-c-with-code-examples">Nested if statement in C with code examples (Uncodemy)</a></li>
-<li><a href="https://www.wscubetech.com/resources/c-programming/nested-if-else">Nested if-else in C (WsCube Tech)</a></li>
-<li><a href="https://beginnersbook.com/2014/01/c-if-else-statement-example/">C if…else statement example (BeginnersBook)</a></li>
-</ol>
-
-
-</section>
-
- ]]></description>
-  <category>C</category>
-  <category>Programming</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/c-nested-if-explained-with-examples.html</guid>
-  <pubDate>Mon, 14 Sep 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/c-nested-if-flow.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>The Best Order to Write a Research Paper</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/paper-writing-sequence.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<p>A final paper is always <em>read</em> from Introduction to Conclusion, but writing it in that order is inefficient. Starting with the introduction often causes writer’s block, because the narrative’s final nuances aren’t clear yet — you don’t fully know what story you’re introducing until you’ve analyzed your own results.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/research-paper.jpeg" class="img-fluid figure-img"></p>
-<figcaption>The introduction is the last thing a reader skips past and the last thing you should write.</figcaption>
-</figure>
-</div>
-<p>Experienced researchers instead use an <strong>inside-out sequence</strong>: start with the easiest, most concrete, data-driven sections and move toward the harder, more abstract ones.</p>
-<section id="the-recommended-inside-out-sequence" class="level2">
-<h2 class="anchored" data-anchor-id="the-recommended-inside-out-sequence">The Recommended Inside-Out Sequence</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Step</th>
-<th>Section</th>
-<th>Why This Order Works</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1</td>
-<td>Figures, Tables &amp; Data Visualizations</td>
-<td>The core of the work. Organizing graphs and tables first creates a structural roadmap for everything you write after.</td>
-</tr>
-<tr class="even">
-<td>2</td>
-<td>Methods</td>
-<td>The easiest section — it just describes what you did. Often draftable straight from lab notes or protocols, switched to past tense.</td>
-</tr>
-<tr class="odd">
-<td>3</td>
-<td>Results</td>
-<td>Describe findings objectively based on the figures from Step 1: facts, percentages, and trends — without interpreting what they mean yet.</td>
-</tr>
-<tr class="even">
-<td>4</td>
-<td>Discussion</td>
-<td>Interpret the results, explain why they matter, note limitations, and compare against existing literature.</td>
-</tr>
-<tr class="odd">
-<td>5</td>
-<td>Introduction</td>
-<td>Now that you fully understand your findings and how they fit the field, framing the “gap in knowledge” your paper bridges is easy.</td>
-</tr>
-<tr class="even">
-<td>6</td>
-<td>Conclusion &amp; References</td>
-<td>Summarize the main takeaway, suggest future work, and tidy up citations with a reference manager.</td>
-</tr>
-<tr class="odd">
-<td>7</td>
-<td>Abstract &amp; Title</td>
-<td>Always last — you can’t compress an entire paper into a tight summary until the full text is finished.</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="phase-1-the-core-data-mechanics" class="level2">
-<h2 class="anchored" data-anchor-id="phase-1-the-core-data-mechanics">Phase 1: The Core (Data &amp; Mechanics)</h2>
-<ul>
-<li><strong>Figures &amp; Tables</strong>: Lay out visual data in a logical sequence that tells a story, even if it differs from the chronological order the experiments were run in.</li>
-<li><strong>Methods</strong>: Break this into standard subsections — study design, materials/population, data collection procedures, and statistical analysis.</li>
-</ul>
-</section>
-<section id="phase-2-the-narrative-interpretation" class="level2">
-<h2 class="anchored" data-anchor-id="phase-2-the-narrative-interpretation">Phase 2: The Narrative (Interpretation)</h2>
-<ul>
-<li><strong>Results</strong>: Stick strictly to facts. Use phrasing like <em>“Figure 1 demonstrates that…”</em> or <em>“Group A exhibited a 12% increase compared to Group B.”</em></li>
-<li><strong>Discussion</strong>: Structure paragraphs with the <strong>TEEL</strong> formula:
-<ul>
-<li><strong>T</strong>opic sentence: state the core claim or finding.</li>
-<li><strong>E</strong>xplain: elaborate on what the data implies.</li>
-<li><strong>E</strong>vidence: cite prior studies that agree or disagree with the outcome.</li>
-<li><strong>L</strong>ink: connect the paragraph back to the overall research question.</li>
-</ul></li>
-</ul>
-</section>
-<section id="phase-3-the-frame-contextualizing" class="level2">
-<h2 class="anchored" data-anchor-id="phase-3-the-frame-contextualizing">Phase 3: The Frame (Contextualizing)</h2>
-<ul>
-<li><strong>Introduction</strong>: Use a funnel approach — start broad with the big-picture problem, narrow to the specific gap in current literature, and end with the specific hypothesis or objective.</li>
-<li><strong>Abstract</strong>: Package the paper by pulling one or two sentences each from the Introduction, Methods, Results, and Conclusion into a stand-alone summary.</li>
-</ul>
-</section>
-<section id="takeaway" class="level2">
-<h2 class="anchored" data-anchor-id="takeaway">Takeaway</h2>
-<p>Write in the order you can answer questions with confidence: what you did, what you found, what it means, and only then why it matters to the field. The introduction and abstract come last because they’re summaries of a story you can’t yet tell until the rest is written.</p>
-
-
-</section>
-
- ]]></description>
-  <category>research</category>
-  <category>writing</category>
-  <guid>https://www.statmania.info/blog/posts/paper-writing-sequence.html</guid>
-  <pubDate>Thu, 10 Sep 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/research-paper.jpeg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
