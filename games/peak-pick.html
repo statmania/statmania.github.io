@@ -233,6 +233,14 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true });
                 <div class="sm-card game-card p-8">
                     <div class="toolbar">
                         <div class="toolbar-left">
+                            <div class="select-group">
+                                <span class="select-label">Timer</span>
+                                <select id="speed-select" aria-label="Timer speed">
+                                    <option value="slow">Slow</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="fast">Fast</option>
+                                </select>
+                            </div>
                             <button id="start-btn" class="action start-btn" aria-label="Start game">
                                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
                                 <span>Start</span>
@@ -300,7 +308,7 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true });
                                 <li><em>Correct pick:</em> 10 points + 5 per second left on the clock.</li>
                                 <li><em>Wrong pick or timeout:</em> one mistake, no points.</li>
                                 <li><em>Rounds 1&ndash;4:</em> numbers up to 99; <em>5+:</em> up to 999 (never more than 3 digits).</li>
-                                <li>Each round adds numbers (up to 12) and trims the time (down to 2.2s).</li>
+                                <li>Each round adds numbers (up to 12) and trims the time. <em>Timer speed:</em> Slow starts at 7s (down to 3.5s), Medium at 5s (down to 2.2s), Fast at 3.5s (down to 1.5s). Each speed has its own Top 10.</li>
                             </ul>
                         </div>
                         <div class="rules-panel">
@@ -361,7 +369,12 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true });
 
 <script>
 (function () {
-  var MAX_MISTAKES = 5, LB_SIZE = 10, LB_KEY = 'peakPick.top10';
+  var MAX_MISTAKES = 5, LB_SIZE = 10, LB_BASE = 'peakPick.top10';
+  var SPEEDS = { slow: { start: 7, step: 0.2, min: 3.5 }, medium: { start: 5, step: 0.2, min: 2.2 }, fast: { start: 3.5, step: 0.15, min: 1.5 } };
+  var speedSel = document.getElementById('speed-select'), speed = 'medium';
+  try { var sv = localStorage.getItem('peakPick.speed'); if (SPEEDS[sv]) speed = sv; } catch (e) {}
+  speedSel.value = speed;
+  function lbKey() { return speed === 'medium' ? LB_BASE : LB_BASE + '.' + speed; }
   var box = document.getElementById('box'), fill = document.getElementById('fill'),
       timeEl = document.getElementById('time'), timerTile = document.getElementById('timer-tile'),
       msg = document.getElementById('msg'), startBtn = document.getElementById('start-btn'),
@@ -380,9 +393,9 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true });
 
   /* ---------- Top-10 leaderboard (localStorage) ---------- */
   function loadBoard() {
-    try { var a = JSON.parse(localStorage.getItem(LB_KEY)); return Array.isArray(a) ? a : []; } catch (e) { return []; }
+    try { var a = JSON.parse(localStorage.getItem(lbKey())); return Array.isArray(a) ? a : []; } catch (e) { return []; }
   }
-  function saveBoard(b) { try { localStorage.setItem(LB_KEY, JSON.stringify(b)); } catch (e) {} }
+  function saveBoard(b) { try { localStorage.setItem(lbKey(), JSON.stringify(b)); } catch (e) {} }
   function submitScore() {
     if (score <= 0) return -1;
     var entry = { score: score, round: round, correct: correct, acc: acc(), t: Date.now() };
@@ -446,7 +459,7 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true });
   function nextRound() {
     round++; updateHud();
     var count = Math.min(4 + Math.floor(round / 2), 12);
-    duration = Math.max(2.2, 5 - round * 0.2);
+    var sp = SPEEDS[speed]; duration = Math.max(sp.min, sp.start - round * sp.step);
     var maxVal = round < 5 ? 99 : 999;
     var lo = Math.max(1, Math.floor(maxVal / 10));
     var vals = [];
@@ -519,13 +532,18 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true });
   }
   function toggle() { if (paused) resume(); else if (active) pause(); else newGame(); }
 
+  speedSel.addEventListener('change', function () {
+    resetToReady();   /* bank any running game on the old speed's board first */
+    speed = speedSel.value; try { localStorage.setItem('peakPick.speed', speed); } catch (e) {}
+    renderBoard(-1); speedSel.blur();
+  });
   startBtn.addEventListener('click', toggle);
   document.getElementById('new-game-btn').addEventListener('click', resetToReady);
   pausedEl.addEventListener('click', resume);
   intro.addEventListener('click', newGame);
   over.addEventListener('click', newGame);
   document.getElementById('lb-clear').addEventListener('click', function () {
-    try { localStorage.removeItem(LB_KEY); } catch (e) {} renderBoard(-1);
+    try { localStorage.removeItem(lbKey()); } catch (e) {} renderBoard(-1);
   });
   document.addEventListener('visibilitychange', function () { if (document.hidden) pause(); });
   document.addEventListener('keydown', function (e) {
