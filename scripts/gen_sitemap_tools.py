@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Regenerate sitemap-tools.xml for the hand-written, non-Quarto-rendered
-sections of the site (utility/, games/, courses/index.html, ds/, slide/)
+sections of the site (utility/, games/, ds/, slide/)
 plus the R package dashboard, none of which are covered by Quarto's own
-generated sitemap.xml, blog/sitemap.xml, or courses/rprogramming/sitemap.xml.
+generated sitemap.xml, blog/sitemap.xml, or the sitemaps kept by the
+separate statmania/courses repo (courses/sitemap.xml, courses/rprogramming/sitemap.xml).
 
 Run from the repo root: python3 scripts/gen_sitemap_tools.py
 """
@@ -25,10 +26,7 @@ def collect_files():
     files = []
     files += sorted((ROOT / "utility").glob("*.html"))
     files += sorted((ROOT / "games").glob("*.html"))
-    # courses/index.html is hand-written (no Quarto sitemap of its own);
-    # courses/rprogramming/ is a Quarto website project with site-url set,
-    # so it generates and maintains its own sitemap.xml — not duplicated here.
-    files += sorted((ROOT / "courses").glob("*.html"))
+    # courses/ is its own repo (statmania/courses) with its own sitemaps.
     files += sorted((ROOT / "ds/viz").glob("*.html"))
     files += sorted((ROOT / "ds/analysis").glob("*.html"))
     files += sorted((ROOT / "ds/viz/map").glob("*.html"))

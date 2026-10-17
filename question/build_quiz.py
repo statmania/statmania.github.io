@@ -13,13 +13,15 @@ from html import escape as _esc
 from pathlib import Path
 
 HERE = Path(__file__).parent
-sys.path.insert(0, str(HERE.parent / "courses"))
+sys.path.insert(0, str(HERE))
 from discover_quiz_banks import discover_quiz_banks  # noqa: E402
 
 SOURCES = [
     ("Statistics I", HERE / "bank" / "stat1_mcq_bank.tex"),
     ("Statistics II", HERE / "bank" / "stat2_mcq_bank.tex"),
 ]
+# The courses live in their own repo (statmania/courses); locally they are
+# reached through the gitignored ../courses symlink (see README "Courses").
 SOURCES += discover_quiz_banks(HERE.parent / "courses")
 # Statistics II's chapters go well beyond probability proper (sampling, vital
 # statistics, index numbers, ...), hence "& Others" in its display title.

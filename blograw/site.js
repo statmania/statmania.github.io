@@ -43,14 +43,22 @@
   function mobileToc() {
     var toc = document.querySelector('#quarto-margin-sidebar #TOC');
     var main = document.getElementById('quarto-document-content');
-    if (!toc || !main || !toc.querySelector('a[href^="#"]')) return;
+    // Quarto rewrites the TOC hrefs to absolute URLs on load, so read the hash from
+    // data-scroll-target (or the href) instead of requiring href="#..."
+    function hashOf(a) {
+      var h = a.getAttribute('data-scroll-target') || a.getAttribute('href') || '';
+      var i = h.indexOf('#');
+      return i < 0 ? '' : h.slice(i);
+    }
+    var srcs = [].filter.call(toc ? toc.querySelectorAll('a') : [], function (a) { return hashOf(a).length > 1; });
+    if (!toc || !main || !srcs.length) return;
     var box = el('details', 'sm-toc-mobile');
     var sum = el('summary', null, 'On this page');
     var nav = el('nav');
     nav.setAttribute('aria-label', 'On this page');
     var links = [];
-    toc.querySelectorAll('a[href^="#"]').forEach(function (src) {
-      var a = link(src.getAttribute('href'), src.textContent);
+    srcs.forEach(function (src) {
+      var a = link(hashOf(src), src.textContent);
       a.addEventListener('click', function () { box.open = false; });
       nav.appendChild(a);
       links.push(a);
