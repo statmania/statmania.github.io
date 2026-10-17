@@ -18,14 +18,23 @@ image: ../img/<name>.png                  # PNG, see "Images"
 ---
 ```
 
-### Tags (for later use)
+### Tags (keep the vocabulary small)
 
-`tags:` is **not displayed or used by the site yet**, but fill it in on every
-new post anyway (lowercase, hyphenated, specific: `c`, `struct`, `typedef`,
-`python-dict`). We plan to use them later for related-posts and topic pages,
-and it is much cheaper to tag posts as you write than to backfill. `categories`
-stay broad (language, subject, post type); `tags` are the specific concepts.
-Every existing post has been backfilled (2026-09-26); keep tags lowercase and hyphenated for consistency.
+Tags drive the tag cloud, `tags.html`, and related posts. Lowercase, hyphenated. The vocabulary was
+merged from 195 near-duplicate tags down to about 40 (2026-10-17), so **reuse an existing tag before
+inventing one**: list them with `grep -h '^tags:' posts/*.qmd`. Merge specific ideas into the broad tag:
+
+- C: `c`, `control-flow`, `loops` (for/while/do-while/nested/break/patterns), `conditionals`
+  (if-else/switch), `arrays`, `indexing`, `pointers`, `memory` (malloc/realloc/stack), `data-types`
+  (struct/typedef/float/variables), `operators`, `input-output` (scanf/printf/fgets), `random-numbers`,
+  `compiler`, `functions`, `math`, `beginners`, `practice-problems`
+- Statistics: `statistics`, `probability` (distributions), `descriptive-statistics`, `hypothesis-testing`,
+  `regression`, `time-series`, `machine-learning`, `spatial`, `visualization`, `imaging`
+- R/Python: `r`, `r-package`, `python`
+- Tools: `linux`, `command-line` (shell/bash/sed/ffmpeg), `git`, `quarto`, `slides`, `workflow`, `writing`, `research`
+
+A genuinely new topic may get its own tag, but only if at least a second post is likely to use it.
+`categories` stay broad (language, subject, post type).
 
 ## Images: SVG in the body, PNG in the front matter
 
