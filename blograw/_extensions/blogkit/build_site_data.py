@@ -1,0 +1,202 @@
+#!/usr/bin/env python3
+"""Blogkit pre-render hook.
+
+Add to _quarto.yml:
+
+    project:
+      pre-render: _extensions/blogkit/build_site_data.py
+
+On every `quarto render` (the whole project or a single post) it
+
+  * reads the front matter of every post (title, description, date, tags,
+    categories, author, draft),
+  * reads authors.yml,
+  * writes <output-dir>/blogkit-data.js and copies blogkit.js next to it
+    (the browser script that builds the archive, tag cloud, related posts,
+    author cards, tags page and author pages from that data),
+  * (re)writes authors/<slug>.qmd for every author in authors.yml, and
+  * creates tags.qmd if the project does not have one yet.
+
+Nothing about other posts is baked into rendered pages, so rendering just the
+new post updates the archive, tags, related posts and author pages everywhere.
+
+Options go in _quarto.yml under a top-level `blogkit:` key (all optional):
+
+    blogkit:
+      posts-dir: posts          # where posts live (also supports posts/<slug>/index.qmd)
+      authors-file: authors.yml
+      per-page: 10              # pagination on tag and author pages
+      related: 5                # related posts under each post
+      labels: {archive: Archiv, tags: Schlagworte}   # translate/override UI text
+
+Requires Python 3 and PyYAML (pip install pyyaml).
+"""
+import html
+import json
+import os
+import re
+import shutil
+import sys
+from datetime import date, datetime
+from pathlib import Path
+
+try:
+    import yaml
+except ImportError:                                    # pragma: no cover
+    sys.exit("blogkit: PyYAML is required (pip install pyyaml)")
+
+HERE = Path(__file__).resolve().parent                  # _extensions/blogkit
+ROOT = Path(os.environ.get("QUARTO_PROJECT_DIR") or Path.cwd()).resolve()
+
+
+def load_yaml(path):
+    return (yaml.safe_load(path.read_text(encoding="utf-8")) or {}) if path.exists() else {}
+
+
+def project_config():
+    for name in ("_quarto.yml", "_quarto.yaml"):
+        if (ROOT / name).exists():
+            return load_yaml(ROOT / name)
+    return {}
+
+
+CONFIG = project_config()
+OPTS = CONFIG.get("blogkit") or {}
+POSTS_DIR = ROOT / str(OPTS.get("posts-dir", "posts"))
+AUTHORS_FILE = ROOT / str(OPTS.get("authors-file", "authors.yml"))
+
+
+def output_dir():
+    env = os.environ.get("QUARTO_PROJECT_OUTPUT_DIR")
+    if env:
+        return Path(env) if Path(env).is_absolute() else ROOT / env
+    return ROOT / str((CONFIG.get("project") or {}).get("output-dir", "_site"))
+
+
+def front_matter(path):
+    m = re.match(r"^---\s*\n(.*?)\n---\s*(\n|$)", path.read_text(encoding="utf-8"), re.S)
+    return (yaml.safe_load(m.group(1)) or {}) if m else {}
+
+
+def as_date(v):
+    if isinstance(v, datetime):
+        return v.date()
+    if isinstance(v, date):
+        return v
+    try:
+        return datetime.strptime(str(v)[:10], "%Y-%m-%d").date()
+    except ValueError:
+        return None
+
+
+def as_list(v, lower=False):
+    if isinstance(v, str):
+        v = [x.strip() for x in v.split(",")]
+    out = [str(x).strip() for x in (v or []) if str(x).strip()]
+    return [x.lower() for x in out] if lower else out
+
+
+def post_files():
+    """posts/x.qmd, posts/x.md and posts/x/index.qmd (Quarto's default blog layout)."""
+    found = list(POSTS_DIR.glob("*.qmd")) + list(POSTS_DIR.glob("*.md")) + list(POSTS_DIR.glob("*/index.qmd"))
+    return sorted(p for p in found if not p.name.startswith("_") and p.name.lower() != "readme.md")
+
+
+def load_posts():
+    posts = []
+    for path in post_files():
+        fm = front_matter(path)
+        d = as_date(fm.get("date"))
+        if fm.get("draft"):
+            continue
+        if not fm.get("title") or d is None:
+            print(f"blogkit: skipping {path.relative_to(ROOT)} (needs title and date)", file=sys.stderr)
+            continue
+        rel = path.relative_to(ROOT).with_suffix(".html").as_posix()
+        posts.append({
+            "href": rel,
+            "title": str(fm["title"]),
+            "desc": " ".join(str(fm.get("description") or "").split()),
+            "date": d.isoformat(),
+            "tags": as_list(fm.get("tags"), lower=True),
+            "cats": as_list(fm.get("categories")),
+            "author": str(fm.get("author") or "").strip(),
+        })
+    posts.sort(key=lambda p: p["date"], reverse=True)
+    return posts
+
+
+def author_stub(slug, a):
+    links = "".join(
+        f'<a class="bk-tag" href="{html.escape(l["href"])}" rel="noopener">{html.escape(l["text"])}</a>'
+        for l in a.get("links") or [])
+    img = (f'<img class="bk-author-img" src="../{html.escape(str(a["image"]))}" alt="{html.escape(a["name"])}">'
+           if a.get("image") else "")
+    bio = html.escape(" ".join(str(a.get("bio") or "").split()))
+    tagline = " ".join(str(a.get("tagline") or "").replace('"', "'").split())
+    return f"""---
+title: "{a["name"]}"
+description: "{tagline}"
+page-layout: article
+toc: false
+---
+
+<!-- GENERATED by blogkit from authors.yml; do not edit. -->
+```{{=html}}
+<div class="bk-author-head">
+{img}
+<div><p class="bk-author-bio">{bio}</p>
+<div class="bk-tag-cloud bk-tag-cloud-all">{links}</div></div>
+</div>
+<div id="bk-author-root" data-slug="{slug}"></div>
+```
+"""
+
+
+TAGS_QMD = """---
+title: "Posts by Tag"
+description: "Browse every post by tag."
+page-layout: article
+toc: false
+---
+
+::: {.column-margin}
+```{=html}
+<div id="bk-tags-side" class="bk-widget bk-tags bk-tags-side"></div>
+```
+:::
+
+```{=html}
+<div id="bk-tags-page"></div>
+```
+"""
+
+
+def main():
+    posts = load_posts()
+    authors = load_yaml(AUTHORS_FILE)
+    config = {k: v for k, v in OPTS.items() if k in ("per-page", "related", "labels")}
+    config = {"perPage": config.get("per-page"), "related": config.get("related"),
+              "labels": config.get("labels")}
+    config = {k: v for k, v in config.items() if v}
+    out = output_dir()
+    out.mkdir(parents=True, exist_ok=True)
+
+    payload = json.dumps({"posts": posts, "authors": authors, "config": config},
+                         ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    # a .js file (not .json) so pages also work when opened straight from disk
+    (out / "blogkit-data.js").write_text("window.BLOGKIT_DATA=" + payload + ";\n", encoding="utf-8")
+    shutil.copyfile(HERE / "blogkit.js", out / "blogkit.js")
+
+    if authors:
+        (ROOT / "authors").mkdir(exist_ok=True)
+        for slug, a in authors.items():
+            (ROOT / "authors" / f"{slug}.qmd").write_text(author_stub(slug, a), encoding="utf-8")
+    if not (ROOT / "tags.qmd").exists():
+        (ROOT / "tags.qmd").write_text(TAGS_QMD, encoding="utf-8")
+
+    print(f"blogkit: {len(posts)} posts, {len(authors)} authors -> {out / 'blogkit-data.js'}")
+
+
+if __name__ == "__main__":
+    main()

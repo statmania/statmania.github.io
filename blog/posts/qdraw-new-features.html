@@ -87,7 +87,8 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 
-<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../site_libs/quarto-contrib/quarto-project/blogkit/styles.css">
+<link rel="stylesheet" href="../site.css">
 <meta property="og:title" content="What’s New in qdraw: Shapes, Pages, and a Smarter Eraser – Stat Mania">
 <meta property="og:description" content="A tour of the latest qdraw features — a Quarto reveal.js extension for drawing and annotating directly on slides during a live presentation.">
 <meta property="og:image" content="https://www.statmania.info/blog/posts/logo.png">
@@ -414,25 +415,6 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
 </section>
 
 </main> <!-- /main -->
-<!-- Shared Quarto include: adds the site-wide starfield to a page.
-     Use from any Quarto project's _quarto.yml (path relative to that project):
-       format: { html: { include-after-body: ../starfield-include.html } }
-     It adds the canvas and loads /starfield.js from the site root, working out
-     the root from the URL so it is the same for every page depth. The page's
-     CSS must still make the canvas fixed at z-index -1 (see blograw/styles.css
-     or courses/rprogramming/dark.scss). -->
-<canvas class="sm-canvas" aria-hidden="true"></canvas>
-<script>
-(function () {
-  var p = location.pathname;
-  // Root = everything before the first top-level site section in the URL
-  // (site is served from the domain root; locally may be under a prefix).
-  var m = p.match(/^(.*?\/)(blog|courses|slide|games|utility|question|quiz|ds|research)\//);
-  var s = document.createElement('script');
-  s.src = (m ? m[1] : '/') + 'starfield.js';
-  document.body.appendChild(s);
-})();
-</script>
 <script>
 /* Blog-wide "See hint" / "Reveal code" toggles.
    Markup in a post:
@@ -483,13 +465,33 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
 })();
 </script>
 <script>
-/* Loads the blog's dynamic widgets (site.js) from the blog root, whatever the page depth. */
+/* Blogkit: load blogkit.js from the site root, whatever the page depth. */
 (function () {
-  var css = document.querySelector('link[rel="stylesheet"][href$="styles.css"]');
-  var base = css ? css.getAttribute('href').slice(0, -'styles.css'.length) : '';
+  var m = document.querySelector('meta[name="quarto:offset"]');
+  var base = m ? m.getAttribute('content') : '';
+  if (base === './') base = '';
   var s = document.createElement('script');
-  s.src = base + 'site.js';
+  s.src = base + 'blogkit.js';
   s.dataset.base = base;
+  document.body.appendChild(s);
+})();
+</script>
+<!-- Shared Quarto include: adds the site-wide starfield to a page.
+     Use from any Quarto project's _quarto.yml (path relative to that project):
+       format: { html: { include-after-body: ../starfield-include.html } }
+     It adds the canvas and loads /starfield.js from the site root, working out
+     the root from the URL so it is the same for every page depth. The page's
+     CSS must still make the canvas fixed at z-index -1 (see blograw/styles.css
+     or courses/rprogramming/dark.scss). -->
+<canvas class="sm-canvas" aria-hidden="true"></canvas>
+<script>
+(function () {
+  var p = location.pathname;
+  // Root = everything before the first top-level site section in the URL
+  // (site is served from the domain root; locally may be under a prefix).
+  var m = p.match(/^(.*?\/)(blog|courses|slide|games|utility|question|quiz|ds|research)\//);
+  var s = document.createElement('script');
+  s.src = (m ? m[1] : '/') + 'starfield.js';
   document.body.appendChild(s);
 })();
 </script>

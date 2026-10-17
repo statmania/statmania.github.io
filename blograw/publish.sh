@@ -3,7 +3,7 @@
 #
 #   ./publish.sh posts/my-post.qmd            render one post, commit, push
 #   ./publish.sh posts/a.qmd posts/b.qmd      render several posts, commit, push
-#   ./publish.sh --all                        full `quarto render` (after changing site.js/CSS/config)
+#   ./publish.sh --all                        full `quarto render` (after changing site.css/config/the extension)
 #   ./publish.sh                              no render: just refresh data + commit/push current changes
 #
 # Options:  -m "message"   commit message (default: "Blog: update <files>")
@@ -41,7 +41,7 @@ elif [ "${#files[@]}" -gt 0 ]; then
   done
 else
   echo "==> Refreshing site data"
-  python3 scripts/build_site_data.py
+  (cd "$here" && python3 _extensions/blogkit/build_site_data.py)
 fi
 
 cd "$repo"

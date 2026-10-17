@@ -74,7 +74,7 @@ Don't geenrate svg if an existing image name (svg or png) matches with the post 
 - Compile/run code examples before publishing, and paste real output. State
   any needed flag (e.g. `-lm` for `<math.h>`).
 - Use `::: {.callout-note}` / `-tip` / `-warning` for asides (styled for the
-  dark theme in `styles.css`).
+  dark theme in the extension's `styles.css`; site-only tweaks go in `site.css`).
 - Voice: first-person plural for tutorials ("we", "us", "let's") rather than "you"; keep instructions short and concrete.
 - Don't include personal details (course codes, degree info) in public posts.
 - Only list references you actually used.
@@ -91,24 +91,36 @@ are harmless (the output dir `../blog` is outside the project); ignore them.
 Publish = commit the `.qmd`, `img/` files and the regenerated `blog/` output,
 then push to `master` on GitHub Pages.
 
-## Dynamic widgets (site.js + site-data.js)
+## Blogkit extension (the engine) and site.css (this site's overrides)
 
-Everything cross-post is **dynamic**, so a new post needs no re-render of other pages:
+The blog runs on the **quarto-blogkit** extension (`../../quarto-blogkit`, GitHub
+`statmania/quarto-blogkit`), installed in `_extensions/blogkit/`. **Do not edit files in
+`_extensions/blogkit/`**: they are overwritten on update. Generic features and fixes (theme,
+`styles.css`, `blogkit.js`, `build_site_data.py`, code-reveal) are made in the quarto-blogkit repo and
+pulled in here:
 
-- `scripts/build_site_data.py` is the project `pre-render` hook (`_quarto.yml`). On every
-  `quarto render`, even of one post, it reads post front matter (`title`, `description`,
-  `date`, `tags`, `categories`, `author`; `draft: true` is skipped) and `authors.yml`,
-  writes `../blog/site-data.js`, copies `site.js` next to it, and rewrites the small
-  `authors/<slug>.qmd` stubs (never hand-edit those).
-- `site.js` (hand-written, loaded on every page by `_site-include.html`) fetches the JSON
-  and builds: the homepage/post sidebar archive and tag cloud (below the TOC on posts,
-  under the article on small screens), each post's tags row, up to 5 related posts
-  (ranked by shared tags/categories, rarer ones weigh more), the author card and
-  byline links, `tags.html#tag=<name>` (10 per page) and the author pages
-  (category/tag filters, 10 per page), plus the sticky small-screen "On this page" menu.
+```
+# after committing/pushing a change in quarto-blogkit:
+cd blograw && quarto update extension statmania/quarto-blogkit   # or: quarto add ../../quarto-blogkit
+quarto render                                                      # full render; every page changes
+```
+
+Site-specific things stay in `blograw/`: `site.css` (starfield canvas, homepage hero with `.sm-*`
+classes, dark navbar/banner/hero bands in light mode), `_quarto.yml` (`format: blogkit-html` plus
+`../starfield-include.html`), `index.qmd`, `about.qmd`, `authors.yml`. The extension's CSS uses
+`--bk-*` variables and `.bk-*` classes (this site used `sm-` before the switch).
+
+How it works: the extension's `build_site_data.py` is the `pre-render` hook. On every
+`quarto render`, even of one post, it reads post front matter (`title`, `description`, `date`,
+`tags`, `categories`, `author`; `draft: true` is skipped) and `authors.yml`, writes
+`../blog/blogkit-data.js`, copies `blogkit.js` next to it, rewrites the small `authors/<slug>.qmd`
+stubs (never hand-edit those) and creates `tags.qmd` if missing. `blogkit.js` fetches the data and
+builds the sidebar archive and tag cloud, each post's tags row, related posts, author cards and
+pages, `tags.html#tag=<name>`, and the sticky small-screen "On this page" menu.
+
 - Workflow: write the post, `quarto render posts/<post>.qmd` (~7 s), commit `blog/`.
-  A full `quarto render` (~40 s) is only needed when `site.js`, CSS or `_quarto.yml`
-  change. Browsers may cache `site-data.js` for a few minutes after publishing.
+  A full `quarto render` (~40 s) is only needed when `site.css`, `_quarto.yml` or the extension
+  change. Browsers may cache `blogkit-data.js` for a few minutes after publishing.
 - Needs `title` and `date` in the front matter; `tags:` (lowercase, hyphenated) drive
   the tag cloud and related posts.
 - Posts get a margin TOC (`posts/_metadata.yml`: `toc-depth: 3`, since many posts use
@@ -123,10 +135,10 @@ render; the hook creates `authors/<slug>.qmd`. Authors not in `authors.yml` get 
 
 ## Light / dark theme
 
-`_quarto.yml` has `theme: {dark: [cosmo, theme-dark.scss], light: cosmo}` (dark listed first = default;
+The extension sets `theme: {dark: [cosmo, theme-dark.scss], light: cosmo}` (dark listed first = default;
 the empty-looking `theme-dark.scss` only exists because Quarto decides dark vs light from `$body-bg`,
 so a dark scheme must actually be dark) and `highlight-style: {light: github, dark: dracula}`.
-Quarto adds a navbar toggle and puts `quarto-light` / `quarto-dark` on `<body>`. `styles.css` is the
+Quarto adds a navbar toggle and puts `quarto-light` / `quarto-dark` on `<body>`. the extension's `styles.css` is the
 dark design; its final "Light theme" section overrides variables on `:root:has(body.quarto-light)` and
 fixes hardcoded colours under `body.quarto-light`. Navbar, post title banner and homepage hero re-assert
 the dark palette locally (dark bands on a light page); the starfield is hidden in light mode. Use `--sm-*`

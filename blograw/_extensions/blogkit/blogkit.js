@@ -1,10 +1,10 @@
-/* Stat Mania blog: dynamic sidebar widgets, post extras, tags page and author pages.
+/* Blogkit: dynamic sidebar widgets, post extras, tags page and author pages.
  *
- * All data comes from site-data.js (a script file, so it also works when a page is
- * opened straight from disk), which scripts/build_site_data.py rewrites on
+ * All data comes from blogkit-data.js (a script file, so it also works when a page is
+ * opened straight from disk), which build_site_data.py rewrites on
  * every `quarto render` (even of a single post). Nothing here is baked into pages,
  * so a new or retagged post shows up everywhere on the next page load.
- * Loaded on every page by _site-include.html. Hand-written: edit freely.
+ * Loaded on every page by site-include.html (copied to the output folder as blogkit.js).
  */
 (function () {
   var me = document.currentScript;
@@ -12,6 +12,18 @@
   var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
                 'August', 'September', 'October', 'November', 'December'];
   var small = window.matchMedia('(max-width: 991.98px)');
+  var CFG = {};
+  var LABELS = {
+    onThisPage: 'On this page', archive: 'Archive', tags: 'Tags', related: 'Related posts',
+    allCategories: 'All categories', allTags: 'All tags', category: 'Category', tag: 'Tag',
+    pickTag: 'Pick a tag to see its posts.', post: 'post', posts: 'posts',
+    prev: '\u2039 Prev', next: 'Next \u203a', allBy: 'All {n} posts by {name}', of: '{a} of {b} posts'
+  };
+  function t(key, vars) {
+    var s = (CFG.labels && CFG.labels[key]) || LABELS[key];
+    Object.keys(vars || {}).forEach(function (k) { s = s.replace('{' + k + '}', vars[k]); });
+    return s;
+  }
 
   // ---------- tiny helpers ----------
   function el(tag, cls, text) {
@@ -52,10 +64,10 @@
     }
     var srcs = [].filter.call(toc ? toc.querySelectorAll('a') : [], function (a) { return hashOf(a).length > 1; });
     if (!toc || !main || !srcs.length) return;
-    var box = el('details', 'sm-toc-mobile');
-    var sum = el('summary', null, 'On this page');
+    var box = el('details', 'bk-toc-mobile');
+    var sum = el('summary', null, t('onThisPage'));
     var nav = el('nav');
-    nav.setAttribute('aria-label', 'On this page');
+    nav.setAttribute('aria-label', t('onThisPage'));
     var links = [];
     srcs.forEach(function (src) {
       var a = link(hashOf(src), src.textContent);
@@ -79,6 +91,7 @@
 
   // ---------- data ----------
   function prepare(data) {
+    CFG = data.config || {};
     var posts = data.posts.slice().sort(function (a, b) { return a.date < b.date ? 1 : -1; });
     var authors = {}, byName = {};
     Object.keys(data.authors || {}).forEach(function (slug) {
@@ -98,7 +111,7 @@
   function postItem(p) {
     var li = el('li');
     li.appendChild(link(postHref(p), p.title));
-    li.appendChild(el('span', 'sm-tp-date', p.date));
+    li.appendChild(el('span', 'bk-tp-date', p.date));
     if (p.desc) li.appendChild(el('p', null, p.desc));
     return li;
   }
@@ -110,22 +123,22 @@
       var y = +p.date.slice(0, 4), m = +p.date.slice(5, 7);
       ((years[y] = years[y] || {})[m] = years[y][m] || []).push(p);
     });
-    var nav = el('nav', 'sm-widget sm-archive');
+    var nav = el('nav', 'bk-widget bk-archive');
     nav.setAttribute('aria-label', 'Post archive');
-    nav.appendChild(el('h3', 'sm-widget-title', 'Archive'));
+    nav.appendChild(el('h3', 'bk-widget-title', t('archive')));
     Object.keys(years).sort(function (a, b) { return b - a; }).forEach(function (y, i) {
       var n = 0;
       Object.keys(years[y]).forEach(function (m) { n += years[y][m].length; });
-      var yd = el('details', 'sm-year');
+      var yd = el('details', 'bk-year');
       yd.open = i === 0;
       var ys = el('summary', null, y + ' ');
-      ys.appendChild(el('span', 'sm-count', n));
+      ys.appendChild(el('span', 'bk-count', n));
       yd.appendChild(ys);
       Object.keys(years[y]).sort(function (a, b) { return b - a; }).forEach(function (m) {
         var items = years[y][m];
-        var md = el('details', 'sm-month');
+        var md = el('details', 'bk-month');
         var ms = el('summary', null, MONTHS[m - 1] + ' ');
-        ms.appendChild(el('span', 'sm-count', items.length));
+        ms.appendChild(el('span', 'bk-count', items.length));
         md.appendChild(ms);
         var ul = el('ul');
         items.forEach(function (p) {
@@ -146,10 +159,10 @@
     var frag = document.createDocumentFragment();
     keys.forEach(function (t) {
       var size = 0.78 + (hi > lo ? 0.5 * (counts[t] - lo) / (hi - lo) : 0);
-      var a = link(tagHref(t), t + ' ', 'sm-tag');
+      var a = link(tagHref(t), t + ' ', 'bk-tag');
       a.dataset.tag = t;
       a.style.fontSize = size.toFixed(2) + 'rem';
-      a.appendChild(el('span', 'sm-count', counts[t]));
+      a.appendChild(el('span', 'bk-count', counts[t]));
       if (t === active) a.classList.add('active');
       frag.appendChild(a);
     });
@@ -161,10 +174,10 @@
     return counter(all);
   }
   function cloud(posts) {
-    var sec = el('section', 'sm-widget sm-tags');
+    var sec = el('section', 'bk-widget bk-tags');
     sec.setAttribute('aria-label', 'Tag cloud');
-    sec.appendChild(el('h3', 'sm-widget-title', 'Tags'));
-    var box = el('div', 'sm-tag-cloud');
+    sec.appendChild(el('h3', 'bk-widget-title', t('tags')));
+    var box = el('div', 'bk-tag-cloud');
     box.appendChild(chips(tagCounts(posts)));
     sec.appendChild(box);
     return sec;
@@ -174,13 +187,13 @@
     var main = document.getElementById('quarto-document-content');
     if (!side) return;
     var w = el('div');
-    w.id = 'sm-widgets';
+    w.id = 'bk-widgets';
     w.appendChild(archive(D.posts));
     w.appendChild(cloud(D.posts));
     // Posts on small screens: Quarto hides the sidebar, so widgets go under the article.
     function place() {
       var bottom = small.matches && side.querySelector('#TOC') && main;
-      w.classList.toggle('sm-widgets-bottom', !!bottom);
+      w.classList.toggle('bk-widgets-bottom', !!bottom);
       (bottom ? main : side).appendChild(w);
     }
     place();
@@ -205,23 +218,23 @@
     return scored.slice(0, k).map(function (x) { return x[1]; });
   }
   function authorCard(a) {
-    var card = el('aside', 'sm-author-card');
+    var card = el('aside', 'bk-author-card');
     if (a.image) {
-      var img = el('img', 'sm-author-img');
+      var img = el('img', 'bk-author-img');
       img.src = base + a.image;
       img.alt = '';
       card.appendChild(img);
     }
     var body = el('div');
-    body.appendChild(el('div', 'sm-author-card-name', a.name));
+    body.appendChild(el('div', 'bk-author-card-name', a.name));
     body.appendChild(el('p', null, a.tagline || a.bio));
     body.appendChild(link(base + 'authors/' + a.slug + '.html',
-      'All ' + a.posts.length + ' posts by ' + a.name + ' →', 'sm-author-more'));
+      'All ' + a.posts.length + ' posts by ' + a.name + ' →', 'bk-author-more'));
     card.appendChild(body);
     return card;
   }
   function authorLink(node, a) {
-    var k = link(base + 'authors/' + a.slug + '.html', node.textContent.trim(), 'sm-author-link');
+    var k = link(base + 'authors/' + a.slug + '.html', node.textContent.trim(), 'bk-author-link');
     // homepage cards sit inside one big <a>; navigate ourselves so the author link wins
     k.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); location.href = k.href; });
     node.textContent = '';
@@ -229,9 +242,11 @@
   }
   function postExtras(D) {
     var main = document.getElementById('quarto-document-content');
-    var file = location.pathname.split('/').pop();
-    var me = D.posts.filter(function (p) { return p.href.split('/').pop() === file; })[0];
-    if (!me || !main || !/\/posts\//.test(location.pathname)) return;
+    var here = location.pathname.replace(/index\.html$/, '');
+    var me = D.posts.filter(function (p) {
+      return here.endsWith('/' + p.href.replace(/index\.html$/, ''));
+    })[0];
+    if (!me || !main) return;
 
     // byline -> author page
     document.querySelectorAll('.quarto-title-meta-heading').forEach(function (h) {
@@ -243,17 +258,17 @@
     });
     // tags
     if (me.tags.length) {
-      var row = el('div', 'sm-post-tags');
-      row.appendChild(el('span', 'sm-post-tags-label', 'Tags'));
-      me.tags.forEach(function (t) { row.appendChild(link(tagHref(t), t, 'sm-tag')); });
+      var row = el('div', 'bk-post-tags');
+      row.appendChild(el('span', 'bk-post-tags-label', t('tags')));
+      me.tags.forEach(function (t) { row.appendChild(link(tagHref(t), t, 'bk-tag')); });
       main.appendChild(row);
     }
     // related posts
-    var rel = related(D, me, 5);
+    var rel = related(D, me, CFG.related || 5);
     if (rel.length) {
-      var box = el('section', 'sm-related');
-      box.appendChild(el('h2', null, 'Related posts'));
-      var ul = el('ul', 'sm-post-list');
+      var box = el('section', 'bk-related');
+      box.appendChild(el('h2', null, t('related')));
+      var ul = el('ul', 'bk-post-list');
       rel.forEach(function (p) { ul.appendChild(postItem(p)); });
       box.appendChild(ul);
       main.appendChild(box);
@@ -274,7 +289,7 @@
     nav.textContent = '';
     nav.hidden = pages < 2;
     function btn(label, n, cur, off) {
-      var b = el('button', 'sm-page' + (cur ? ' active' : ''), label);
+      var b = el('button', 'bk-page' + (cur ? ' active' : ''), label);
       b.type = 'button';
       b.disabled = !!off;
       if (cur) b.setAttribute('aria-current', 'page');
@@ -289,13 +304,13 @@
 
   // ---------- tags page ----------
   function tagsPage(D) {
-    var root = document.getElementById('sm-tags-page');
+    var root = document.getElementById('bk-tags-page');
     if (!root) return;
-    var side = document.getElementById('sm-tags-side');
-    var counts = tagCounts(D.posts), per = 10;
-    var hint = el('p', 'sm-tags-hint', 'Pick a tag to see its posts.');
-    var sec = el('section', 'sm-tag-section');
-    var nav = el('nav', 'sm-pager');
+    var side = document.getElementById('bk-tags-side');
+    var counts = tagCounts(D.posts), per = CFG.perPage || 10;
+    var hint = el('p', 'bk-tags-hint', t('pickTag'));
+    var sec = el('section', 'bk-tag-section');
+    var nav = el('nav', 'bk-pager');
     nav.setAttribute('aria-label', 'Pagination');
     root.append(hint, sec, nav);
     function render() {
@@ -303,8 +318,8 @@
       var list = tag ? D.posts.filter(function (p) { return p.tags.indexOf(tag) > -1; }) : [];
       if (side) {
         side.textContent = '';
-        side.appendChild(el('h3', 'sm-widget-title', 'Tags'));
-        var box = el('div', 'sm-tag-cloud');
+        side.appendChild(el('h3', 'bk-widget-title', t('tags')));
+        var box = el('div', 'bk-tag-cloud');
         box.appendChild(chips(counts, tag));
         side.appendChild(box);
       }
@@ -316,8 +331,8 @@
       var pages = Math.ceil(list.length / per);
       var page = Math.min(Math.max(+h.get('page') || 1, 1), pages);
       var title = el('h2', null, tag + ' ');
-      title.appendChild(el('span', 'sm-count', list.length + (list.length === 1 ? ' post' : ' posts')));
-      var ul = el('ul', 'sm-post-list');
+      title.appendChild(el('span', 'bk-count', list.length + ' ' + (list.length === 1 ? t('post') : t('posts'))));
+      var ul = el('ul', 'bk-post-list');
       list.slice((page - 1) * per, page * per).forEach(function (p) { ul.appendChild(postItem(p)); });
       sec.append(title, ul);
       pager(nav, pages, page, function (n) {
@@ -330,11 +345,11 @@
 
   // ---------- author page ----------
   function authorPage(D) {
-    var root = document.getElementById('sm-author-root');
+    var root = document.getElementById('bk-author-root');
     if (!root) return;
     var a = D.authors[root.dataset.slug];
     if (!a) return;
-    var posts = a.posts, per = 10;
+    var posts = a.posts, per = CFG.perPage || 10;
     function opts(label, counts) {
       var s = el('select');
       s.appendChild(new Option(label, ''));
@@ -346,15 +361,15 @@
       new Set(p.cats).forEach(function (c) { allCats.push(c); });
       new Set(p.tags).forEach(function (t) { allTags.push(t); });
     });
-    var selCat = opts('All categories', counter(allCats)), selTag = opts('All tags', counter(allTags));
-    var bar = el('div', 'sm-filter-bar');
-    var l1 = el('label', null, 'Category '), l2 = el('label', null, 'Tag ');
+    var selCat = opts(t('allCategories'), counter(allCats)), selTag = opts(t('allTags'), counter(allTags));
+    var bar = el('div', 'bk-filter-bar');
+    var l1 = el('label', null, t('category') + ' '), l2 = el('label', null, t('tag') + ' ');
     l1.appendChild(selCat); l2.appendChild(selTag);
-    var count = el('span', 'sm-filter-count');
+    var count = el('span', 'bk-filter-count');
     count.setAttribute('aria-live', 'polite');
     bar.append(l1, l2, count);
-    var ul = el('ul', 'sm-post-list');
-    var nav = el('nav', 'sm-pager');
+    var ul = el('ul', 'bk-post-list');
+    var nav = el('nav', 'bk-pager');
     nav.setAttribute('aria-label', 'Pagination');
     root.append(bar, ul, nav);
 
@@ -379,7 +394,7 @@
       st.page = Math.min(Math.max(st.page, 1), pages);
       ul.textContent = '';
       hit.slice((st.page - 1) * per, st.page * per).forEach(function (p) { ul.appendChild(postItem(p)); });
-      count.textContent = hit.length + ' of ' + posts.length + ' posts';
+      count.textContent = t('of', {a: hit.length, b: posts.length});
       pager(nav, pages, st.page, function (n) {
         st.page = n; write(); render();
         root.scrollIntoView({behavior: 'smooth'});
@@ -405,12 +420,12 @@
       sidebarWidgets(D);
     });
   }
-  if (window.SM_DATA) start(window.SM_DATA);
+  if (window.BLOGKIT_DATA) start(window.BLOGKIT_DATA);
   else {
     var ds = document.createElement('script');
-    ds.src = base + 'site-data.js';
-    ds.onload = function () { start(window.SM_DATA); };
-    ds.onerror = function () { console.warn('site.js: could not load site-data.js'); };
+    ds.src = base + 'blogkit-data.js';
+    ds.onload = function () { start(window.BLOGKIT_DATA); };
+    ds.onerror = function () { console.warn('site.js: could not load blogkit-data.js'); };
     document.head.appendChild(ds);
   }
 })();

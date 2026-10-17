@@ -1,0 +1,123 @@
+/* Stat Mania site overrides, loaded after the Blogkit extension's styles.css
+   (quarto-blogkit). Only what is specific to this site lives here: the shared
+   starfield canvas, the homepage hero, and dark navbar/banner/hero bands that
+   stay dark in the light theme. Everything generic belongs in the extension. */
+
+/* Listing cards: no thumbnails, full-width body */
+.quarto-post .thumbnail { display: none; }
+.quarto-post .body { flex-basis: 80% !important; }
+
+/* Site-wide starfield (starfield-include.html, /starfield.js) */
+.sm-canvas{
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  display: block;
+  pointer-events: none;
+}
+
+/* ---- Blog hero (index.qmd) ---- */
+.sm-hero-wrap{
+  position: relative;
+  background: radial-gradient(1200px 500px at 50% -10%, #0e1930 0%, var(--bk-bg) 60%);
+  color: #e8ecf7;
+  overflow: hidden;
+  margin: -1.5rem -1.5rem 2.5rem -1.5rem;
+  padding: 0;
+  font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+}
+#sm-canvas{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.sm-hero{
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 5rem 1.5rem 3.5rem 1.5rem;
+}
+.sm-eyebrow{
+  display: inline-block;
+  font-size: 0.78rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--bk-cyan);
+  border: 1px solid var(--bk-line);
+  border-radius: 999px;
+  padding: 0.35rem 1rem;
+  margin-bottom: 1.5rem;
+  background: rgba(0,229,255,0.06);
+  box-shadow: 0 0 20px rgba(0,229,255,0.15);
+}
+.sm-title{
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  font-weight: 800;
+  margin: 0 0 0.75rem 0;
+  letter-spacing: 0.02em;
+  background: linear-gradient(90deg, var(--bk-cyan), #7dd3fc 25%, var(--bk-purple) 55%, var(--bk-pink) 85%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-size: 200% auto;
+  animation: sm-gradient-move 6s ease-in-out infinite;
+  text-shadow: 0 0 60px rgba(0,229,255,0.15);
+}
+@keyframes sm-gradient-move{
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.sm-subtitle{
+  max-width: 620px;
+  margin: 0 auto;
+  color: #aab4d0;
+  font-size: clamp(1rem, 2vw, 1.1rem);
+  line-height: 1.6;
+}
+
+/* Light theme: navbar, post banner and hero stay dark bands (Blogkit's default is all light) */
+body.quarto-light #quarto-header,
+body.quarto-light #title-block-header.quarto-title-block,
+body.quarto-light .quarto-title-banner,
+body.quarto-light .sm-hero-wrap{
+  --bk-bg: #05070d;
+  --bk-bg2: #0a0f1e;
+  --bk-cyan: #00e5ff;
+  --bk-purple: #a855f7;
+  --bk-pink: #ff2fb4;
+  --bk-line: rgba(0,229,255,0.25);
+  --bk-text: #e8ecf7;
+  --bk-muted: #9aa4c2;
+}
+body.quarto-light #quarto-header,
+body.quarto-light #quarto-header .navbar{
+  background: rgba(5,7,13,0.82) !important;
+  border-bottom-color: var(--bk-line);
+}
+body.quarto-light #quarto-header .navbar-brand,
+body.quarto-light #quarto-header .navbar-nav .nav-link,
+body.quarto-light #quarto-header .navbar-title{ color: var(--bk-text) !important; }
+body.quarto-light #quarto-header .navbar-nav .nav-link:hover,
+body.quarto-light #quarto-header .navbar-nav .nav-link.active{ color: var(--bk-cyan) !important; }
+body.quarto-light #quarto-header .navbar-toggler-icon{ filter: none; }
+body.quarto-light #title-block-header.quarto-title-block,
+body.quarto-light .quarto-title-banner{
+  background: radial-gradient(1200px 400px at 50% -20%, #0e1930 0%, var(--bk-bg) 70%);
+  border-bottom-color: rgba(255,255,255,0.08);
+}
+body.quarto-light .quarto-title-meta-heading{ color: var(--bk-muted); }
+body.quarto-light .quarto-title-meta-contents,
+body.quarto-light .quarto-title-meta-contents p{ color: var(--bk-text); }
+
+/* the starfield only makes sense on a dark page */
+body.quarto-light .sm-canvas{ display: none; }
+
+/* hero text keeps its dark-band colours inside the light page panel */
+body.quarto-light main.content .sm-hero-wrap h1.sm-title{ color: transparent; }
+body.quarto-light main.content .sm-hero-wrap .sm-subtitle{ color: #aab4d0; }
+body.quarto-light main.content .sm-hero-wrap .sm-eyebrow{ color: var(--bk-cyan); }

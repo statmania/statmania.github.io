@@ -5,7 +5,7 @@ project:
     - "posts/*.qmd"
     - "authors/*.qmd"
   output-dir: ../blog
-  pre-render: scripts/build_site_data.py
+  pre-render: _extensions/blogkit/build_site_data.py
 
 website:
   title: "Stat Mania"
@@ -31,22 +31,12 @@ website:
       - icon: twitter
         href: https://twitter.com
 format:
-  html:
-    # dark is listed first so it is the default; the navbar gets a light/dark toggle
-    theme:
-      dark: [cosmo, theme-dark.scss]
-      light: cosmo
-    css: styles.css
-    highlight-style:
-      light: github
-      dark: dracula
+  blogkit-html:
+    # the extension supplies the theme, styles.css, code-reveal and its scripts;
+    # site.css holds the Stat Mania overrides (starfield, hero, dark bands)
+    css: site.css
     include-after-body:
       - ../starfield-include.html
-      - code-reveal.html
-      - _site-include.html
     include-in-header:
       text: |
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-
-

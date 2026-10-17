@@ -42,7 +42,7 @@ This takes a few seconds and does everything needed:
 
 - builds `blog/posts/my-post.html` (and copies the images it uses),
 - refreshes the homepage list,
-- refreshes `blog/site-data.js`, so the archive, tag cloud, tags page, related posts and author page include the post automatically. **You do not need to re-render other posts.**
+- refreshes `blog/blogkit-data.js`, so the archive, tag cloud, tags page, related posts and author page include the post automatically. **You do not need to re-render other posts.**
 
 ## 3. Publish SEVERAL posts
 
@@ -68,12 +68,12 @@ Rendering many posts is only for bulk edits. Because everything cross-post is dy
 | You changed | Run |
 | :--- | :--- |
 | `posts/x.qmd` (text, code, images used by it) | `quarto render posts/x.qmd` |
-| `styles.css` | any render, e.g. `quarto render posts/x.qmd` (copies it); other pages pick it up on reload |
-| `site.js` (widgets, related posts, pagers) | `python3 scripts/build_site_data.py` (copies it to `blog/`; no Quarto needed) |
+| `site.css` | full `quarto render` (it is a project CSS file) |
+| `_extensions/blogkit/` (widgets, related posts, pagers, generic CSS) | `quarto update extension statmania/quarto-blogkit`, then a full render. Edit the extension in the `quarto-blogkit` repo, not here |
 | `authors.yml`: photo, name, tagline, bio, links | `quarto render authors/<slug>.qmd` for the author page header; post cards update from the data file on the next render of anything |
 | a **new author** in `authors.yml` + photo in `img/` | `quarto render` (creates `authors/<slug>.qmd` and builds it) |
 | `about.qmd`, `index.qmd`, `tags.qmd` | `quarto render <that file>` |
-| `_quarto.yml`, `theme-dark.scss`, `_site-include.html`, `code-reveal.html`, `posts/_metadata.yml` | full `quarto render` (they change every page, ~40 s) |
+| `_quarto.yml`, `posts/_metadata.yml` | full `quarto render` (they change every page, ~40 s) |
 | a **deleted post** | delete `posts/x.qmd`, delete `../blog/posts/x.html` (and `../blog/posts/x_files/` if present), then `quarto render index.qmd` |
 | a new image only | render the post that uses it (images are copied when a page references them) |
 
@@ -86,7 +86,7 @@ Code in `{python}`/`{r}` chunks is cached (`freeze: true`). To re-run it, delete
 ```
 ./publish.sh posts/my-post.qmd                  # one post
 ./publish.sh posts/a.qmd posts/b.qmd            # several posts
-./publish.sh --all                              # full render (site.js / CSS / config changes)
+./publish.sh --all                              # full render (site.css / config / extension changes)
 ./publish.sh                                    # no render; commit and push whatever is pending
 ./publish.sh -m "Blog: add srand post" posts/c-srand-time-null.qmd
 ./publish.sh --no-push posts/x.qmd              # render + commit, check locally, push later
@@ -101,7 +101,7 @@ cd ../blog
 python3 -m http.server 8000      # then open http://localhost:8000
 ```
 
-Use a hard refresh (Ctrl+Shift+R) so the browser does not show cached CSS or `site-data.js`. Check: the post page, the homepage card, the tags page (`/tags.html#tag=c`) and your author page.
+Use a hard refresh (Ctrl+Shift+R) so the browser does not show cached CSS or `blogkit-data.js`. Check: the post page, the homepage card, the tags page (`/tags.html#tag=c`) and your author page.
 
 ## 6. Publish
 
@@ -113,17 +113,17 @@ git pull --rebase --autostash
 git push
 ```
 
-GitHub Pages updates in a minute or two. Readers' browsers may keep the old `site-data.js` for up to ~10 minutes.
+GitHub Pages updates in a minute or two. Readers' browsers may keep the old `blogkit-data.js` for up to ~10 minutes.
 
 ## Light / dark theme
 
-The navbar has a sun/moon toggle; dark is the default and the choice is remembered per browser. Quarto does the switching (`theme:` in `_quarto.yml`: `dark: [cosmo, theme-dark.scss]`, `light: cosmo`; code highlighting `dracula` / `github`). The dark look is the base of `styles.css`; the light overrides are in the last section of that file under `body.quarto-light`, and the navbar, post banner and homepage hero stay dark bands in light mode. When you add new components, give them colours through the `--sm-*` CSS variables so both themes work.
+The navbar has a sun/moon toggle; dark is the default and the choice is remembered per browser. Quarto does the switching (`theme:` in `_quarto.yml`: `dark: [cosmo, theme-dark.scss]`, `light: cosmo`; code highlighting `dracula` / `github`), set by the Blogkit extension. The dark look is the base of the extension's `styles.css`; the light overrides are in the last section of that file under `body.quarto-light`, and `site.css` keeps the navbar, post banner and homepage hero dark bands in light mode. When you add new components, give them colours through the `--bk-*` CSS variables so both themes work.
 
 ## What is generated (never hand-edit)
 
-- `../blog/` (the whole built site), including `blog/site-data.js` and `blog/site.js`
+- `../blog/` (the whole built site), including `blog/blogkit-data.js` and `blog/blogkit.js`
 - `authors/<slug>.qmd` (from `authors.yml`)
 
-Hand-written: posts, `authors.yml`, `site.js`, `styles.css`, `tags.qmd`, `index.qmd`, `about.qmd`, `publish.sh`.
+Hand-written: posts, `authors.yml`, `site.css`, `tags.qmd`, `index.qmd`, `about.qmd`, `publish.sh`.
 
 `CLAUDE.md` has the detailed design notes (images, writing conventions, how the dynamic widgets work).
