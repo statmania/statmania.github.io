@@ -222,13 +222,12 @@
   function relatedItem(p) {
     var li = el('li', 'bk-rel-item');
     var a = link(postHref(p), '', 'bk-rel-link');
-    if (p.image) {
-      var img = el('img', 'bk-rel-thumb');
-      img.src = assetHref(p.image);
-      img.alt = '';
-      img.loading = 'lazy';
-      a.appendChild(img);
-    }
+    var img = el('img', 'bk-rel-thumb');
+    img.src = assetHref(p.image || 'img/placeholder.svg');   // the starter site ships img/placeholder.svg
+    img.alt = '';
+    img.loading = 'lazy';
+    img.onerror = function () { img.remove(); };
+    a.appendChild(img);
     var body = el('span', 'bk-rel-body');
     body.appendChild(el('span', 'bk-rel-title', p.title));
     body.appendChild(el('span', 'bk-tp-date', p.date));
