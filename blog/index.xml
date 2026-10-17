@@ -6251,18 +6251,32 @@ font-style: inherit;">}</span></span></code></pre></div></div>
 
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/blog-build-pipeline.svg" class="img-fluid figure-img" alt="Posts and authors.yml feed quarto render and a pre-render hook. Rendering writes blog/*.html, the hook writes site-data.js and site.js. Git push publishes to GitHub Pages and the browser builds the widgets from site-data.js."></p>
+<p><img src="https://www.statmania.info/blog/img/blog-build-pipeline.svg" class="img-fluid figure-img" alt="Posts and authors.yml feed quarto render and a pre-render hook. Rendering writes blog/*.html, the hook writes blogkit-data.js and blogkit.js. Git push publishes to GitHub Pages and the browser builds the widgets from blogkit-data.js."></p>
 <figcaption>The blog’s chain from Markdown source to published page: Quarto renders the posts, a pre-render hook writes the shared data file, git push publishes, and the browser builds the widgets.</figcaption>
 </figure>
 </div>
 <p>This blog is plain files: Markdown in, HTML out, hosted for free on GitHub Pages. There is no server and no database, yet it has a sidebar archive, a tag cloud, related posts, author pages, a light/dark switch, and a one-command publish. Here is how it fits together, so we can borrow whatever is useful.</p>
 <section id="the-idea-sources-in-built-site-out" class="level3">
 <h3 class="anchored" data-anchor-id="the-idea-sources-in-built-site-out">The Idea: Sources In, Built Site Out</h3>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>This is now an extension.</strong> Everything in this post (the hook, the browser script, the theme and the <code>publish.sh</code>) was later packaged as a reusable Quarto extension, <a href="https://github.com/statmania/quarto-blogkit">quarto-blogkit</a>, and this blog installs it with <code>quarto add</code>. Generic improvements are made once in that repo and pulled in with <code>quarto update extension</code>; only site-specific styling (<code>site.css</code>) stays here. The snippets below are simplified from the extension’s code.</p>
+</div>
+</div>
 <p>Quarto turns <code>.qmd</code> files into HTML. GitHub Pages serves whatever is committed. So we keep two folders side by side:</p>
 <pre><code>blograw/          # sources (what we edit)
   _quarto.yml     # project config
   posts/*.qmd     # one file per post
-  styles.css, site.js, authors.yml, publish.sh
+  site.css, authors.yml, publish.sh
+  _extensions/blogkit/   # the theme, scripts and pre-render hook (see below)
 blog/             # built site (generated; committed; served by Pages)</code></pre>
 <p>Nothing is built on GitHub. We render on our own computer and commit the result. The cost is that generated HTML lives in git. The gain is zero build infrastructure and a site that works with any static host.</p>
 <p>The project file points Quarto at the right inputs and output:</p>
@@ -6329,7 +6343,7 @@ background-color: null;
 font-weight: bold;
 font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
-font-style: inherit;"> scripts/build_site_data.py</span></span></code></pre></div></div>
+font-style: inherit;"> _extensions/blogkit/build_site_data.py</span></span></code></pre></div></div>
 <p>Each post starts with front matter that everything else reads:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><span class="pp" style="color: #AD0000;
 background-color: null;
@@ -6645,16 +6659,16 @@ font-style: inherit;">"tags"</span>)), …})</span>
 background-color: null;
 font-style: inherit;">/</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"site-data.js"</span>).write_text(<span class="st" style="color: #20794D;
+font-style: inherit;">"blogkit-data.js"</span>).write_text(<span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"window.SM_DATA="</span> <span class="op" style="color: #5E5E5E;
+font-style: inherit;">"window.BLOGKIT_DATA="</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span> json.dumps(data) <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">";"</span>)</span></code></pre></div></div>
-<p>A small hand-written <code>site.js</code> is loaded on every page. It reads <code>SM_DATA</code> and builds, in the browser:</p>
+<p>A small script, <code>blogkit.js</code>, is loaded on every page. It reads <code>BLOGKIT_DATA</code> and builds, in the browser:</p>
 <ul>
 <li>the <strong>archive</strong> (year, month, posts) and the <strong>tag cloud</strong> in the sidebar,</li>
 <li>a <strong>Tags</strong> row and up to five <strong>Related posts</strong> under each post,</li>
@@ -6705,7 +6719,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Why <code>site-data.js</code> and not a JSON file?</strong> Our first version fetched <code>site-data.json</code>. Browsers block <code>fetch()</code> for pages opened straight from disk (<code>file://</code>), so every widget vanished locally. A <code>&lt;script src&gt;</code> works everywhere, so the data became a <code>.js</code> file that sets a global.</p>
+<p><strong>Why <code>blogkit-data.js</code> and not a JSON file?</strong> Our first version fetched a <code>.json</code> file. Browsers block <code>fetch()</code> for pages opened straight from disk (<code>file://</code>), so every widget vanished locally. A <code>&lt;script src&gt;</code> works everywhere, so the data became a <code>.js</code> file that sets a global.</p>
 </div>
 </div>
 </section>
@@ -6722,7 +6736,7 @@ font-style: inherit;">:</span></span>
 background-color: null;
 font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">html</span><span class="kw" style="color: #003B4F;
+font-style: inherit;">blogkit-html</span><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">:</span></span>
@@ -6802,7 +6816,7 @@ font-style: inherit;"> dracula</span><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">}</span></span></code></pre></div></div>
-<p>Two lessons. Listing <code>dark</code> first makes it the default. And Quarto decides what is dark from the theme’s <strong>background colour</strong>: giving it <code>cosmo</code> twice looked fine but made <em>both</em> modes “light”. The tiny <code>theme-dark.scss</code> only sets <code>$body-bg: #05070d;</code>, which is enough to make Quarto treat it as dark. After that, our stylesheet uses CSS variables (<code>--sm-bg</code>, <code>--sm-text</code>, …) and overrides them under <code>body.quarto-light</code>.</p>
+<p>Two lessons. Listing <code>dark</code> first makes it the default. And Quarto decides what is dark from the theme’s <strong>background colour</strong>: giving it <code>cosmo</code> twice looked fine but made <em>both</em> modes “light”. The tiny <code>theme-dark.scss</code> only sets <code>$body-bg: #05070d;</code>, which is enough to make Quarto treat it as dark. After that, our stylesheet uses CSS variables (<code>--bk-bg</code>, <code>--bk-text</code>, …) and overrides them under <code>body.quarto-light</code>.</p>
 </section>
 <section id="small-quality-of-life-pieces" class="level3">
 <h3 class="anchored" data-anchor-id="small-quality-of-life-pieces">Small Quality-of-Life Pieces</h3>
@@ -6988,7 +7002,7 @@ background-color: null;
 font-style: inherit;">git</span> push</span></code></pre></div></div>
 <p>Day to day it is one line:</p>
 <pre><code>./publish.sh posts/my-new-post.qmd</code></pre>
-<p>Useful options: <code>--no-push</code> (commit but look first), <code>--all</code> (full render after changing the theme or config), and <code>-m "message"</code>. The script stops if a render fails, skips empty commits, and refuses to touch files outside the blog folders.</p>
+<p>Useful options: <code>--no-push</code> (commit but look first), <code>--all</code> (full render after changing the theme, <code>site.css</code> or config), and <code>-m "message"</code>. The script stops if a render fails, skips empty commits, and refuses to touch files outside the blog folders.</p>
 </section>
 <section id="gotchas-we-hit" class="level3">
 <h3 class="anchored" data-anchor-id="gotchas-we-hit">Gotchas We Hit</h3>
@@ -6996,7 +7010,7 @@ font-style: inherit;">git</span> push</span></code></pre></div></div>
 <li><code>quarto render a.qmd b.qmd</code> does <strong>not</strong> render two files; the second is treated as an option. Loop instead.</li>
 <li>A single-post render re-renders the homepage too (to refresh the listing). That is expected.</li>
 <li><code>freeze: true</code> caches R/Python output; delete <code>_freeze/posts/&lt;post&gt;/</code> to force a re-run.</li>
-<li>GitHub Pages may cache <code>site-data.js</code> for a few minutes after a push.</li>
+<li>GitHub Pages may cache <code>blogkit-data.js</code> for a few minutes after a push.</li>
 <li>Keep generated files generated: edit the <code>.qmd</code>, never the HTML in <code>blog/</code>.</li>
 </ul>
 </section>

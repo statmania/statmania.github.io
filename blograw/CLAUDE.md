@@ -93,6 +93,20 @@ then push to `master` on GitHub Pages.
 
 ## Blogkit extension (the engine) and site.css (this site's overrides)
 
+> **Rule: new blog features and fixes go into quarto-blogkit first, never straight into this repo.**
+> Whenever an idea for the blog comes up while working here (a widget, a layout or CSS change, a
+> script fix, a new option, anything that is not specific to Stat Mania), do it like this:
+>
+> 1. Implement it in `../../quarto-blogkit/_extensions/blogkit/` (use `bk-` / `--bk-` names, keep it
+>    generic, add a line to its `CHANGELOG.md`), commit and push that repo.
+> 2. Here run `cd blograw && quarto update extension statmania/quarto-blogkit` (or
+>    `quarto add ../../quarto-blogkit` to test before pushing), then a full `quarto render`.
+> 3. Only things that are truly specific to this site (starfield, `.sm-*` hero, dark bands, branding)
+>    go in `site.css` / `_quarto.yml` / `index.qmd` here.
+>
+> Never hand-edit `_extensions/blogkit/` in this repo: the next update overwrites it, and the
+> improvement would be lost from blogkit.
+
 The blog runs on the **quarto-blogkit** extension (`../../quarto-blogkit`, GitHub
 `statmania/quarto-blogkit`), installed in `_extensions/blogkit/`. **Do not edit files in
 `_extensions/blogkit/`**: they are overwritten on update. Generic features and fixes (theme,
