@@ -14,7 +14,7 @@
   var small = window.matchMedia('(max-width: 991.98px)');
   var CFG = {};
   var LABELS = {
-    onThisPage: 'On this page', archive: 'Archive', tags: 'Tags', categories: 'Categories', related: 'Related posts',
+    onThisPage: 'On this page', archive: 'Archive', tags: 'Tags', categories: 'Categories', related: 'Related posts', prevPost: 'Previous post', nextPost: 'Next post',
     allCategories: 'All categories', allTags: 'All tags', category: 'Category', tag: 'Tag',
     pickTag: 'Pick a tag to see its posts.', pickCategory: 'Pick a category to see its posts.', post: 'post', posts: 'posts',
     prev: '\u2039 Prev', next: 'Next \u203a', allBy: 'All {n} posts by {name}', of: '{a} of {b} posts'
@@ -219,15 +219,39 @@
     scored.sort(function (a, b) { return b[0] - a[0] || (a[1].date < b[1].date ? 1 : -1); });
     return scored.slice(0, k).map(function (x) { return x[1]; });
   }
-  function relatedItem(p) {
-    var li = el('li', 'bk-rel-item');
-    var a = link(postHref(p), '', 'bk-rel-link');
+  function thumb(p) {
     var img = el('img', 'bk-rel-thumb');
     img.src = assetHref(p.image || 'img/placeholder.svg');   // the starter site ships img/placeholder.svg
     img.alt = '';
     img.loading = 'lazy';
     img.onerror = function () { img.remove(); };
-    a.appendChild(img);
+    return img;
+  }
+  function postNav(D, me) {
+    var i = D.posts.indexOf(me);
+    var older = D.posts[i + 1], newer = D.posts[i - 1];   // posts are sorted newest first
+    if (!older && !newer) return null;
+    var nav = el('nav', 'bk-postnav');
+    nav.setAttribute('aria-label', 'Previous and next post');
+    function side(p, cls, label) {
+      if (!p) return nav.appendChild(el('span', 'bk-postnav-empty'));
+      var a = link(postHref(p), '', 'bk-postnav-link ' + cls);
+      a.appendChild(thumb(p));
+      var body = el('span', 'bk-rel-body');
+      body.appendChild(el('span', 'bk-postnav-label', label));
+      body.appendChild(el('span', 'bk-rel-title', p.title));
+      body.appendChild(el('span', 'bk-tp-date', p.date));
+      a.appendChild(body);
+      nav.appendChild(a);
+    }
+    side(older, 'bk-postnav-prev', '\u2039 ' + t('prevPost'));
+    side(newer, 'bk-postnav-next', t('nextPost') + ' \u203a');
+    return nav;
+  }
+  function relatedItem(p) {
+    var li = el('li', 'bk-rel-item');
+    var a = link(postHref(p), '', 'bk-rel-link');
+    a.appendChild(thumb(p));
     var body = el('span', 'bk-rel-body');
     body.appendChild(el('span', 'bk-rel-title', p.title));
     body.appendChild(el('span', 'bk-tp-date', p.date));
@@ -281,6 +305,12 @@
       me.tags.forEach(function (t) { row.appendChild(link(tagHref(t), t, 'bk-tag')); });
       main.appendChild(row);
     }
+    // author card
+    var au = D.byName[(me.author || '').toLowerCase()];
+    if (au) main.appendChild(authorCard(au));
+    // previous / next post
+    var pn = postNav(D, me);
+    if (pn) main.appendChild(pn);
     // related posts
     var rel = related(D, me, CFG.related || 5);
     if (rel.length) {
@@ -291,9 +321,6 @@
       box.appendChild(ul);
       main.appendChild(box);
     }
-    // author card
-    var au = D.byName[(me.author || '').toLowerCase()];
-    if (au) main.appendChild(authorCard(au));
   }
   function homepageBylines(D) {
     document.querySelectorAll('.listing-author').forEach(function (n) {
