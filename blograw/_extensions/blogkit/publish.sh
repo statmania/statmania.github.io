@@ -39,6 +39,12 @@ elif [ "${#files[@]}" -gt 0 ]; then
     echo "==> Rendering $f"
     quarto render "$f"      # quarto takes one file per call
   done
+  # A single-file render also refreshes the homepage listing, but through a path that drops
+  # the extension's format (no theme, CSS or scripts). Rendering index.qmd itself repairs it.
+  if [ -f index.qmd ]; then
+    echo "==> Re-rendering index.qmd (listing refresh drops the extension format)"
+    quarto render index.qmd
+  fi
 else
   echo "==> Refreshing site data"
   python3 _extensions/blogkit/build_site_data.py
