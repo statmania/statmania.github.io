@@ -15,7 +15,7 @@ On every `quarto render` (the whole project or a single post) it
     (the browser script that builds the archive, tag cloud, related posts,
     author cards, tags page and author pages from that data),
   * (re)writes authors/<slug>.qmd for every author in authors.yml, and
-  * creates tags.qmd if the project does not have one yet.
+  * creates tags.qmd and categories.qmd if the project does not have them yet.
 
 Nothing about other posts is baked into rendered pages, so rendering just the
 new post updates the archive, tags, related posts and author pages everywhere.
@@ -102,6 +102,20 @@ def post_files():
     return sorted(p for p in found if not p.name.startswith("_") and p.name.lower() != "readme.md")
 
 
+def post_image(path, image):
+    """The post's front-matter image as a path relative to the site root (or an absolute URL)."""
+    if not image:
+        return ""
+    image = str(image).strip()
+    if re.match(r"^(https?:)?//", image):
+        return image
+    target = Path(os.path.normpath(path.parent / image))
+    try:
+        return target.relative_to(ROOT).as_posix()
+    except ValueError:
+        return ""
+
+
 def load_posts():
     posts = []
     for path in post_files():
@@ -121,6 +135,7 @@ def load_posts():
             "tags": as_list(fm.get("tags"), lower=True),
             "cats": as_list(fm.get("categories")),
             "author": str(fm.get("author") or "").strip(),
+            "image": post_image(path, fm.get("image")),
         })
     posts.sort(key=lambda p: p["date"], reverse=True)
     return posts
@@ -153,23 +168,27 @@ toc: false
 """
 
 
-TAGS_QMD = """---
-title: "Posts by Tag"
-description: "Browse every post by tag."
+FACET_QMD = """---
+title: "{title}"
+description: "{description}"
 page-layout: article
 toc: false
 ---
 
-::: {.column-margin}
-```{=html}
-<div id="bk-tags-side" class="bk-widget bk-tags bk-tags-side"></div>
+::: {{.column-margin}}
+```{{=html}}
+<div id="bk-{short}-side" class="bk-widget bk-tags bk-tags-side"></div>
 ```
 :::
 
-```{=html}
-<div id="bk-tags-page"></div>
+```{{=html}}
+<div id="bk-{short}-page"></div>
 ```
 """
+FACET_PAGES = {
+    "tags.qmd": dict(title="Posts by Tag", description="Browse every post by tag.", short="tags"),
+    "categories.qmd": dict(title="Posts by Category", description="Browse every post by category.", short="cats"),
+}
 
 
 def main():
@@ -192,8 +211,9 @@ def main():
         (ROOT / "authors").mkdir(exist_ok=True)
         for slug, a in authors.items():
             (ROOT / "authors" / f"{slug}.qmd").write_text(author_stub(slug, a), encoding="utf-8")
-    if not (ROOT / "tags.qmd").exists():
-        (ROOT / "tags.qmd").write_text(TAGS_QMD, encoding="utf-8")
+    for name, vals in FACET_PAGES.items():
+        if not (ROOT / name).exists():
+            (ROOT / name).write_text(FACET_QMD.format(**vals), encoding="utf-8")
 
     print(f"blogkit: {len(posts)} posts, {len(authors)} authors -> {out / 'blogkit-data.js'}")
 
