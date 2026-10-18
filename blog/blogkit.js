@@ -188,6 +188,14 @@
     var side = document.getElementById('quarto-margin-sidebar');
     var main = document.getElementById('quarto-document-content');
     if (!side) return;
+    // Keep "On this page" in view while reading (desktop): wrap the TOC in a track that fills the
+    // sidebar above the widgets, so a sticky TOC never runs over the archive and tag cloud.
+    var toc = side.querySelector('#TOC');
+    if (toc && !toc.parentNode.classList.contains('bk-toc-track')) {
+      var track = el('div', 'bk-toc-track');
+      toc.parentNode.insertBefore(track, toc);
+      track.appendChild(toc);
+    }
     var w = el('div');
     w.id = 'bk-widgets';
     w.appendChild(archive(D.posts));
