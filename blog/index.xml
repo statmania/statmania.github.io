@@ -10,7 +10,300 @@
 <atom:link href="https://www.statmania.info/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Posts on statistics theory, R &amp; Python, and developer tips from Stat Mania.</description>
 <generator>quarto-1.9.38</generator>
-<lastBuildDate>Fri, 16 Oct 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sat, 17 Oct 2026 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>pdfLaTeX vs XeLaTeX: Which LaTeX Engine Should We Use?</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/pdflatex-vs-xelatex.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/pdflatex-vs-xelatex.svg" class="img-fluid figure-img" alt="Two terminal windows side by side: pdflatex labelled fast and traditional, and xelatex labelled multilingual, showing sample text in several scripts."></p>
+<figcaption>pdfLaTeX is the fast, traditional engine; XeLaTeX adds system fonts and native Unicode.</figcaption>
+</figure>
+</div>
+<p><strong>pdfLaTeX</strong> is the traditional, default LaTeX engine. It compiles quickly and works with almost every package ever written. <strong>XeLaTeX</strong> is a newer engine built for <strong>Unicode</strong> and for <strong>system fonts</strong> (TrueType and OpenType). Both produce a PDF from the same kind of <code>.tex</code> file, but they handle fonts and text differently, so the preamble we write has to match the engine we choose.</p>
+<p>(A third engine, <strong>LuaLaTeX</strong>, also supports Unicode and system fonts, and lets us script the document in Lua. Everything below about XeLaTeX applies to it in broad strokes.)</p>
+<section id="the-key-differences" class="level2">
+<h2 class="anchored" data-anchor-id="the-key-differences">The Key Differences</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Feature</th>
+<th style="text-align: left;">pdfLaTeX</th>
+<th style="text-align: left;">XeLaTeX</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Default engine</td>
+<td style="text-align: left;">Yes (historical standard)</td>
+<td style="text-align: left;">No</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">System fonts (<code>.ttf</code> / <code>.otf</code>)</td>
+<td style="text-align: left;">No (needs TeX-ready font packages)</td>
+<td style="text-align: left;">Yes, through <code>fontspec</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Unicode text</td>
+<td style="text-align: left;">Limited to what the font encoding covers</td>
+<td style="text-align: left;">Native UTF-8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Non-Latin scripts (Arabic, Bengali, Chinese)</td>
+<td style="text-align: left;">Difficult; needs extra workarounds</td>
+<td style="text-align: left;">Supported with a suitable font</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Compile speed</td>
+<td style="text-align: left;">Fast</td>
+<td style="text-align: left;">Slower</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Micro-typography (<code>microtype</code>)</td>
+<td style="text-align: left;">Full support</td>
+<td style="text-align: left;">Partial (character protrusion only)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Old pdfLaTeX-only packages</td>
+<td style="text-align: left;">Work</td>
+<td style="text-align: left;">Some fail</td>
+</tr>
+</tbody>
+</table>
+<section id="speed" class="level3">
+<h3 class="anchored" data-anchor-id="speed">Speed</h3>
+<p>XeLaTeX does extra work: it loads system fonts and shapes the text. On our machine a one-line document compiled in about 0.13 s with pdfLaTeX and about 0.7 s with XeLaTeX (TeX Live 2026). The gap is far less dramatic than the ratio sounds, and on a real thesis the time goes to packages, figures and bibliographies. Still, pdfLaTeX is the faster engine for quick edit-compile cycles.</p>
+</section>
+<section id="fonts-and-unicode" class="level3">
+<h3 class="anchored" data-anchor-id="fonts-and-unicode">Fonts and Unicode</h3>
+<p>pdfLaTeX works with TeX fonts and font encodings such as T1. Modern LaTeX reads UTF-8 input by default, but a character only prints if the font encoding has it. Try Bengali text with pdfLaTeX and it stops:</p>
+<pre><code>! LaTeX Error: Unicode character আ (U+0986)
+               not set up for use with LaTeX.</code></pre>
+<p>XeLaTeX has no such limit. With <code>fontspec</code> we name any installed font, and the same text compiles:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb2-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">\documentclass</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">article</span>}</span>
+<span id="cb2-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">\usepackage</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">fontspec</span>}</span>
+<span id="cb2-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">\setmainfont</span>{Noto Serif Bengali}</span>
+<span id="cb2-4"></span>
+<span id="cb2-5"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">\begin</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">document</span>}</span>
+<span id="cb2-6">আমার দেশ বাংলাদেশ</span>
+<span id="cb2-7"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">\end</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">document</span>}</span></code></pre></div></div>
+</section>
+<section id="typography-and-compatibility" class="level3">
+<h3 class="anchored" data-anchor-id="typography-and-compatibility">Typography and Compatibility</h3>
+<p><code>microtype</code> makes subtle spacing and margin adjustments that improve the look of a page. It gives its full effect in pdfLaTeX; with XeLaTeX only part of it is available. pdfLaTeX also has the longest track record with journals and publishers, so for an academic submission we should check the journal’s instructions, because many still ask for pdfLaTeX.</p>
+</section>
+</section>
+<section id="which-one-should-we-choose" class="level2">
+<h2 class="anchored" data-anchor-id="which-one-should-we-choose">Which One Should We Choose?</h2>
+<ul>
+<li><strong>Choose pdfLaTeX</strong> for a standard paper, report or thesis in a Latin script, when we want speed and maximum package compatibility.</li>
+<li><strong>Choose XeLaTeX</strong> (or LuaLaTeX) when we need an operating-system font such as Times New Roman or a designer font, or when we write in a non-Latin script or mix several languages.</li>
+</ul>
+</section>
+<section id="compiling-from-the-terminal" class="level2">
+<h2 class="anchored" data-anchor-id="compiling-from-the-terminal">1. Compiling from the Terminal</h2>
+<p>Use the executable that matches the engine:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">pdflatex</span> document.tex</span></code></pre></div></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">xelatex</span> document.tex</span></code></pre></div></div>
+<p>pdfLaTeX reads the source, uses TeX fonts and writes the PDF directly. XeLaTeX reads the source, fetches fonts through the operating system, produces an intermediate <code>.xdv</code> file, and passes it to a driver (<code>xdvipdfmx</code>) that writes the final PDF. We don’t see the second step; it happens inside the single <code>xelatex</code> command.</p>
+</section>
+<section id="switching-the-engine-in-an-editor" class="level2">
+<h2 class="anchored" data-anchor-id="switching-the-engine-in-an-editor">2. Switching the Engine in an Editor</h2>
+<p>In an editor we change the engine in the settings instead of on the command line.</p>
+<p><strong>Overleaf</strong></p>
+<ol type="1">
+<li>Click the <strong>Menu</strong> button at the top left.</li>
+<li>Under <strong>Compiler</strong>, change the dropdown from pdfLaTeX to XeLaTeX.</li>
+<li>Click <strong>Recompile</strong>.</li>
+</ol>
+<p><strong>TeXstudio</strong></p>
+<ol type="1">
+<li>Go to <strong>Options → Configure TeXstudio</strong>.</li>
+<li>Open the <strong>Build</strong> tab.</li>
+<li>Set <strong>Default Compiler</strong> to PdfLaTeX or XeLaTeX.</li>
+</ol>
+</section>
+<section id="the-preamble-each-engine-needs" class="level2">
+<h2 class="anchored" data-anchor-id="the-preamble-each-engine-needs">3. The Preamble Each Engine Needs</h2>
+<p>The preamble (the setup code above <code>\begin{document}</code>) must match the engine.</p>
+<section id="pdflatex" class="level3">
+<h3 class="anchored" data-anchor-id="pdflatex">pdfLaTeX</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb5-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">\documentclass</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">article</span>}</span>
+<span id="cb5-2"></span>
+<span id="cb5-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">% Rendering options for pdfLaTeX</span></span>
+<span id="cb5-4"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">\usepackage</span>[utf8]{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">inputenc</span>} <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">% Allows typing Unicode characters directly</span></span>
+<span id="cb5-5"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">\usepackage</span>[T1]{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">fontenc</span>}    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">% 8-bit font encoding: better hyphenation and copy-paste</span></span>
+<span id="cb5-6"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">\usepackage</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">lmodern</span>}        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">% Latin Modern, a scalable vector font</span></span>
+<span id="cb5-7"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">\usepackage</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">microtype</span>}      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">% Subtle spacing and margin adjustments</span></span>
+<span id="cb5-8"></span>
+<span id="cb5-9"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">\begin</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">document</span>}</span>
+<span id="cb5-10">Hello World! This is rendered via pdfLaTeX.</span>
+<span id="cb5-11"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">\end</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">document</span>}</span></code></pre></div></div>
+</section>
+<section id="xelatex" class="level3">
+<h3 class="anchored" data-anchor-id="xelatex">XeLaTeX</h3>
+<p>Drop <code>inputenc</code>, <code>fontenc</code> and <code>lmodern</code>, and load <code>fontspec</code> instead:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb6-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">\documentclass</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">article</span>}</span>
+<span id="cb6-2"></span>
+<span id="cb6-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">% Rendering options for XeLaTeX</span></span>
+<span id="cb6-4"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">\usepackage</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">fontspec</span>}</span>
+<span id="cb6-5"></span>
+<span id="cb6-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">% Use any font installed on the computer</span></span>
+<span id="cb6-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">\setmainfont</span>{Times New Roman}</span>
+<span id="cb6-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">\setsansfont</span>{Arial}</span>
+<span id="cb6-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">\setmonofont</span>{Courier New}</span>
+<span id="cb6-10"></span>
+<span id="cb6-11"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">\begin</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">document</span>}</span>
+<span id="cb6-12">Hello World! This is rendered via XeLaTeX using system fonts.</span>
+<span id="cb6-13"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">\end</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">document</span>}</span></code></pre></div></div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>The fonts must be installed.</strong> <code>\setmainfont{Times New Roman}</code> fails on a machine without that font: <code>fontspec Error: The font "Times New Roman" cannot be found</code>. On Debian and Ubuntu, Times New Roman and Arial come from the <code>ttf-mscorefonts-installer</code> package. For documents that must compile anywhere, pick a font that ships with TeX Live, or an open font such as Noto or DejaVu.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Don’t mix the two preambles.</strong> <code>\usepackage[utf8]{inputenc}</code> and <code>\usepackage[T1]{fontenc}</code> are for pdfLaTeX; with XeLaTeX they are unnecessary; XeLaTeX warns that <code>inputenc</code> is “ignored with utf8 based engines”. <code>fontspec</code> only works with XeLaTeX and LuaLaTeX, and stops with an error under pdfLaTeX.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>For plain English (or other Latin-script) documents, pdfLaTeX is quick and safe. The moment we need a specific system font or a non-Latin script, switch to XeLaTeX, change the preamble to use <code>fontspec</code>, and compile again.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>LaTeX</category>
+  <category>Tools</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/pdflatex-vs-xelatex.html</guid>
+  <pubDate>Sat, 17 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/pdflatex-vs-xelatex.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
 <item>
   <title>5 for Loop Practice Problems in C (with Hints and Solutions)</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
@@ -10962,160 +11255,6 @@ font-style: inherit;">}</span></span></code></pre></div></div>
   <guid>https://www.statmania.info/blog/posts/10-short-real-world-c-programming-examples.html</guid>
   <pubDate>Wed, 23 Sep 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/c-examples-10.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Modulus vs. Remainder: Why -5 % 3 Isn’t the Same Everywhere</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/modulus-vs-remainder.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<p><img src="https://www.statmania.info/blog/img/modulus-vs-remainder.png" class="img-fluid"></p>
-<p>No, modulus and remainder are not always the same — though they give the exact same answer for positive numbers. The difference shows up once negative numbers are involved, and it depends entirely on how the programming language (or math formula) handles negative division.</p>
-<section id="key-differences" class="level3">
-<h3 class="anchored" data-anchor-id="key-differences">Key Differences</h3>
-<p><strong>For positive numbers</strong>, both operations do the same thing: divide two numbers and return what’s left over. <code>5 % 2</code> is <code>1</code> either way.</p>
-<p><strong>For negative numbers</strong>, they use different rules to decide the sign of the result:</p>
-<ul>
-<li><strong>Remainder</strong> keeps the sign of the <em>dividend</em> (the first number). C, C++, Java, and JavaScript all treat <code>%</code> as a remainder operator — <code>-21 % 4</code> is <code>-1</code>.</li>
-<li><strong>Modulus</strong> (modulo) keeps the sign of the <em>divisor</em> (the second number). Python treats <code>%</code> as a true modulo — <code>-21 % 4</code> is <code>3</code>.</li>
-</ul>
-</section>
-<section id="why-they-differ" class="level3">
-<h3 class="anchored" data-anchor-id="why-they-differ">Why They Differ</h3>
-<ul>
-<li><strong>Remainder</strong> comes from <strong>truncated division</strong>: the quotient is rounded <em>toward zero</em>, so the leftover value keeps the sign of the number being divided.</li>
-<li><strong>Modulo</strong> comes from <strong>floored division</strong>: the quotient is rounded <em>down, toward negative infinity</em>, so the leftover value always matches the sign of the divisor.</li>
-</ul>
-</section>
-<section id="worked-example--5-3" class="level3">
-<h3 class="anchored" data-anchor-id="worked-example--5-3">Worked Example: -5 ÷ 3</h3>
-<p><img src="https://latex.codecogs.com/png.latex?-5%20%5Cdiv%203%20%5Capprox%20-1.66%5Coverline%7B6%7D"></p>
-<p><strong>Remainder (truncate toward zero):</strong> the quotient rounds to <img src="https://latex.codecogs.com/png.latex?-1">. <img src="https://latex.codecogs.com/png.latex?%5Ctext%7Bleftover%7D%20=%20-5%20-%20(3%20%5Ctimes%20-1)%20=%20%5Cmathbf%7B-2%7D"></p>
-<p><strong>Modulo (floor toward <img src="https://latex.codecogs.com/png.latex?-%5Cinfty">):</strong> the quotient rounds to <img src="https://latex.codecogs.com/png.latex?-2">. <img src="https://latex.codecogs.com/png.latex?%5Ctext%7Bleftover%7D%20=%20-5%20-%20(3%20%5Ctimes%20-2)%20=%20%5Cmathbf%7B1%7D"></p>
-<p>Same inputs, different rounding rule for the quotient, different sign on the result.</p>
-</section>
-<section id="c-vs.-python-side-by-side" class="level3">
-<h3 class="anchored" data-anchor-id="c-vs.-python-side-by-side">C vs.&nbsp;Python, Side by Side</h3>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th>C (and C++, Java, JavaScript)</th>
-<th>Python</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Operation</td>
-<td>Remainder</td>
-<td>Modulus</td>
-</tr>
-<tr class="even">
-<td>Rule</td>
-<td>Result takes the sign of the <strong>dividend</strong></td>
-<td>Result takes the sign of the <strong>divisor</strong></td>
-</tr>
-<tr class="odd">
-<td>Expression</td>
-<td><code>-5 % 3</code></td>
-<td><code>-5 % 3</code></td>
-</tr>
-<tr class="even">
-<td>Result</td>
-<td><code>-2</code></td>
-<td><code>1</code></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="the-clock-intuition-for-modulo" class="level3">
-<h3 class="anchored" data-anchor-id="the-clock-intuition-for-modulo">The “Clock” Intuition for Modulo</h3>
-<p>Think of modulo as a circular clock. If the divisor is <code>3</code>, the only possible results are <code>0</code>, <code>1</code>, and <code>2</code> — it always wraps around cleanly to a value with the divisor’s sign. Starting at <code>0</code> and stepping backward 5 times on a 3-hour clock lands you on <code>1</code>, which is exactly what <code>-5 % 3</code> gives in Python.</p>
-</section>
-<section id="where-r-fits-in" class="level3">
-<h3 class="anchored" data-anchor-id="where-r-fits-in">Where R Fits In</h3>
-<p>R behaves exactly like Python: it computes a true mathematical modulus (floored division), not a truncated remainder. In R, the modulus operator is written <code>%%</code> — it rounds the division downward toward negative infinity, so the result always takes the sign of the divisor.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%%</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span></span>
-<span id="cb1-2"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># [1] 1</span></span>
-<span id="cb1-3"></span>
-<span id="cb1-4"><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%%</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span></span>
-<span id="cb1-5"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># [1] -1</span></span></code></pre></div></div>
-<p>R also provides a matching integer-division operator, <code>%/%</code>, which finds the quotient rounded down toward negative infinity:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%/%</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span></span>
-<span id="cb2-2"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># [1] -2</span></span></code></pre></div></div>
-<p>That quotient is exactly what makes the modulus formula work: <code>-5 - (3 * -2) = 1</code>.</p>
-</section>
-<section id="summary-checklist" class="level3">
-<h3 class="anchored" data-anchor-id="summary-checklist">Summary Checklist</h3>
-<ul>
-<li><strong>Positive numbers?</strong> Remainder and modulus always agree — <code>5 % 3</code> is <code>2</code> in both C and Python.</li>
-<li><strong>Negative numbers?</strong> They can disagree:
-<ul>
-<li>C, C++, Java, JavaScript: result takes the sign of the <strong>dividend</strong> (remainder).</li>
-<li>Python, R: result takes the sign of the <strong>divisor</strong> (modulus).</li>
-</ul></li>
-<li><strong>The reason:</strong> remainder truncates the quotient toward zero; modulus floors it toward negative infinity.</li>
-</ul>
-</section>
-<section id="further-reading" class="level3">
-<h3 class="anchored" data-anchor-id="further-reading">Further Reading</h3>
-<ul>
-<li><a href="https://stackoverflow.com/questions/13683563/whats-the-difference-between-mod-and-remainder">Stack Overflow: What’s the difference between “mod” and “remainder”?</a></li>
-<li><a href="https://en.wikipedia.org/wiki/Modulo">Wikipedia: Modulo</a></li>
-<li><a href="https://bigmachine.io/articles/theory/mod-and-remainder-are-not-the-same">bigmachine.io: Mod and remainder are not the same</a></li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>C</category>
-  <category>Python</category>
-  <category>R</category>
-  <category>Mathematics</category>
-  <guid>https://www.statmania.info/blog/posts/modulus-vs-remainder.html</guid>
-  <pubDate>Wed, 23 Sep 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/modulus-vs-remainder.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>
