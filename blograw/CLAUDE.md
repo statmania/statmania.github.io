@@ -31,7 +31,7 @@ inventing one**: list them with `grep -h '^tags:' posts/*.qmd`. Merge specific i
 - Statistics: `statistics`, `probability` (distributions), `descriptive-statistics`, `hypothesis-testing`,
   `regression`, `time-series`, `machine-learning`, `spatial`, `visualization`, `imaging`
 - R/Python: `r`, `r-package`, `python`
-- Tools: `linux`, `command-line` (shell/bash/sed/ffmpeg), `git`, `quarto`, `slides`, `workflow`, `writing`, `research`
+- Tools: `linux`, `command-line` (shell/bash/sed/ffmpeg), `git`, `quarto`, `latex`, `slides`, `workflow`, `writing`, `research`
 
 A genuinely new topic may get its own tag, but only if at least a second post is likely to use it.
 `categories` stay broad (language, subject, post type).
@@ -93,7 +93,8 @@ Don't geenrate svg if an existing image name (svg or png) matches with the post 
 ```
 cd blograw
 quarto render posts/<post>.qmd     # renders one post
-quarto render index.qmd            # REQUIRED after it: the listing refresh breaks the homepage theme (publish.sh does both)
+# (the project's post-render hook, _extensions/blogkit/repair_index.py, then re-renders index.qmd:
+#  Quarto's listing refresh would otherwise strip the homepage theme)
 ```
 
 The `Refusing to remove directory ... _files` and "path configuration" warnings
@@ -142,7 +143,7 @@ stubs (never hand-edit those) and creates `tags.qmd` if missing. `blogkit.js` fe
 builds the sidebar archive and tag cloud, each post's tags row, related posts, author cards and
 pages, `tags.html#tag=<name>`, and the sticky small-screen "On this page" menu.
 
-- Workflow: write the post, `quarto render posts/<post>.qmd` (~7 s) **then `quarto render index.qmd`**, commit `blog/` (or just `./publish.sh posts/<post>.qmd`).
+- Workflow: write the post, `quarto render posts/<post>.qmd` (~7 s), commit `blog/` (or just `./publish.sh posts/<post>.qmd`). The `post-render` hook repairs the homepage automatically.
   A full `quarto render` (~40 s) is only needed when `site.css`, `_quarto.yml` or the extension
   change. Browsers may cache `blogkit-data.js` for a few minutes after publishing.
 - Needs `title` and `date` in the front matter; `tags:` (lowercase, hyphenated) drive
