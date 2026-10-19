@@ -110,11 +110,16 @@
     return {posts: posts, authors: authors, byName: byName};
   }
   function postHref(p) { return base + p.href; }
-  function postItem(p) {
-    var li = el('li');
-    li.appendChild(link(postHref(p), p.title));
-    li.appendChild(el('span', 'bk-tp-date', p.date));
-    if (p.desc) li.appendChild(el('p', null, p.desc));
+  function postItem(p) {   // tag, category and author lists: thumbnail, title, date, description
+    var li = el('li', 'bk-rel-item bk-post-item');
+    var a = link(postHref(p), '', 'bk-rel-link');
+    a.appendChild(thumb(p));
+    var body = el('span', 'bk-rel-body');
+    body.appendChild(el('span', 'bk-rel-title', p.title));
+    body.appendChild(el('span', 'bk-tp-date', p.date));
+    if (p.desc) body.appendChild(el('span', 'bk-rel-desc', p.desc));
+    a.appendChild(body);
+    li.appendChild(a);
     return li;
   }
 
