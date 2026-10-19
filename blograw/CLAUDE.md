@@ -10,7 +10,7 @@ project that renders to `../blog/` (see the top-level `CLAUDE.md`). Posts are
 ---
 title: "Descriptive Title, Not Just a Keyword"
 description: "One or two sentences; used for the listing card, <meta>, and search results."
-date: "YYYY-MM-DD"
+date: "YYYY-MM-DD"                          # today: run `date +%F`; never a future date
 categories: [C, Programming, Tutorial]   # shown in the listing; used for filtering
 tags: [c, struct, memory-layout]          # keep filling these in — see below
 author: "Abdullah Al Mahmud"
@@ -91,6 +91,8 @@ Don't geenrate svg if an existing image name (svg or png) matches with the post 
 ## Writing conventions
 
 - Name files by topic (`c-struct.qmd`), not by number.
+- Dates: use the real current date (`date +%F`). Don't invent later dates for a batch of posts; a future date
+  makes the post look unpublished or misdated.
 - Compile/run code examples before publishing, and paste real output. State
   any needed flag (e.g. `-lm` for `<math.h>`).
 - Use `::: {.callout-note}` / `-tip` / `-warning` for asides (styled for the

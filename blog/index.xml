@@ -10,11 +10,11 @@
 <atom:link href="https://www.statmania.info/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Posts on statistics theory, R &amp; Python, and developer tips from Stat Mania.</description>
 <generator>quarto-1.9.38</generator>
-<lastBuildDate>Thu, 22 Oct 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sun, 18 Oct 2026 18:00:00 GMT</lastBuildDate>
 <item>
-  <title>How to Write a Multiline Git Commit Message (4 Methods)</title>
+  <title>Printing a Comma-Separated List in C (No Trailing Comma, Clean Line Breaks)</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/git-multiline-commit-message.html</link>
+  <link>https://www.statmania.info/blog/posts/c-print-comma-separated-list.html</link>
   <description><![CDATA[ 
 
 
@@ -24,331 +24,897 @@
 
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/git-multiline-commit.svg" class="img-fluid figure-img" alt="A terminal showing a commit message: the subject line 'Fix login timeout bug' under 50 characters, a blank line, and a wrapped body, with labels for each part."></p>
-<figcaption>A commit message is a short subject, a blank line, then a body that explains why.</figcaption>
+<p><img src="https://www.statmania.info/blog/img/c-comma-list.svg" class="img-fluid figure-img" alt="Terminal output showing a list that ends with a stray comma, a clean list without it, and a three-row grid of numbers with a newline after each row."></p>
+<figcaption>A separator printed only between items leaves no trailing comma; a newline after the inner loop ends each row.</figcaption>
 </figure>
 </div>
-<p>A one-line <code>git commit -m "..."</code> is fine for tiny changes. When a change needs explaining, a commit message has a <strong>subject</strong> (one short line), a <strong>blank line</strong>, and a <strong>body</strong> (the details). Git offers four ways to write one. I tried each in a fresh repository, and the messages below are what <code>git log</code> showed.</p>
-<section id="method-1-the-default-text-editor-recommended" class="level2">
-<h2 class="anchored" data-anchor-id="method-1-the-default-text-editor-recommended">Method 1: The Default Text Editor (Recommended)</h2>
-<p>Leave out <code>-m</code> entirely:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+<p>A common beginner question: this loop prints the numbers 0 to 19 except 10, but all stuck together. How do we get <code>0, 1, 2, ...</code>?</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="pp" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">git</span> commit</span></code></pre></div></div>
-<p>Git opens our editor (Vim, Nano, VS Code, …) with a template. We type the subject on the first line, leave the second line <strong>blank</strong>, write the body from line 3, then save and close to finish the commit. An empty message aborts the commit. Lines that start with <code>#</code> are comments and are removed.</p>
-<p>To choose the editor once and for all:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
 background-color: null;
-font-style: inherit;">git</span> config <span class="at" style="color: #657422;
+font-style: inherit;">&lt;stdio.h&gt;</span></span>
+<span id="cb1-2"></span>
+<span id="cb1-3"><span class="dt" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">--global</span> core.editor <span class="st" style="color: #20794D;
+font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">"nano"</span></span>
-<span id="cb2-2"><span class="fu" style="color: #4758AB;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">git</span> config <span class="at" style="color: #657422;
+font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">--global</span> core.editor <span class="st" style="color: #20794D;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">"code --wait"</span>   <span class="co" style="color: #5E5E5E;
+font-style: inherit;">{</span></span>
+<span id="cb1-4">    <span class="cf" style="color: #003B4F;
 background-color: null;
-font-style: inherit;"># VS Code</span></span></code></pre></div></div>
-<p>This is the most comfortable method for long messages, because we can see the whole message and edit it freely.</p>
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> numb <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> numb <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> numb<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-5">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>numb <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">continue</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-6">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> numb<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb1-7">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-8">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb1-9">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-10"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>Output:</p>
+<pre><code>0123456789111213141516171819</code></pre>
+<p><code>printf("%d", numb)</code> prints only the digits; nothing tells C to add a space. Whatever we want between the numbers, we must print ourselves. (Every program below was compiled with <code>gcc -Wall -Wextra</code> and run; the outputs are real.)</p>
+<section id="step-1-put-the-comma-and-space-in-the-format-string" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-put-the-comma-and-space-in-the-format-string">Step 1: Put the Comma and Space in the Format String</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">, "</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> numb<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<p>Output:</p>
+<pre><code>0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, </code></pre>
+<p>It works, but the line ends with a <strong>trailing comma and space</strong>. For quick debugging that is harmless. For output a person will read or a program will parse, we want the separator <strong>between</strong> items only.</p>
 </section>
-<section id="method-2-several--m-flags" class="level2">
-<h2 class="anchored" data-anchor-id="method-2-several--m-flags">Method 2: Several <code>-m</code> Flags</h2>
-<p>Each <code>-m</code> becomes its own <strong>paragraph</strong>, with a blank line between them:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+<section id="step-2-remove-the-trailing-comma" class="level2">
+<h2 class="anchored" data-anchor-id="step-2-remove-the-trailing-comma">Step 2: Remove the Trailing Comma</h2>
+<p>The idea in all three fixes is the same: print the separator <em>before</em> each item, except the first (or <em>after</em> each item, except the last).</p>
+<section id="option-1-separator-before-every-number-except-the-first" class="level3">
+<h3 class="anchored" data-anchor-id="option-1-separator-before-every-number-except-the-first">Option 1: separator before every number except the first</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><span class="cf" style="color: #003B4F;
 background-color: null;
-font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">"Add authentication feature"</span> <span class="at" style="color: #657422;
+font-style: inherit;">int</span> numb <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">"This paragraph explains why the change was made."</span></span></code></pre></div></div>
-<p>Result in <code>git log</code>:</p>
-<pre><code>Add authentication feature
-
-This paragraph explains why the change was made.</code></pre>
-<p>The first <code>-m</code> is the subject and the rest are body paragraphs. It is quick, but each <code>-m</code> is a single paragraph, so it is awkward for bullet lists.</p>
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> numb <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> numb<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb5-2">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>numb <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">continue</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-3">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>numb <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">", "</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb5-4">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> numb<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb5-5"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb5-6">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<pre><code>0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19</code></pre>
+<p>This works only because <code>0</code> happens to be the first value printed. If we started at 1, or skipped 0, the test <code>numb != 0</code> would be wrong.</p>
 </section>
-<section id="method-3-quotes-that-span-several-lines" class="level2">
-<h2 class="anchored" data-anchor-id="method-3-quotes-that-span-several-lines">Method 3: Quotes That Span Several Lines</h2>
-<p>Open the quotes, press Enter inside them to start a new line, and close the quotes at the end. The shell shows a <code>&gt;</code> continuation prompt (fish just continues on the next line):</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+<section id="option-2-a-first-flag-always-correct" class="level3">
+<h3 class="anchored" data-anchor-id="option-2-a-first-flag-always-correct">Option 2: a <code>first</code> flag (always correct)</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><span class="dt" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
+font-style: inherit;">int</span> first <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">"Fix login timeout bug</span></span>
-<span id="cb5-2"></span>
-<span id="cb5-3"><span class="st" style="color: #20794D;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">- Increased token expiration to 2 hours</span></span>
-<span id="cb5-4"><span class="st" style="color: #20794D;
+font-style: inherit;">;</span></span>
+<span id="cb7-2"><span class="cf" style="color: #003B4F;
 background-color: null;
-font-style: inherit;">- Resolved edge case where session cleared unexpectedly"</span></span></code></pre></div></div>
-<p>Result:</p>
-<pre><code>Fix login timeout bug
-
-- Increased token expiration to 2 hours
-- Resolved edge case where session cleared unexpectedly</code></pre>
-<p>This worked in bash and in fish. Remember the blank line after the subject: press Enter twice. In bash and zsh we can also write <code>\n</code> explicitly with the <code>$'...'</code> form (plain <code>"...\n..."</code> does <strong>not</strong> create a line break):</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="fu" style="color: #4758AB;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
+font-style: inherit;">int</span> numb <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">$'Quoted with dollar sign</span><span class="dt" style="color: #AD0000;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">\n\n</span><span class="st" style="color: #20794D;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">Body line from ANSI-C quoting.'</span></span></code></pre></div></div>
+font-style: inherit;">;</span> numb <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> numb<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb7-3">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>numb <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">continue</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb7-4">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(!</span>first<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">", "</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb7-5">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> numb<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb7-6">    first <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb7-7"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb7-8">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<p>Same output, and it is right whatever the first printed value is or which values we skip.</p>
 </section>
-<section id="method-4-read-the-message-from-a-file" class="level2">
-<h2 class="anchored" data-anchor-id="method-4-read-the-message-from-a-file">Method 4: Read the Message from a File</h2>
-<p>For a long message, write it in a file first (the file name does not matter), then pass it with <code>-F</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><span class="fu" style="color: #4758AB;
+<section id="option-3-choose-the-separator-with" class="level3">
+<h3 class="anchored" data-anchor-id="option-3-choose-the-separator-with">Option 3: choose the separator with <code>?:</code></h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb8-1"><span class="cf" style="color: #003B4F;
 background-color: null;
-font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">-F</span> commit_msg.txt</span></code></pre></div></div>
-<p>The same works without a file. In <strong>bash or zsh</strong> a here-document supplies the message (<code>-F -</code> means “read from standard input”; the word after <code>&lt;&lt;</code> marks where the message ends):</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><span class="fu" style="color: #4758AB;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
+font-style: inherit;">int</span> numb <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">-F</span> <span class="at" style="color: #657422;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">-</span> <span class="op" style="color: #5E5E5E;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">&lt;&lt;'EOF'</span></span>
-<span id="cb9-2"><span class="st" style="color: #20794D;
+font-style: inherit;">;</span> numb <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">Add RSS link</span></span>
-<span id="cb9-3"></span>
-<span id="cb9-4"><span class="st" style="color: #20794D;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">Shown in the hero stats line.</span></span>
-<span id="cb9-5"><span class="op" style="color: #5E5E5E;
+font-style: inherit;">20</span><span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">EOF</span></span></code></pre></div></div>
-<p><strong>fish</strong> has no here-documents, so pipe <code>printf</code> into it instead:</p>
-<pre class="fish"><code>printf 'Add feature X\n\nBody via printf in fish.\n' | git commit -F -</code></pre>
-<p>Both give the usual subject, blank line and body.</p>
-</section>
-<section id="check-or-fix-the-message" class="level2">
-<h2 class="anchored" data-anchor-id="check-or-fix-the-message">Check or Fix the Message</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="fu" style="color: #4758AB;
+font-style: inherit;">;</span> numb<span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">git</span> log <span class="at" style="color: #657422;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">-1</span>            <span class="co" style="color: #5E5E5E;
+font-style: inherit;">{</span></span>
+<span id="cb8-2">    <span class="cf" style="color: #003B4F;
 background-color: null;
-font-style: inherit;"># show the last commit with its full message</span></span>
-<span id="cb11-2"><span class="fu" style="color: #4758AB;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
+font-style: inherit;">(</span>numb <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">--amend</span>    <span class="co" style="color: #5E5E5E;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;"># reopen the last message in the editor and rewrite it</span></span></code></pre></div></div>
-<p>Only amend commits that have not been pushed. Rewriting a pushed commit changes its history for everyone who pulled it.</p>
-</section>
-<section id="which-method" class="level2">
-<h2 class="anchored" data-anchor-id="which-method">Which Method?</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Method</th>
-<th style="text-align: left;">Best for</th>
-<th style="text-align: left;">Watch out for</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">1. Editor (<code>git commit</code>)</td>
-<td style="text-align: left;">long, careful messages</td>
-<td style="text-align: left;">needs an editor set up</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2. Several <code>-m</code></td>
-<td style="text-align: left;">a subject plus one or two paragraphs</td>
-<td style="text-align: left;">no bullet lists</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">3. Multi-line quotes</td>
-<td style="text-align: left;">short messages with a list, typed in the terminal</td>
-<td style="text-align: left;">quotes inside the message</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">4. <code>-F</code> file or stdin</td>
-<td style="text-align: left;">long messages, scripts</td>
-<td style="text-align: left;">the shell syntax differs (bash vs fish)</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="best-practices-for-multiline-commits" class="level2">
-<h2 class="anchored" data-anchor-id="best-practices-for-multiline-commits">Best Practices for Multiline Commits</h2>
-<ul>
-<li><strong>Subject:</strong> about 50 characters or fewer, starting with a capital letter, without a final period. Use the imperative mood, as if giving an order: “Fix bug”, not “Fixed bug”.</li>
-<li><strong>Blank line:</strong> always leave line 2 empty. Git and many tools (<code>git log --oneline</code>, GitHub) treat the first paragraph as the title and the rest as the body.</li>
-<li><strong>Body:</strong> wrap lines at about 72 characters and explain <strong>why</strong> the change was made and what it achieves, rather than how it was coded. The code already shows the “how”.</li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>Git</category>
-  <category>DevOps</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/git-multiline-commit-message.html</guid>
-  <pubDate>Thu, 22 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/git-multiline-commit.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Why Learn a Programming Language in the AI Age?</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/why-learn-to-code-in-the-ai-age.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/learn-to-code-ai-age.svg" class="img-fluid figure-img" alt="Three cards: Emergency (AI offline or a server down at night), Save tokens (tiny edits by hand, AI for the big work), and Fundamentals (a stack from our code down to the hardware)."></p>
-<figcaption>Three reasons among eight: emergencies, saving tokens for the big work, and knowing the fundamentals.</figcaption>
-</figure>
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">continue</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb8-3">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d%s</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> numb<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> numb <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">19</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">", "</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb8-4"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>The <code>%s</code> prints <code>", "</code> after every number except the last, where it prints the newline instead. It is the shortest, but it needs to know which value is last. If we skipped 19 with <code>continue</code>, the previous number would be the last printed and would still get a trailing <code>", "</code>. Use Option 2 when the last item can change.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
-<p>Learning a programming language in the age of AI is still worth it, but <strong>the reason has shifted</strong>.</p>
-<p>In the past, learning to code was mostly about memorising syntax and making a computer do one specific task. Today, AI can write basic code, fix bugs and generate whole scripts in seconds. That does not make programmers obsolete; it makes the ones who understand the code <strong>more powerful</strong>. Here is why a computer language is still worth learning.</p>
-<section id="we-must-direct-the-ai" class="level2">
-<h2 class="anchored" data-anchor-id="we-must-direct-the-ai">1. We Must Direct the AI</h2>
-<p>AI is a tool, and a tool needs a skilled operator. To get good code from an AI, we have to describe the problem precisely. Without programming logic, data structures and some feel for how systems work, we won’t know how to break a big problem into smaller tasks, what to ask for, or when the answer is wrong or insecure.</p>
-<p>We cannot manage an AI well if we don’t know the language it is speaking.</p>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Which one?</strong> Option 3 when the last item is known and fixed (a plain <code>0..n-1</code> loop), Option 2 when items are skipped or the range can change, and Step 1 when the trailing comma doesn’t matter.</p>
+</div>
+</div>
 </section>
-<section id="we-should-know-how-the-system-works" class="level2">
-<h2 class="anchored" data-anchor-id="we-should-know-how-the-system-works">2. We Should Know How the System Works</h2>
-<p>Code runs on something: memory, a file system, processes, a network, a compiler or interpreter. AI-written code sits on top of all of it, and the bugs often come from underneath. For example, in C:</p>
-<ul>
-<li>an AI-written function returns a pointer to a local variable. It compiles, and it may even seem to work, until it doesn’t;</li>
-<li>a loop reads one element past the end of an array;</li>
-<li>a program is “fast on my laptop” but slow on the server because of how it uses memory or disk.</li>
-</ul>
-<p>If we don’t know about the stack, the heap, integer overflow or how a request travels over a network, we cannot see these problems in generated code, and we cannot even ask the right question about them. The fundamentals are the questions we know to ask, and the way we judge the answers.</p>
 </section>
-<section id="the-last-mile-integration-and-debugging" class="level2">
-<h2 class="anchored" data-anchor-id="the-last-mile-integration-and-debugging">3. The “Last Mile”: Integration and Debugging</h2>
-<p>AI can produce a block of code, but a complete application has to fit into the systems around it.</p>
-<ul>
-<li><strong>Integration:</strong> connecting the code to our databases, servers and user interfaces.</li>
-<li><strong>Debugging:</strong> when the code breaks (and it will), someone has to trace the error, read the logs and fix the logic. AI sometimes writes code that looks right but fails on edge cases, and a person who can code is needed to catch it.</li>
-</ul>
+<section id="line-breaks-with-n-in-nested-loops" class="level2">
+<h2 class="anchored" data-anchor-id="line-breaks-with-n-in-nested-loops">Line Breaks with <code>\n</code> in Nested Loops</h2>
+<p><code>\n</code> is the “new line” character. In a single loop we print it once, after the loop. With <strong>nested loops</strong> (one loop inside another, as in the <a href="../posts/c-nested-for-loop-practice-problems.html">nested for loop practice problems</a>), the question becomes <em>which loop</em> prints it. The rule:</p>
+<blockquote class="blockquote">
+<p>The inner loop prints one <strong>row</strong>; the <code>\n</code> goes <strong>after</strong> the inner loop, so it runs once per row.</p>
+</blockquote>
+<section id="example-1-a-grid-of-comma-separated-numbers" class="level3">
+<h3 class="anchored" data-anchor-id="example-1-a-grid-of-comma-separated-numbers">Example 1: a grid of comma-separated numbers</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb9-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> row <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> row <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> row<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb9-2">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> col <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> col <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> col<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb9-3">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>col <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">", "</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>          <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// separator before every item but the first</span></span>
+<span id="cb9-4">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>row <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> col<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb9-5">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb9-6">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>                           <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// once per row, after the inner loop</span></span>
+<span id="cb9-7"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<pre><code>1, 2, 3, 4, 5
+6, 7, 8, 9, 10
+11, 12, 13, 14, 15</code></pre>
+<p>The comma test (<code>col &gt; 1</code>) restarts for every row, because <code>col</code> starts again at 1. No row ends with a comma.</p>
 </section>
-<section id="emergencies-dont-wait-for-the-ai" class="level2">
-<h2 class="anchored" data-anchor-id="emergencies-dont-wait-for-the-ai">4. Emergencies Don’t Wait for the AI</h2>
-<p>Sooner or later there is an emergency: a server is down at 2 a.m., a script has to run correctly before a deadline in an hour, or a bug is losing data right now. In that moment:</p>
-<ul>
-<li>the AI service may be unavailable, or our usage limit may be used up;</li>
-<li>we may be offline, or working on a private machine where we can’t paste code and logs into a chat;</li>
-<li>the AI doesn’t know our whole system and can’t see what we can see.</li>
-</ul>
-<p>That is not the time to start learning the basics. In an emergency we need to read the code, find the fault and make the fix ourselves, calmly and quickly. Think of it as a fire drill: we practise before we need it.</p>
+<section id="example-2-the-classic-mistake-n-inside-the-inner-loop" class="level3">
+<h3 class="anchored" data-anchor-id="example-2-the-classic-mistake-n-inside-the-inner-loop">Example 2: the classic mistake, <code>\n</code> inside the inner loop</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb11-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> row <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> row <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> row<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb11-2">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> col <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> col <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> col<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb11-3">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">, "</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>row <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> col<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb11-4">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>                       <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// wrong place</span></span>
+<span id="cb11-5">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb11-6"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<pre><code>1, 
+2, 
+3, 
+4, 
+5, 
+6, 
+...</code></pre>
+<p>Now every number lands on its own line (15 lines instead of 3), because the newline runs once per <strong>cell</strong>, not once per row. Move it out of the inner loop.</p>
 </section>
-<section id="save-the-tokens-for-the-big-work" class="level2">
-<h2 class="anchored" data-anchor-id="save-the-tokens-for-the-big-work">5. Save the Tokens for the Big Work</h2>
-<p>AI usage costs tokens, time and sometimes money, and most plans have limits. A tiny edit is often faster to do by hand than to describe:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Do it by hand</th>
-<th style="text-align: left;">Ask the AI</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">change <code>#define N 10</code> to <code>#define N 20</code></td>
-<td style="text-align: left;">write a new module or a test suite</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">rename a variable, fix a typo</td>
-<td style="text-align: left;">explain an unfamiliar codebase</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">fix an off-by-one in a loop bound</td>
-<td style="text-align: left;">translate code between languages</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">change a format string</td>
-<td style="text-align: left;">design and compare several approaches</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">move a line up or down</td>
-<td style="text-align: left;">find the cause of a bug we can’t locate</td>
-</tr>
-</tbody>
-</table>
-<p>Typing a one-line change takes seconds. Writing a prompt, waiting, reading the answer and checking that the AI did not also “improve” five other lines takes longer, and spends tokens we may want later for the work that really needs them. If we can code, we can keep the AI for the heavy lifting.</p>
+<section id="example-3-option-3-inside-a-triangle" class="level3">
+<h3 class="anchored" data-anchor-id="example-3-option-3-inside-a-triangle">Example 3: Option 3 inside a triangle</h3>
+<p>The last item of each row is the one where <code>col == row</code>, so the <code>?:</code> trick can print the comma or the newline:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb13-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> row <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> row <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> row<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb13-2">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> col <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> col <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;=</span> row<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> col<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb13-3">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d%s</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> col<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> col <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> row <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">", "</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb13-4">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb13-5"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<pre><code>1
+1, 2
+1, 2, 3
+1, 2, 3, 4
+1, 2, 3, 4, 5</code></pre>
+<p>There is no separate <code>printf("\n")</code> here: the separator choice does both jobs, comma inside a row and newline at its end.</p>
 </section>
-<section id="computational-thinking-and-problem-solving" class="level2">
-<h2 class="anchored" data-anchor-id="computational-thinking-and-problem-solving">6. Computational Thinking and Problem Solving</h2>
-<p>Learning a language is not just typing syntax. It teaches <strong>computational thinking</strong>: breaking a complex, vague problem into logical, step-by-step parts. That skill is useful in any career, and especially when we manage AI projects. AI is good at solving <em>defined</em> problems, while people are still better at <em>defining</em> them in the first place.</p>
+<section id="example-4-aligned-columns" class="level3">
+<h3 class="anchored" data-anchor-id="example-4-aligned-columns">Example 4: aligned columns</h3>
+<p>For a table, pad each number to a fixed width with <code>%2d</code> (the same idea as <code>%4d</code> in the multiplication grid problem):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb15-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb15-2">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> j <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> j <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> j<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb15-3">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%2d%s</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> j<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> j <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">", "</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb15-4">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb15-5"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<pre><code> 1,  2,  3,  4
+ 2,  4,  6,  8
+ 3,  6,  9, 12
+ 4,  8, 12, 16</code></pre>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Checklist when the layout looks wrong.</strong> (1) Which loop prints the <code>\n</code>? It belongs after the inner loop. (2) Is the separator printed between items, not after the last? (3) Does the test for “first item” or “last item” use a variable that restarts with each row?</p>
+</div>
+</div>
 </section>
-<section id="security-privacy-and-ethics" class="level2">
-<h2 class="anchored" data-anchor-id="security-privacy-and-ethics">7. Security, Privacy and Ethics</h2>
-<p>AI generates code, but we are still responsible for the final product. Copying AI code blindly can introduce vulnerabilities such as SQL injection or leaked data. Understanding the code is the only way to audit it, protect users’ data and make sure the program does what it should.</p>
-</section>
-<section id="someone-builds-and-oversees-the-ai" class="level2">
-<h2 class="anchored" data-anchor-id="someone-builds-and-oversees-the-ai">8. Someone Builds and Oversees the AI</h2>
-<p>AI models don’t build themselves. Their progress needs people who understand mathematics, logic and programming languages (such as Python, C++ and R) to:</p>
-<ul>
-<li>build the infrastructure that runs the models,</li>
-<li>fine-tune the algorithms,</li>
-<li>manage the data pipelines,</li>
-<li>keep the systems secure and ethical.</li>
-</ul>
-<p>As AI takes over basic coding tasks, the value moves toward <strong>architects and system designers</strong>: people who can oversee the AI, combine several tools, and design the overall system.</p>
 </section>
 <section id="summary" class="level2">
 <h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<p>In the AI age, learning to code is no longer just about being a translator for the computer. It is about becoming the <strong>conductor of an orchestra</strong>: AI provides the instruments, and someone who understands the language of code makes them play in harmony. And when the orchestra stops, as in an emergency, it is that person who has to keep playing.</p>
-<p>If we are learning to code today, the practical advice is:</p>
-<ol type="1">
-<li>Learn the <strong>fundamentals</strong> (one language well, plus how memory, files and networks work), not just syntax.</li>
-<li>Write and fix the <strong>small things by hand</strong>, so the skill stays sharp and the tokens last.</li>
-<li>Use AI for the <strong>big, repetitive or exploratory</strong> work, and always read and test what it gives us.</li>
-<li>Practise the <strong>emergency</strong>: now and then, solve a problem with the AI switched off.</li>
-</ol>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Goal</th>
+<th style="text-align: left;">Code</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Numbers with separators</td>
+<td style="text-align: left;"><code>printf("%d, ", x);</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">No trailing comma, first item known</td>
+<td style="text-align: left;"><code>if (i != first) printf(", ");</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">No trailing comma, always correct</td>
+<td style="text-align: left;">a <code>first</code> flag</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Separator or newline in one call</td>
+<td style="text-align: left;"><code>printf("%d%s", x, last ? "\n" : ", ");</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">One row per line in nested loops</td>
+<td style="text-align: left;"><code>printf("\n");</code> after the inner loop</td>
+</tr>
+</tbody>
+</table>
 
 
 </section>
 
  ]]></description>
+  <category>C</category>
   <category>Programming</category>
-  <category>Learning</category>
-  <category>AI</category>
-  <guid>https://www.statmania.info/blog/posts/why-learn-to-code-in-the-ai-age.html</guid>
-  <pubDate>Wed, 21 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/learn-to-code-ai-age.png" medium="image" type="image/png" height="76" width="144"/>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/c-print-comma-separated-list.html</guid>
+  <pubDate>Sun, 18 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/c-comma-list.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 <item>
   <title>Shortcut Ways to Write if in C: the Ternary Operator and More</title>
@@ -1472,913 +2038,8 @@ font-style: inherit;">);</span></span></code></pre></div></div>
   <category>Programming</category>
   <category>Tutorial</category>
   <guid>https://www.statmania.info/blog/posts/c-shortcut-if-else-ternary.html</guid>
-  <pubDate>Tue, 20 Oct 2026 18:00:00 GMT</pubDate>
+  <pubDate>Sun, 18 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/c-ternary-shortcut.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Printing a Comma-Separated List in C (No Trailing Comma, Clean Line Breaks)</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/c-print-comma-separated-list.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/c-comma-list.svg" class="img-fluid figure-img" alt="Terminal output showing a list that ends with a stray comma, a clean list without it, and a three-row grid of numbers with a newline after each row."></p>
-<figcaption>A separator printed only between items leaves no trailing comma; a newline after the inner loop ends each row.</figcaption>
-</figure>
-</div>
-<p>A common beginner question: this loop prints the numbers 0 to 19 except 10, but all stuck together. How do we get <code>0, 1, 2, ...</code>?</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb1-2"></span>
-<span id="cb1-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb1-4">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> numb <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> numb <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> numb<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb1-5">        <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>numb <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">continue</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb1-6">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> numb<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb1-7">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb1-8">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb1-9">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb1-10"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>Output:</p>
-<pre><code>0123456789111213141516171819</code></pre>
-<p><code>printf("%d", numb)</code> prints only the digits; nothing tells C to add a space. Whatever we want between the numbers, we must print ourselves. (Every program below was compiled with <code>gcc -Wall -Wextra</code> and run; the outputs are real.)</p>
-<section id="step-1-put-the-comma-and-space-in-the-format-string" class="level2">
-<h2 class="anchored" data-anchor-id="step-1-put-the-comma-and-space-in-the-format-string">Step 1: Put the Comma and Space in the Format String</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1">printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">, "</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> numb<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span></code></pre></div></div>
-<p>Output:</p>
-<pre><code>0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, </code></pre>
-<p>It works, but the line ends with a <strong>trailing comma and space</strong>. For quick debugging that is harmless. For output a person will read or a program will parse, we want the separator <strong>between</strong> items only.</p>
-</section>
-<section id="step-2-remove-the-trailing-comma" class="level2">
-<h2 class="anchored" data-anchor-id="step-2-remove-the-trailing-comma">Step 2: Remove the Trailing Comma</h2>
-<p>The idea in all three fixes is the same: print the separator <em>before</em> each item, except the first (or <em>after</em> each item, except the last).</p>
-<section id="option-1-separator-before-every-number-except-the-first" class="level3">
-<h3 class="anchored" data-anchor-id="option-1-separator-before-every-number-except-the-first">Option 1: separator before every number except the first</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> numb <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> numb <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> numb<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb5-2">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>numb <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">continue</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb5-3">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>numb <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">", "</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb5-4">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> numb<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb5-5"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb5-6">printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span></code></pre></div></div>
-<pre><code>0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19</code></pre>
-<p>This works only because <code>0</code> happens to be the first value printed. If we started at 1, or skipped 0, the test <code>numb != 0</code> would be wrong.</p>
-</section>
-<section id="option-2-a-first-flag-always-correct" class="level3">
-<h3 class="anchored" data-anchor-id="option-2-a-first-flag-always-correct">Option 2: a <code>first</code> flag (always correct)</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> first <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb7-2"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> numb <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> numb <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> numb<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb7-3">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>numb <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">continue</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb7-4">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(!</span>first<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">", "</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb7-5">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> numb<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb7-6">    first <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb7-7"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb7-8">printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span></code></pre></div></div>
-<p>Same output, and it is right whatever the first printed value is or which values we skip.</p>
-</section>
-<section id="option-3-choose-the-separator-with" class="level3">
-<h3 class="anchored" data-anchor-id="option-3-choose-the-separator-with">Option 3: choose the separator with <code>?:</code></h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb8-1"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> numb <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> numb <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> numb<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb8-2">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>numb <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">continue</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb8-3">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d%s</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> numb<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> numb <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">19</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">?</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">", "</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb8-4"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>The <code>%s</code> prints <code>", "</code> after every number except the last, where it prints the newline instead. It is the shortest, but it needs to know which value is last. If we skipped 19 with <code>continue</code>, the previous number would be the last printed and would still get a trailing <code>", "</code>. Use Option 2 when the last item can change.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>Which one?</strong> Option 3 when the last item is known and fixed (a plain <code>0..n-1</code> loop), Option 2 when items are skipped or the range can change, and Step 1 when the trailing comma doesn’t matter.</p>
-</div>
-</div>
-</section>
-</section>
-<section id="line-breaks-with-n-in-nested-loops" class="level2">
-<h2 class="anchored" data-anchor-id="line-breaks-with-n-in-nested-loops">Line Breaks with <code>\n</code> in Nested Loops</h2>
-<p><code>\n</code> is the “new line” character. In a single loop we print it once, after the loop. With <strong>nested loops</strong> (one loop inside another, as in the <a href="../posts/c-nested-for-loop-practice-problems.html">nested for loop practice problems</a>), the question becomes <em>which loop</em> prints it. The rule:</p>
-<blockquote class="blockquote">
-<p>The inner loop prints one <strong>row</strong>; the <code>\n</code> goes <strong>after</strong> the inner loop, so it runs once per row.</p>
-</blockquote>
-<section id="example-1-a-grid-of-comma-separated-numbers" class="level3">
-<h3 class="anchored" data-anchor-id="example-1-a-grid-of-comma-separated-numbers">Example 1: a grid of comma-separated numbers</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb9-1"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> row <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> row <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> row<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb9-2">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> col <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> col <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> col<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb9-3">        <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>col <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">", "</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>          <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// separator before every item but the first</span></span>
-<span id="cb9-4">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>row <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> col<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb9-5">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb9-6">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>                           <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// once per row, after the inner loop</span></span>
-<span id="cb9-7"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<pre><code>1, 2, 3, 4, 5
-6, 7, 8, 9, 10
-11, 12, 13, 14, 15</code></pre>
-<p>The comma test (<code>col &gt; 1</code>) restarts for every row, because <code>col</code> starts again at 1. No row ends with a comma.</p>
-</section>
-<section id="example-2-the-classic-mistake-n-inside-the-inner-loop" class="level3">
-<h3 class="anchored" data-anchor-id="example-2-the-classic-mistake-n-inside-the-inner-loop">Example 2: the classic mistake, <code>\n</code> inside the inner loop</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb11-1"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> row <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> row <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> row<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb11-2">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> col <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> col <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> col<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb11-3">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">, "</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>row <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> col<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb11-4">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>                       <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// wrong place</span></span>
-<span id="cb11-5">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb11-6"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<pre><code>1, 
-2, 
-3, 
-4, 
-5, 
-6, 
-...</code></pre>
-<p>Now every number lands on its own line (15 lines instead of 3), because the newline runs once per <strong>cell</strong>, not once per row. Move it out of the inner loop.</p>
-</section>
-<section id="example-3-option-3-inside-a-triangle" class="level3">
-<h3 class="anchored" data-anchor-id="example-3-option-3-inside-a-triangle">Example 3: Option 3 inside a triangle</h3>
-<p>The last item of each row is the one where <code>col == row</code>, so the <code>?:</code> trick can print the comma or the newline:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb13-1"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> row <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> row <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> row<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb13-2">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> col <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> col <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> row<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> col<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb13-3">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d%s</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> col<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> col <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> row <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">?</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">", "</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb13-4">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb13-5"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<pre><code>1
-1, 2
-1, 2, 3
-1, 2, 3, 4
-1, 2, 3, 4, 5</code></pre>
-<p>There is no separate <code>printf("\n")</code> here: the separator choice does both jobs, comma inside a row and newline at its end.</p>
-</section>
-<section id="example-4-aligned-columns" class="level3">
-<h3 class="anchored" data-anchor-id="example-4-aligned-columns">Example 4: aligned columns</h3>
-<p>For a table, pad each number to a fixed width with <code>%2d</code> (the same idea as <code>%4d</code> in the multiplication grid problem):</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb15-1"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb15-2">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> j <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> j <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> j<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb15-3">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%2d%s</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> j<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> j <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">?</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">", "</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb15-4">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb15-5"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<pre><code> 1,  2,  3,  4
- 2,  4,  6,  8
- 3,  6,  9, 12
- 4,  8, 12, 16</code></pre>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>Checklist when the layout looks wrong.</strong> (1) Which loop prints the <code>\n</code>? It belongs after the inner loop. (2) Is the separator printed between items, not after the last? (3) Does the test for “first item” or “last item” use a variable that restarts with each row?</p>
-</div>
-</div>
-</section>
-</section>
-<section id="summary" class="level2">
-<h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Goal</th>
-<th style="text-align: left;">Code</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Numbers with separators</td>
-<td style="text-align: left;"><code>printf("%d, ", x);</code></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">No trailing comma, first item known</td>
-<td style="text-align: left;"><code>if (i != first) printf(", ");</code></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">No trailing comma, always correct</td>
-<td style="text-align: left;">a <code>first</code> flag</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Separator or newline in one call</td>
-<td style="text-align: left;"><code>printf("%d%s", x, last ? "\n" : ", ");</code></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">One row per line in nested loops</td>
-<td style="text-align: left;"><code>printf("\n");</code> after the inner loop</td>
-</tr>
-</tbody>
-</table>
-
-
-</section>
-
- ]]></description>
-  <category>C</category>
-  <category>Programming</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/c-print-comma-separated-list.html</guid>
-  <pubDate>Mon, 19 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/c-comma-list.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 <item>
   <title>Double Summation (ΣΣ) in Statistics, and How to Code It in C</title>
@@ -2874,6 +2535,345 @@ Note
   <guid>https://www.statmania.info/blog/posts/double-summation-statistics-c.html</guid>
   <pubDate>Sun, 18 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/double-summation-c.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>How to Write a Multiline Git Commit Message (4 Methods)</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/git-multiline-commit-message.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/git-multiline-commit.svg" class="img-fluid figure-img" alt="A terminal showing a commit message: the subject line 'Fix login timeout bug' under 50 characters, a blank line, and a wrapped body, with labels for each part."></p>
+<figcaption>A commit message is a short subject, a blank line, then a body that explains why.</figcaption>
+</figure>
+</div>
+<p>A one-line <code>git commit -m "..."</code> is fine for tiny changes. When a change needs explaining, a commit message has a <strong>subject</strong> (one short line), a <strong>blank line</strong>, and a <strong>body</strong> (the details). Git offers four ways to write one. I tried each in a fresh repository, and the messages below are what <code>git log</code> showed.</p>
+<section id="method-1-the-default-text-editor-recommended" class="level2">
+<h2 class="anchored" data-anchor-id="method-1-the-default-text-editor-recommended">Method 1: The Default Text Editor (Recommended)</h2>
+<p>Leave out <code>-m</code> entirely:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> commit</span></code></pre></div></div>
+<p>Git opens our editor (Vim, Nano, VS Code, …) with a template. We type the subject on the first line, leave the second line <strong>blank</strong>, write the body from line 3, then save and close to finish the commit. An empty message aborts the commit. Lines that start with <code>#</code> are comments and are removed.</p>
+<p>To choose the editor once and for all:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> config <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--global</span> core.editor <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"nano"</span></span>
+<span id="cb2-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> config <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--global</span> core.editor <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"code --wait"</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># VS Code</span></span></code></pre></div></div>
+<p>This is the most comfortable method for long messages, because we can see the whole message and edit it freely.</p>
+</section>
+<section id="method-2-several--m-flags" class="level2">
+<h2 class="anchored" data-anchor-id="method-2-several--m-flags">Method 2: Several <code>-m</code> Flags</h2>
+<p>Each <code>-m</code> becomes its own <strong>paragraph</strong>, with a blank line between them:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Add authentication feature"</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"This paragraph explains why the change was made."</span></span></code></pre></div></div>
+<p>Result in <code>git log</code>:</p>
+<pre><code>Add authentication feature
+
+This paragraph explains why the change was made.</code></pre>
+<p>The first <code>-m</code> is the subject and the rest are body paragraphs. It is quick, but each <code>-m</code> is a single paragraph, so it is awkward for bullet lists.</p>
+</section>
+<section id="method-3-quotes-that-span-several-lines" class="level2">
+<h2 class="anchored" data-anchor-id="method-3-quotes-that-span-several-lines">Method 3: Quotes That Span Several Lines</h2>
+<p>Open the quotes, press Enter inside them to start a new line, and close the quotes at the end. The shell shows a <code>&gt;</code> continuation prompt (fish just continues on the next line):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Fix login timeout bug</span></span>
+<span id="cb5-2"></span>
+<span id="cb5-3"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">- Increased token expiration to 2 hours</span></span>
+<span id="cb5-4"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">- Resolved edge case where session cleared unexpectedly"</span></span></code></pre></div></div>
+<p>Result:</p>
+<pre><code>Fix login timeout bug
+
+- Increased token expiration to 2 hours
+- Resolved edge case where session cleared unexpectedly</code></pre>
+<p>This worked in bash and in fish. Remember the blank line after the subject: press Enter twice. In bash and zsh we can also write <code>\n</code> explicitly with the <code>$'...'</code> form (plain <code>"...\n..."</code> does <strong>not</strong> create a line break):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">$'Quoted with dollar sign</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\n\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Body line from ANSI-C quoting.'</span></span></code></pre></div></div>
+</section>
+<section id="method-4-read-the-message-from-a-file" class="level2">
+<h2 class="anchored" data-anchor-id="method-4-read-the-message-from-a-file">Method 4: Read the Message from a File</h2>
+<p>For a long message, write it in a file first (the file name does not matter), then pass it with <code>-F</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-F</span> commit_msg.txt</span></code></pre></div></div>
+<p>The same works without a file. In <strong>bash or zsh</strong> a here-document supplies the message (<code>-F -</code> means “read from standard input”; the word after <code>&lt;&lt;</code> marks where the message ends):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-F</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;&lt;'EOF'</span></span>
+<span id="cb9-2"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Add RSS link</span></span>
+<span id="cb9-3"></span>
+<span id="cb9-4"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Shown in the hero stats line.</span></span>
+<span id="cb9-5"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">EOF</span></span></code></pre></div></div>
+<p><strong>fish</strong> has no here-documents, so pipe <code>printf</code> into it instead:</p>
+<pre class="fish"><code>printf 'Add feature X\n\nBody via printf in fish.\n' | git commit -F -</code></pre>
+<p>Both give the usual subject, blank line and body.</p>
+</section>
+<section id="check-or-fix-the-message" class="level2">
+<h2 class="anchored" data-anchor-id="check-or-fix-the-message">Check or Fix the Message</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> log <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-1</span>            <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># show the last commit with its full message</span></span>
+<span id="cb11-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--amend</span>    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># reopen the last message in the editor and rewrite it</span></span></code></pre></div></div>
+<p>Only amend commits that have not been pushed. Rewriting a pushed commit changes its history for everyone who pulled it.</p>
+</section>
+<section id="which-method" class="level2">
+<h2 class="anchored" data-anchor-id="which-method">Which Method?</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Method</th>
+<th style="text-align: left;">Best for</th>
+<th style="text-align: left;">Watch out for</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1. Editor (<code>git commit</code>)</td>
+<td style="text-align: left;">long, careful messages</td>
+<td style="text-align: left;">needs an editor set up</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2. Several <code>-m</code></td>
+<td style="text-align: left;">a subject plus one or two paragraphs</td>
+<td style="text-align: left;">no bullet lists</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3. Multi-line quotes</td>
+<td style="text-align: left;">short messages with a list, typed in the terminal</td>
+<td style="text-align: left;">quotes inside the message</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4. <code>-F</code> file or stdin</td>
+<td style="text-align: left;">long messages, scripts</td>
+<td style="text-align: left;">the shell syntax differs (bash vs fish)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="best-practices-for-multiline-commits" class="level2">
+<h2 class="anchored" data-anchor-id="best-practices-for-multiline-commits">Best Practices for Multiline Commits</h2>
+<ul>
+<li><strong>Subject:</strong> about 50 characters or fewer, starting with a capital letter, without a final period. Use the imperative mood, as if giving an order: “Fix bug”, not “Fixed bug”.</li>
+<li><strong>Blank line:</strong> always leave line 2 empty. Git and many tools (<code>git log --oneline</code>, GitHub) treat the first paragraph as the title and the rest as the body.</li>
+<li><strong>Body:</strong> wrap lines at about 72 characters and explain <strong>why</strong> the change was made and what it achieves, rather than how it was coded. The code already shows the “how”.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>Git</category>
+  <category>DevOps</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/git-multiline-commit-message.html</guid>
+  <pubDate>Sun, 18 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/git-multiline-commit.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>Why Learn a Programming Language in the AI Age?</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/why-learn-to-code-in-the-ai-age.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/learn-to-code-ai-age.svg" class="img-fluid figure-img" alt="Three cards: Emergency (AI offline or a server down at night), Save tokens (tiny edits by hand, AI for the big work), and Fundamentals (a stack from our code down to the hardware)."></p>
+<figcaption>Three reasons among eight: emergencies, saving tokens for the big work, and knowing the fundamentals.</figcaption>
+</figure>
+</div>
+<p>Learning a programming language in the age of AI is still worth it, but <strong>the reason has shifted</strong>.</p>
+<p>In the past, learning to code was mostly about memorising syntax and making a computer do one specific task. Today, AI can write basic code, fix bugs and generate whole scripts in seconds. That does not make programmers obsolete; it makes the ones who understand the code <strong>more powerful</strong>. Here is why a computer language is still worth learning.</p>
+<section id="we-must-direct-the-ai" class="level2">
+<h2 class="anchored" data-anchor-id="we-must-direct-the-ai">1. We Must Direct the AI</h2>
+<p>AI is a tool, and a tool needs a skilled operator. To get good code from an AI, we have to describe the problem precisely. Without programming logic, data structures and some feel for how systems work, we won’t know how to break a big problem into smaller tasks, what to ask for, or when the answer is wrong or insecure.</p>
+<p>We cannot manage an AI well if we don’t know the language it is speaking.</p>
+</section>
+<section id="we-should-know-how-the-system-works" class="level2">
+<h2 class="anchored" data-anchor-id="we-should-know-how-the-system-works">2. We Should Know How the System Works</h2>
+<p>Code runs on something: memory, a file system, processes, a network, a compiler or interpreter. AI-written code sits on top of all of it, and the bugs often come from underneath. For example, in C:</p>
+<ul>
+<li>an AI-written function returns a pointer to a local variable. It compiles, and it may even seem to work, until it doesn’t;</li>
+<li>a loop reads one element past the end of an array;</li>
+<li>a program is “fast on my laptop” but slow on the server because of how it uses memory or disk.</li>
+</ul>
+<p>If we don’t know about the stack, the heap, integer overflow or how a request travels over a network, we cannot see these problems in generated code, and we cannot even ask the right question about them. The fundamentals are the questions we know to ask, and the way we judge the answers.</p>
+</section>
+<section id="the-last-mile-integration-and-debugging" class="level2">
+<h2 class="anchored" data-anchor-id="the-last-mile-integration-and-debugging">3. The “Last Mile”: Integration and Debugging</h2>
+<p>AI can produce a block of code, but a complete application has to fit into the systems around it.</p>
+<ul>
+<li><strong>Integration:</strong> connecting the code to our databases, servers and user interfaces.</li>
+<li><strong>Debugging:</strong> when the code breaks (and it will), someone has to trace the error, read the logs and fix the logic. AI sometimes writes code that looks right but fails on edge cases, and a person who can code is needed to catch it.</li>
+</ul>
+</section>
+<section id="emergencies-dont-wait-for-the-ai" class="level2">
+<h2 class="anchored" data-anchor-id="emergencies-dont-wait-for-the-ai">4. Emergencies Don’t Wait for the AI</h2>
+<p>Sooner or later there is an emergency: a server is down at 2 a.m., a script has to run correctly before a deadline in an hour, or a bug is losing data right now. In that moment:</p>
+<ul>
+<li>the AI service may be unavailable, or our usage limit may be used up;</li>
+<li>we may be offline, or working on a private machine where we can’t paste code and logs into a chat;</li>
+<li>the AI doesn’t know our whole system and can’t see what we can see.</li>
+</ul>
+<p>That is not the time to start learning the basics. In an emergency we need to read the code, find the fault and make the fix ourselves, calmly and quickly. Think of it as a fire drill: we practise before we need it.</p>
+</section>
+<section id="save-the-tokens-for-the-big-work" class="level2">
+<h2 class="anchored" data-anchor-id="save-the-tokens-for-the-big-work">5. Save the Tokens for the Big Work</h2>
+<p>AI usage costs tokens, time and sometimes money, and most plans have limits. A tiny edit is often faster to do by hand than to describe:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Do it by hand</th>
+<th style="text-align: left;">Ask the AI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">change <code>#define N 10</code> to <code>#define N 20</code></td>
+<td style="text-align: left;">write a new module or a test suite</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rename a variable, fix a typo</td>
+<td style="text-align: left;">explain an unfamiliar codebase</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fix an off-by-one in a loop bound</td>
+<td style="text-align: left;">translate code between languages</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">change a format string</td>
+<td style="text-align: left;">design and compare several approaches</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">move a line up or down</td>
+<td style="text-align: left;">find the cause of a bug we can’t locate</td>
+</tr>
+</tbody>
+</table>
+<p>Typing a one-line change takes seconds. Writing a prompt, waiting, reading the answer and checking that the AI did not also “improve” five other lines takes longer, and spends tokens we may want later for the work that really needs them. If we can code, we can keep the AI for the heavy lifting.</p>
+</section>
+<section id="computational-thinking-and-problem-solving" class="level2">
+<h2 class="anchored" data-anchor-id="computational-thinking-and-problem-solving">6. Computational Thinking and Problem Solving</h2>
+<p>Learning a language is not just typing syntax. It teaches <strong>computational thinking</strong>: breaking a complex, vague problem into logical, step-by-step parts. That skill is useful in any career, and especially when we manage AI projects. AI is good at solving <em>defined</em> problems, while people are still better at <em>defining</em> them in the first place.</p>
+</section>
+<section id="security-privacy-and-ethics" class="level2">
+<h2 class="anchored" data-anchor-id="security-privacy-and-ethics">7. Security, Privacy and Ethics</h2>
+<p>AI generates code, but we are still responsible for the final product. Copying AI code blindly can introduce vulnerabilities such as SQL injection or leaked data. Understanding the code is the only way to audit it, protect users’ data and make sure the program does what it should.</p>
+</section>
+<section id="someone-builds-and-oversees-the-ai" class="level2">
+<h2 class="anchored" data-anchor-id="someone-builds-and-oversees-the-ai">8. Someone Builds and Oversees the AI</h2>
+<p>AI models don’t build themselves. Their progress needs people who understand mathematics, logic and programming languages (such as Python, C++ and R) to:</p>
+<ul>
+<li>build the infrastructure that runs the models,</li>
+<li>fine-tune the algorithms,</li>
+<li>manage the data pipelines,</li>
+<li>keep the systems secure and ethical.</li>
+</ul>
+<p>As AI takes over basic coding tasks, the value moves toward <strong>architects and system designers</strong>: people who can oversee the AI, combine several tools, and design the overall system.</p>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>In the AI age, learning to code is no longer just about being a translator for the computer. It is about becoming the <strong>conductor of an orchestra</strong>: AI provides the instruments, and someone who understands the language of code makes them play in harmony. And when the orchestra stops, as in an emergency, it is that person who has to keep playing.</p>
+<p>If we are learning to code today, the practical advice is:</p>
+<ol type="1">
+<li>Learn the <strong>fundamentals</strong> (one language well, plus how memory, files and networks work), not just syntax.</li>
+<li>Write and fix the <strong>small things by hand</strong>, so the skill stays sharp and the tokens last.</li>
+<li>Use AI for the <strong>big, repetitive or exploratory</strong> work, and always read and test what it gives us.</li>
+<li>Practise the <strong>emergency</strong>: now and then, solve a problem with the AI switched off.</li>
+</ol>
+
+
+</section>
+
+ ]]></description>
+  <category>Programming</category>
+  <category>Learning</category>
+  <category>AI</category>
+  <guid>https://www.statmania.info/blog/posts/why-learn-to-code-in-the-ai-age.html</guid>
+  <pubDate>Sun, 18 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/learn-to-code-ai-age.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 <item>
   <title>pdfLaTeX vs XeLaTeX: Which LaTeX Engine Should We Use?</title>
