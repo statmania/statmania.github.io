@@ -17,6 +17,7 @@
     onThisPage: 'On this page', archive: 'Archive', tags: 'Tags', categories: 'Categories', related: 'Related posts', prevPost: 'Previous post', nextPost: 'Next post',
     allCategories: 'All categories', allTags: 'All tags', category: 'Category', tag: 'Tag',
     pickTag: 'Pick a tag to see its posts.', pickCategory: 'Pick a category to see its posts.', post: 'post', posts: 'posts', allPosts: 'All posts',
+    searchPosts: 'Search posts', topics: 'topics', updated: 'updated', rss: 'RSS',
     prev: '\u2039 Prev', next: 'Next \u203a', allBy: 'All {n} posts by {name}', of: '{a} of {b} posts'
   };
   function t(key, vars) {
@@ -342,6 +343,47 @@
     });
   }
 
+  // ---------- homepage hero tools: search box, topic chips, stats strip ----------
+  // Fills <div id="bk-hero-tools"></div> (put it inside your hero). The search box drives
+  // Quarto's own listing filter, so it needs `filter-ui: true` in the listing.
+  function heroTools(D) {
+    var root = document.getElementById('bk-hero-tools');
+    if (!root) return;
+    document.body.classList.add('bk-has-hero-tools');
+    var form = el('form', 'bk-hero-search');
+    form.setAttribute('role', 'search');
+    var input = el('input');
+    input.type = 'search';
+    input.placeholder = t('searchPosts');
+    input.setAttribute('aria-label', t('searchPosts'));
+    form.appendChild(input);
+    function filter() {
+      var f = document.querySelector('.quarto-listing-filter input.search');
+      if (!f) return;
+      f.value = input.value;
+      ['input', 'keyup'].forEach(function (ev) { f.dispatchEvent(new Event(ev, {bubbles: true})); });
+    }
+    input.addEventListener('input', filter);
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      filter();
+      var l = document.querySelector('.quarto-listing');
+      if (l) l.scrollIntoView({behavior: 'smooth', block: 'start'});
+    });
+    var counts = tagCounts(D.posts);
+    var chips = el('div', 'bk-hero-chips');
+    byCount(counts).slice(0, CFG.heroTopics || 8).forEach(function (k) {
+      chips.appendChild(link(tagHref(k), k, 'bk-tag'));
+    });
+    var latest = D.posts.length ? D.posts[0].date : '';
+    var stats = el('p', 'bk-hero-stats');
+    var bits = [D.posts.length + ' ' + t('posts'), Object.keys(counts).length + ' ' + t('topics')];
+    if (latest) bits.push(t('updated') + ' ' + MONTHS[+latest.slice(5, 7) - 1].slice(0, 3) + ' ' + latest.slice(0, 4));
+    stats.appendChild(document.createTextNode(bits.join(' \u00b7 ') + ' \u00b7 '));
+    stats.appendChild(link(base + 'index.xml', t('rss'), 'bk-hero-rss'));
+    root.append(form, chips, stats);
+  }
+
   // ---------- pager (shared by tags page and author pages) ----------
   function pager(nav, pages, page, onPage) {
     nav.textContent = '';
@@ -485,6 +527,7 @@
     categoriesPage(D);
     authorPage(D);
     homepageBylines(D);
+    heroTools(D);
     ready(function () {
       // after load, so Quarto has already copied the TOC into its own structures
       postExtras(D);

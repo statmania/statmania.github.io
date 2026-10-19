@@ -119,10 +119,29 @@ GitHub Pages updates in a minute or two. Readers' browsers may keep the old `blo
 
 The navbar has a sun/moon toggle; dark is the default and the choice is remembered per browser. Quarto does the switching (`theme:` in `_quarto.yml`: `dark: [cosmo, theme-dark.scss]`, `light: cosmo`; code highlighting `dracula` / `github`), set by the Blogkit extension. The dark look is the base of the extension's `styles.css`; the light overrides are in the last section of that file under `body.quarto-light`, and `site.css` keeps the navbar, post banner and homepage hero dark bands in light mode. When you add new components, give them colours through the `--bk-*` CSS variables so both themes work.
 
+## Editing manual: where each thing on the pages comes from
+
+| You see | Edit this | Then run |
+| :--- | :--- | :--- |
+| Homepage headline ("Statistics, explained with code") and the line under it ("Tutorials, theory and dev notes...") | `index.qmd`, the `<div class="sm-hero">` block near the top (`.sm-title` and `.sm-subtitle`). Plain HTML text; keep the headline a `<p role="heading">`, because Quarto turns a raw `<h1>` into the hidden page title | `quarto render index.qmd` |
+| Hero search box, topic chips, stats strip ("62 posts · 40 topics...") | Generated in the browser by the extension from `blogkit-data.js`. Only the `<div id="bk-hero-tools"></div>` placeholder is in `index.qmd`. Change the look in `quarto-blogkit` (`blogkit.js`, `styles.css`), the number of chips with `hero-topics` under `blogkit:` in `_quarto.yml` (see the extension README) | update the extension, then full `quarto render` |
+| Hero colours, size, starfield strength | `site.css` (`.sm-hero`, `.sm-title`, `.sm-subtitle`, `#sm-canvas { opacity }`) | full `quarto render` |
+| Star animation on the hero | `index.qmd`, the `<script>` below the hero (particle count, speed) | `quarto render index.qmd` |
+| Homepage post cards, sort, page size | `index.qmd` front matter, `listing:` (`page-size`, `sort`, `fields`) | `quarto render index.qmd` |
+| Navbar links, footer text and links, site title, logo | `_quarto.yml` (`website: navbar:` and `page-footer:`) | full `quarto render` |
+| Tag and category lists (sidebar cloud, `tags.html`, `categories.html`) | Nothing to edit by hand: they come from each post's `tags` and `categories`. The two pages' intro text lives in `tags.qmd` and `categories.qmd` (created once by the hook, then yours) | render any post |
+| Post thumbnails (listing, related, prev/next, tag pages) | the post's `image:` front matter (1200x630 PNG; a post without one gets `img/placeholder.svg`) | render that post |
+| Author card and author page | `authors.yml` (never `authors/<slug>.qmd`) | `quarto render` for a new author |
+| About page | `about.qmd` | `quarto render about.qmd` |
+| Labels such as "Related posts", "Previous post", "All posts" | the extension's `blogkit.js` (`LABELS`); override per site with `labels:` in the `blogkit` options | full `quarto render` |
+| Anything in `blog/` | never edit by hand; it is overwritten on render | n/a |
+
+Rule of thumb: text that belongs to this site (headline, tagline, nav, footer, colours) is edited here. Behaviour or layout that any blog would want (widgets, pages, CSS for them) is edited in `quarto-blogkit`, pushed, then pulled in with `quarto update extension statmania/quarto-blogkit` (see `CLAUDE.md`).
+
 ## What is generated (never hand-edit)
 
 - `../blog/` (the whole built site), including `blog/blogkit-data.js` and `blog/blogkit.js`
-- `authors/<slug>.qmd` (from `authors.yml`)
+- `authors/<slug>.qmd` (from `authors.yml`), and `tags.qmd` / `categories.qmd` on first creation only
 
 Hand-written: posts, `authors.yml`, `site.css`, `tags.qmd`, `index.qmd`, `about.qmd`, `publish.sh`.
 

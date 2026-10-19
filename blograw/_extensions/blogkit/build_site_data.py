@@ -27,6 +27,7 @@ Options go in _quarto.yml under a top-level `blogkit:` key (all optional):
       authors-file: authors.yml
       per-page: 10              # pagination on tag and author pages
       related: 5                # related posts under each post
+      hero-topics: 8            # topic chips in the homepage hero tools
       labels: {archive: Archiv, tags: Schlagworte}   # translate/override UI text
 
 Requires Python 3 and PyYAML (pip install pyyaml).
@@ -194,9 +195,9 @@ FACET_PAGES = {
 def main():
     posts = load_posts()
     authors = load_yaml(AUTHORS_FILE)
-    config = {k: v for k, v in OPTS.items() if k in ("per-page", "related", "labels")}
+    config = {k: v for k, v in OPTS.items() if k in ("per-page", "related", "labels", "hero-topics")}
     config = {"perPage": config.get("per-page"), "related": config.get("related"),
-              "labels": config.get("labels")}
+              "labels": config.get("labels"), "heroTopics": config.get("hero-topics")}
     config = {k: v for k, v in config.items() if v}
     out = output_dir()
     out.mkdir(parents=True, exist_ok=True)
