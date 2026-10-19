@@ -17,7 +17,7 @@
     onThisPage: 'On this page', archive: 'Archive', tags: 'Tags', categories: 'Categories', related: 'Related posts', prevPost: 'Previous post', nextPost: 'Next post',
     allCategories: 'All categories', allTags: 'All tags', category: 'Category', tag: 'Tag',
     pickTag: 'Pick a tag to see its posts.', pickCategory: 'Pick a category to see its posts.', post: 'post', posts: 'posts', allPosts: 'All posts',
-    searchPosts: 'Search posts', topics: 'topics', updated: 'updated', rss: 'RSS',
+    searchPosts: 'Search posts', moreTopics: 'more', topics: 'topics', updated: 'updated', rss: 'RSS',
     prev: '\u2039 Prev', next: 'Next \u203a', allBy: 'All {n} posts by {name}', of: '{a} of {b} posts'
   };
   function t(key, vars) {
@@ -350,35 +350,48 @@
     var root = document.getElementById('bk-hero-tools');
     if (!root) return;
     document.body.classList.add('bk-has-hero-tools');
-    var form = el('form', 'bk-hero-search');
-    form.setAttribute('role', 'search');
-    var input = el('input');
-    input.type = 'search';
-    input.placeholder = t('searchPosts');
-    input.setAttribute('aria-label', t('searchPosts'));
-    form.appendChild(input);
+    var form, input;
     function filter() {
       var f = document.querySelector('.quarto-listing-filter input.search');
       if (!f) return;
       f.value = input.value;
       ['input', 'keyup'].forEach(function (ev) { f.dispatchEvent(new Event(ev, {bubbles: true})); });
     }
-    input.addEventListener('input', filter);
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      filter();
-      var l = document.querySelector('.quarto-listing');
-      if (l) l.scrollIntoView({behavior: 'smooth', block: 'start'});
-    });
+    function wire() {
+      input.addEventListener('input', filter);
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        filter();
+        var l = document.querySelector('.quarto-listing');
+        if (l) l.scrollIntoView({behavior: 'smooth', block: 'start'});
+      });
+    }
+    if (root.children.length) {   // markup was included at render time (_bk-hero-tools.html): just attach the search
+      form = root.querySelector('.bk-hero-search'); input = root.querySelector('input');
+      if (form && input) wire();
+      return;
+    }
+    root.classList.add('bk-hero-built');
+    form = el('form', 'bk-hero-search');
+    form.setAttribute('role', 'search');
+    input = el('input');
+    input.type = 'search';
+    input.placeholder = t('searchPosts');
+    input.setAttribute('aria-label', t('searchPosts'));
+    form.appendChild(input);
+    wire();
     var counts = tagCounts(D.posts);
     var chips = el('div', 'bk-hero-chips');
-    byCount(counts).slice(0, CFG.heroTopics || 8).forEach(function (k) {
+    byCount(counts).slice(0, CFG.heroTopics || 5).forEach(function (k) {
       chips.appendChild(link(tagHref(k), k, 'bk-tag'));
     });
+    chips.appendChild(link(base + 'tags.html', t('moreTopics') + ' \u203a', 'bk-tag bk-tag-more'));
     var latest = D.posts.length ? D.posts[0].date : '';
     var stats = el('p', 'bk-hero-stats');
     var bits = [D.posts.length + ' ' + t('posts'), Object.keys(counts).length + ' ' + t('topics')];
     if (latest) bits.push(t('updated') + ' ' + MONTHS[+latest.slice(5, 7) - 1].slice(0, 3) + ' ' + latest.slice(0, 4));
+    var tagline = root.dataset.tagline;   // optional one-line description, shown above the stats
+    if (tagline) stats.appendChild(el('span', 'bk-hero-tagline', tagline));
     stats.appendChild(document.createTextNode(bits.join(' \u00b7 ') + ' \u00b7 '));
     stats.appendChild(link(base + 'index.xml', t('rss'), 'bk-hero-rss'));
     root.append(form, chips, stats);

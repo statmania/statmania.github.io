@@ -24,7 +24,10 @@
   background: radial-gradient(1200px 500px at 50% -10%, #0e1930 0%, var(--bk-bg) 60%);
   color: #e8ecf7;
   overflow: hidden;
-  margin: -1.5rem -1.5rem 1.8rem -1.5rem;
+  margin: 1rem 0 1.4rem;
+  border-radius: 14px;
+  /* futuristic frame: soft neon glow outside, faint inner glow, gradient edge and corner brackets below */
+  box-shadow: 0 0 22px rgba(0,229,255,.14), 0 0 48px rgba(168,85,247,.12), inset 0 0 40px rgba(0,229,255,.05);
   padding: 0;
   font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
 }
@@ -40,7 +43,7 @@
   position: relative;
   z-index: 2;
   text-align: center;
-  padding: 2.6rem 1.5rem 2rem 1.5rem;
+  padding: 1.2rem 1.5rem 1rem 1.5rem;
 }
 .sm-eyebrow{
   display: inline-block;
@@ -56,16 +59,12 @@
   box-shadow: 0 0 20px rgba(0,229,255,0.15);
 }
 .sm-title{
-  font-size: clamp(1.7rem, 4.2vw, 2.6rem);
+  font-size: clamp(1.05rem, 2.4vw, 1.45rem);
   font-weight: 700;
-  margin: 0 0 .5rem 0;
+  margin: 0;
   letter-spacing: -0.01em;
   color: var(--bk-text);
   border: 0;
-}
-.sm-title::after{
-  content: ""; display: block; width: 64px; height: 3px; margin: .7rem auto 0; border-radius: 2px;
-  background: linear-gradient(90deg, var(--bk-cyan), var(--bk-purple), var(--bk-pink));
 }
 .sm-subtitle{
   max-width: 620px;
@@ -74,6 +73,35 @@
   font-size: clamp(1rem, 2vw, 1.1rem);
   line-height: 1.6;
 }
+
+/* animated gradient edge (cyan > purple > pink) drawn as a masked 1.5px ring */
+.sm-hero-wrap::before{
+  content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  padding: 1.5px; border-radius: inherit;
+  background: linear-gradient(110deg, var(--bk-cyan), var(--bk-purple), var(--bk-pink), var(--bk-purple), var(--bk-cyan));
+  background-size: 300% 100%;
+  animation: sm-edge-flow 10s linear infinite;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+/* HUD-style corner brackets just inside the edge */
+.sm-hero-wrap::after{
+  content: ""; position: absolute; inset: 8px; z-index: 3; pointer-events: none;
+  --br: var(--bk-cyan);
+  background:
+    linear-gradient(var(--br), var(--br)) top left / 16px 2px no-repeat,
+    linear-gradient(var(--br), var(--br)) top left / 2px 16px no-repeat,
+    linear-gradient(var(--br), var(--br)) top right / 16px 2px no-repeat,
+    linear-gradient(var(--br), var(--br)) top right / 2px 16px no-repeat,
+    linear-gradient(var(--br), var(--br)) bottom left / 16px 2px no-repeat,
+    linear-gradient(var(--br), var(--br)) bottom left / 2px 16px no-repeat,
+    linear-gradient(var(--br), var(--br)) bottom right / 16px 2px no-repeat,
+    linear-gradient(var(--br), var(--br)) bottom right / 2px 16px no-repeat;
+  opacity: .75;
+}
+@keyframes sm-edge-flow{ to{ background-position: 300% 0; } }
+@media (prefers-reduced-motion: reduce){ .sm-hero-wrap::before{ animation: none; } }
 
 /* Light theme: navbar, post banner and hero stay dark bands (Blogkit's default is all light) */
 body.quarto-light #quarto-header,
@@ -116,3 +144,10 @@ body.quarto-light .sm-canvas{ display: none; }
 body.quarto-light main.content .sm-hero-wrap .sm-title{ color: #e8ecf7; }
 body.quarto-light main.content .sm-hero-wrap .sm-subtitle{ color: #aab4d0; }
 body.quarto-light main.content .sm-hero-wrap .sm-eyebrow{ color: var(--bk-cyan); }
+
+/* hero stats line: a touch brighter so it reads over the starfield */
+.sm-hero-wrap .bk-hero-stats{ color: #aab4d0; }
+
+/* Quarto first pads the body by 64px, then (after the logo has loaded) re-pads it to the real
+   header height, which made the whole page jump by 13px. Start at the final value. */
+body.nav-fixed{ padding-top: 77px; }

@@ -10,7 +10,1132 @@
 <atom:link href="https://www.statmania.info/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Posts on statistics theory, R &amp; Python, and developer tips from Stat Mania.</description>
 <generator>quarto-1.9.38</generator>
-<lastBuildDate>Mon, 19 Oct 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 20 Oct 2026 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>Shortcut Ways to Write if in C: the Ternary Operator and More</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/c-shortcut-if-else-ternary.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/c-ternary-shortcut.svg" class="img-fluid figure-img" alt="A five-line if-else block assigning the larger of a and b to max, with an arrow to the one-line version max = a > b ? a : b, with the condition, the true value and the false value labelled."></p>
+<figcaption>The ternary operator replaces a five-line if-else with one expression.</figcaption>
+</figure>
+</div>
+<p>A short <code>if</code> takes three lines, and an <code>if</code>-<code>else</code> that only chooses <strong>a value</strong> takes five. C has a few shortcuts for these small decisions. Every program below was compiled with <code>gcc -Wall -Wextra</code> and run; the outputs are real. For the long form, see <a href="../posts/10-c-if-else-examples.html">if-else examples in C</a>.</p>
+<section id="start-simple-drop-the-braces" class="level2">
+<h2 class="anchored" data-anchor-id="start-simple-drop-the-braces">1. Start Simple: Drop the Braces</h2>
+<p>Here is a very common piece of code, inside a loop that should skip the number 4. The long form:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-2">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">continue</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-3"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>The braces <code>{ }</code> are needed only to group <strong>several</strong> statements. When the body is a single statement, we can leave them out, and the whole <code>if</code> fits on one line:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">continue</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span></code></pre></div></div>
+<p>Same meaning, two lines shorter. In a complete program:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb3-2">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">continue</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb3-3">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> "</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb3-4"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb3-5">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<pre><code>1 2 3 5 6 </code></pre>
+<p>The number 4 is skipped. (Section 5 shows the one trap of this shortcut.)</p>
+</section>
+<section id="the-ternary-operator" class="level2">
+<h2 class="anchored" data-anchor-id="the-ternary-operator">2. The Ternary Operator <code>? :</code></h2>
+<p>An <code>if</code>-<code>else</code> that only chooses <strong>a value</strong> can shrink too. The pattern is <code>condition ? value_if_true : value_if_false</code>. It is an <strong>expression</strong>: it produces a value we can assign, return or print. First, the long form:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> a <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> b <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> max<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-3"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>a <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> b<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb5-4">    max <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-5"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb5-6">    max <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> b<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-7"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>The shortcut:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> max <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> a <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> b <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?</span> a <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> b<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span></code></pre></div></div>
+<p>Both give <code>12</code>. Read the shortcut aloud as “is <code>a</code> greater than <code>b</code>? then <code>a</code>, otherwise <code>b</code>”. Together in a runnable program:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdio.h&gt;</span></span>
+<span id="cb7-2"></span>
+<span id="cb7-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb7-4">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> a <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> b <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb7-5">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> max <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> a <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> b <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?</span> a <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> b<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb7-6">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> max<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb7-7">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb7-8"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<pre><code>12</code></pre>
+<section id="example-choose-a-word-inside-printf" class="level3">
+<h3 class="anchored" data-anchor-id="example-choose-a-word-inside-printf">Example: choose a word inside <code>printf</code></h3>
+<p>Because it is an expression, it fits inside a function call, which is where it is most useful:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb9-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> n <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> n <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb9-2">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> is </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%s\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> n <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"even"</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"odd"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb9-3"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb9-4"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> items <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb9-5">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> item</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%s\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> items<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> items <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"s"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb9-6">items <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb9-7">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> item</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%s\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> items<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> items <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"s"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<pre><code>3 is odd
+4 is even
+1 item
+3 items</code></pre>
+<p>The second pattern, adding an <code>s</code> only when the count is not 1, is a classic.</p>
+</section>
+<section id="example-absolute-value-and-clamping" class="level3">
+<h3 class="anchored" data-anchor-id="example-absolute-value-and-clamping">Example: absolute value and clamping</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb11-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> n <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> low <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> high <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> x <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb11-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> abs_n <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> n <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>n <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb11-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> clamped <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> x <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> low <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?</span> low <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>x <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> high <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?</span> high <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb11-4">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"abs = </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">, clamped = </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> abs_n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> clamped<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<pre><code>abs = 5, clamped = 10</code></pre>
+<p>The second line <strong>nests</strong> a ternary inside another: below <code>low</code> gives <code>low</code>, above <code>high</code> gives <code>high</code>, otherwise <code>x</code>. One level of nesting is fine; beyond that, write a normal <code>if</code>.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Keep it readable.</strong> A chain such as <code>score &gt;= 80 ? 'A' : score &gt;= 60 ? 'B' : 'C'</code> works (it printed <code>A</code> for 85), but three or more levels are harder to read than the <code>if</code>/<code>else if</code> they replace. The ternary is a shortcut for a <em>simple</em> choice between two values. It is not a replacement for <code>if</code> when the branches <em>do</em> things (several statements, loops, <code>return</code>).</p>
+</div>
+</div>
+</section>
+</section>
+<section id="test-a-value-directly" class="level2">
+<h2 class="anchored" data-anchor-id="test-a-value-directly">3. Test a Value Directly</h2>
+<p>In C, <strong>zero is false and any other value is true</strong>. So we don’t need to compare with 0:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb13-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> count <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> done <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb13-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>count<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>  printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"count is non-zero</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// same as count != 0</span></span>
+<span id="cb13-3"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(!</span>done<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>  printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"not done yet</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// same as done == 0</span></span></code></pre></div></div>
+<pre><code>count is non-zero
+not done yet</code></pre>
+<p><code>if (x)</code> means “x is not zero”; <code>if (!x)</code> means “x is zero”. Use it for flags and counts; for a number where zero is a meaningful value (a score, a temperature), the explicit <code>!= 0</code> is clearer.</p>
+</section>
+<section id="a-comparison-is-a-number" class="level2">
+<h2 class="anchored" data-anchor-id="a-comparison-is-a-number">4. A Comparison Is a Number</h2>
+<p>A comparison gives <code>1</code> when true and <code>0</code> when false, so it can be stored or added:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb15-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> year <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2100</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb15-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> leap <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>year <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;&amp;</span> year <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">||</span> year <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">400</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb15-3">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> leap? </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> year<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> leap<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb15-4"></span>
+<span id="cb15-5"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> a <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> b <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb15-6">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"a &gt; b gives </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">, a &lt; b gives </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> a <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> b<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> a <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> b<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb15-7"></span>
+<span id="cb15-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// counting with a condition: no if needed</span></span>
+<span id="cb15-9"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> nums<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">9</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">},</span> big <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb15-10"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb15-11">    big <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> nums<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb15-12"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb15-13">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"numbers above 5: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> big<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<pre><code>2100 leap? 0
+a &gt; b gives 1, a &lt; b gives 0
+numbers above 5: 3</code></pre>
+<p><code>big += nums[i] &gt; 5;</code> adds 1 for every element above 5 and 0 otherwise, replacing <code>if (nums[i] &gt; 5) big++;</code>. (2100 is not a leap year: divisible by 100 but not by 400.)</p>
+</section>
+<section id="the-trap-of-braces-free-if" class="level2">
+<h2 class="anchored" data-anchor-id="the-trap-of-braces-free-if">5. The Trap of Braces-Free <code>if</code></h2>
+<p>The shortcut in section 1 works because the body is a <strong>single statement</strong>. The trap is adding a second one later. Only the first statement after the <code>if</code> belongs to it, whatever the indentation says:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb17-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> n <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb17-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>n <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb17-3">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"one</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb17-4">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"two (always printed!)</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<pre><code>two (always printed!)</code></pre>
+<p><code>n</code> is not positive, yet the second <code>printf</code> runs, because it is not part of the <code>if</code>. With <code>-Wall</code>, gcc even warns: <code>this 'if' clause does not guard... [-Wmisleading-indentation]</code>. The fix is to keep the braces whenever the body might grow:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb19-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>n <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb19-2">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"one</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb19-3">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"two</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb19-4"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+</section>
+<section id="lookup-instead-of-ifelse-if" class="level2">
+<h2 class="anchored" data-anchor-id="lookup-instead-of-ifelse-if">6. Lookup Instead of <code>if</code>/<code>else if</code></h2>
+<p>When a number picks one of several fixed texts, an array beats a chain of <code>if</code>s:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb20-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> month <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb20-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">const</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">char</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>name<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Jan"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Feb"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Mar"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Apr"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">};</span></span>
+<span id="cb20-3">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%s\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> name<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>month <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]);</span></span></code></pre></div></div>
+<pre><code>Mar</code></pre>
+</section>
+<section id="precedence-and-type-pitfalls" class="level2">
+<h2 class="anchored" data-anchor-id="precedence-and-type-pitfalls">Precedence and Type Pitfalls</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb22-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> x <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb22-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> r <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> x <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb22-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> p <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> x <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">200</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 1 + x is computed, then &gt; 3, then ?:</span></span>
+<span id="cb22-4">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> r<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> p<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb22-5">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%.1f\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.5</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<pre><code>10 100
+1.5</code></pre>
+<ul>
+<li><code>?:</code> has <strong>low precedence</strong>: the whole condition is evaluated first. When in doubt, add parentheses around the condition, and around a ternary used inside a bigger expression.</li>
+<li>If the two values have different types (<code>1.5</code> and <code>2</code>), the result takes the common type (<code>double</code>). Use the matching format (<code>%.1f</code>, not <code>%d</code>).</li>
+</ul>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Shortcut</th>
+<th style="text-align: left;">Replaces</th>
+<th style="text-align: left;">Use when</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>x = c ? a : b;</code></td>
+<td style="text-align: left;"><code>if (c) x = a; else x = b;</code></td>
+<td style="text-align: left;">choosing one of two values</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>printf("%s", c ? "yes" : "no");</code></td>
+<td style="text-align: left;">an <code>if</code> around two <code>printf</code>s</td>
+<td style="text-align: left;">picking text inside output</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>if (x)</code> / <code>if (!x)</code></td>
+<td style="text-align: left;"><code>x != 0</code> / <code>x == 0</code></td>
+<td style="text-align: left;">flags and counts</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>count += cond;</code></td>
+<td style="text-align: left;"><code>if (cond) count++;</code></td>
+<td style="text-align: left;">counting matches</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>if (c) stmt;</code></td>
+<td style="text-align: left;"><code>if (c) { stmt; }</code></td>
+<td style="text-align: left;">one short statement, no later additions</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>name[i]</code></td>
+<td style="text-align: left;">a chain of <code>else if</code></td>
+<td style="text-align: left;">an index selects a fixed value</td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+
+ ]]></description>
+  <category>C</category>
+  <category>Programming</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/c-shortcut-if-else-ternary.html</guid>
+  <pubDate>Tue, 20 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/c-ternary-shortcut.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
 <item>
   <title>Printing a Comma-Separated List in C (No Trailing Comma, Clean Line Breaks)</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
@@ -10588,525 +11713,6 @@ font-style: inherit;">}</span></span></code></pre></div></div>
   <guid>https://www.statmania.info/blog/posts/c-die-throw.html</guid>
   <pubDate>Thu, 01 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/c-die-throw.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>float vs double in C: Precision, Memory, and When to Use Which</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/c-double-vs-float.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<p><code>float</code> and <code>double</code> both store decimal (floating-point) numbers in C, but they differ in precision, memory usage, and range.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/c-float-vs-double.svg" class="img-fluid figure-img"></p>
-<figcaption>A <code>double</code> spends more bits on the mantissa (precision) and the exponent (range) than a <code>float</code></figcaption>
-</figure>
-</div>
-<p>The fundamental difference is that <code>double</code> provides roughly twice the precision of <code>float</code>. Modern desktop computers handle both at similar speeds, so <code>double</code> is generally preferred unless memory is tightly restricted.</p>
-<section id="quick-comparison" class="level2">
-<h2 class="anchored" data-anchor-id="quick-comparison">Quick Comparison</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Feature</th>
-<th>float</th>
-<th>double</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Precision</td>
-<td>Single (~6–7 decimal digits)</td>
-<td>Double (~15 decimal digits)</td>
-</tr>
-<tr class="even">
-<td>Memory size</td>
-<td>4 bytes (32 bits)</td>
-<td>8 bytes (64 bits)</td>
-</tr>
-<tr class="odd">
-<td>IEEE 754 bit layout</td>
-<td>1 sign, 8 exponent, 23 mantissa</td>
-<td>1 sign, 11 exponent, 52 mantissa</td>
-</tr>
-<tr class="even">
-<td>Range</td>
-<td>≈ 1.2 × 10⁻³⁸ to 3.4 × 10⁺³⁸</td>
-<td>≈ 2.2 × 10⁻³⁰⁸ to 1.8 × 10⁺³⁰⁸</td>
-</tr>
-<tr class="odd">
-<td><code>printf</code> specifier</td>
-<td><code>%f</code></td>
-<td><code>%f</code> (<code>%lf</code> also accepted)</td>
-</tr>
-<tr class="even">
-<td><code>scanf</code> specifier</td>
-<td><code>%f</code></td>
-<td><code>%lf</code></td>
-</tr>
-<tr class="odd">
-<td>Literal</td>
-<td><code>3.14f</code> (needs <code>f</code> or <code>F</code>)</td>
-<td><code>3.14</code> (the default)</td>
-</tr>
-</tbody>
-</table>
-<p>The ranges above are the smallest and largest normal positive values. You can check every number on your own machine with <code>sizeof</code> and the constants in <code>&lt;float.h&gt;</code>.</p>
-</section>
-<section id="precision-and-the-rounding-trap" class="level2">
-<h2 class="anchored" data-anchor-id="precision-and-the-rounding-trap">1. Precision and the Rounding Trap</h2>
-<p>A <code>float</code> has 23 bits for its fractional part (the mantissa), so it starts losing accuracy after about 7 significant digits. A <code>double</code> has 52 bits and stays accurate to about 15.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb1-2"></span>
-<span id="cb1-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">()</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb1-4">    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// Both variables are assigned the same long decimal</span></span>
-<span id="cb1-5">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">float</span> pi_float <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3.141592653589793</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">f</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb1-6">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">double</span> pi_double <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3.141592653589793</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb1-7"></span>
-<span id="cb1-8">    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// %.15f prints 15 digits after the decimal point</span></span>
-<span id="cb1-9">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Float value:  </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%.15f\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> pi_float<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb1-10">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Double value: </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%.15f\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> pi_double<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb1-11">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb1-12"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>Output (compiled with GCC):</p>
-<pre><code>Float value:  3.141592741012573
-Double value: 3.141592653589793</code></pre>
-<p>The float is already wrong from the 7th decimal place onward (<code>3.1415927...</code> instead of <code>3.1415926...</code>).</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Why do float and double often look identical when printed?
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><code>%f</code> prints only 6 digits after the decimal point by default, which hides the difference. Ask for more digits, such as <code>%.15f</code>, to see it.</p>
-</div>
-</div>
-</section>
-<section id="neither-can-store-0.1-exactly" class="level2">
-<h2 class="anchored" data-anchor-id="neither-can-store-0.1-exactly">2. Neither Can Store 0.1 Exactly</h2>
-<p>Computers store numbers in binary, and 0.1 has no finite binary representation. Both types store the nearest approximation; <code>double</code> is just much closer.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">float</span>  a <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.1</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">f</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb3-2"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">double</span> b <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb3-3">printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%.20f\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// 0.10000000149011611938</span></span>
-<span id="cb3-4">printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%.20f\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> b<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// 0.10000000000000000555</span></span></code></pre></div></div>
-<p>This is why comparing floating-point numbers with <code>==</code> is risky, even with <code>double</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1">printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.1</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.2</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.3</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// 0 (false!)</span></span>
-<span id="cb4-2">printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%.17f\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.1</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>       <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// 0.30000000000000004</span></span></code></pre></div></div>
-<p>Instead of <code>==</code>, check whether the difference is tiny: <code>fabs(x - y) &lt; 1e-9</code> (needs <code>&lt;math.h&gt;</code>).</p>
-</section>
-<section id="errors-accumulate" class="level2">
-<h2 class="anchored" data-anchor-id="errors-accumulate">3. Errors Accumulate</h2>
-<p>Small rounding errors add up when repeated. Here we add 0.1 ten million times, so the exact answer is 1,000,000:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">float</span>  s <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb5-2"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">double</span> d <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb5-3"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10000000</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb5-4">    s <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.1</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">f</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb5-5">    d <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb5-6"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb5-7">printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"float:  </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%f\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> s<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// 1087937.000000  (about 9% off!)</span></span>
-<span id="cb5-8">printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"double: </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%f\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> d<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// 999999.999839   (off by about 0.0002)</span></span></code></pre></div></div>
-<p>A <code>float</code> also runs out of whole-number precision early: above 16,777,216 (2²⁴) it cannot represent every integer, so <code>16777216.0f + 1.0f</code> is still <code>16777216.0</code>.</p>
-</section>
-<section id="literals-and-defaults" class="level2">
-<h2 class="anchored" data-anchor-id="literals-and-defaults">4. Literals and Defaults</h2>
-<p>In C, any decimal number written directly in code (such as <code>3.14</code>) is a <code>double</code>. To make a <code>float</code>, add an <code>f</code> or <code>F</code> suffix:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">float</span>  x <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3.14</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">f</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// float literal</span></span>
-<span id="cb6-2"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">float</span>  y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3.14</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// double literal silently converted to float</span></span>
-<span id="cb6-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">double</span> z <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3.14</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// double literal</span></span></code></pre></div></div>
-<p>Writing <code>float y = 3.14;</code> compiles fine, but the compiler converts a <code>double</code> to a <code>float</code>, which can lose precision. Use the <code>f</code> suffix to be explicit.</p>
-</section>
-<section id="mixing-types" class="level2">
-<h2 class="anchored" data-anchor-id="mixing-types">5. Mixing Types</h2>
-<p>When a <code>float</code> and a <code>double</code> meet in an expression, the <code>float</code> is promoted to <code>double</code>. Also, <code>printf</code> always receives a <code>double</code> for <code>%f</code>, which is why <code>%f</code> works for both types:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">float</span> f <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3.0</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">f</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb7-2">printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%f\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> f<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>          <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// 0.333333</span></span>
-<span id="cb7-3">printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%.15f\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">double</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> f<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// 0.333333343267441 (the float's rounding error is still there)</span></span></code></pre></div></div>
-<p>Promoting to <code>double</code> does not repair an error that already happened; it only prevents new ones.</p>
-</section>
-<section id="when-to-use-which" class="level2">
-<h2 class="anchored" data-anchor-id="when-to-use-which">When to Use Which?</h2>
-<p><strong>Use <code>double</code> for:</strong></p>
-<ul>
-<li>Everyday programming and general calculations.</li>
-<li>Scientific computing, statistics, and simulations, where errors can grow.</li>
-<li>Large sums or long loops, where rounding errors accumulate.</li>
-</ul>
-<p><strong>Use <code>float</code> for:</strong></p>
-<ul>
-<li>Memory-critical systems, such as embedded hardware with limited RAM.</li>
-<li>Huge arrays of floating-point numbers, where halving the memory matters.</li>
-<li>Graphics, games, and GPU computing (CUDA), where throughput matters more than extreme accuracy.</li>
-</ul>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Rule of thumb
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Start with <code>double</code>. Switch to <code>float</code> only when you have a measured memory or speed reason, and you know the reduced precision is acceptable.</p>
-</div>
-</div>
-</section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<ol type="1">
-<li><a href="https://www.reddit.com/r/learnprogramming/comments/1gi6xo5/float_vs_double_whats_the_key_difference/">Float vs double: what’s the key difference? (Reddit r/learnprogramming)</a></li>
-<li><a href="https://www.geeksforgeeks.org/cpp/difference-float-double-c-cpp/">Difference between float and double in C/C++ (GeeksforGeeks)</a></li>
-<li><a href="https://www.geeksforgeeks.org/c/c-float-and-double/">C float and double (GeeksforGeeks)</a></li>
-<li><a href="https://www.programiz.com/cpp-programming/float-double">C++ float and double (Programiz)</a></li>
-<li><a href="https://softwareengineering.stackexchange.com/questions/188721/when-do-you-use-float-and-when-do-you-use-double">When do you use float and when do you use double? (Software Engineering Stack Exchange)</a></li>
-<li><a href="https://www.scaler.com/topics/difference-between-float-and-double-in-c-cpp/">Difference between float and double in C/C++ (Scaler)</a></li>
-<li><a href="https://www.freecodecamp.org/news/double-vs-float-in-cpp-the-difference-between-floats-and-doubles/">Double vs float in C++ (freeCodeCamp)</a></li>
-<li><a href="https://unstop.com/blog/difference-between-float-and-double">Difference between float and double (Unstop)</a></li>
-<li><a href="https://meshlib.io/documentation/FloatVSDouble.html">Float vs double (MeshLib)</a></li>
-</ol>
-
-
-</section>
-
- ]]></description>
-  <category>C</category>
-  <category>Programming</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/c-double-vs-float.html</guid>
-  <pubDate>Fri, 25 Sep 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/c-float-vs-double.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>

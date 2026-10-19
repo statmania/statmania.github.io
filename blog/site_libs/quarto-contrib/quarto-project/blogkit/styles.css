@@ -743,18 +743,39 @@ body.quarto-light .quarto-title-meta-contents p{ color: #25304f; }
 #quarto-header .navbar-logo{ height: 48px; width: auto; max-height: none; }
 
 /* ---- Homepage hero tools (#bk-hero-tools, filled by blogkit.js): search, topic chips, stats ---- */
-.bk-hero-search{ max-width: 520px; margin: 1.2rem auto 0; }
+#bk-hero-tools{ display: grid; gap: .7rem; margin-top: .9rem; }
+.bk-hero-search{ width: 100%; max-width: 520px; margin: 0 auto; }
 .bk-hero-search input{
-  width: 100%; box-sizing: border-box; padding: .65rem 1.1rem; font-size: 1rem;
+  width: 100%; box-sizing: border-box; padding: .5rem 1rem; font-size: .95rem;
   color: var(--bk-text); background: rgba(255,255,255,.06);
   border: 1px solid var(--bk-line); border-radius: 999px;
   backdrop-filter: blur(6px);
 }
 .bk-hero-search input::placeholder{ color: var(--bk-muted); }
 .bk-hero-search input:focus-visible{ outline: none; border-color: var(--bk-cyan); box-shadow: 0 0 12px rgba(0,229,255,.4); }
-.bk-hero-chips{ display: flex; flex-wrap: wrap; gap: .4rem; justify-content: center; margin: 1rem auto 0; max-width: 640px; }
-.bk-hero-stats{ margin: 1rem 0 0; color: var(--bk-muted); font-size: .85rem; }
+/* one row of chips; it scrolls sideways (no scrollbar) when there are more than fit */
+.bk-hero-chips{ display: flex; flex-wrap: nowrap; gap: .4rem; align-items: center; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+.bk-hero-chips::-webkit-scrollbar{ display: none; }
+.bk-hero-chips .bk-tag{ flex: none; white-space: nowrap; font-size: .8rem; padding: .05rem .7rem; }
+.bk-hero-chips .bk-tag-more{ opacity: .8; }
+.bk-hero-stats{ margin: 0; color: var(--bk-muted); font-size: .82rem; }
+.bk-hero-tagline{ display: block; color: var(--bk-text); opacity: .85; margin-bottom: .2rem; }   /* the stats go on the next line */
+@media (max-width: 575.98px){ .bk-hero-tagline{ display: none; } }   /* phones: keep the hero short */
 .bk-hero-rss{ color: var(--bk-cyan); text-decoration: none; }
 .bk-hero-rss:hover{ text-decoration: underline; }
-/* the hero search replaces the listing's own filter box */
-.bk-has-hero-tools .quarto-listing-filter{ display: none; }
+/* the hero search replaces the listing's own filter box (:has() hides it before the script runs, so it never flashes) */
+.bk-has-hero-tools .quarto-listing-filter,
+:root:has(#bk-hero-tools) .quarto-listing-filter{ display: none; }
+/* Smooth load: with `{{< include _bk-hero-tools.html >}}` the tools are in the page from the first paint.
+   Without it the script builds them, so reserve their height meanwhile and fade them in. */
+#bk-hero-tools:empty{ min-height: 7.8rem; }
+@media (min-width: 768px){ #bk-hero-tools:empty{ min-height: 5.8rem; } }
+#bk-hero-tools.bk-hero-built > *{ animation: bk-hero-in .25s ease-out both; }
+@keyframes bk-hero-in{ from{ opacity: 0; transform: translateY(4px); } to{ opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce){ #bk-hero-tools.bk-hero-built > *{ animation: none; } }
+/* desktop: search and chips side by side, stats underneath */
+@media (min-width: 768px){
+  #bk-hero-tools{ grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: center; gap: .6rem 1rem; }
+  .bk-hero-search{ max-width: none; margin: 0; }
+  .bk-hero-stats{ grid-column: 1 / -1; }
+}
