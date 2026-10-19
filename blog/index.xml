@@ -10,7 +10,214 @@
 <atom:link href="https://www.statmania.info/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Posts on statistics theory, R &amp; Python, and developer tips from Stat Mania.</description>
 <generator>quarto-1.9.38</generator>
-<lastBuildDate>Wed, 21 Oct 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 22 Oct 2026 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>How to Write a Multiline Git Commit Message (4 Methods)</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/git-multiline-commit-message.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/git-multiline-commit.svg" class="img-fluid figure-img" alt="A terminal showing a commit message: the subject line 'Fix login timeout bug' under 50 characters, a blank line, and a wrapped body, with labels for each part."></p>
+<figcaption>A commit message is a short subject, a blank line, then a body that explains why.</figcaption>
+</figure>
+</div>
+<p>A one-line <code>git commit -m "..."</code> is fine for tiny changes. When a change needs explaining, a commit message has a <strong>subject</strong> (one short line), a <strong>blank line</strong>, and a <strong>body</strong> (the details). Git offers four ways to write one. I tried each in a fresh repository, and the messages below are what <code>git log</code> showed.</p>
+<section id="method-1-the-default-text-editor-recommended" class="level2">
+<h2 class="anchored" data-anchor-id="method-1-the-default-text-editor-recommended">Method 1: The Default Text Editor (Recommended)</h2>
+<p>Leave out <code>-m</code> entirely:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> commit</span></code></pre></div></div>
+<p>Git opens our editor (Vim, Nano, VS Code, …) with a template. We type the subject on the first line, leave the second line <strong>blank</strong>, write the body from line 3, then save and close to finish the commit. An empty message aborts the commit. Lines that start with <code>#</code> are comments and are removed.</p>
+<p>To choose the editor once and for all:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> config <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--global</span> core.editor <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"nano"</span></span>
+<span id="cb2-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> config <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--global</span> core.editor <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"code --wait"</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># VS Code</span></span></code></pre></div></div>
+<p>This is the most comfortable method for long messages, because we can see the whole message and edit it freely.</p>
+</section>
+<section id="method-2-several--m-flags" class="level2">
+<h2 class="anchored" data-anchor-id="method-2-several--m-flags">Method 2: Several <code>-m</code> Flags</h2>
+<p>Each <code>-m</code> becomes its own <strong>paragraph</strong>, with a blank line between them:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Add authentication feature"</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"This paragraph explains why the change was made."</span></span></code></pre></div></div>
+<p>Result in <code>git log</code>:</p>
+<pre><code>Add authentication feature
+
+This paragraph explains why the change was made.</code></pre>
+<p>The first <code>-m</code> is the subject and the rest are body paragraphs. It is quick, but each <code>-m</code> is a single paragraph, so it is awkward for bullet lists.</p>
+</section>
+<section id="method-3-quotes-that-span-several-lines" class="level2">
+<h2 class="anchored" data-anchor-id="method-3-quotes-that-span-several-lines">Method 3: Quotes That Span Several Lines</h2>
+<p>Open the quotes, press Enter inside them to start a new line, and close the quotes at the end. The shell shows a <code>&gt;</code> continuation prompt (fish just continues on the next line):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Fix login timeout bug</span></span>
+<span id="cb5-2"></span>
+<span id="cb5-3"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">- Increased token expiration to 2 hours</span></span>
+<span id="cb5-4"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">- Resolved edge case where session cleared unexpectedly"</span></span></code></pre></div></div>
+<p>Result:</p>
+<pre><code>Fix login timeout bug
+
+- Increased token expiration to 2 hours
+- Resolved edge case where session cleared unexpectedly</code></pre>
+<p>This worked in bash and in fish. Remember the blank line after the subject: press Enter twice. In bash and zsh we can also write <code>\n</code> explicitly with the <code>$'...'</code> form (plain <code>"...\n..."</code> does <strong>not</strong> create a line break):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">$'Quoted with dollar sign</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\n\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Body line from ANSI-C quoting.'</span></span></code></pre></div></div>
+</section>
+<section id="method-4-read-the-message-from-a-file" class="level2">
+<h2 class="anchored" data-anchor-id="method-4-read-the-message-from-a-file">Method 4: Read the Message from a File</h2>
+<p>For a long message, write it in a file first (the file name does not matter), then pass it with <code>-F</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-F</span> commit_msg.txt</span></code></pre></div></div>
+<p>The same works without a file. In <strong>bash or zsh</strong> a here-document supplies the message (<code>-F -</code> means “read from standard input”; the word after <code>&lt;&lt;</code> marks where the message ends):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-F</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;&lt;'EOF'</span></span>
+<span id="cb9-2"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Add RSS link</span></span>
+<span id="cb9-3"></span>
+<span id="cb9-4"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Shown in the hero stats line.</span></span>
+<span id="cb9-5"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">EOF</span></span></code></pre></div></div>
+<p><strong>fish</strong> has no here-documents, so pipe <code>printf</code> into it instead:</p>
+<pre class="fish"><code>printf 'Add feature X\n\nBody via printf in fish.\n' | git commit -F -</code></pre>
+<p>Both give the usual subject, blank line and body.</p>
+</section>
+<section id="check-or-fix-the-message" class="level2">
+<h2 class="anchored" data-anchor-id="check-or-fix-the-message">Check or Fix the Message</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> log <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-1</span>            <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># show the last commit with its full message</span></span>
+<span id="cb11-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--amend</span>    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># reopen the last message in the editor and rewrite it</span></span></code></pre></div></div>
+<p>Only amend commits that have not been pushed. Rewriting a pushed commit changes its history for everyone who pulled it.</p>
+</section>
+<section id="which-method" class="level2">
+<h2 class="anchored" data-anchor-id="which-method">Which Method?</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Method</th>
+<th style="text-align: left;">Best for</th>
+<th style="text-align: left;">Watch out for</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1. Editor (<code>git commit</code>)</td>
+<td style="text-align: left;">long, careful messages</td>
+<td style="text-align: left;">needs an editor set up</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2. Several <code>-m</code></td>
+<td style="text-align: left;">a subject plus one or two paragraphs</td>
+<td style="text-align: left;">no bullet lists</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3. Multi-line quotes</td>
+<td style="text-align: left;">short messages with a list, typed in the terminal</td>
+<td style="text-align: left;">quotes inside the message</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4. <code>-F</code> file or stdin</td>
+<td style="text-align: left;">long messages, scripts</td>
+<td style="text-align: left;">the shell syntax differs (bash vs fish)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="best-practices-for-multiline-commits" class="level2">
+<h2 class="anchored" data-anchor-id="best-practices-for-multiline-commits">Best Practices for Multiline Commits</h2>
+<ul>
+<li><strong>Subject:</strong> about 50 characters or fewer, starting with a capital letter, without a final period. Use the imperative mood, as if giving an order: “Fix bug”, not “Fixed bug”.</li>
+<li><strong>Blank line:</strong> always leave line 2 empty. Git and many tools (<code>git log --oneline</code>, GitHub) treat the first paragraph as the title and the rest as the body.</li>
+<li><strong>Body:</strong> wrap lines at about 72 characters and explain <strong>why</strong> the change was made and what it achieves, rather than how it was coded. The code already shows the “how”.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>Git</category>
+  <category>DevOps</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/git-multiline-commit-message.html</guid>
+  <pubDate>Thu, 22 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/git-multiline-commit.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
 <item>
   <title>Why Learn a Programming Language in the AI Age?</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
@@ -10442,416 +10649,6 @@ font-style: inherit;">;</span></span>
   <guid>https://www.statmania.info/blog/posts/revealjs-quarto-stat-slides.html</guid>
   <pubDate>Sat, 03 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/revealjs-stat-slides.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>srand(time(NULL)) in C: Why Random Numbers Repeat and How to Seed Them</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/c-srand-time-null.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/c-srand-time-null.svg" class="img-fluid figure-img" alt="A clock labelled time(NULL) leads to a box labelled srand, the seed, which leads to a box of random numbers from rand()."></p>
-<figcaption>srand(time(NULL)) feeds the clock into the generator, and rand() then produces a fixed sequence from that seed.</figcaption>
-</figure>
-</div>
-<p>The line <code>srand(time(NULL));</code> appears at the top of almost every C program that needs random numbers, such as <a href="../posts/c-die-throw.html">the die-rolling example</a>. It is often copied without explanation. Let’s see what each part does and what happens without it.</p>
-<section id="the-surprise-rand-is-not-random" class="level3">
-<h3 class="anchored" data-anchor-id="the-surprise-rand-is-not-random">The Surprise: <code>rand()</code> Is Not Random</h3>
-<p><code>rand()</code> returns pseudo-random integers. “Pseudo” means they come from a formula: each number is computed from the previous one, starting at a <strong>seed</strong>. Same seed, same sequence, every time.</p>
-<p>Let’s roll five numbers from 1 to 100 without setting a seed:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb1-2"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdlib.h&gt;</span></span>
-<span id="cb1-3"></span>
-<span id="cb1-4"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb1-5">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb1-6">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> "</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> rand<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">()</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb1-7">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb1-8">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb1-9">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb1-10"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>Running it twice:</p>
-<pre><code>84 87 78 16 94
-84 87 78 16 94</code></pre>
-<p>Identical. When we never call <code>srand()</code>, C behaves as if we called <code>srand(1)</code>, so the program starts from the same point on every run.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The exact numbers depend on the C library. The ones in this post come from glibc (gcc on Linux). Another platform gives a different sequence, but it will still repeat from run to run.</p>
-</div>
-</div>
-</section>
-<section id="the-parts-one-at-a-time" class="level3">
-<h3 class="anchored" data-anchor-id="the-parts-one-at-a-time">The Parts, One at a Time</h3>
-<ol type="1">
-<li><strong><code>rand()</code></strong> returns the next number in the sequence. It has no memory of the clock; it only continues from its current state.</li>
-<li><strong><code>srand(seed)</code></strong> sets that starting state. It takes an <code>unsigned int</code>.</li>
-<li><strong><code>time(NULL)</code></strong> (from <code>&lt;time.h&gt;</code>) returns the current time as the number of seconds since 1 January 1970, the Unix epoch. This value changes every second, so each run starts from a different seed.</li>
-</ol>
-<p>Together, <code>srand(time(NULL))</code> means “start the sequence from a point that depends on the clock.”</p>
-</section>
-<section id="a-fixed-seed-is-useful-too" class="level3">
-<h3 class="anchored" data-anchor-id="a-fixed-seed-is-useful-too">A Fixed Seed Is Useful Too</h3>
-<p>Passing a constant makes the sequence repeatable on purpose:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1">srand<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">42</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span></code></pre></div></div>
-<p>Every run now prints <code>67 41 82 42 13</code>. That is exactly what we want when <strong>testing or debugging</strong>, or when a simulation must be reproducible. Print the seed, and anyone can replay the same run.</p>
-</section>
-<section id="seeding-with-the-clock" class="level3">
-<h3 class="anchored" data-anchor-id="seeding-with-the-clock">Seeding with the Clock</h3>
-<p>Here is the usual form:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb4-2"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdlib.h&gt;</span></span>
-<span id="cb4-3"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;time.h&gt;</span></span>
-<span id="cb4-4"></span>
-<span id="cb4-5"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb4-6">    srand<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">((</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">unsigned</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>time<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>NULL<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">));</span></span>
-<span id="cb4-7"></span>
-<span id="cb4-8">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb4-9">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> "</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> rand<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">()</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb4-10">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb4-11">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb4-12">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb4-13"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>Two runs a second or more apart:</p>
-<pre><code>20 24 59 67 77
-15 82 18 77 34</code></pre>
-<section id="why-the-unsigned-int-cast" class="level4">
-<h4 class="anchored" data-anchor-id="why-the-unsigned-int-cast">Why the <code>(unsigned int)</code> cast?</h4>
-<p><code>time(NULL)</code> returns a <code>time_t</code>, usually a 64-bit integer, while <code>srand()</code> takes a 32-bit <code>unsigned int</code>. Passing one to the other narrows the value. With default warnings gcc stays quiet, but with <code>-Wconversion</code> it says:</p>
-<pre><code>warning: conversion from 'time_t' {aka 'long int'} to 'unsigned int' may change value [-Wconversion]</code></pre>
-<p>The cast says “yes, we know” and silences it. Losing the high bits is harmless here, since all we need is a number that differs from run to run.</p>
-</section>
-</section>
-<section id="pitfall-1-the-same-second-trap" class="level3">
-<h3 class="anchored" data-anchor-id="pitfall-1-the-same-second-trap">Pitfall 1: The Same-Second Trap</h3>
-<p>The clock only changes once per second. Two runs that start within the same second get the same seed, and therefore the same numbers. Running the program twice in a row from a script printed this:</p>
-<pre><code>20 24 59 67 77
-20 24 59 67 77</code></pre>
-<p>For a game or a quick demo this rarely matters. For a program launched many times in a loop (a test harness, a batch job), it does.</p>
-</section>
-<section id="pitfall-2-seeding-inside-a-loop" class="level3">
-<h3 class="anchored" data-anchor-id="pitfall-2-seeding-inside-a-loop">Pitfall 2: Seeding Inside a Loop</h3>
-<p><code>srand()</code> belongs <strong>once</strong>, at the start of <code>main()</code>. Putting it inside the loop re-seeds with the same second again and again:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb8-1"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb8-2">    srand<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>time<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>NULL<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">));</span>              <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// wrong: restarts the sequence each pass</span></span>
-<span id="cb8-3">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> "</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> rand<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">()</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb8-4"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>Output:</p>
-<pre><code>15 15 15 15 15</code></pre>
-<p>Every pass restarts the sequence from the same seed and takes its first number, so we get the same value five times.</p>
-</section>
-<section id="what-srandtimenull-cannot-do" class="level3">
-<h3 class="anchored" data-anchor-id="what-srandtimenull-cannot-do">What <code>srand(time(NULL))</code> Cannot Do</h3>
-<ul>
-<li><strong>It is not secure.</strong> Anyone who knows roughly when the program ran can guess the seed. Never use <code>rand()</code> for passwords, tokens or cryptography; use the operating system’s secure source instead (for example <code>getrandom()</code> on Linux or <code>arc4random()</code> on BSD and macOS).</li>
-<li><strong>It is not very uniform.</strong> <code>rand() % 100</code> slightly favours small values, because <code>RAND_MAX + 1</code> is rarely a multiple of 100. For teaching and games this is fine.</li>
-<li><strong>In C++</strong>, prefer <code>&lt;random&gt;</code> (<code>std::mt19937</code> with <code>std::random_device</code>) over <code>rand()</code>/<code>srand()</code>.</li>
-</ul>
-</section>
-<section id="quick-summary" class="level3">
-<h3 class="anchored" data-anchor-id="quick-summary">Quick Summary</h3>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Question</th>
-<th style="text-align: left;">Answer</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Why does <code>rand()</code> repeat across runs?</td>
-<td style="text-align: left;">No <code>srand()</code> means the default seed 1 every time.</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">What does <code>time(NULL)</code> give?</td>
-<td style="text-align: left;">Seconds since 1970, so a new seed each second.</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Why cast to <code>unsigned int</code>?</td>
-<td style="text-align: left;"><code>time_t</code> is wider; the cast avoids a <code>-Wconversion</code> warning.</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">How often do we call <code>srand()</code>?</td>
-<td style="text-align: left;">Once, at the start of the program.</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">When do we use a fixed seed?</td>
-<td style="text-align: left;">Testing, debugging, reproducible simulations.</td>
-</tr>
-</tbody>
-</table>
-
-
-</section>
-
- ]]></description>
-  <category>C</category>
-  <category>Programming</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/c-srand-time-null.html</guid>
-  <pubDate>Fri, 02 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/c-srand-time-null.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>
