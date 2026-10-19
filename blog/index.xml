@@ -12,6 +12,503 @@
 <generator>quarto-1.9.38</generator>
 <lastBuildDate>Sun, 18 Oct 2026 18:00:00 GMT</lastBuildDate>
 <item>
+  <title>Why Use break in a while Loop If the Condition Already Stops It?</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/c-break-statement-in-while-loop.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/c-break-while-loop.svg" class="img-fluid figure-img" alt="A while loop box with the condition i < 10. A teal arrow on the right is the normal exit when the condition is false; a red arrow below is the break exit taken when i equals 4."></p>
+<figcaption>A loop has a planned exit (the condition) and an emergency exit (break).</figcaption>
+</figure>
+</div>
+<p>A common question when we first meet <code>break</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-3">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">break</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-4">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb1-5">    i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++;</span></span>
+<span id="cb1-6"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<pre><code>0
+1
+2
+3</code></pre>
+<p>The loop stops at 4, so <strong>why did we write <code>i &lt; 10</code>?</strong></p>
+<section id="the-condition-is-the-normal-exit-break-is-the-special-exit" class="level2">
+<h2 class="anchored" data-anchor-id="the-condition-is-the-normal-exit-break-is-the-special-exit">The Condition Is the Normal Exit, <code>break</code> Is the Special Exit</h2>
+<p>The two answer different questions:</p>
+<ul>
+<li><code>i &lt; 10</code> says “keep going while <code>i</code> is under 10”: the <em>planned</em> range.</li>
+<li><code>if (i == 4) break;</code> says “but if something special happens, stop <strong>now</strong>.”</li>
+</ul>
+<p>Think of driving. “Drive until we reach the destination” (<code>i &lt; 10</code>) is the plan. “Stop at a red light” (<code>break</code>) is the exception. We don’t delete the destination from the plan because a red light <em>might</em> appear.</p>
+<p>In this toy example we could simply write <code>i &lt; 4</code>. Real programs rarely know the stopping point in advance, as the next examples show.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Rule.</strong> <code>break</code> leaves the <em>innermost</em> loop at once and skips the rest of the body. The program continues after the loop.</p>
+</div>
+</div>
+</section>
+<section id="four-short-examples" class="level2">
+<h2 class="anchored" data-anchor-id="four-short-examples">Four Short Examples</h2>
+<p>(The snippets go inside <code>main</code>, with <code>#include &lt;stdio.h&gt;</code>. Each was compiled with <code>gcc -Wall -Wextra</code> and run.)</p>
+<section id="search-stop-when-we-find-it" class="level3">
+<h3 class="anchored" data-anchor-id="search-stop-when-we-find-it">1. Search: Stop When We Find It</h3>
+<p>We don’t know where 42 is, or whether it is there at all. We stop at the first match:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> arr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">19</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">42</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">};</span></span>
+<span id="cb3-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> found <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb3-3"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb3-4">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>arr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">42</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb3-5">        found <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb3-6">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">break</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb3-7">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb3-8"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb3-9">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> found<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<pre><code>2</code></pre>
+<p>Without <code>break</code> the loop would keep scanning for no reason. If 42 is missing, <code>found</code> stays -1.</p>
+</section>
+<section id="read-numbers-until-0" class="level3">
+<h3 class="anchored" data-anchor-id="read-numbers-until-0">2. Read Numbers Until 0</h3>
+<p>The condition means “keep reading while the input is valid”. <code>break</code> means “the user typed 0”:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> sum <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>scanf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span>x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb5-3">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>x <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">break</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-4">    sum <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-5"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb5-6">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> sum<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<p>For the input <code>5 10 0 99</code>:</p>
+<pre><code>15</code></pre>
+<p>The 0 stops the loop, so 99 is never added.</p>
+</section>
+<section id="retry-with-a-limit" class="level3">
+<h3 class="anchored" data-anchor-id="retry-with-a-limit">3. Retry with a Limit</h3>
+<p>“At most 3 tries” is the plan; “stop as soon as it works” is the discovery. Here the second try pretends to succeed:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> tries <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb7-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>tries <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb7-3">    tries<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++;</span></span>
+<span id="cb7-4">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>tries <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">break</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// pretend it worked</span></span>
+<span id="cb7-5"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb7-6">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> tries<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<pre><code>2</code></pre>
+<p>Change the test to <code>tries == 5</code> and the loop ends by its condition, printing 3.</p>
+</section>
+<section id="an-endless-loop-with-an-exit" class="level3">
+<h3 class="anchored" data-anchor-id="an-endless-loop-with-an-exit">4. An Endless Loop with an Exit</h3>
+<p>When there is no natural condition (a menu, a game loop), <code>while (1)</code> runs until <code>break</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb9-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">char</span> cmd<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb9-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb9-3">    scanf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">" </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%c</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span>cmd<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb9-4">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>cmd <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'q'</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">break</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb9-5">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%c\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> cmd<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb9-6"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>For the input <code>a b q c</code>:</p>
+<pre><code>a
+b</code></pre>
+<p>Here <code>break</code> <em>is</em> the exit condition. (A real program should also stop when <code>scanf</code> fails, such as at the end of the input.)</p>
+</section>
+</section>
+<section id="which-stop-goes-where" class="level2">
+<h2 class="anchored" data-anchor-id="which-stop-goes-where">Which Stop Goes Where?</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Kind of stop</th>
+<th style="text-align: left;">Where it goes</th>
+<th style="text-align: left;">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Planned stop</strong> (known up front)</td>
+<td style="text-align: left;">loop condition</td>
+<td style="text-align: left;"><code>i &lt; 10</code>, <code>scanf(...) == 1</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Discovered stop</strong> (found mid-loop)</td>
+<td style="text-align: left;"><code>break</code></td>
+<td style="text-align: left;">found the item, user typed 0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>No natural condition</strong></td>
+<td style="text-align: left;"><code>while (1)</code> + <code>break</code></td>
+<td style="text-align: left;">menu loop, game loop</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>A <code>while</code> condition says <em>when to keep going in the normal case</em>. A <code>break</code> says <em>stop immediately when a special case shows up</em>. The special case often can’t be checked in the condition, because it is only known once we are inside the loop.</p>
+<p>For more practice, see <a href="../posts/c-while-loop-practice-problems.html">while loop practice problems</a>.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>C</category>
+  <category>Programming</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/c-break-statement-in-while-loop.html</guid>
+  <pubDate>Sun, 18 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/c-break-while-loop.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
   <title>Printing a Comma-Separated List in C (No Trailing Comma, Clean Line Breaks)</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://www.statmania.info/blog/posts/c-print-comma-separated-list.html</link>
@@ -10192,463 +10689,6 @@ font-style: inherit;">git</span> push</span></code></pre></div></div>
   <guid>https://www.statmania.info/blog/posts/how-this-blog-is-built.html</guid>
   <pubDate>Sat, 03 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/blog-build-pipeline.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>How I Make Statistics Lecture Slides with Quarto and reveal.js</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/revealjs-quarto-stat-slides.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/revealjs-stat-slides.svg" class="img-fluid figure-img" alt="A _quarto.yml and a css/styles.css feed a chapter .qmd file, which renders to a reveal.js HTML deck, with the qdraw plugin adding live drawing on top."></p>
-<figcaption>One shared config and stylesheet apply to one .qmd file per chapter; Quarto renders each into a reveal.js deck, and the qdraw plugin adds live drawing.</figcaption>
-</figure>
-</div>
-<p>Statistics slides need three things at once: readable text, real math, and numbers that are actually correct. After trying the usual slide tools, I settled on <strong>Quarto with reveal.js</strong>. Each chapter is one plain-text file; math is LaTeX, tables and plots come from R code, and the result is a web page that opens anywhere. This post shows the setup behind the <a href="https://www.statmania.info/lectures.html">Stat Mania lecture slides</a>, so we can build the same thing.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/stat-slide-function.jpg" class="img-fluid figure-img" alt="A teal lecture slide titled Function showing the binomial formula P(x) = nCx p^x (1-p)^(n-x), and bullets defining p, q, n and x."></p>
-<figcaption>A real slide from the binomial distribution deck: a title, a LaTeX formula, and bullets that appear one by one. The pen icon top left is qdraw.</figcaption>
-</figure>
-</div>
-<section id="why-quarto-reveal.js" class="level3">
-<h3 class="anchored" data-anchor-id="why-quarto-reveal.js">Why Quarto + reveal.js</h3>
-<ul>
-<li><strong>Plain text.</strong> A deck is a <code>.qmd</code> file, so it works with git, diffs and any editor.</li>
-<li><strong>Math just works.</strong> <code>$\binom{n}{x}p^x(1-p)^{n-x}$</code> renders crisply at any size.</li>
-<li><strong>Code lives next to the slide.</strong> An R chunk computes the table, so the numbers cannot drift from the explanation.</li>
-<li><strong>It is a web page.</strong> Students open a link on a phone; nothing to install.</li>
-<li><strong>One look for every deck</strong>, from a single config and stylesheet.</li>
-</ul>
-</section>
-<section id="the-layout-one-config-many-decks" class="level3">
-<h3 class="anchored" data-anchor-id="the-layout-one-config-many-decks">The Layout: One Config, Many Decks</h3>
-<p>All the lecture files sit in one folder that is a small Quarto project:</p>
-<pre><code>slide/
-  _quarto.yml               # shared settings for every deck
-  css/styles.css            # the theme
-  js/starfield-bg.js        # optional animated background
-  01-stat-intro.qmd
-  04-binomial.qmd
-  06-correlation-regression.qmd
-  …</code></pre>
-<p>The shared <code>_quarto.yml</code> holds everything a deck should have in common, so each chapter file stays short:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">project</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span></span>
-<span id="cb2-2"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">type</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> website</span></span>
-<span id="cb2-3"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">output-dir</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> .</span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">          # the .html lands next to its .qmd</span></span>
-<span id="cb2-4"></span>
-<span id="cb2-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">format</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span></span>
-<span id="cb2-6"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">revealjs</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span></span>
-<span id="cb2-7"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">theme</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> sky</span></span>
-<span id="cb2-8"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">transition</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> convex</span></span>
-<span id="cb2-9"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">slide-number</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> c/t</span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">        # "current / total"</span></span>
-<span id="cb2-10"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">navigation-mode</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> vertical</span></span>
-<span id="cb2-11"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">incremental</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> </span><span class="ch" style="color: #20794D;
-background-color: null;
-font-style: inherit;">true</span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">        # bullets appear one at a time</span></span>
-<span id="cb2-12"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">highlight-style</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> dracula</span></span>
-<span id="cb2-13"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">css</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> css/styles.css</span></span>
-<span id="cb2-14"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">footer</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> </span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'&lt;a href="https://www.statmania.info"&gt;statmania.info&lt;/a&gt; | Press space or arrow to change slides'</span></span>
-<span id="cb2-15"></span>
-<span id="cb2-16"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">revealjs-plugins</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span></span>
-<span id="cb2-17"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">  </span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">-</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> qdraw</span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">                    # draw on slides while teaching</span></span></code></pre></div></div>
-<p><code>incremental: true</code> is the setting I like most for lectures: every bullet list reveals one point per key press, so students do not read ahead of the explanation.</p>
-<p>A chapter file then needs only a few lines of front matter:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">---</span></span>
-<span id="cb3-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">title</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> </span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Binomial Distribution"</span></span>
-<span id="cb3-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">author</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> Your Name</span></span>
-<span id="cb3-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">format</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> revealjs</span></span>
-<span id="cb3-5"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">---</span></span></code></pre></div></div>
-</section>
-<section id="writing-slides" class="level3">
-<h3 class="anchored" data-anchor-id="writing-slides">Writing Slides</h3>
-<p>The structure is just headings: <code>#</code> starts a <strong>section</strong> (a title slide) and <code>##</code> starts a <strong>slide</strong>.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"># Concept</span></span>
-<span id="cb4-2"></span>
-<span id="cb4-3"><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">- </span>Success or failure</span>
-<span id="cb4-4"><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">- </span>Detecting a disease is a success</span>
-<span id="cb4-5"></span>
-<span id="cb4-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">## Function</span></span>
-<span id="cb4-7"></span>
-<span id="cb4-8">$P(x) = \binom{n}{x} p^x (1-p)^{n-x}$</span>
-<span id="cb4-9"></span>
-<span id="cb4-10"><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">- </span>$p$: probability of success</span>
-<span id="cb4-11"><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">- </span>$n$: number of trials</span></code></pre></div></div>
-<p>A few patterns cover most of what a statistics lecture needs.</p>
-<p><strong>Pause for a question.</strong> <code>. . .</code> (three spaced dots) hides everything below until the next key press. It is perfect for “what is the answer?” slides:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">## Answer on click</span></span>
-<span id="cb5-2"></span>
-<span id="cb5-3">What is P(X = 2) for n = 5, p = 0.3?</span>
-<span id="cb5-4"></span>
-<span id="cb5-5">. . .</span>
-<span id="cb5-6"></span>
-<span id="cb5-7"><span class="in" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">```{r}</span></span>
-<span id="cb5-8"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dbinom</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.3</span>)</span>
-<span id="cb5-9"><span class="in" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">```</span></span></code></pre></div></div>
-<p><strong>Compute, do not copy.</strong> Mark a chunk <code>echo: false</code> to show only its output. The table on the slide is then produced by the same code that would give the answer in an exam:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><span class="in" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">```{r}</span></span>
-<span id="cb6-2"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#| echo: false</span></span>
-<span id="cb6-3">x <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span></span>
-<span id="cb6-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dbinom</span>(x, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.3</span>), <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>)</span>
-<span id="cb6-5"><span class="in" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">```</span></span></code></pre></div></div>
-<p><strong>Two columns:</strong> text beside a table or plot.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb7-1">::: {.columns}</span>
-<span id="cb7-2">::: {.column width="45%"}</span>
-<span id="cb7-3">(left: a table or plot)</span>
-<span id="cb7-4">:::</span>
-<span id="cb7-5">::: {.column width="55%"}</span>
-<span id="cb7-6"><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">- </span>n = 5, p = 0.3</span>
-<span id="cb7-7"><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">- </span>What do we see?</span>
-<span id="cb7-8">:::</span>
-<span id="cb7-9">:::</span></code></pre></div></div>
-<p><strong>Tabs</strong> for R versus Python (or “formula versus code”) on a single slide:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb8-1">::: {.panel-tabset}</span>
-<span id="cb8-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">### R</span></span>
-<span id="cb8-3"><span class="in" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">```r</span></span>
-<span id="cb8-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dbinom</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.3</span>)</span>
-<span id="cb8-5"><span class="in" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">```</span></span>
-<span id="cb8-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">### Python</span></span>
-<span id="cb8-7"><span class="in" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">```python</span></span>
-<span id="cb8-8"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> scipy.stats <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> binom</span>
-<span id="cb8-9">binom.pmf(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.3</span>)</span>
-<span id="cb8-10"><span class="in" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">```</span></span>
-<span id="cb8-11">:::</span></code></pre></div></div>
-<p><strong>Small utilities.</strong> <code>## Title {.smaller}</code> shrinks the text on a crowded slide. <code>## Title {background-color="white"}</code> gives a slide a white background, useful for a plot or an image with its own white page. <code>## Title {visibility="hidden"}</code> keeps a draft slide in the file but leaves it out of the rendered deck, so it never reaches the audience.</p>
-</section>
-<section id="a-theme-that-works-for-teaching" class="level3">
-<h3 class="anchored" data-anchor-id="a-theme-that-works-for-teaching">A Theme That Works for Teaching</h3>
-<p>reveal.js ships with themes (I start from <code>sky</code>), then <code>css/styles.css</code> restyles everything with a handful of CSS variables:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode css code-with-copy"><code class="sourceCode css"><span id="cb9-1"><span class="in" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:root</span>{</span>
-<span id="cb9-2">  <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">--sm-bg</span><span class="ch" style="color: #20794D;
-background-color: null;
-font-style: inherit;">:</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">#0b3d34</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>      <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/* deep teal */</span></span>
-<span id="cb9-3">  <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">--sm-cyan</span><span class="ch" style="color: #20794D;
-background-color: null;
-font-style: inherit;">:</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">#00e5ff</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb9-4">  <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">--sm-green</span><span class="ch" style="color: #20794D;
-background-color: null;
-font-style: inherit;">:</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">#2dd4a7</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb9-5">  <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">--sm-text</span><span class="ch" style="color: #20794D;
-background-color: null;
-font-style: inherit;">:</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">#e6f7f2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb9-6">}</span></code></pre></div></div>
-<p>One decision came from live teaching. The background is a deep <strong>teal rather than near-black</strong>. The qdraw pen (below) draws in black by default, and on a black background the ink was invisible. A dark-but-not-black background keeps the mood and keeps the pen readable. A small script (<code>starfield-bg.js</code>, added with <code>include-after-body:</code>) draws a calm animated starfield behind the slides; it is optional.</p>
-<p>The stylesheet is a <em>linked</em> file, not baked into each deck. So when I only change colours, spacing or table styles, <strong>I do not need to re-render any slides</strong>; a browser refresh shows the change on all decks.</p>
-</section>
-<section id="drawing-on-slides" class="level3">
-<h3 class="anchored" data-anchor-id="drawing-on-slides">Drawing on Slides</h3>
-<p>Circling a term, sketching a normal curve or underlining a step is much of teaching. <a href="https://www.thinkermahmud.com/qdraw/">qdraw</a> is a small Quarto extension that adds a pen, shapes and an eraser on top of any reveal.js slide. It is one line in <code>_quarto.yml</code> (<code>revealjs-plugins: [qdraw]</code>) after installing it with <code>quarto add</code>. I wrote about its newer features in <a href="../posts/qdraw-new-features.html">What’s New in qdraw</a>.</p>
-</section>
-<section id="render-check-publish" class="level3">
-<h3 class="anchored" data-anchor-id="render-check-publish">Render, Check, Publish</h3>
-<p>Rendering one deck is one command from the slides folder:</p>
-<pre><code>quarto render 04-binomial.qmd</code></pre>
-<p>Because <code>output-dir: .</code>, the HTML appears next to the source, ready to commit. Publishing is then the usual: add the files, commit, push, and the static host serves them. While presenting, the built-in keys help: <code>space</code> or the arrow keys to move, <code>o</code> for an overview of all slides, <code>f</code> for full screen, and <code>?</code> for the list of shortcuts. To hand out a PDF, open the deck with <code>?print-pdf</code> added to the address and use the browser’s <em>Print to PDF</em>.</p>
-</section>
-<section id="habits-that-save-time" class="level3">
-<h3 class="anchored" data-anchor-id="habits-that-save-time">Habits That Save Time</h3>
-<ul>
-<li><strong>One chapter, one file.</strong> Short files render in seconds and are easy to reorder.</li>
-<li><strong>Keep shared choices in <code>_quarto.yml</code> and the CSS</strong>, never repeated in decks.</li>
-<li><strong>Use sections</strong> (<code>#</code>) so students can navigate a long chapter by topic.</li>
-<li><strong>Let code produce the numbers.</strong> If an example changes, the slide updates itself.</li>
-<li><strong>Hide drafts</strong> with <code>visibility="hidden"</code> instead of commenting them out.</li>
-</ul>
-</section>
-<section id="start-your-own" class="level3">
-<h3 class="anchored" data-anchor-id="start-your-own">Start Your Own</h3>
-<ol type="1">
-<li>Install Quarto and create a folder with a <code>_quarto.yml</code> like the one above.</li>
-<li>Add <code>01-intro.qmd</code> with <code>format: revealjs</code> and a few <code>##</code> slides.</li>
-<li>Run <code>quarto render 01-intro.qmd</code> and open the HTML.</li>
-<li>Move repeated settings into <code>_quarto.yml</code> and <code>css/styles.css</code> as the second deck shows you what to share.</li>
-</ol>
-<p>Slides stay small and boring in the best way: Markdown for words, LaTeX for math, R for numbers, and one stylesheet for the look.</p>
-
-
-</section>
-
- ]]></description>
-  <category>Tools</category>
-  <category>Quarto</category>
-  <category>Teaching</category>
-  <guid>https://www.statmania.info/blog/posts/revealjs-quarto-stat-slides.html</guid>
-  <pubDate>Sat, 03 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/revealjs-stat-slides.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>
