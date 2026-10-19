@@ -359,6 +359,18 @@
   // ---------- homepage hero tools: search box, topic chips, stats strip ----------
   // Fills <div id="bk-hero-tools"></div> (put it inside your hero). The search box drives
   // Quarto's own listing filter, so it needs `filter-ui: true` in the listing.
+  var ICONS = {
+    posts: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>',
+    topics: '<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>',
+    updated: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    rss: '<path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/>',
+  };
+  function icon(name) {
+    var s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    s.setAttribute('class', 'bk-icon'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('aria-hidden', 'true');
+    s.innerHTML = ICONS[name];
+    return s;
+  }
   function heroTools(D) {
     var root = document.getElementById('bk-hero-tools');
     if (!root) return;
@@ -401,12 +413,17 @@
     chips.appendChild(link(base + 'tags.html', t('moreTopics') + ' \u203a', 'bk-tag bk-tag-more'));
     var latest = D.posts.length ? D.posts[0].date : '';
     var stats = el('p', 'bk-hero-stats');
-    var bits = [D.posts.length + ' ' + t('posts'), Object.keys(counts).length + ' ' + t('topics')];
-    if (latest) bits.push(t('updated') + ' ' + MONTHS[+latest.slice(5, 7) - 1].slice(0, 3) + ' ' + latest.slice(0, 4));
     var tagline = root.dataset.tagline;   // optional one-line description, shown above the stats
     if (tagline) stats.appendChild(el('span', 'bk-hero-tagline', tagline));
-    stats.appendChild(document.createTextNode(bits.join(' \u00b7 ') + ' \u00b7 '));
-    stats.appendChild(link(base + 'index.xml', t('rss'), 'bk-hero-rss'));
+    function stat(name, text, href) {
+      var s = href ? link(href, '', 'bk-stat bk-hero-rss') : el('span', 'bk-stat');
+      s.append(icon(name), document.createTextNode(text));
+      stats.appendChild(s);
+    }
+    stat('posts', D.posts.length + ' ' + t('posts'));
+    stat('topics', Object.keys(counts).length + ' ' + t('topics'));
+    if (latest) stat('updated', t('updated') + ' ' + MONTHS[+latest.slice(5, 7) - 1].slice(0, 3) + ' ' + latest.slice(0, 4));
+    stat('rss', t('rss'), base + 'index.xml');
     root.append(form, chips, stats);
   }
 
