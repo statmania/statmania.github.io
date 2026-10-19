@@ -234,7 +234,7 @@
     return scored.slice(0, k).map(function (x) { return x[1]; });
   }
   function thumb(p) {
-    var img = el('img', 'bk-rel-thumb');
+    var img = el('img', 'bk-rel-thumb' + (p.adapt ? ' bk-adapt' : ''));
     img.src = assetHref(p.image || 'img/placeholder.svg');   // the starter site ships img/placeholder.svg
     img.alt = '';
     img.loading = 'lazy';
@@ -335,6 +335,19 @@
       box.appendChild(ul);
       main.appendChild(box);
     }
+  }
+  // listing cards: mark generated (dark) covers so the light theme can adapt them
+  function adaptCards(D) {
+    // compare resolved paths: Quarto rewrites listing hrefs to absolute URLs on load
+    var path = function (h) { return new URL(h, location.href).pathname; };
+    var adapt = {};
+    D.posts.forEach(function (p) { if (p.adapt) adapt[path(base + p.href)] = true; });
+    // grid cards: <a class="quarto-grid-link"> around the card; default cards: .quarto-post with a title link
+    document.querySelectorAll('.quarto-listing img.thumbnail-image, .quarto-post .thumbnail img').forEach(function (img) {
+      var card = img.closest('.quarto-post');
+      var a = img.closest('a[href]') || (card && card.querySelector('a[href]'));
+      if (a && adapt[path(a.getAttribute('href'))]) img.classList.add('bk-adapt');
+    });
   }
   function homepageBylines(D) {
     document.querySelectorAll('.listing-author').forEach(function (n) {
@@ -540,6 +553,7 @@
     categoriesPage(D);
     authorPage(D);
     homepageBylines(D);
+    adaptCards(D);
     heroTools(D);
     ready(function () {
       // after load, so Quarto has already copied the TOC into its own structures

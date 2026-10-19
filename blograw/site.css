@@ -1,6 +1,6 @@
 /* Stat Mania site overrides, loaded after the Blogkit extension's styles.css
    (quarto-blogkit). Only what is specific to this site lives here: the shared
-   starfield canvas, the homepage hero, and dark navbar/banner/hero bands that
+   starfield canvas, the homepage hero, and dark navbar/banner bands that
    stay dark in the light theme. Everything generic belongs in the extension. */
 
 /* Listing cards: no thumbnails, full-width body */
@@ -22,12 +22,10 @@
 .sm-hero-wrap{
   position: relative;
   background: radial-gradient(1200px 500px at 50% -10%, #0e1930 0%, var(--bk-bg) 60%);
-  color: #e8ecf7;
+  color: var(--bk-text);
   overflow: hidden;
   margin: 1rem 0 1.4rem;
   border-radius: 14px;
-  /* futuristic frame: soft neon glow outside, faint inner glow, gradient edge and corner brackets below */
-  box-shadow: 0 0 22px rgba(0,229,255,.14), 0 0 48px rgba(168,85,247,.12), inset 0 0 40px rgba(0,229,255,.05);
   padding: 0;
   font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
 }
@@ -66,25 +64,7 @@
   color: var(--bk-text);
   border: 0;
 }
-.sm-subtitle{
-  max-width: 620px;
-  margin: 0 auto;
-  color: #aab4d0;
-  font-size: clamp(1rem, 2vw, 1.1rem);
-  line-height: 1.6;
-}
 
-/* animated gradient edge (cyan > purple > pink) drawn as a masked 1.5px ring */
-.sm-hero-wrap::before{
-  content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
-  padding: 1.5px; border-radius: inherit;
-  background: linear-gradient(110deg, var(--bk-cyan), var(--bk-purple), var(--bk-pink), var(--bk-purple), var(--bk-cyan));
-  background-size: 300% 100%;
-  animation: sm-edge-flow 10s linear infinite;
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-          mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-}
 /* HUD-style corner brackets just inside the edge */
 .sm-hero-wrap::after{
   content: ""; position: absolute; inset: 8px; z-index: 3; pointer-events: none;
@@ -100,14 +80,11 @@
     linear-gradient(var(--br), var(--br)) bottom right / 2px 16px no-repeat;
   opacity: .75;
 }
-@keyframes sm-edge-flow{ to{ background-position: 300% 0; } }
-@media (prefers-reduced-motion: reduce){ .sm-hero-wrap::before{ animation: none; } }
 
 /* Light theme: navbar, post banner and hero stay dark bands (Blogkit's default is all light) */
 body.quarto-light #quarto-header,
 body.quarto-light #title-block-header.quarto-title-block,
-body.quarto-light .quarto-title-banner,
-body.quarto-light .sm-hero-wrap{
+body.quarto-light .quarto-title-banner{
   --bk-bg: #05070d;
   --bk-bg2: #0a0f1e;
   --bk-cyan: #00e5ff;
@@ -140,14 +117,14 @@ body.quarto-light .quarto-title-meta-contents p{ color: var(--bk-text); }
 /* the starfield only makes sense on a dark page */
 body.quarto-light .sm-canvas{ display: none; }
 
-/* hero text keeps its dark-band colours inside the light page panel */
-body.quarto-light main.content .sm-hero-wrap .sm-title{ color: #e8ecf7; }
-body.quarto-light main.content .sm-hero-wrap .sm-subtitle{ color: #aab4d0; }
-body.quarto-light main.content .sm-hero-wrap .sm-eyebrow{ color: var(--bk-cyan); }
-
-/* hero stats line: a touch brighter so it reads over the starfield */
-.sm-hero-wrap .bk-hero-stats{ color: #aab4d0; }
+/* hero stats line */
+.sm-hero-wrap .bk-hero-stats{ color: var(--bk-muted); }
 
 /* Quarto first pads the body by 64px, then (after the logo has loaded) re-pads it to the real
    header height, which made the whole page jump by 13px. Start at the final value. */
 body.nav-fixed{ padding-top: 77px; }
+
+/* light theme: the hero follows the theme (light card, softer glow); only the navbar and post banner stay dark bands */
+body.quarto-light .sm-hero-wrap{
+  background: radial-gradient(1200px 500px at 50% -10%, #ffffff 0%, var(--bk-bg) 70%);
+}

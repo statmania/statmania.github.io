@@ -75,6 +75,17 @@ Don't geenrate svg if an existing image name (svg or png) matches with the post 
   flowchart/diagram only when the post is about a process or structure. Keep the same SVG
   rules (dark tinted background, `<title>`/`<desc>`, varied palette). Examples:
   `img/c-test-code-quickly.svg`, `img/c-die-throw.svg`, `img/c-while-practice.svg`.
+- **Every figure and cover must look right in BOTH the dark and the light theme.** Check both
+  (navbar toggle) before publishing. How it works: figures are drawn dark. In the light theme the
+  extension inverts them with a CSS filter (`invert(1) hue-rotate(180deg)`): post-body `.svg` images,
+  plus PNG covers that have a same-named SVG in the same folder (the hook flags them `adapt` in
+  `blogkit-data.js`), so a generated cover and its SVG should always share a base name. Photos,
+  screenshots and real plots (JPEG, or a PNG without a same-named SVG) are never inverted. When drawing:
+  - use a dark, tinted background and light text, with accents that stay readable once inverted (avoid
+    near-white or near-black accents, which swap places);
+  - don't rely on one exact colour to carry meaning, since hues shift a little after inverting;
+  - put real pictures (a screenshot, a photo) inside a figure only as JPEG/PNG files, never embedded in
+    the SVG, because the filter would invert them too.
 - Photos/screenshots stay JPEG/PNG as usual.
 
 ## Writing conventions
@@ -131,7 +142,7 @@ quarto render                                                      # full render
 ```
 
 Site-specific things stay in `blograw/`: `site.css` (starfield canvas, homepage hero with `.sm-*`
-classes, dark navbar/banner/hero bands in light mode), `_quarto.yml` (`format: blogkit-html` plus
+classes, dark navbar and post banner bands in light mode; the hero itself follows the theme), `_quarto.yml` (`format: blogkit-html` plus
 `../starfield-include.html`), `index.qmd`, `about.qmd`, `authors.yml`. The extension's CSS uses
 `--bk-*` variables and `.bk-*` classes (this site used `sm-` before the switch).
 
@@ -165,8 +176,8 @@ the empty-looking `theme-dark.scss` only exists because Quarto decides dark vs l
 so a dark scheme must actually be dark) and `highlight-style: {light: github, dark: dracula}`.
 Quarto adds a navbar toggle and puts `quarto-light` / `quarto-dark` on `<body>`. the extension's `styles.css` is the
 dark design; its final "Light theme" section overrides variables on `:root:has(body.quarto-light)` and
-fixes hardcoded colours under `body.quarto-light`. Navbar, post title banner and homepage hero re-assert
-the dark palette locally (dark bands on a light page); the starfield is hidden in light mode. Use `--sm-*`
+fixes hardcoded colours under `body.quarto-light`. Navbar and post title banner re-assert
+the dark palette locally (dark bands on a light page); the homepage hero follows the theme; the starfield is hidden in light mode. Use `--sm-*`
 variables, not hex colours, in new CSS.
 
 ## Starfield background

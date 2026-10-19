@@ -125,7 +125,7 @@ The navbar has a sun/moon toggle; dark is the default and the choice is remember
 | :--- | :--- | :--- |
 | Homepage headline and the tagline in the stats line ("Tutorials, theory and dev notes...") | `index.qmd`, the `<div class="sm-hero">` block near the top: the headline is `.sm-title`. The tagline is `hero-tagline:` under `blogkit:` in `_quarto.yml` (full `quarto render`). Plain HTML text; keep the headline a `<p role="heading">`, because Quarto turns a raw `<h1>` into the hidden page title | `quarto render index.qmd` |
 | Hero search box, topic chips, stats strip ("62 posts · 40 topics...") | Generated into `_bk-hero-tools.html` on every render (never edit it) and pulled into the hero by `{{< include _bk-hero-tools.html >}}` in `index.qmd`, so it is in the page from the first paint. The tagline is `hero-tagline:` under `blogkit:` in `_quarto.yml`. Change the look in `quarto-blogkit` (`blogkit.js`, `styles.css`), the number of chips with `hero-topics` under `blogkit:` in `_quarto.yml` (see the extension README) | update the extension, then full `quarto render` |
-| Hero colours, size, starfield strength | `site.css` (`.sm-hero`, `.sm-title`, `#sm-canvas { opacity }`) | full `quarto render` |
+| Hero colours, size, corner brackets, starfield strength | `site.css` (`.sm-hero`, `.sm-title`, `#sm-canvas { opacity }`) | full `quarto render` |
 | Star animation on the hero | `index.qmd`, the `<script>` below the hero (particle count, speed) | `quarto render index.qmd` |
 | Homepage post cards, sort, page size | `index.qmd` front matter, `listing:` (`page-size`, `sort`, `fields`) | `quarto render index.qmd` |
 | Navbar links, footer text and links, site title, logo | `_quarto.yml` (`website: navbar:` and `page-footer:`) | full `quarto render` |

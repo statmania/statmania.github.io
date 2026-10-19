@@ -118,6 +118,15 @@ def post_image(path, image):
         return ""
 
 
+def adaptive_image(path, image):
+    """True when the cover is a PNG made from a same-named SVG (svg2og.py): a dark generated
+    figure that blogkit.js may invert in the light theme. Photos and real plots stay untouched."""
+    if not image or re.match(r"^(https?:)?//", str(image).strip()):
+        return False
+    target = Path(os.path.normpath(path.parent / str(image).strip()))
+    return target.suffix.lower() == ".png" and target.with_suffix(".svg").exists()
+
+
 def load_posts():
     posts = []
     for path in post_files():
@@ -139,6 +148,8 @@ def load_posts():
             "author": str(fm.get("author") or "").strip(),
             "image": post_image(path, fm.get("image")),
         })
+        if adaptive_image(path, fm.get("image")):
+            posts[-1]["adapt"] = True
     posts.sort(key=lambda p: p["date"], reverse=True)
     return posts
 
