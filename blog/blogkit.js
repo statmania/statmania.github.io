@@ -16,7 +16,7 @@
   var LABELS = {
     onThisPage: 'On this page', archive: 'Archive', tags: 'Tags', categories: 'Categories', related: 'Related posts', prevPost: 'Previous post', nextPost: 'Next post',
     allCategories: 'All categories', allTags: 'All tags', category: 'Category', tag: 'Tag',
-    pickTag: 'Pick a tag to see its posts.', pickCategory: 'Pick a category to see its posts.', post: 'post', posts: 'posts',
+    pickTag: 'Pick a tag to see its posts.', pickCategory: 'Pick a category to see its posts.', post: 'post', posts: 'posts', allPosts: 'All posts',
     prev: '\u2039 Prev', next: 'Next \u203a', allBy: 'All {n} posts by {name}', of: '{a} of {b} posts'
   };
   function t(key, vars) {
@@ -378,7 +378,7 @@
     root.append(hint, sec, nav);
     function render() {
       var h = hashParams(), val = h.get(o.param) || '';
-      var list = val ? D.posts.filter(function (p) { return p[o.field].indexOf(val) > -1; }) : [];
+      var list = val ? D.posts.filter(function (p) { return p[o.field].indexOf(val) > -1; }) : D.posts;   // nothing picked: all posts
       if (side) {
         side.textContent = '';
         side.appendChild(el('h3', 'bk-widget-title', t(o.title)));
@@ -386,20 +386,20 @@
         box.appendChild(chips(counts, val, o.href));
         side.appendChild(box);
       }
-      hint.hidden = list.length > 0;
+      hint.hidden = !!val;
       sec.hidden = !list.length;
       sec.textContent = '';
       nav.hidden = true;
       if (!list.length) return;
       var pages = Math.ceil(list.length / per);
       var page = Math.min(Math.max(+h.get('page') || 1, 1), pages);
-      var title = el('h2', null, val + ' ');
+      var title = el('h2', null, (val || t('allPosts')) + ' ');
       title.appendChild(el('span', 'bk-count', list.length + ' ' + (list.length === 1 ? t('post') : t('posts'))));
       var ul = el('ul', 'bk-post-list');
       list.slice((page - 1) * per, page * per).forEach(function (p) { ul.appendChild(postItem(p)); });
       sec.append(title, ul);
       pager(nav, pages, page, function (n) {
-        location.hash = o.param + '=' + encodeURIComponent(val) + (n > 1 ? '&page=' + n : '');
+        location.hash = (val ? o.param + '=' + encodeURIComponent(val) : '') + (n > 1 ? (val ? '&' : '') + 'page=' + n : '');
       });
     }
     window.addEventListener('hashchange', render);
