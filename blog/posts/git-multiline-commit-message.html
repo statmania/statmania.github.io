@@ -405,6 +405,7 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
   <li><a href="#method-2-several--m-flags" id="toc-method-2-several--m-flags" class="nav-link" data-scroll-target="#method-2-several--m-flags">Method 2: Several <code>-m</code> Flags</a></li>
   <li><a href="#method-3-quotes-that-span-several-lines" id="toc-method-3-quotes-that-span-several-lines" class="nav-link" data-scroll-target="#method-3-quotes-that-span-several-lines">Method 3: Quotes That Span Several Lines</a></li>
   <li><a href="#method-4-read-the-message-from-a-file" id="toc-method-4-read-the-message-from-a-file" class="nav-link" data-scroll-target="#method-4-read-the-message-from-a-file">Method 4: Read the Message from a File</a></li>
+  <li><a href="#works-with--a-too" id="toc-works-with--a-too" class="nav-link" data-scroll-target="#works-with--a-too">Works with <code>-a</code> Too</a></li>
   <li><a href="#check-or-fix-the-message" id="toc-check-or-fix-the-message" class="nav-link" data-scroll-target="#check-or-fix-the-message">Check or Fix the Message</a></li>
   <li><a href="#which-method" id="toc-which-method" class="nav-link" data-scroll-target="#which-method">Which Method?</a></li>
   <li><a href="#best-practices-for-multiline-commits" id="toc-best-practices-for-multiline-commits" class="nav-link" data-scroll-target="#best-practices-for-multiline-commits">Best Practices for Multiline Commits</a></li>
@@ -475,10 +476,21 @@ This paragraph explains why the change was made.</code></pre>
 <pre class="fish"><code>printf 'Add feature X\n\nBody via printf in fish.\n' | git commit -F -</code></pre>
 <p>Both give the usual subject, blank line and body.</p>
 </section>
+<section id="works-with--a-too" class="level2">
+<h2 class="anchored" data-anchor-id="works-with--a-too">Works with <code>-a</code> Too</h2>
+<p>Everything above combines with <code>-a</code> (stage all tracked changes, then commit). The message is written in the same way:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-a</span>                                  <span class="co"># editor</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-a</span> <span class="at">-m</span> <span class="st">"Update f"</span> <span class="at">-m</span> <span class="st">"Body text."</span>    <span class="co"># several -m</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-a</span> <span class="at">-F</span> commit_msg.txt                <span class="co"># message from a file</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-a</span> <span class="at">-m</span> <span class="st">"Fix login timeout bug</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="st">- Increased token expiration to 2 hours"</span>       <span class="co"># multi-line quotes</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>I tried the second form in a test repository, and <code>git log</code> showed the subject, a blank line and the body as usual. (The short <code>-am</code> also works, but it suits one-line messages.)</p>
+</section>
 <section id="check-or-fix-the-message" class="level2">
 <h2 class="anchored" data-anchor-id="check-or-fix-the-message">Check or Fix the Message</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> log <span class="at">-1</span>            <span class="co"># show the last commit with its full message</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">--amend</span>    <span class="co"># reopen the last message in the editor and rewrite it</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> log <span class="at">-1</span>            <span class="co"># show the last commit with its full message</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">--amend</span>    <span class="co"># reopen the last message in the editor and rewrite it</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Only amend commits that have not been pushed. Rewriting a pushed commit changes its history for everyone who pulled it.</p>
 </section>
 <section id="which-method" class="level2">

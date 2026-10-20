@@ -101,6 +101,21 @@ printf 'Add feature X\n\nBody via printf in fish.\n' | git commit -F -
 
 Both give the usual subject, blank line and body.
 
+## Works with `-a` Too
+
+Everything above combines with `-a` (stage all tracked changes, then commit). The message is written in the same way:
+
+```bash
+git commit -a                                  # editor
+git commit -a -m "Update f" -m "Body text."    # several -m
+git commit -a -F commit_msg.txt                # message from a file
+git commit -a -m "Fix login timeout bug
+
+- Increased token expiration to 2 hours"       # multi-line quotes
+```
+
+I tried the second form in a test repository, and `git log` showed the subject, a blank line and the body as usual. (The short `-am` also works, but it suits one-line messages.)
+
 ## Check or Fix the Message
 
 ```bash
