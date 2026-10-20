@@ -453,11 +453,6 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
       <h3 class="anchored"><i class="fa-solid fa-gamepad"></i>Games</h3>
       <a href="games/index.html">View all <i class="fa-solid fa-arrow-right"></i></a>
     </div>
-    <div class="sm-home-search">
-      <i class="fa-solid fa-magnifying-glass"></i>
-      <input type="search" id="home-game-search" placeholder="Search all games..." aria-label="Search all games" autocomplete="off">
-      <div class="sm-home-search-count" id="home-game-count" aria-live="polite"></div>
-    </div>
     <div class="sm-grid" id="home-games-grid">
 
     <a class="sm-card" href="games/sudoku.html">
@@ -516,60 +511,6 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
   </div>
 
 </div>
-
-
-<style>
-  .sm-home-search { position: relative; max-width: 520px; margin: 0 0 18px; }
-  .sm-home-search > i { position: absolute; left: 16px; top: 14px; color: #8b96b8; }
-  .sm-home-search input { width: 100%; padding: 11px 16px 11px 42px; border-radius: 999px; font-size: 1rem;
-    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.18); color: #e8ecf7; outline: none; }
-  .sm-home-search input:focus { border-color: #00e5ff; box-shadow: 0 0 20px rgba(0,229,255,0.25); }
-  .sm-home-search-count { font-size: 0.85rem; color: #8b96b8; margin: 6px 0 0 16px; min-height: 1.2em; }
-</style>
-<script>
-/* Home-page game search: pulls the live card list from games/index.html
-   (rendered from raw/games/index.qmd), so new games appear here automatically. */
-(function () {
-  var input = document.getElementById('home-game-search'), grid = document.getElementById('home-games-grid'),
-      countEl = document.getElementById('home-game-count');
-  if (!input || !grid) return;
-  var original = grid.innerHTML, cards = null, loading = null;
-  function load() {
-    if (cards) return Promise.resolve(cards);
-    if (!loading) loading = fetch('games/index.html').then(function (r) {
-      if (!r.ok) throw new Error(r.status);
-      return r.text();
-    }).then(function (html) {
-      var doc = new DOMParser().parseFromString(html, 'text/html');
-      cards = [].slice.call(doc.querySelectorAll('#game-grid a.sm-card')).map(function (a) {
-        var c = document.importNode(a, true);
-        c.setAttribute('href', 'games/' + a.getAttribute('href'));
-        c.removeAttribute('hidden');
-        return c;
-      });
-      return cards;
-    });
-    return loading;
-  }
-  function run() {
-    var q = input.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
-    if (!q.length) { grid.innerHTML = original; countEl.textContent = ''; return; }
-    load().then(function (all) {
-      if (input.value.trim().toLowerCase().split(/\s+/).filter(Boolean).join(' ') !== q.join(' ')) return;
-      var hits = all.filter(function (c) {
-        var hay = (c.textContent + ' ' + (c.dataset.tags || '')).toLowerCase();
-        return q.every(function (w) { return hay.indexOf(w) >= 0; });
-      });
-      grid.innerHTML = '';
-      hits.forEach(function (c) { grid.appendChild(c.cloneNode(true)); });
-      countEl.textContent = hits.length ? hits.length + ' of ' + all.length + ' games' : 'No games match \u2014 try another word.';
-    }).catch(function () { countEl.textContent = 'Could not load the games list. Try the full Games page.'; });
-  }
-  input.addEventListener('focus', load, { once: true });
-  input.addEventListener('input', run);
-  input.addEventListener('keydown', function (e) { if (e.key === 'Escape') { input.value = ''; run(); } });
-})();
-</script>
 
 <footer class="sm-footer">
   <div class="sm-footer-inner">
