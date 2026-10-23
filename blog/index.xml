@@ -10,7 +10,1820 @@
 <atom:link href="https://www.statmania.info/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Posts on statistics theory, R &amp; Python, and developer tips from Stat Mania.</description>
 <generator>quarto-1.9.38</generator>
-<lastBuildDate>Mon, 19 Oct 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Fri, 23 Oct 2026 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>Do Array Addresses Change in C? ASLR and Reliable Pointers</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/c-pointer-address.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/c-pointer-address.svg" class="img-fluid figure-img" alt="Two runs of the same program place an int array of four elements at different base addresses, but neighbouring elements are 4 bytes apart in both."></p>
+<figcaption>The base address moves from run to run; the 4-byte gaps and the values do not.</figcaption>
+</figure>
+</div>
+<p>Take this loop, which prints the address of every element of an array:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> myNumbers<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">50</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">75</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">};</span></span>
+<span id="cb1-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-3"></span>
+<span id="cb1-4"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-5">  printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%p\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span>myNumbers<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]);</span></span>
+<span id="cb1-6"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>Will it always print the same output? Can the addresses change with the operating system or the device? And if they do change, how can pointers be reliable at all? Let’s answer both questions.</p>
+<section id="short-answer" class="level2">
+<h2 class="anchored" data-anchor-id="short-answer">Short answer</h2>
+<p><strong>The spacing between the addresses is always the same. The actual numbers almost always change.</strong></p>
+<p>Within one run, we see something like:</p>
+<pre><code>0x7ffd4a3c2b40
+0x7ffd4a3c2b44
+0x7ffd4a3c2b48
+0x7ffd4a3c2b4c</code></pre>
+<p>Each address is exactly <strong>4 bytes</strong> after the previous one, because <code>sizeof(int)</code> is 4 here. C guarantees that array elements are contiguous. The <em>starting</em> address, however, will differ almost every time we run the program.</p>
+</section>
+<section id="what-is-guaranteed-and-what-changes" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-guaranteed-and-what-changes">What is guaranteed and what changes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Property</th>
+<th>Guaranteed?</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>&amp;myNumbers[i+1] - &amp;myNumbers[i] == 1</code></td>
+<td>✅ Always</td>
+<td>Pointer arithmetic on <code>int *</code> counts elements</td>
+</tr>
+<tr class="even">
+<td>Neighbours are <code>sizeof(int)</code> bytes apart</td>
+<td>✅ Always</td>
+<td>Arrays are contiguous in memory</td>
+</tr>
+<tr class="odd">
+<td>The <strong>absolute</strong> value such as <code>0x7ffd...</code></td>
+<td>❌ Almost never</td>
+<td>Depends on the OS, ASLR and the stack state</td>
+</tr>
+<tr class="even">
+<td>Same address across runs</td>
+<td>❌ No</td>
+<td>ASLR randomizes the stack each run</td>
+</tr>
+<tr class="odd">
+<td>Same address on a different device</td>
+<td>❌ No</td>
+<td>Different OS, architecture and stack layout</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="why-the-starting-address-changes" class="level2">
+<h2 class="anchored" data-anchor-id="why-the-starting-address-changes">Why the starting address changes</h2>
+<p><strong>ASLR (Address Space Layout Randomization)</strong> is a security feature of modern operating systems. Each time a program starts, the OS places the stack at a random base address, so a local array such as <code>myNumbers</code> lands in a different spot. Running the same binary three times can give:</p>
+<pre><code>Run 1: 0x7ffd4a3c2b40
+Run 2: 0x7ffc81e9d5a0
+Run 3: 0x7ffd9f27c3e0</code></pre>
+<p>This makes it harder for attackers to predict where things live. The offset pattern (<code>+0, +4, +8, +12</code>) never changes; only the base moves.</p>
+<p>Other things can shift the address too:</p>
+<ul>
+<li><strong>OS and compiler:</strong> stack alignment, the <code>main</code> prologue and variable ordering differ.</li>
+<li><strong>Architecture:</strong> a 32-bit build prints 8 hex digits, a 64-bit build prints up to 12 or more.</li>
+<li><strong>Compiler flags:</strong> <code>-O0</code> and <code>-O2</code> may reorder local variables.</li>
+<li><strong>Other variables:</strong> adding another local variable shifts the neighbours.</li>
+</ul>
+</section>
+<section id="see-it-yourself" class="level2">
+<h2 class="anchored" data-anchor-id="see-it-yourself">See it yourself</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdio.h&gt;</span></span>
+<span id="cb4-2"></span>
+<span id="cb4-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb4-4">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">50</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">75</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">};</span></span>
+<span id="cb4-5">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>p <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span>                              <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// p holds the CURRENT address</span></span>
+<span id="cb4-6"></span>
+<span id="cb4-7">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span></span>
+<span id="cb4-8">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%p\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*)&amp;</span>a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]);</span></span>
+<span id="cb4-9"></span>
+<span id="cb4-10">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gap    : </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%td</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> bytes</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">char</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*)&amp;</span>a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">char</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*)&amp;</span>a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]);</span></span>
+<span id="cb4-11">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"value  : </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>p<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb4-12">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"value  : </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*(</span>p <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">));</span></span>
+<span id="cb4-13"></span>
+<span id="cb4-14">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>q <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span>a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">];</span></span>
+<span id="cb4-15">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"offset : </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%td\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> q <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> p<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb4-16">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb4-17"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>One run on Linux gave:</p>
+<pre><code>0x7ffd710965e0
+0x7ffd710965e4
+0x7ffd710965e8
+0x7ffd710965ec
+gap    : 4 bytes
+value  : 25
+value  : 75
+offset : 3</code></pre>
+<p>Run it a few times: the four addresses change, while <code>gap</code>, <code>value</code> and <code>offset</code> stay identical.</p>
+<p>To switch ASLR off for one run on Linux:</p>
+<pre><code>setarch $(uname -m) -R ./a.out</code></pre>
+<p>Now the same address prints every time, which shows the shifting was ASLR and not our code.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>%p</code> expects a <code>void *</code>, so the strictly correct call is <code>printf("%p\n", (void *)&amp;a[i]);</code>. Most compilers accept the version without the cast, but the cast is proper C. Likewise, print <code>sizeof</code> values with <code>%zu</code>.</p>
+</div>
+</div>
+</section>
+<section id="so-how-can-pointers-be-reliable" class="level2">
+<h2 class="anchored" data-anchor-id="so-how-can-pointers-be-reliable">So how can pointers be reliable?</h2>
+<p>A pointer stores the address <strong>as it is right now</strong>, not a fixed number. The address of an object is decided when the program runs, and then it does not change for the lifetime of that object:</p>
+<ul>
+<li>ASLR picks the base address at startup.</li>
+<li><code>&amp;a[0]</code> evaluates to whatever that base turned out to be.</li>
+<li>The pointer stores that value.</li>
+<li><code>*p</code> reads from that exact address, which is where the array really is.</li>
+</ul>
+<p>The pointer and the object always agree, because the pointer was computed from the object at runtime. Reliability comes not from the number being constant, but from the pointer and the object sharing the same current address.</p>
+<blockquote class="blockquote">
+<p><strong>Analogy:</strong> we don’t need to know a friend’s address in advance. We ask “where do you live?” and get the current one. Hardcoding an old address and hoping nobody moved is what fails.</p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Question</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Does <code>&amp;a[0]</code> change while the program runs?</td>
+<td>❌ No, an object’s address is fixed for its lifetime</td>
+</tr>
+<tr class="even">
+<td>Does <code>p = &amp;a[0]; *p</code> read the right value?</td>
+<td>✅ Always, within that run</td>
+</tr>
+<tr class="odd">
+<td>Is <code>&amp;a[3] - &amp;a[0]</code> always 3?</td>
+<td>✅ Always, offsets are stable even if the base moves</td>
+</tr>
+<tr class="even">
+<td>Does the number <code>0x7ffd...</code> survive to the next run?</td>
+<td>❌ No, ASLR changes it</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="what-really-makes-pointers-unreliable" class="level2">
+<h2 class="anchored" data-anchor-id="what-really-makes-pointers-unreliable">What really makes pointers unreliable</h2>
+<p>ASLR is not the danger. These are:</p>
+<ol type="1">
+<li><strong>Hardcoding addresses:</strong> <code>int *p = (int *)0x7ffd4a3c2b40;</code> breaks on the next run.</li>
+<li><strong>Dangling pointers:</strong> using a pointer after the object is freed, or after the function that owned a local variable returned.</li>
+<li><strong>Saving pointers to disk or sending them to another process:</strong> the address means nothing there.</li>
+<li><strong>Out-of-bounds arithmetic:</strong> <code>a[10]</code> on a four-element array points somewhere valid-looking but wrong.</li>
+<li><strong>Comparing addresses across runs:</strong> the numbers differ, so <code>==</code> fails.</li>
+</ol>
+<p>None of these involves ASLR itself. They all use a pointer outside the object’s valid lifetime, or treat an address as portable when it is not.</p>
+</section>
+<section id="why-pointers-are-still-the-right-tool" class="level2">
+<h2 class="anchored" data-anchor-id="why-pointers-are-still-the-right-tool">Why pointers are still the right tool</h2>
+<ul>
+<li><strong>Computed, not memorized.</strong> <code>&amp;x</code> asks the system where <code>x</code> is, and the answer is always current.</li>
+<li><strong>Type-aware.</strong> <code>int *p</code> tells the compiler to read 4 bytes as an <code>int</code>, whatever the numeric address.</li>
+<li><strong>Relative math is stable.</strong> <code>p + 1</code> means the next <code>int</code>, that is <code>address + sizeof(int)</code>, independent of the base.</li>
+</ul>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>Array addresses change between runs, devices and builds, because ASLR and the platform choose where the stack goes. What never changes is the <em>layout</em>: elements are contiguous and <code>sizeof(T)</code> apart, and a pointer always holds the actual current address of its object. So:</p>
+<blockquote class="blockquote">
+<p><strong>Never rely on a specific address value; rely on the relationships.</strong> Take the address with <code>&amp;</code>, use it while the object is alive, and it is always correct. The address only looks unpredictable <em>between</em> runs, which is exactly when we should not be reusing the old number.</p>
+</blockquote>
+
+
+</section>
+
+ ]]></description>
+  <category>C</category>
+  <category>Programming</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/c-pointer-address.html</guid>
+  <pubDate>Fri, 23 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/c-pointer-address.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>Printing Array Elements in C: Labels, Commas, and Clean Output</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/c-print-array-with-label.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/c-print-array-with-label.svg" class="img-fluid figure-img" alt="A printf label printed once, above ten array cells holding 2, 5, 7, 10, 12, 15, 18, 20, 23 and 25 separated by commas."></p>
+<figcaption>Label once before the loop; numbers and commas inside it.</figcaption>
+</figure>
+</div>
+<p>We have an array and want one tidy line of output:</p>
+<pre><code>The printed values of the array: 2, 5, 7, 10, 12, 15, 18, 20, 23, 25</code></pre>
+<p>Our first attempt puts the whole message inside the loop:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdio.h&gt;</span></span>
+<span id="cb2-2"></span>
+<span id="cb2-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb2-4">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> FixedArr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">18</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">23</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">};</span></span>
+<span id="cb2-5"></span>
+<span id="cb2-6">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> val<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb2-7">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"The printed values of the array: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">, "</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> FixedArr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>val<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]);</span></span>
+<span id="cb2-8">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb2-9">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb2-10"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>Output:</p>
+<pre><code>The printed values of the array: 2, The printed values of the array: 5, The printed values of the array: 7, ...</code></pre>
+<p>(Every program in this post was compiled with <code>gcc -Wall -Wextra</code> and run; the outputs are real.)</p>
+<section id="why-the-label-repeats" class="level2">
+<h2 class="anchored" data-anchor-id="why-the-label-repeats">Why the label repeats</h2>
+<p>The body of a loop runs once per element, and <code>printf</code> prints its whole format string every time. The label is part of that string, so it is printed ten times. We want it <strong>once</strong>.</p>
+<blockquote class="blockquote">
+<p><strong>Anything that should appear once goes outside the loop.</strong> The loop body should print only what repeats for each element.</p>
+</blockquote>
+<p>So the label goes <strong>before</strong> the loop, the numbers and separators go <strong>inside</strong>, and the final newline goes <strong>after</strong>.</p>
+</section>
+<section id="fix-1-label-before-the-loop" class="level2">
+<h2 class="anchored" data-anchor-id="fix-1-label-before-the-loop">Fix 1: Label before the loop</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"The printed values of the array: "</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb4-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> val<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb4-3">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">, "</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> FixedArr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>val<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]);</span></span>
+<span id="cb4-4"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb4-5">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<pre><code>The printed values of the array: 2, 5, 7, 10, 12, 15, 18, 20, 23, 25,</code></pre>
+<p>This is the label problem solved, but the line still ends with a <strong>trailing comma and space</strong>. For quick debugging that is fine. For output people read or programs parse, we want the comma only <strong>between</strong> numbers.</p>
+</section>
+<section id="removing-the-trailing-comma" class="level2">
+<h2 class="anchored" data-anchor-id="removing-the-trailing-comma">Removing the trailing comma</h2>
+<p>The idea is the same in each fix: print the separator <em>before</em> every element except the first, or <em>after</em> every element except the last.</p>
+<section id="fix-2-a-first-flag" class="level3">
+<h3 class="anchored" data-anchor-id="fix-2-a-first-flag">Fix 2: A <code>first</code> flag</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"The printed values of the array: "</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb6-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> first <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb6-3"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> val<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb6-4">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(!</span>first<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">", "</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb6-5">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> FixedArr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>val<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]);</span></span>
+<span id="cb6-6">    first <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb6-7"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb6-8">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<pre><code>The printed values of the array: 2, 5, 7, 10, 12, 15, 18, 20, 23, 25</code></pre>
+<p>The flag is <code>1</code> only for the first element, so the first number gets no comma before it. It makes no assumption about the array size or about which values are printed, which makes it the most robust choice.</p>
+</section>
+<section id="fix-3-choose-the-separator-with" class="level3">
+<h3 class="anchored" data-anchor-id="fix-3-choose-the-separator-with">Fix 3: Choose the separator with <code>?:</code></h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb8-1">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"The printed values of the array: "</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb8-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> val<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb8-3">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d%s</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> FixedArr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>val<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">],</span> val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">9</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">", "</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb8-4"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb8-5">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<p>Same output, no extra variable. <code>%s</code> prints <code>", "</code> after every element except the last one (index 9), where it prints an empty string. The catch is that the number <code>9</code> is hard-coded, so we must change it whenever the size changes. Better to use a size variable:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb9-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> n <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb9-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> val<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb9-3">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d%s</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> FixedArr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>val<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">],</span> val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> n <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">", "</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb9-4"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+</section>
+<section id="fix-4-a-leading-separator" class="level3">
+<h3 class="anchored" data-anchor-id="fix-4-a-leading-separator">Fix 4: A leading separator</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb10-1">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"The printed values of the array:"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb10-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> val<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb10-3">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%s%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">?</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">", "</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">" "</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> FixedArr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>val<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]);</span></span>
+<span id="cb10-4"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb10-5">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<p>Here the label has no trailing space. For the first element (<code>val</code> is <code>0</code>, which counts as false) <code>?:</code> prints a single space; for every other element it prints <code>", "</code>. This is the shortest clean form, but it is also the hardest to read at a glance.</p>
+</section>
+<section id="fix-5-an-if-after-the-number" class="level3">
+<h3 class="anchored" data-anchor-id="fix-5-an-if-after-the-number">Fix 5: An <code>if</code> after the number</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb11-1">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"The printed values of the array: "</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb11-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> val<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb11-3">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> FixedArr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>val<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]);</span></span>
+<span id="cb11-4">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> n <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">", "</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb11-5"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb11-6">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+<p>Same output again, and probably the easiest version to read: print the number, then add a comma unless it was the last one.</p>
+<p>All of Fixes 2 to 5 print exactly:</p>
+<pre><code>The printed values of the array: 2, 5, 7, 10, 12, 15, 18, 20, 23, 25</code></pre>
+</section>
+</section>
+<section id="use-the-array-size-not-10" class="level2">
+<h2 class="anchored" data-anchor-id="use-the-array-size-not-10">Use the array size, not <code>10</code></h2>
+<p>In the examples above we wrote <code>val &lt; 10</code> to match the array. If the array later grows, every <code>10</code> must be found and changed. Let C compute the count:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb13-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> n <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">sizeof</span> FixedArr <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">sizeof</span> FixedArr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">];</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 10</span></span></code></pre></div></div>
+<p><code>sizeof FixedArr</code> is the array’s size in bytes and <code>sizeof FixedArr[0]</code> is the size of one <code>int</code>, so the division gives the number of elements. This works only where <code>FixedArr</code> is a real array. Inside a function that receives the array as a parameter, it is a pointer and this trick gives the wrong answer, so pass the length as a separate argument.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Do not loop past the end.</strong> An array of 10 elements has valid indices 0 to 9. With <code>val &lt;= 10</code> the last iteration reads <code>FixedArr[10]</code>, which does not exist. If the array is only partly filled, loop up to the number of elements we actually set, as explained in <a href="../posts/c-uninitialized-array.html">Why an Uninitialized C Array Prints Garbage</a>.</p>
+</div>
+</div>
+</section>
+<section id="which-one-to-use" class="level2">
+<h2 class="anchored" data-anchor-id="which-one-to-use">Which one to use</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Situation</th>
+<th style="text-align: left;">Use</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Quick debug output, trailing comma is fine</td>
+<td style="text-align: left;">Fix 1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Clean output, easiest to read</td>
+<td style="text-align: left;">Fix 5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Clean output, any size or skipped items</td>
+<td style="text-align: left;">Fix 2 (<code>first</code> flag)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Short one-liner, size known</td>
+<td style="text-align: left;">Fix 3 or 4</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<ul>
+<li>A loop body runs once per element, so a label inside it is printed once per element.</li>
+<li>Print the label before the loop, the elements inside it, and the newline after it.</li>
+<li>To avoid a trailing comma, print the separator between elements: with a <code>first</code> flag, a <code>?:</code>, or an <code>if</code> on the last index.</li>
+<li>Compute the element count with <code>sizeof arr / sizeof arr[0]</code> instead of hard-coding it.</li>
+</ul>
+<p>For the same idea with numbers produced by a loop, and with rows in nested loops, see <a href="../posts/c-print-comma-separated-list.html">Printing a Comma-Separated List in C</a>. To fill an array from a loop first, see <a href="../posts/c-save-loop-in-array.html">How to Save Loop Results in an Array in C</a>.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>C</category>
+  <category>Programming</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/c-print-array-with-label.html</guid>
+  <pubDate>Tue, 20 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/c-print-array-with-label.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>Why an Uninitialized C Array Prints Garbage (and How to Avoid It)</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/c-uninitialized-array.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/c-uninitialized-array.svg" class="img-fluid figure-img" alt="An array of ten int slots. Slot 0 is never written and holds leftover garbage, slots 1 and 2 hold 10 and 13, and slots 3 to 9 are unset."></p>
+<figcaption>Slot 0 was never written, so it holds whatever was left in that memory.</figcaption>
+</figure>
+</div>
+<p>We declare an array of 10 integers, set only elements 1 and 2, and print the first three:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdio.h&gt;</span></span>
+<span id="cb1-2"></span>
+<span id="cb1-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-4">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> FixedArr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">];</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// an integer array of size 10</span></span>
+<span id="cb1-5">    FixedArr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// we skip the first element, index 0</span></span>
+<span id="cb1-6">    FixedArr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-7"></span>
+<span id="cb1-8">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> k <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> k <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> k<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-9">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> FixedArr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>k<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]);</span></span>
+<span id="cb1-10">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-11">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-12"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>The loop prints <code>10</code> and <code>13</code> as expected, but the first line is a strange number such as <code>-1328874616</code>. Where does it come from, and how do we stop it?</p>
+<section id="why-it-happens" class="level3">
+<h3 class="anchored" data-anchor-id="why-it-happens">Why it happens</h3>
+<p><code>int FixedArr[10];</code> only <strong>reserves</strong> 40 bytes (10 ints of 4 bytes) for the array. It does not write anything into them. Those bytes still hold whatever the program, or the code that ran before it, last left in that part of the stack. We call such a value <strong>indeterminate</strong>.</p>
+<p>When the loop reads <code>FixedArr[0]</code>, <code>printf</code> takes those leftover bits and shows them as an <code>int</code>. The number means nothing; it is just old data.</p>
+<p>Two things follow from this:</p>
+<ul>
+<li><strong>The value is not stable.</strong> It can change with the compiler, the optimisation level, the machine, or even a change somewhere else in the program. Compiled with <code>gcc 11.4 -Wall -Wextra</code>, our program printed <code>2</code> for slot 0 on every run. Compiled with <code>-O2</code> it printed <code>-1149427712</code>. You may see yet another number.</li>
+<li><strong>The C standard does not allow relying on it.</strong> Reading an uninitialised local variable gives an unspecified value at best, and the behaviour can be undefined. A program that reads one may work today and fail tomorrow.</li>
+</ul>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>No warning, no error.</strong> gcc with <code>-Wall -Wextra</code> compiled this program without a single message, even at <code>-O2</code>. The compiler cannot always tell that a loop will read a slot we never wrote. This is why the bug is easy to miss.</p>
+</div>
+</div>
+<p>Skipping index 0 is not special. Any slot we do not write holds garbage, and so do slots 3 to 9 in the program above. They only look harmless because the loop never reads them.</p>
+</section>
+<section id="fix-1-initialise-the-whole-array-with-0" class="level3">
+<h3 class="anchored" data-anchor-id="fix-1-initialise-the-whole-array-with-0">Fix 1: Initialise the whole array with <code>{0}</code></h3>
+<p>Give the array an initialiser. Every element not listed is set to zero:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> FixedArr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">};</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// all ten slots are 0</span></span>
+<span id="cb2-2">FixedArr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb2-3">FixedArr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span></code></pre></div></div>
+<p>Output:</p>
+<pre><code>0
+10
+13</code></pre>
+<p>Now the slot we skipped is a clean <code>0</code>, and so are slots 3 to 9. This is the simplest habit: <strong>initialise an array when we declare it</strong>.</p>
+</section>
+<section id="fix-2-partial-and-designated-initialisers" class="level3">
+<h3 class="anchored" data-anchor-id="fix-2-partial-and-designated-initialisers">Fix 2: Partial and designated initialisers</h3>
+<p>The initialiser does not have to be all zeros. Elements we leave out are always zero:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> b<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">};</span>          <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 7 8 0 0 0</span></span>
+<span id="cb4-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> c<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">9</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">};</span>     <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 0 0 0 9 0  (designated initialiser)</span></span></code></pre></div></div>
+<p>Output:</p>
+<pre><code>partial: 7 8 0 0 0
+designated: 0 0 0 9 0</code></pre>
+<p>The <code>[3] = 9</code> form sets one chosen slot and zeroes the rest.</p>
+</section>
+<section id="fix-3-fill-it-with-a-loop-or-memset" class="level3">
+<h3 class="anchored" data-anchor-id="fix-3-fill-it-with-a-loop-or-memset">Fix 3: Fill it with a loop or <code>memset</code></h3>
+<p>A loop works for any starting value:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb6-2">    FixedArr<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span>       <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// for example, -1 can mean "not set"</span></span>
+<span id="cb6-3"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>For zero, <code>memset</code> from <code>&lt;string.h&gt;</code> does the same in one line:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;string.h&gt;</span></span>
+<span id="cb7-2"></span>
+<span id="cb7-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">];</span></span>
+<span id="cb7-4">memset<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">sizeof</span> a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>     <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// sets every byte to 0</span></span></code></pre></div></div>
+<p><code>memset</code> sets <strong>bytes</strong>, so it is safe for <code>0</code> (and <code>-1</code>) but not for other values: <code>memset(a, 1, sizeof a)</code> would make each int <code>16843009</code>.</p>
+</section>
+<section id="fix-4-use-calloc-for-dynamic-arrays" class="level3">
+<h3 class="anchored" data-anchor-id="fix-4-use-calloc-for-dynamic-arrays">Fix 4: Use <code>calloc</code> for dynamic arrays</h3>
+<p><code>malloc</code> gives uninitialised memory, exactly like the array above. <code>calloc</code> gives zeroed memory:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb8-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdlib.h&gt;</span></span>
+<span id="cb8-2"></span>
+<span id="cb8-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>d <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> calloc<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">sizeof</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>d<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// five ints, all 0</span></span>
+<span id="cb8-4">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> d<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">],</span> d<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]);</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 0 0</span></span>
+<span id="cb8-5">free<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>d<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span></code></pre></div></div>
+</section>
+<section id="fix-5-static-and-global-arrays-start-at-zero" class="level3">
+<h3 class="anchored" data-anchor-id="fix-5-static-and-global-arrays-start-at-zero">Fix 5: Static and global arrays start at zero</h3>
+<p>An array declared with <code>static</code>, or outside any function, is zero-initialised automatically:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb9-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">static</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> e<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">];</span>                 <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// all zeros</span></span>
+<span id="cb9-2">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> e<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">],</span> e<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]);</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 0 0</span></span></code></pre></div></div>
+<p>This is a rule only for static storage. An ordinary local array, like <code>FixedArr</code> above, gets no such treatment.</p>
+</section>
+<section id="fix-6-only-read-what-we-wrote" class="level3">
+<h3 class="anchored" data-anchor-id="fix-6-only-read-what-we-wrote">Fix 6: Only read what we wrote</h3>
+<p>Sometimes the array is <strong>deliberately</strong> only partly filled, for instance when we do not know in advance how many values will arrive. Then the cleanest fix is not to zero everything but to keep a counter of used slots, and loop up to the counter:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb10-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> f<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">];</span></span>
+<span id="cb10-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> used <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span>                 <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// how many slots hold real data</span></span>
+<span id="cb10-3"></span>
+<span id="cb10-4">f<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>used<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb10-5">f<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>used<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb10-6"></span>
+<span id="cb10-7"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> k <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> k <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> used<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> k<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// not k &lt; 5</span></span>
+<span id="cb10-8">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> f<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>k<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]);</span></span>
+<span id="cb10-9"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>Output:</p>
+<pre><code>10
+13</code></pre>
+<p>The loop never touches an unset slot, so there is nothing to go wrong. Notice that in our original program the bug was the loop limit <code>k &lt; 3</code>: we wrote two values but read three.</p>
+</section>
+<section id="which-fix-to-use" class="level3">
+<h3 class="anchored" data-anchor-id="which-fix-to-use">Which fix to use</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Situation</th>
+<th style="text-align: left;">Use</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Array we will fill later, any reads possible</td>
+<td style="text-align: left;"><code>= {0}</code> at declaration</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">A few known starting values</td>
+<td style="text-align: left;">partial or designated initialiser</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Reset an existing array to 0</td>
+<td style="text-align: left;"><code>memset(a, 0, sizeof a)</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dynamic array that must start at 0</td>
+<td style="text-align: left;"><code>calloc</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Array that is intentionally partly filled</td>
+<td style="text-align: left;">a counter such as <code>used</code></td>
+</tr>
+</tbody>
+</table>
+<p>Whichever we pick, the rule is the same: <strong>never read a slot we have not written</strong>. Tools such as Valgrind and compiler sanitizers can also catch reads of uninitialised memory while a program runs, which helps when the code is too big to check by eye.</p>
+</section>
+<section id="summary" class="level3">
+<h3 class="anchored" data-anchor-id="summary">Summary</h3>
+<ul>
+<li><code>int a[10];</code> reserves memory but does not set it, so unset slots hold leftover (indeterminate) values.</li>
+<li>Printing one gives a number like <code>-1328874616</code> that can change between compilers, flags and machines. The compiler may not warn about it.</li>
+<li>Initialise at the declaration with <code>= {0}</code>, or fill the array before reading it.</li>
+<li><code>static</code> and global arrays, and <code>calloc</code> memory, start at zero; ordinary local arrays and <code>malloc</code> memory do not.</li>
+<li>If the array is only partly used, keep a counter and loop up to it.</li>
+</ul>
+<p>Every program above was compiled with <code>gcc 11.4 -Wall -Wextra</code> and run; the outputs shown are real, except that the garbage value in the first program depends on the machine. For more on arrays, see <a href="../posts/c-save-loop-in-array.html">How to Save Loop Results in an Array in C</a>.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>C</category>
+  <category>Programming</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/c-uninitialized-array.html</guid>
+  <pubDate>Mon, 19 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/c-uninitialized-array.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
 <item>
   <title>Why Critical Thinking Matters More in the AI Age</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
@@ -8597,1451 +10410,6 @@ Enter a number: 20
   <guid>https://www.statmania.info/blog/posts/c-validate-user-input.html</guid>
   <pubDate>Sat, 10 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/c-validate-input.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>How to Reduce Fan Noise in a Linux Laptop Microphone</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/linux-mic-fan-noise.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/linux-mic-fan-noise.svg" class="img-fluid figure-img" alt="A fan emits noise waves into the internal microphone. Three fixes are listed: lower mic gain, noise suppression, and an external mic."></p>
-<figcaption>The fan’s noise reaches the internal microphone; we can reduce it with lower gain, a noise-suppression filter, or an external microphone.</figcaption>
-</figure>
-</div>
-<p>On Linux laptops, the internal microphone often picks up the sound of the cooling fan. The mic sits close to the heat pipes and fan assembly, or the input gain is set too high. Users on Reddit report the same thing: built-in laptop mics commonly capture loud fan noise and internal speaker bleed.</p>
-<section id="lower-the-microphone-gain" class="level3">
-<h3 class="anchored" data-anchor-id="lower-the-microphone-gain">1. Lower the microphone gain</h3>
-<p>High input gain overdrives the microphone and amplifies background whirring. Let’s lower the internal microphone volume using <code>alsamixer</code>, <code>pavucontrol</code>, or the sound panel of our desktop environment (GNOME, KDE).</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">alsamixer</span>      <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># press F4 for capture devices, adjust with the arrow keys</span></span></code></pre></div></div>
-<p>Lower it only until the fan fades but our voice is still clear. Going too far (we tried 30% and below) makes the recording very quiet. The ALSA <code>Capture</code> slider and the desktop’s input volume can both change the level, so check both. We can also set it from the terminal:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">wpctl</span> set-volume @DEFAULT_AUDIO_SOURCE@ 0.8    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># 0.0 to 1.0</span></span></code></pre></div></div>
-<p>If the recording is too quiet afterwards, we raise the level again and rely on noise suppression (next step) instead of low gain.</p>
-</section>
-<section id="enable-noise-suppression-in-pipewire-pulseaudio" class="level3">
-<h3 class="anchored" data-anchor-id="enable-noise-suppression-in-pipewire-pulseaudio">2. Enable noise suppression in PipeWire / PulseAudio</h3>
-<p>Modern distributions using PipeWire or PulseAudio support echo cancellation and noise suppression. We can enable a noise-reduction filter, or use tools such as NoiseTorch or a PipeWire noise-canceling source, to filter out the steady hum of a fan.</p>
-</section>
-<section id="stop-the-fan-from-running-constantly" class="level3">
-<h3 class="anchored" data-anchor-id="stop-the-fan-from-running-constantly">3. Stop the fan from running constantly</h3>
-<p>Overlapping power tools (for example TLP, <code>power-profiles-daemon</code> and <code>cpupower</code>) can lock the CPU in high-frequency states and keep the fan spinning. We should make sure only one power-profile daemon is active, set to a balanced or power-saving mode.</p>
-</section>
-<section id="clean-the-vents-and-check-the-thermal-paste" class="level3">
-<h3 class="anchored" data-anchor-id="clean-the-vents-and-check-the-thermal-paste">4. Clean the vents and check the thermal paste</h3>
-<p>If the fan runs at full speed all the time, we clear dust from the intake and exhaust vents with compressed air. On older machines, dried-out thermal paste can also force the fan to spin fast even under light load.</p>
-</section>
-<section id="use-an-external-microphone" class="level3">
-<h3 class="anchored" data-anchor-id="use-an-external-microphone">5. Use an external microphone</h3>
-<p>If the internal mic capsule sits too close to the fan duct, software fixes may not be enough. Switching to a USB or headset microphone and disabling the internal one is the most reliable workaround.</p>
-</section>
-<section id="references" class="level3">
-<h3 class="anchored" data-anchor-id="references">References</h3>
-<ul>
-<li><a href="https://www.reddit.com/r/linuxquestions/comments/1sx4fgk/laptop_internal_microphone_picks_up_loud_fan_and/">Reddit: laptop internal microphone picks up loud fan</a></li>
-<li><a href="https://community.frame.work/t/terrible-noise-on-the-internal-microphone/12259">Framework Community: terrible noise on the internal microphone</a></li>
-<li><a href="https://bbs.archlinux.org/viewtopic.php?id=293880">Arch Linux forum thread</a></li>
-<li><a href="https://askubuntu.com/questions/961200/internal-mic-only-capturing-static-noise-in-asus-laptop-ubuntu-16-04">Ask Ubuntu: internal mic only capturing static noise</a></li>
-<li><a href="https://www.makeuseof.com/finally-fixed-linux-laptops-constant-fan-noise-it-wasnt-hardware/">MakeUseOf: fixing constant Linux laptop fan noise</a></li>
-<li><a href="https://system76.com/support/fan-noise/">System76: fan noise</a></li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>Linux</category>
-  <category>Troubleshooting</category>
-  <guid>https://www.statmania.info/blog/posts/linux-mic-fan-noise.html</guid>
-  <pubDate>Fri, 09 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/linux-mic-fan-noise.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>How to Save Loop Results in an Array in C</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/c-save-loop-in-array.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/c-save-loop-in-array.svg" class="img-fluid figure-img" alt="A for loop with index i from 0 to 4 writes i times i into results[i], filling five boxes with 0, 1, 4, 9 and 16."></p>
-<figcaption>A for loop writes i * i into results[i] on each pass, filling the array one slot at a time.</figcaption>
-</figure>
-</div>
-<p>To save loop results in an array in C, we declare an array with a fixed size <strong>before</strong> the loop, then use the loop’s index variable to assign a value to each slot.</p>
-<p>Unlike Python, a C array cannot grow with something like <code>append()</code>. We manage the indexing ourselves.</p>
-<section id="a-fixed-size-array" class="level3">
-<h3 class="anchored" data-anchor-id="a-fixed-size-array">A fixed-size array</h3>
-<p>This program squares the numbers 0 to 4 inside a loop and stores each result:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb1-2"></span>
-<span id="cb1-3"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#define SIZE </span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">   </span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// fixed size of the array</span></span>
-<span id="cb1-4"></span>
-<span id="cb1-5"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb1-6">    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// 1. Declare the array with a predefined size</span></span>
-<span id="cb1-7">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> results<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>SIZE<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">];</span></span>
-<span id="cb1-8"></span>
-<span id="cb1-9">    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// 2. Use a loop to populate the array</span></span>
-<span id="cb1-10">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> SIZE<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb1-11">        results<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// save the result at index i</span></span>
-<span id="cb1-12">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb1-13"></span>
-<span id="cb1-14">    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// 3. Print the saved elements to check</span></span>
-<span id="cb1-15">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Saved results:</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb1-16">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> SIZE<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb1-17">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"results[</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">] = </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> results<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]);</span></span>
-<span id="cb1-18">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb1-19"></span>
-<span id="cb1-20">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb1-21"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>Output (compiled with <code>gcc -Wall -Wextra</code>):</p>
-<pre><code>Saved results:
-results[0] = 0
-results[1] = 1
-results[2] = 4
-results[3] = 9
-results[4] = 16</code></pre>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>Stay inside the array.</strong> Valid indices run from <code>0</code> to <code>SIZE - 1</code>, so the loop condition must be <code>i &lt; SIZE</code>, not <code>i &lt;= SIZE</code>. Writing outside the array is undefined behaviour: it may crash, or silently corrupt other variables.</p>
-</div>
-</div>
-</section>
-<section id="when-the-number-of-values-is-unknown" class="level3">
-<h3 class="anchored" data-anchor-id="when-the-number-of-values-is-unknown">When the number of values is unknown</h3>
-<p>If we do not know in advance how many times the loop will run (for example, reading numbers until the user types <code>0</code>), a fixed-size array does not work. We allocate memory with <code>malloc()</code> and enlarge it with <code>realloc()</code> when it fills up:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb3-2"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdlib.h&gt;</span></span>
-<span id="cb3-3"></span>
-<span id="cb3-4"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb3-5">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> capacity <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> count <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb3-6">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>data <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> malloc<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>capacity <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">sizeof</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>data<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb3-7">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>data <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> NULL<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb3-8"></span>
-<span id="cb3-9">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Enter numbers (0 to stop): "</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb3-10">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>scanf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span>x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;&amp;</span> x <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb3-11">        <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>count <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> capacity<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span>          <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// full: double the space</span></span>
-<span id="cb3-12">            capacity <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb3-13">            <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>tmp <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> realloc<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>data<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> capacity <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">sizeof</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>data<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb3-14">            <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>tmp <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> NULL<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span> free<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>data<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb3-15">            data <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> tmp<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb3-16">        <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb3-17">        data<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>count<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++]</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>                <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// save, then move to the next slot</span></span>
-<span id="cb3-18">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb3-19"></span>
-<span id="cb3-20">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Saved </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> values:"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> count<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb3-21">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> count<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">" </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> data<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]);</span></span>
-<span id="cb3-22">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb3-23"></span>
-<span id="cb3-24">    free<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>data<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb3-25">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb3-26"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>Entering <code>4 8 15 16 23 42 0</code> gives:</p>
-<pre><code>Enter numbers (0 to stop): Saved 6 values: 4 8 15 16 23 42</code></pre>
-<p>Three habits to notice:</p>
-<ul>
-<li><code>count</code> tracks how many slots are used, and doubles as the next index.</li>
-<li><code>realloc()</code> goes into a temporary pointer first, so we do not lose <code>data</code> if it fails.</li>
-<li><code>free()</code> returns the memory when we are done.</li>
-</ul>
-</section>
-<section id="summary" class="level3">
-<h3 class="anchored" data-anchor-id="summary">Summary</h3>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Situation</th>
-<th>Approach</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Number of iterations known</td>
-<td>Fixed array, <code>array[i] = value;</code></td>
-</tr>
-<tr class="even">
-<td>Number of iterations unknown</td>
-<td><code>malloc()</code> + <code>realloc()</code>, track <code>count</code> and <code>capacity</code></td>
-</tr>
-</tbody>
-</table>
-
-
-</section>
-
- ]]></description>
-  <category>C</category>
-  <category>Programming</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/c-save-loop-in-array.html</guid>
-  <pubDate>Tue, 06 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/c-save-loop-in-array.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>5 while Loop Practice Problems in C (with Hints and Solutions)</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/c-while-loop-practice-problems.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/c-while-practice.svg" class="img-fluid figure-img" alt="A circular arrow labelled while (i <= 10) beside a terminal window printing 1 to 5, with printf and i++ code."></p>
-<figcaption>A while loop repeats its body, such as printing 1, 2, 3 …, as long as the test is true.</figcaption>
-</figure>
-</div>
-<p>Five problems, from easy to medium, to build confidence with the <code>while</code> loop. Try each one on paper or in your editor first. If we get stuck, open <strong>See hint</strong> for the steps, and press <strong>Reveal code</strong> to compare with a tested solution.</p>
-<p>Every solution was compiled with <code>gcc -Wall -Wextra</code> and run; the outputs shown are real. For a refresher, see <a href="../posts/c-do-while.html">the do-while loop</a>.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>The loop recipe.</strong> Almost every <code>while</code> solution has three parts: (1) a variable set <strong>before</strong> the loop, (2) a condition that is tested <strong>each time</strong>, and (3) a line <strong>inside</strong> the loop that moves the variable toward making the condition false. Forget the third and the loop never ends.</p>
-</div>
-</div>
-<hr>
-<section id="problem-1-easy-print-even-numbers" class="level3">
-<h3 class="anchored" data-anchor-id="problem-1-easy-print-even-numbers">Problem 1 (Easy): Print Even Numbers</h3>
-<p>Write a program that uses a <code>while</code> loop to print all even numbers from 2 up to 10 (inclusive).</p>
-<p>Expected output:</p>
-<pre><code>2 4 6 8 10</code></pre>
-<div class="reveal-code">
-<div class="hint">
-<ul>
-<li>Start a counter at the first even number: <code>i = 2</code>.</li>
-<li>Repeat while <code>i &lt;= 10</code>.</li>
-<li>Print <code>i</code> inside the loop.</li>
-<li>Add 2 to <code>i</code>, not 1, to land on the next even number.</li>
-</ul>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb2-2"></span>
-<span id="cb2-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb2-4">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>                  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// the first even number</span></span>
-<span id="cb2-5">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb2-6">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> "</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb2-7">        i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>                 <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// jump to the next even number</span></span>
-<span id="cb2-8">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb2-9">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb2-10">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb2-11"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-</div>
-<p><strong>Try next:</strong> print the even numbers from 10 down to 2.</p>
-<hr>
-</section>
-<section id="problem-2-easy-multiplication-table" class="level3">
-<h3 class="anchored" data-anchor-id="problem-2-easy-multiplication-table">Problem 2 (Easy): Multiplication Table</h3>
-<p>Write a program that uses a <code>while</code> loop to print the multiplication table of 5, from 5 × 1 to 5 × 10.</p>
-<p>Expected output (first and last lines):</p>
-<pre><code>5 x 1 = 5
-...
-5 x 10 = 50</code></pre>
-<div class="reveal-code">
-<div class="hint">
-<ul>
-<li>Keep the table number in <code>num = 5</code>.</li>
-<li>Start a counter at <code>i = 1</code>.</li>
-<li>Repeat while <code>i &lt;= 10</code>.</li>
-<li>Print <code>num</code>, <code>i</code> and <code>num * i</code> in one <code>printf</code>.</li>
-<li>Add 1 to <code>i</code>.</li>
-</ul>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb4-2"></span>
-<span id="cb4-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb4-4">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> num <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb4-5">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb4-6">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb4-7">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> x </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> = </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> num<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> num <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb4-8">        i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++;</span></span>
-<span id="cb4-9">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb4-10">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb4-11"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-</div>
-<p><strong>Try next:</strong> read <code>num</code> with <code>scanf</code> so the program prints any table.</p>
-<hr>
-</section>
-<section id="problem-3-medium-factorial-calculator" class="level3">
-<h3 class="anchored" data-anchor-id="problem-3-medium-factorial-calculator">Problem 3 (Medium): Factorial Calculator</h3>
-<p>Write a program that reads a number from the user and uses a <code>while</code> loop to compute its factorial. For example, 5! = 5 × 4 × 3 × 2 × 1 = 120.</p>
-<p>Example run:</p>
-<pre><code>Enter a number: 5
-5! = 120</code></pre>
-<div class="reveal-code">
-<div class="hint">
-<ul>
-<li>Read <code>num</code> with <code>scanf</code>; reject negative input.</li>
-<li>Start a result at <code>factorial = 1</code> (use <code>long long</code>, since factorials grow fast).</li>
-<li>Copy the input into a counter: <code>i = num</code>.</li>
-<li>Repeat while <code>i &gt; 1</code>.</li>
-<li>Multiply: <code>factorial *= i</code>, then <code>i--</code>.</li>
-<li>Print <code>factorial</code> after the loop.</li>
-</ul>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb6-2"></span>
-<span id="cb6-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb6-4">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> num<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb6-5">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Enter a number: "</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb6-6">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>scanf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span>num<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">||</span> num <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb6-7">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Please enter a non-negative integer.</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb6-8">        <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb6-9">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb6-10"></span>
-<span id="cb6-11">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">long</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">long</span> factorial <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb6-12">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> num<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb6-13">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span>             <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// multiplying by 1 changes nothing</span></span>
-<span id="cb6-14">        factorial <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*=</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb6-15">        i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">--;</span></span>
-<span id="cb6-16">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb6-17">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">! = </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%lld\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> num<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> factorial<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb6-18">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb6-19"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-</div>
-<p>Runs with different inputs:</p>
-<pre><code>Enter a number: 0
-0! = 1
-Enter a number: 20
-20! = 2432902008176640000
-Enter a number: 21
-21! = -4249290049419214848</code></pre>
-<p>Two things to notice. <code>0! = 1</code> works because the loop body never runs and the result stays 1. And <strong>21! overflows</strong> even <code>long long</code> (the largest factorial that fits is 20!), so the printed value is garbage. A real program should check for this.</p>
-<p><strong>Try next:</strong> stop with a message if <code>num</code> is greater than 20.</p>
-<hr>
-</section>
-<section id="problem-4-medium-reverse-a-number" class="level3">
-<h3 class="anchored" data-anchor-id="problem-4-medium-reverse-a-number">Problem 4 (Medium): Reverse a Number</h3>
-<p>Write a program that reads an integer such as 1234 and uses a <code>while</code> loop to print it reversed (4321).</p>
-<p>Example run:</p>
-<pre><code>Enter an integer: 1234
-Reversed: 4321</code></pre>
-<div class="reveal-code">
-<div class="hint">
-<ul>
-<li>Start with <code>reversed = 0</code>.</li>
-<li>Repeat while <code>num != 0</code>.</li>
-<li>Get the last digit: <code>digit = num % 10</code>.</li>
-<li>Append it: <code>reversed = reversed * 10 + digit</code>.</li>
-<li>Drop it from the input: <code>num /= 10</code>.</li>
-<li>Print <code>reversed</code> after the loop.</li>
-</ul>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb9-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb9-2"></span>
-<span id="cb9-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb9-4">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> num<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb9-5">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Enter an integer: "</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb9-6">    scanf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span>num<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb9-7"></span>
-<span id="cb9-8">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> reversed <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb9-9">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>num <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb9-10">        <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> digit <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> num <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>               <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// last digit</span></span>
-<span id="cb9-11">        reversed <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> reversed <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> digit<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// append it to the result</span></span>
-<span id="cb9-12">        num <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>                          <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// drop it from num</span></span>
-<span id="cb9-13">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb9-14">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Reversed: </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> reversed<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb9-15">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb9-16"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-</div>
-<p>Let’s trace <code>1234</code>:</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th style="text-align: right;"><code>num</code></th>
-<th style="text-align: right;"><code>digit</code></th>
-<th style="text-align: right;"><code>reversed</code></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">1234</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">4</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">123</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">43</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">12</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">432</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">4321</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">loop ends</td>
-<td style="text-align: right;">4321</td>
-</tr>
-</tbody>
-</table>
-<p>Edge cases from real runs:</p>
-<pre><code>Enter an integer: 1200
-Reversed: 21
-Enter an integer: -45
-Reversed: -54</code></pre>
-<p>Trailing zeros disappear (<code>1200</code> becomes <code>21</code>), because a number cannot have leading zeros. Negative numbers work, since <code>%</code> and <code>/</code> keep the sign in C. To keep the zeros, treat the input as a string instead.</p>
-<p><strong>Try next:</strong> use the same loop to check whether a number is a palindrome.</p>
-<hr>
-</section>
-<section id="problem-5-medium-count-digits" class="level3">
-<h3 class="anchored" data-anchor-id="problem-5-medium-count-digits">Problem 5 (Medium): Count Digits</h3>
-<p>Write a program that uses a <code>while</code> loop to count the digits of an integer entered by the user (4502 has 4 digits).</p>
-<p>Example run:</p>
-<pre><code>Enter an integer: 4502
-4502 has 4 digit(s)</code></pre>
-<div class="reveal-code">
-<div class="hint">
-<ul>
-<li>Copy the input into <code>temp</code> so <code>num</code> stays intact for printing.</li>
-<li>Start <code>count = 0</code>.</li>
-<li>Special case: if <code>temp == 0</code>, set <code>count = 1</code>.</li>
-<li>Repeat while <code>temp != 0</code>: divide <code>temp</code> by 10 and add 1 to <code>count</code>.</li>
-<li>Print <code>count</code>.</li>
-</ul>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb12-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb12-2"></span>
-<span id="cb12-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb12-4">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> num<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb12-5">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Enter an integer: "</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb12-6">    scanf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span>num<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb12-7"></span>
-<span id="cb12-8">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> count <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb12-9">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> temp <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> num<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb12-10">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>temp <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb12-11">        count <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>              <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// 0 has one digit, but the loop below would skip it</span></span>
-<span id="cb12-12">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb12-13">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>temp <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb12-14">        temp <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb12-15">        count<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++;</span></span>
-<span id="cb12-16">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb12-17">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> has </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> digit(s)</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> num<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> count<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb12-18">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb12-19"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-</div>
-<p>The special case matters: for <code>0</code> the condition <code>temp != 0</code> is false at once, so without the <code>if</code> we would print 0 digits. Negative numbers work too (<code>-987</code> has 3 digits), because dividing by 10 moves a negative number toward 0 as well.</p>
-<p><strong>Try next:</strong> compute the sum of the digits instead of the count.</p>
-<hr>
-</section>
-<section id="what-these-problems-practise" class="level3">
-<h3 class="anchored" data-anchor-id="what-these-problems-practise">What These Problems Practise</h3>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th style="text-align: left;">Problem</th>
-<th style="text-align: left;">Pattern</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">1. Even numbers</td>
-<td style="text-align: left;">Counting with a step other than 1</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2. Multiplication table</td>
-<td style="text-align: left;">A counter used inside a calculation</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">3. Factorial</td>
-<td style="text-align: left;">An accumulator that multiplies</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">4. Reverse a number</td>
-<td style="text-align: left;">Peeling digits with <code>%</code> and <code>/</code></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">5. Count digits</td>
-<td style="text-align: left;">A counter that runs until the value reaches 0</td>
-</tr>
-</tbody>
-</table>
-
-
-</section>
-
- ]]></description>
-  <category>C</category>
-  <category>Programming</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/c-while-loop-practice-problems.html</guid>
-  <pubDate>Sat, 03 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/c-while-practice.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>
