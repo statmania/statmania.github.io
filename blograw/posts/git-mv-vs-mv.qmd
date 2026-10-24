@@ -1,0 +1,137 @@
+---
+title: "git mv vs. mv: Renaming and Deleting Files in a Git Repository"
+description: "What git mv and git rm do that plain mv and rm do not, how to stage a manual rename, and how to stop tracking a file with git rm --cached."
+date: "2026-10-25"
+categories: [Linux, Tools, Tutorial]
+tags: [git, command-line, beginners]
+author: "Abdullah Al Mahmud"
+image: ../img/linux-git.jpeg
+---
+
+![Rename with Git, or rename by hand and tell Git afterwards.](../img/linux-git.jpeg){fig-alt="A person typing at a desk in front of a monitor showing a terminal with git commands."}
+
+The difference between `git mv` and plain `mv` is small but worth knowing. `git mv` moves the file **and** stages the change in one step. `mv` only changes the disk, so we have to tell Git what happened. The same goes for `git rm` and `rm`.
+
+Git does not store renames as a special action. It stores snapshots, and when we run `git status` or `git log` it *detects* that a deleted file and a new file have the same content, and labels the pair a rename. That is why both routes below end in the same place.
+
+## Moving or renaming
+
+| | Plain commands | Git commands |
+|---|---|---|
+| Move or rename | `mv old.js new.js` | `git mv old.js new.js` |
+| What Git sees | `old.js` deleted, `new.js` untracked | rename, already staged |
+| Extra steps | `git rm old.js` and `git add new.js` | none |
+
+### With `git mv`
+
+```bash
+git mv old_name.js new_name.js
+git status --short
+```
+
+```
+R  old_name.js -> new_name.js
+```
+
+The rename is staged and ready to commit.
+
+### With plain `mv`
+
+```bash
+mv old_name.js new_name.js
+git status --short
+```
+
+```
+ D old_name.js
+?? new_name.js
+```
+
+Git sees a deleted file and an untracked file. Staging only the new one is a common mistake:
+
+```bash
+git add new_name.js
+git status --short
+```
+
+```
+A  new_name.js
+ D old_name.js
+```
+
+The deletion is still unstaged, so a commit now would contain the new file but leave the old one in the repository. We need to stage both:
+
+```bash
+git rm old_name.js     # stages the deletion (the file is already gone from disk)
+git add new_name.js
+```
+
+or, in one step:
+
+```bash
+git add -A
+```
+
+```
+R  old_name.js -> new_name.js
+```
+
+`git add -A` is also the easy way to stage a whole batch of manual moves, or renames done in a file manager or editor such as VS Code.
+
+::: {.callout-note}
+`git mv` only works on files Git already tracks. For an untracked file it stops with `fatal: not under version control`, so use plain `mv` there.
+:::
+
+## Deleting
+
+| | Plain command | Git command |
+|---|---|---|
+| Delete a file | `rm file.txt` | `git rm file.txt` |
+| What Git sees | deleted, not staged | deleted, staged |
+
+```bash
+rm file.txt
+git status --short       #  D file.txt   (not staged)
+
+git rm file.txt
+git status --short       # D  file.txt   (staged)
+```
+
+`git rm` also works after the file has already been removed by hand, as above: it just stages the deletion.
+
+## Stop tracking a file but keep it on disk
+
+If we committed a file by mistake, such as a `.env` with secrets, we want Git to forget it without deleting our copy:
+
+```bash
+git rm --cached .env
+git status --short
+```
+
+```
+D  .env
+?? .env
+```
+
+The file stays on disk, but Git now lists it as untracked. To keep it from being added again, put it in `.gitignore`.
+
+::: {.callout-warning}
+`git rm --cached` removes the file from future commits only. It stays in the repository's history, so a secret that was committed should be treated as exposed and changed.
+:::
+
+## Rename history
+
+After a rename, `git log --follow` lists the commits from before the rename too:
+
+```bash
+git log --follow --oneline new_name.js
+```
+
+Without `--follow`, the log of the new name starts at the rename.
+
+## Summary
+
+- `git mv` = `mv` + staging. Plain `mv` plus `git add -A` gives the same result.
+- `git rm` = `rm` + staging.
+- `git rm --cached` stops tracking and keeps the file.
+- Git detects renames from the content, so both routes give the same commit.
