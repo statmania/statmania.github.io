@@ -42,6 +42,14 @@ Whenever an edit to a post is sought, check if the post contains an image; if no
 
 Don't geenrate svg if an existing image name (svg or png) matches with the post topic. Generic images like r-shell.jpeg, journal.jpeg can be used in mahy posts. 
 
+**When the user names no image, choose in this order:**
+1. Look in `img/` for an existing image that matches the topic or is a generic fit (e.g. `linux-git.jpeg`
+   for git posts, `r-shell.jpeg`, `fish-shell.jpeg`, `journal.jpeg`) and reuse it for both the body and
+   `image:`. JPEG/PNG photos need no SVG twin.
+2. Only if nothing is relevant, draw a new SVG: a sketch of a person using what the post covers
+   (at a laptop or terminal), or a diagram when the post is about a process or structure.
+3. Claude cannot make photorealistic images; if a photo is wanted, the user supplies it.
+
 - **Inside the post body → SVG**, e.g. `![caption](../img/name.svg){fig-alt="..."}`.
   Sharp at any zoom, small, real text, and it takes alt text. Always add
   `fig-alt` (accessibility and image search) and a short caption.
