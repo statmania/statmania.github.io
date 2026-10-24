@@ -507,6 +507,506 @@ Note
   <media:content url="https://www.statmania.info/blog/img/c-pointer-address.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 <item>
+  <title>Create Multiple Files at Once in the Linux Terminal</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/linux-create-multiple-files.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/linux-create-multiple-files.svg" class="img-fluid figure-img" alt="A terminal running touch file{1..5}.txt with an arrow pointing down to five file icons named file1.txt to file5.txt."></p>
+<figcaption>One touch command creates five files.</figcaption>
+</figure>
+</div>
+<p>Creating files one by one in a file manager is slow. In the terminal, a single <code>touch</code> command can create as many as we like. It works the same way in Linux and macOS shells such as bash and zsh.</p>
+<p><code>touch</code> creates an empty file if it does not exist. If the file already exists, it only updates the modification time and leaves the contents alone.</p>
+<section id="files-with-different-names" class="level2">
+<h2 class="anchored" data-anchor-id="files-with-different-names">1. Files with different names</h2>
+<p>When the names have nothing in common, we list them separated by spaces:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">touch</span> index.html styles.css script.js</span></code></pre></div></div>
+</section>
+<section id="numbered-or-lettered-files-brace-expansion" class="level2">
+<h2 class="anchored" data-anchor-id="numbered-or-lettered-files-brace-expansion">2. Numbered or lettered files (brace expansion)</h2>
+<p>A range inside curly braces, <code>{start..end}</code>, is expanded by the shell before <code>touch</code> runs, so one pattern becomes many names:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># file1.txt, file2.txt, ..., file5.txt</span></span>
+<span id="cb2-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">touch</span> file<span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">..</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">}</span>.txt</span>
+<span id="cb2-3"></span>
+<span id="cb2-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># log_A.txt, log_B.txt, ..., log_E.txt</span></span>
+<span id="cb2-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">touch</span> log_<span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">{</span>A<span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">..</span>E<span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">}</span>.txt</span></code></pre></div></div>
+<p>To pad the numbers with zeros, write the first number with the zeros:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># bspl0001.c, bspl0002.c, bspl0003.c</span></span>
+<span id="cb3-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">touch</span> bspl<span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0001</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">..</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0003</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">}</span>.c</span></code></pre></div></div>
+<p>To preview what a pattern expands to without creating anything, use <code>echo</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> file<span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">..</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">}</span>.txt</span></code></pre></div></div>
+<pre><code>file1.txt file2.txt file3.txt file4.txt file5.txt</code></pre>
+</section>
+<section id="a-chosen-set-of-names" class="level2">
+<h2 class="anchored" data-anchor-id="a-chosen-set-of-names">3. A chosen set of names</h2>
+<p>For specific names that share a prefix or extension, list the variations separated by commas. There must be no spaces inside the braces:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># test.js, demo.js, final.js</span></span>
+<span id="cb6-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">touch</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">{test</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">demo</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">final}</span>.js</span></code></pre></div></div>
+</section>
+<section id="files-inside-a-folder" class="level2">
+<h2 class="anchored" data-anchor-id="files-inside-a-folder">4. Files inside a folder</h2>
+<p>Brace expansion also works after a path, so we can create files somewhere else without changing the current directory. The folder must already exist:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mkdir</span> my_folder</span>
+<span id="cb7-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">touch</span> my_folder/<span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">{file1.txt</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">file2.txt</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">file3.txt}</span></span></code></pre></div></div>
+<p>To create the folders at the same time, <code>mkdir -p</code> accepts braces too:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mkdir</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-p</span> proj/<span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">{src</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">docs}</span></span>
+<span id="cb8-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">touch</span> proj/src/<span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">{main</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">util}</span>.c proj/docs/readme.md</span></code></pre></div></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ls</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-R</span> proj</span></code></pre></div></div>
+<pre><code>proj:
+docs  src
+
+proj/docs:
+readme.md
+
+proj/src:
+main.c  util.c</code></pre>
+</section>
+<section id="files-with-some-starting-text" class="level2">
+<h2 class="anchored" data-anchor-id="files-with-some-starting-text">5. Files with some starting text</h2>
+<p><code>touch</code> always makes empty files. If each file needs a line of text, a short loop does it:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> i <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> 1 2 3<span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"This is note </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$i</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> note<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$i</span>.txt<span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span></code></pre></div></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Brace expansion is a feature of the shell, not of <code>touch</code>, so it works with any command (<code>mkdir</code>, <code>cp</code>, <code>rm</code>). The <code>{1..5}</code> range form needs bash or zsh: fish and a plain <code>sh</code> leave <code>file{1..3}.txt</code> unexpanded. All the examples above were run in bash.</p>
+</div>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>Linux</category>
+  <category>Tools</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/linux-create-multiple-files.html</guid>
+  <pubDate>Fri, 23 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/linux-create-multiple-files.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>Convert PowerPoint (PPT, PPTX) to PDF from the Command Line, in Bulk</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/pptx-to-pdf-command-line.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/pptx-to-pdf-command-line.svg" class="img-fluid figure-img" alt="A sketch of a person at a laptop running libreoffice --headless --convert-to pdf; three PPTX files on the left become three PDF pages on the right."></p>
+<figcaption>One command turns every .pptx in a folder into a PDF.</figcaption>
+</figure>
+</div>
+<p>Opening each presentation and choosing <em>Export as PDF</em> is fine for one file and painful for fifty. The terminal can do it for us. The simplest tool is LibreOffice running without a window; the rest of this post covers a few alternatives.</p>
+<section id="libreoffice-linux-macos-windows" class="level2">
+<h2 class="anchored" data-anchor-id="libreoffice-linux-macos-windows">LibreOffice (Linux, macOS, Windows)</h2>
+<p>LibreOffice is installed on many Linux distributions already, and its <code>--headless</code> mode converts files without opening the GUI.</p>
+<p>Convert a single file:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">libreoffice</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--headless</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--convert-to</span> pdf presentation.pptx</span></code></pre></div></div>
+<p>Convert every <code>.pptx</code> in the current folder:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">libreoffice</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--headless</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--convert-to</span> pdf <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>.pptx</span></code></pre></div></div>
+<p>The PDFs are written to the current directory. To put them somewhere else, add <code>--outdir</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">libreoffice</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--headless</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--convert-to</span> pdf <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--outdir</span> pdf/ <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>.pptx</span></code></pre></div></div>
+<p>Old <code>.ppt</code> files work the same way; use <code>*.ppt</code> instead.</p>
+<section id="a-whole-folder-tree" class="level3">
+<h3 class="anchored" data-anchor-id="a-whole-folder-tree">A whole folder tree</h3>
+<p>The glob <code>*.pptx</code> only sees one folder. To convert files in sub-folders too, let <code>find</code> feed them in, keeping each PDF next to its source:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">find</span> . <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-type</span> f <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\(</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-iname</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'*.pptx'</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-o</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-iname</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'*.ppt'</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\)</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-print0</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span></span>
+<span id="cb4-2">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">IFS</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">read</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-r</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-d</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">''</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">f</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb4-3">    <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">libreoffice</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--headless</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--convert-to</span> pdf <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--outdir</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dirname</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$f</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$f</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb4-4">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span></code></pre></div></div>
+<p><code>-print0</code> with <code>read -d ''</code> keeps file names that contain spaces intact.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If LibreOffice is already open in the GUI, a headless run may do nothing. Close the window first. On macOS the executable is usually <code>/Applications/LibreOffice.app/Contents/MacOS/soffice</code>, and on Linux <code>soffice</code> is the same program as <code>libreoffice</code>.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="unoconv-linux" class="level2">
+<h2 class="anchored" data-anchor-id="unoconv-linux">unoconv (Linux)</h2>
+<p><code>unoconv</code> is a command-line wrapper around LibreOffice.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sudo</span> apt-get install unoconv</span>
+<span id="cb5-2"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">unoconv</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-f</span> pdf presentation.ppt</span></code></pre></div></div>
+<p>It needs LibreOffice installed too, so for a plain conversion the direct command above is simpler.</p>
+</section>
+<section id="win2pdf-windows" class="level2">
+<h2 class="anchored" data-anchor-id="win2pdf-windows">Win2PDF (Windows)</h2>
+<p>On Windows with Win2PDF Pro, the <code>win2pdfd.exe</code> utility converts from the command line:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode cmd code-with-copy"><code class="sourceCode dosbat"><span id="cb6-1">win2pdfd.exe ppt2pdf <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"source.ppt"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dest.pdf"</span></span>
+<span id="cb6-2">win2pdfd.exe pptx2pdf <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"source.pptx"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dest.pdf"</span></span></code></pre></div></div>
+<p>This is a commercial product; see the Win2PDF documentation for the details.</p>
+</section>
+<section id="onlyoffice-document-builder" class="level2">
+<h2 class="anchored" data-anchor-id="onlyoffice-document-builder">ONLYOFFICE Document Builder</h2>
+<p>Unlike LibreOffice, ONLYOFFICE has no single conversion flag. Its Document Builder (Windows, Linux, macOS) runs a small JavaScript file. Save this as <code>convert.js</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb7-1">builder<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">OpenFile</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"presentation.pptx"</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb7-2">builder<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">SaveFile</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"pdf"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"presentation.pdf"</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb7-3">builder<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">CloseFile</span>()<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span></code></pre></div></div>
+<p>and run it:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">documentbuilder</span> convert.js      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Linux and macOS</span></span>
+<span id="cb8-2"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">docbuilder.exe</span> convert.js       <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Windows</span></span></code></pre></div></div>
+<p>There is no built-in recursive mode. To convert a folder tree, wrap the call in a Bash or PowerShell loop that generates the script (or passes the paths) for each file. If we run a self-hosted ONLYOFFICE Document Server, its Conversion API can do the same job through an HTTP POST with <code>curl</code>.</p>
+</section>
+<section id="which-one-to-use" class="level2">
+<h2 class="anchored" data-anchor-id="which-one-to-use">Which one to use</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Need</th>
+<th>Tool</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>One file or one folder</td>
+<td><code>libreoffice --headless --convert-to pdf</code></td>
+</tr>
+<tr class="even">
+<td>Many folders</td>
+<td>the <code>find</code> loop above</td>
+</tr>
+<tr class="odd">
+<td>Windows with Win2PDF Pro</td>
+<td><code>win2pdfd.exe</code></td>
+</tr>
+<tr class="even">
+<td>Already using ONLYOFFICE</td>
+<td>Document Builder or the Conversion API</td>
+</tr>
+</tbody>
+</table>
+<p>For most of us, headless LibreOffice is enough: one command, no scripting. Check a converted PDF or two, since fonts missing on the machine are replaced and can change the layout.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ul>
+<li><a href="https://askubuntu.com/questions/11130/how-can-i-convert-a-ppt-to-a-pdf-from-the-command-line">Ask Ubuntu: How can I convert a PPT to a PDF from the command line?</a></li>
+<li><a href="https://www.win2pdf.com/doc/command-line-ppt-to-pdf.html">Win2PDF: command-line PPT to PDF</a> and <a href="https://www.win2pdf.com/doc/command-line-pptx-to-pdf.html">PPTX to PDF</a></li>
+<li><a href="https://api.onlyoffice.com/docs/document-builder/using-cli/overview">ONLYOFFICE Document Builder: using the CLI</a></li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>Linux</category>
+  <category>Tools</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/pptx-to-pdf-command-line.html</guid>
+  <pubDate>Fri, 23 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/pptx-to-pdf-command-line.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
   <title>Printing Array Elements in C: Labels, Commas, and Clean Output</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://www.statmania.info/blog/posts/c-print-array-with-label.html</link>
@@ -9678,738 +10178,6 @@ font-style: inherit;">&lt;</span> input.txt</span></code></pre></div></div>
   <guid>https://www.statmania.info/blog/posts/c-test-code-quickly.html</guid>
   <pubDate>Mon, 12 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/c-test-code-quickly.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Pre-Increment vs Post-Increment in C: ++i vs i++</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/c-pre-vs-post-increment.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/c-pre-vs-post-increment.svg" class="img-fluid figure-img" alt="Two columns. Pre-increment b = ++a: a goes from 5 to 6, then b is 6. Post-increment y = x++: y gets the old value 5, then x goes from 5 to 6."></p>
-<figcaption>With a = 5, ++a updates a first, so b gets 6. With x = 5, x++ hands over the old value first, so y gets 5.</figcaption>
-</figure>
-</div>
-<p>Both <code>++i</code> and <code>i++</code> add 1 to <code>i</code>. The difference is the <strong>value the expression gives back</strong>, which matters when we use it inside a larger expression:</p>
-<ul>
-<li><strong>Pre-increment (<code>++i</code>)</strong> changes the value first, then returns the <strong>new</strong> value.</li>
-<li><strong>Post-increment (<code>i++</code>)</strong> returns the <strong>original</strong> value first, then changes the value.</li>
-</ul>
-<section id="direct-comparison" class="level3">
-<h3 class="anchored" data-anchor-id="direct-comparison">Direct comparison</h3>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Feature</th>
-<th>Pre-increment (<code>++i</code>)</th>
-<th>Post-increment (<code>i++</code>)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Syntax</td>
-<td><code>++variable;</code></td>
-<td><code>variable++;</code></td>
-</tr>
-<tr class="even">
-<td>Order</td>
-<td>Increments, then evaluates</td>
-<td>Evaluates, then increments</td>
-</tr>
-<tr class="odd">
-<td>Value returned</td>
-<td>The updated value</td>
-<td>The original value</td>
-</tr>
-<tr class="even">
-<td>Precedence</td>
-<td>Lower (prefix)</td>
-<td>Higher (postfix)</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="in-assignments" class="level3">
-<h3 class="anchored" data-anchor-id="in-assignments">1. In assignments</h3>
-<p>When we assign the result to another variable, the order decides the final values:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> a <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb1-2"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> b <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++</span>a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// 'a' becomes 6, then 6 is assigned to 'b'</span></span>
-<span id="cb1-3">printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"a = </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">, b = </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> b<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb1-4"></span>
-<span id="cb1-5"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> x <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb1-6"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++;</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// 5 is assigned to 'y', then 'x' becomes 6</span></span>
-<span id="cb1-7">printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"x = </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">, y = </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> y<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span></code></pre></div></div>
-<p>Output:</p>
-<pre><code>a = 6, b = 6
-x = 6, y = 5</code></pre>
-</section>
-<section id="inside-printf" class="level3">
-<h3 class="anchored" data-anchor-id="inside-printf">2. Inside <code>printf</code></h3>
-<p>The timing changes what appears on the screen:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb3-2">printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++</span>i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// increments first, prints 11</span></span>
-<span id="cb3-3"></span>
-<span id="cb3-4"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> j <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb3-5">printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> j<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++);</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// prints the old value, 10</span></span>
-<span id="cb3-6">printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> j<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>     <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// now j is 11</span></span></code></pre></div></div>
-<p>Output:</p>
-<pre><code>11
-10
-11</code></pre>
-</section>
-<section id="as-a-standalone-statement" class="level3">
-<h3 class="anchored" data-anchor-id="as-a-standalone-statement">3. As a standalone statement</h3>
-<p>When the result is not used, there is no difference. <code>i</code> ends up as <code>i + 1</code> either way. This is why a <code>for</code> loop works the same with <code>i++</code> or <code>++i</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1">i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++;</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// i becomes i + 1</span></span>
-<span id="cb5-2"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++</span>i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// i becomes i + 1</span></span></code></pre></div></div>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Warning</span>Don’t change a variable twice in one expression
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Statements such as <code>i = i++;</code> or <code>a[i] = i++;</code> modify and read <code>i</code> without a defined order, so their behaviour is <strong>undefined</strong> in C. We keep <code>++</code> and <code>--</code> to one use per variable in each expression.</p>
-</div>
-</div>
-</section>
-<section id="performance-note" class="level3">
-<h3 class="anchored" data-anchor-id="performance-note">Performance note</h3>
-<p>In C, a compiler produces the same code for a standalone <code>++i</code> and <code>i++</code>. In C++, pre-increment is usually preferred for iterators and other objects, because post-increment must make a temporary copy of the old value. So <code>++i</code> is a good habit to build early.</p>
-</section>
-<section id="summary" class="level3">
-<h3 class="anchored" data-anchor-id="summary">Summary</h3>
-<ul>
-<li><code>++i</code>: update, then use the new value.</li>
-<li><code>i++</code>: use the old value, then update.</li>
-<li>On their own they are identical; the difference shows up only when the result is used.</li>
-</ul>
-</section>
-<section id="references" class="level3">
-<h3 class="anchored" data-anchor-id="references">References</h3>
-<ul>
-<li><a href="https://www.upgrad.com/tutorials/software-engineering/c-tutorial/pre-increment-and-post-increment-in-c/">UpGrad: pre-increment and post-increment in C</a></li>
-<li><a href="https://www.scaler.com/topics/pre-increment-and-post-increment-in-c/">Scaler: pre-increment and post-increment in C</a></li>
-<li><a href="https://www.reddit.com/r/C_Programming/comments/m1f5kq/pre_vs_post_increment/">Reddit r/C_Programming: pre vs post increment</a></li>
-<li><a href="https://dev.to/galaxy233/unmasking-the-difference-pre-increment-i-vs-post-increment-i-in-c-39ok">DEV: unmasking the difference between ++i and i++</a></li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>C</category>
-  <category>Programming</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/c-pre-vs-post-increment.html</guid>
-  <pubDate>Sat, 10 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/c-pre-vs-post-increment.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Checking User Input in C: Is It Really a Number?</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/c-validate-user-input.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/c-validate-input.svg" class="img-fluid figure-img" alt="A box 'user types 5, abc, 12abc' leads to a box 'check it: is it all a number?'. Yes leads to 'use it'; no leads to 'error'."></p>
-<figcaption>Typed input goes through a check. A whole number is used; anything else prints an error.</figcaption>
-</figure>
-</div>
-<p>A program that asks for a number must not assume the user types one. They may type <code>abc</code>, <code>-3</code> or nothing. C does not stop this, so we check the input ourselves.</p>
-<section id="check-scanfs-return-value" class="level3">
-<h3 class="anchored" data-anchor-id="check-scanfs-return-value">Check <code>scanf</code>’s return value</h3>
-<p><code>scanf</code> returns how many items it converted. For one <code>%d</code>, success means <code>1</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb1-2"></span>
-<span id="cb1-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb1-4">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> num<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb1-5">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Enter a number: "</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb1-6">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>scanf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span>num<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">||</span> num <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb1-7">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Please enter a non-negative integer.</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb1-8">        <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb1-9">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb1-10"></span>
-<span id="cb1-11">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">long</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">long</span> factorial <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb1-12">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> num<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span></span>
-<span id="cb1-13">        factorial <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*=</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb1-14">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">! = </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%lld\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> num<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> factorial<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb1-15">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb1-16"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<ul>
-<li><code>scanf(...) != 1</code> catches the wrong type (<code>abc</code> gives <code>0</code>).</li>
-<li><code>num &lt; 0</code> catches a number that makes no sense for a factorial.</li>
-</ul>
-<pre><code>Enter a number: 5
-5! = 120
-Enter a number: abc
-Please enter a non-negative integer.</code></pre>
-</section>
-<section id="the-catch-partial-input" class="level3">
-<h3 class="anchored" data-anchor-id="the-catch-partial-input">The catch: partial input</h3>
-<p><code>scanf("%d")</code> reads the digits it finds and stops, so it accepts bad input:</p>
-<pre><code>Enter a number: 12abc
-12! = 479001600
-Enter a number: 3.7
-3! = 6</code></pre>
-</section>
-<section id="stricter-fgets-strtol" class="level3">
-<h3 class="anchored" data-anchor-id="stricter-fgets-strtol">Stricter: <code>fgets</code> + <code>strtol</code></h3>
-<p>We read the whole line as text, then convert it. <code>strtol</code> sets <code>end</code> to the first character it could not use, so <code>*end</code> must be the end of the line:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb4-2"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdlib.h&gt;</span></span>
-<span id="cb4-3"></span>
-<span id="cb4-4"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb4-5">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">char</span> line<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">64</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">];</span></span>
-<span id="cb4-6">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Enter a number: "</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb4-7">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>fgets<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>line<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">sizeof</span> line<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> stdin<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> NULL<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span id="cb4-8">        <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb4-9"></span>
-<span id="cb4-10">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">char</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>end<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb4-11">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">long</span> num <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> strtol<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>line<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span>end<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb4-12"></span>
-<span id="cb4-13">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>end <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> line <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">||</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(*</span>end <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!=</span> <span class="ch" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="ch" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;&amp;</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>end <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!=</span> <span class="ch" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\0</span><span class="ch" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">||</span> num <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">||</span> num <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb4-14">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Please enter a whole number from 0 to 20.</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb4-15">        <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb4-16">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb4-17"></span>
-<span id="cb4-18">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">long</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">long</span> factorial <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb4-19">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">long</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> num<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span></span>
-<span id="cb4-20">        factorial <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*=</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb4-21">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%ld</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">! = </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%lld\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> num<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> factorial<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb4-22">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb4-23"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<ul>
-<li><code>end == line</code>: no digits were found (<code>abc</code>).</li>
-<li><code>*end</code> is not the end of the line: extra characters followed the number (<code>12abc</code>, <code>3.7</code>).</li>
-<li><code>num &gt; 20</code>: <code>21!</code> does not fit in a <code>long long</code>, so we reject it.</li>
-</ul>
-<p>Now the earlier bad inputs are rejected:</p>
-<pre><code>Enter a number: 12abc
-Please enter a whole number from 0 to 20.
-Enter a number: 3.7
-Please enter a whole number from 0 to 20.
-Enter a number: 20
-20! = 2432902008176640000</code></pre>
-</section>
-<section id="summary" class="level3">
-<h3 class="anchored" data-anchor-id="summary">Summary</h3>
-<ul>
-<li>Always check what <code>scanf</code> returns.</li>
-<li><code>scanf</code> accepts <code>12abc</code> as <code>12</code>; for strict checks use <code>fgets</code> + <code>strtol</code> and test <code>*end</code>.</li>
-<li>Check the type first, then whether the value makes sense.</li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>C</category>
-  <category>Programming</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/c-validate-user-input.html</guid>
-  <pubDate>Sat, 10 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/c-validate-input.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>
