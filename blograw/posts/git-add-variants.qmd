@@ -1,0 +1,103 @@
+---
+title: "git add -A, git add . or git add *: Which One?"
+description: "What git add -A, git add . and git add * stage, how they differ in a subfolder, and why the shell wildcard * misses deletions and hidden files."
+date: "2026-10-24"
+categories: [Linux, Tools, Tutorial]
+tags: [git, command-line, beginners]
+author: "Abdullah Al Mahmud"
+image: ../img/linux-git.jpeg
+---
+
+![Stage what we mean to commit, and look before we do.](../img/linux-git.jpeg){fig-alt="A person typing at a desk in front of a monitor showing a terminal with git status, git add and git commit output."}
+
+Three commands look similar, but they do not stage the same things:
+
+```bash
+git add -A
+git add .
+git add *
+```
+
+The short answer: use `git add -A` or `git add .`, and avoid `git add *`. Let's see why.
+
+## A test repository
+
+We made a small repository with a `.gitignore` that lists `node_modules/`, committed it, and then changed things:
+
+- modified `a.txt`,
+- deleted `b.txt`,
+- created `new.txt`, `sub/new2.txt` and the hidden file `.hidden`,
+- created an ignored file `node_modules/m2.js`.
+
+The results below are from `git` 2.34.
+
+## `git add -A`: everything in the repository
+
+It stages new, modified and deleted files across the **whole repository**, whatever directory we run it from, and it respects `.gitignore`.
+
+```
+$ cd sub && git add -A && git status --short
+A  .hidden
+M  a.txt
+D  b.txt
+A  new.txt
+A  sub/new2.txt
+```
+
+## `git add .`: everything from here down
+
+Since Git 2.0 it also stages deletions, but only in the **current directory and below**. From the repository root it does the same as `git add -A`. From a subfolder it does not:
+
+```
+$ cd sub && git add . && git status --short
+ M a.txt
+ D b.txt
+A  sub/new2.txt
+?? .hidden
+?? new.txt
+```
+
+Only `sub/new2.txt` was staged. The changes outside `sub/` were left alone.
+
+## `git add *`: a shell wildcard, not a Git feature
+
+The shell expands `*` into a list of file names **before** Git runs, so Git never sees the pattern. That causes three problems:
+
+1. **Hidden files are skipped.** `*` does not match names that start with a dot, such as `.hidden`, `.env` or `.github`.
+2. **Deletions are missed.** A deleted file no longer exists, so `*` cannot expand to it.
+3. **Ignored folders cause an error.** If `node_modules` is in the current directory, `*` hands it to Git, which refuses:
+
+```
+$ git add *
+The following paths are ignored by one of your .gitignore files:
+node_modules
+hint: Use -f if you really want to add them.
+```
+
+Git exits with an error, yet it still staged the other files:
+
+```
+M  a.txt
+ D b.txt
+A  new.txt
+A  sub/new2.txt
+?? .hidden
+```
+
+`a.txt`, `new.txt` and `sub/new2.txt` are staged, but `b.txt` (deleted) and `.hidden` are not. That mix of staged and missed changes is easy to commit by accident.
+
+## Which one should we use?
+
+| Command | Scope | New | Modified | Deleted | Hidden |
+|---|---|---|---|---|---|
+| `git add -A` | whole repository | yes | yes | yes | yes |
+| `git add .` | current folder and below | yes | yes | yes | yes |
+| `git add *` | non-hidden names in the current folder | yes | yes | no | no |
+
+- At the repository root, `git add .` and `git add -A` are the same, so either is fine.
+- In a subfolder, choose by intent: `git add .` for this folder only, `git add -A` for everything.
+- Skip `git add *`.
+
+::: {.callout-warning}
+Before staging, run `git status`, and check the result with `git status` or `git diff --staged` afterwards. Files such as `.env` secrets, build folders and temporary files should be in `.gitignore` first, because `git add -A` and `git add .` will stage anything that is not ignored.
+:::

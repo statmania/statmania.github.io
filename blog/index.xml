@@ -1020,6 +1020,337 @@ Tip
   <media:content url="https://www.statmania.info/blog/img/c-void-return-and-parameter.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 <item>
+  <title>git add -A, git add . or git add *: Which One?</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/git-add-variants.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/linux-git.jpeg" class="img-fluid figure-img" alt="A person typing at a desk in front of a monitor showing a terminal with git status, git add and git commit output."></p>
+<figcaption>Stage what we mean to commit, and look before we do.</figcaption>
+</figure>
+</div>
+<p>Three commands look similar, but they do not stage the same things:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> add <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-A</span></span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> add .</span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> add <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span></span></code></pre></div></div>
+<p>The short answer: use <code>git add -A</code> or <code>git add .</code>, and avoid <code>git add *</code>. Let’s see why.</p>
+<section id="a-test-repository" class="level2">
+<h2 class="anchored" data-anchor-id="a-test-repository">A test repository</h2>
+<p>We made a small repository with a <code>.gitignore</code> that lists <code>node_modules/</code>, committed it, and then changed things:</p>
+<ul>
+<li>modified <code>a.txt</code>,</li>
+<li>deleted <code>b.txt</code>,</li>
+<li>created <code>new.txt</code>, <code>sub/new2.txt</code> and the hidden file <code>.hidden</code>,</li>
+<li>created an ignored file <code>node_modules/m2.js</code>.</li>
+</ul>
+<p>The results below are from <code>git</code> 2.34.</p>
+</section>
+<section id="git-add--a-everything-in-the-repository" class="level2">
+<h2 class="anchored" data-anchor-id="git-add--a-everything-in-the-repository"><code>git add -A</code>: everything in the repository</h2>
+<p>It stages new, modified and deleted files across the <strong>whole repository</strong>, whatever directory we run it from, and it respects <code>.gitignore</code>.</p>
+<pre><code>$ cd sub &amp;&amp; git add -A &amp;&amp; git status --short
+A  .hidden
+M  a.txt
+D  b.txt
+A  new.txt
+A  sub/new2.txt</code></pre>
+</section>
+<section id="git-add-.-everything-from-here-down" class="level2">
+<h2 class="anchored" data-anchor-id="git-add-.-everything-from-here-down"><code>git add .</code>: everything from here down</h2>
+<p>Since Git 2.0 it also stages deletions, but only in the <strong>current directory and below</strong>. From the repository root it does the same as <code>git add -A</code>. From a subfolder it does not:</p>
+<pre><code>$ cd sub &amp;&amp; git add . &amp;&amp; git status --short
+ M a.txt
+ D b.txt
+A  sub/new2.txt
+?? .hidden
+?? new.txt</code></pre>
+<p>Only <code>sub/new2.txt</code> was staged. The changes outside <code>sub/</code> were left alone.</p>
+</section>
+<section id="git-add-a-shell-wildcard-not-a-git-feature" class="level2">
+<h2 class="anchored" data-anchor-id="git-add-a-shell-wildcard-not-a-git-feature"><code>git add *</code>: a shell wildcard, not a Git feature</h2>
+<p>The shell expands <code>*</code> into a list of file names <strong>before</strong> Git runs, so Git never sees the pattern. That causes three problems:</p>
+<ol type="1">
+<li><strong>Hidden files are skipped.</strong> <code>*</code> does not match names that start with a dot, such as <code>.hidden</code>, <code>.env</code> or <code>.github</code>.</li>
+<li><strong>Deletions are missed.</strong> A deleted file no longer exists, so <code>*</code> cannot expand to it.</li>
+<li><strong>Ignored folders cause an error.</strong> If <code>node_modules</code> is in the current directory, <code>*</code> hands it to Git, which refuses:</li>
+</ol>
+<pre><code>$ git add *
+The following paths are ignored by one of your .gitignore files:
+node_modules
+hint: Use -f if you really want to add them.</code></pre>
+<p>Git exits with an error, yet it still staged the other files:</p>
+<pre><code>M  a.txt
+ D b.txt
+A  new.txt
+A  sub/new2.txt
+?? .hidden</code></pre>
+<p><code>a.txt</code>, <code>new.txt</code> and <code>sub/new2.txt</code> are staged, but <code>b.txt</code> (deleted) and <code>.hidden</code> are not. That mix of staged and missed changes is easy to commit by accident.</p>
+</section>
+<section id="which-one-should-we-use" class="level2">
+<h2 class="anchored" data-anchor-id="which-one-should-we-use">Which one should we use?</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Command</th>
+<th>Scope</th>
+<th>New</th>
+<th>Modified</th>
+<th>Deleted</th>
+<th>Hidden</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>git add -A</code></td>
+<td>whole repository</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr class="even">
+<td><code>git add .</code></td>
+<td>current folder and below</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr class="odd">
+<td><code>git add *</code></td>
+<td>non-hidden names in the current folder</td>
+<td>yes</td>
+<td>yes</td>
+<td>no</td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>At the repository root, <code>git add .</code> and <code>git add -A</code> are the same, so either is fine.</li>
+<li>In a subfolder, choose by intent: <code>git add .</code> for this folder only, <code>git add -A</code> for everything.</li>
+<li>Skip <code>git add *</code>.</li>
+</ul>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Before staging, run <code>git status</code>, and check the result with <code>git status</code> or <code>git diff --staged</code> afterwards. Files such as <code>.env</code> secrets, build folders and temporary files should be in <code>.gitignore</code> first, because <code>git add -A</code> and <code>git add .</code> will stage anything that is not ignored.</p>
+</div>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>Linux</category>
+  <category>Tools</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/git-add-variants.html</guid>
+  <pubDate>Fri, 23 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/linux-git.jpeg" medium="image" type="image/jpeg"/>
+</item>
+<item>
+  <title>Line Breaks in LaTeX: Which Command to Use</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/latex-linebreak.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/latex-linebreak.svg" class="img-fluid figure-img" alt="Two paragraphs between margins. With a double backslash the first line ends early and leaves a gap. With linebreak the words on that line are stretched to touch the right margin."></p>
+<figcaption>A double backslash leaves a gap at the right margin; <code>\linebreak</code> stretches the line to reach it.</figcaption>
+</figure>
+</div>
+<p>In LaTeX, pressing Enter once does nothing: a single newline in the source is treated as a space. To start a new line we need a command. Which one depends on what we want the text around the break to look like.</p>
+<section id="and-newline-break-now-leave-the-line-short" class="level2">
+<h2 class="anchored" data-anchor-id="and-newline-break-now-leave-the-line-short"><code>\\</code> and <code>\newline</code>: break now, leave the line short</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb1-1">First line<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">\\</span></span>
+<span id="cb1-2">Second line</span></code></pre></div></div>
+<p>Both commands end the current line at once and continue on the next line, <em>without</em> starting a new paragraph. The line is not stretched, so it ends early and leaves an empty space at the right.</p>
+<p>Two useful variants of <code>\\</code>:</p>
+<ul>
+<li><code>\\[2ex]</code> adds extra vertical space after the break.</li>
+<li><code>\\*</code> also forbids a page break right after the line.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb2-1">Title<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">\\</span>[2ex]</span>
+<span id="cb2-2">Text that starts a little lower.</span></code></pre></div></div>
+</section>
+<section id="linebreak-break-now-stretch-the-line" class="level2">
+<h2 class="anchored" data-anchor-id="linebreak-break-now-stretch-the-line"><code>\linebreak</code>: break now, stretch the line</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb3-1">This text is broken here<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">\linebreak</span> and the rest continues on the next line.</span></code></pre></div></div>
+<p><code>\linebreak</code> also ends the line at that spot, but it stretches the spaces so the line reaches the right margin. With only a few words on the line, the gaps become large and ugly:</p>
+<pre><code>This       text      is     broken      here
+and the rest continues on the next line.</code></pre>
+<p>It takes an optional strength from 0 to 4, written <code>\linebreak[n]</code>. A value of 4, the default, forces the break. Smaller values only <em>request</em> one, which LaTeX may ignore.</p>
+</section>
+<section id="a-new-paragraph-blank-line-or-par" class="level2">
+<h2 class="anchored" data-anchor-id="a-new-paragraph-blank-line-or-par">A new paragraph: blank line or <code>\par</code></h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb5-1">End of the first paragraph.</span>
+<span id="cb5-2"></span>
+<span id="cb5-3">Start of the second paragraph.</span></code></pre></div></div>
+<p>A blank line in the source (or the <code>\par</code> command) ends the paragraph. Depending on the document class, the next paragraph gets an indent or extra vertical space. If we only want the next line, not a new paragraph, we should not use a blank line.</p>
+</section>
+<section id="inside-tables" class="level2">
+<h2 class="anchored" data-anchor-id="inside-tables">Inside tables</h2>
+<p>In a <code>tabular</code>, <code>\\</code> ends the <em>row</em>, not just the line:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb6-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">\begin</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">tabular</span>}{ll}</span>
+<span id="cb6-2">  a<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">\\</span>b <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span> c <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">\\</span></span>
+<span id="cb6-3">  d <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span> e</span>
+<span id="cb6-4"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">\end</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">tabular</span>}</span></code></pre></div></div>
+<p>This gives three rows: <code>a</code>, then <code>b c</code>, then <code>d e</code>. To break a line <em>inside one cell</em>, the column must be a paragraph column such as <code>p{3cm}</code>, and we use <code>\newline</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb7-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">\begin</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">tabular</span>}{p{3cm}l}</span>
+<span id="cb7-2">  first<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">\newline</span> second <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span> x <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">\\</span></span>
+<span id="cb7-3"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">\end</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">tabular</span>}</span></code></pre></div></div>
+<pre><code>first    x
+second</code></pre>
+<p>In an ordinary <code>l</code>, <code>c</code> or <code>r</code> column, <code>\newline</code> has no effect, and the cell stays on one line.</p>
+</section>
+<section id="comparison" class="level2">
+<h2 class="anchored" data-anchor-id="comparison">Comparison</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Command</th>
+<th>Effect</th>
+<th>Right margin</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>\\</code>, <code>\newline</code></td>
+<td>Ends the line at once</td>
+<td>Line stays short</td>
+</tr>
+<tr class="even">
+<td><code>\\*</code></td>
+<td>Ends the line at once, no page break after it</td>
+<td>Line stays short</td>
+</tr>
+<tr class="odd">
+<td><code>\\[2ex]</code></td>
+<td>Ends the line, adds vertical space</td>
+<td>Line stays short</td>
+</tr>
+<tr class="even">
+<td><code>\linebreak</code></td>
+<td>Ends the line at once</td>
+<td>Line is stretched</td>
+</tr>
+<tr class="odd">
+<td>blank line, <code>\par</code></td>
+<td>Ends the paragraph</td>
+<td>Last line stays short</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For spacing between lines or paragraphs, avoid stacking <code>\\</code> commands. Use <code>\\[length]</code>, or set <code>\parskip</code> and <code>\parindent</code> once in the preamble, so the layout stays consistent.</p>
+</div>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>LaTeX</category>
+  <category>Tools</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/latex-linebreak.html</guid>
+  <pubDate>Fri, 23 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/latex-linebreak.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
   <title>Create Multiple Files at Once in the Linux Terminal</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://www.statmania.info/blog/posts/linux-create-multiple-files.html</link>
@@ -9512,970 +9843,6 @@ integer(0)</code></pre>
   <guid>https://www.statmania.info/blog/posts/zero-based-indexing-vs-r.html</guid>
   <pubDate>Wed, 14 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/zero-based-indexing.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Handy Linux Shell One-Liners for Everyday File Tasks</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/linux-shell-one-liners.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/linux-shell-one-liners.svg" class="img-fluid figure-img" alt="A terminal window shows an ls command, a for loop over mp4 files, and find piped to wc -l. Beside it, three messy file names are renamed to 1.jpg, 2.jpg and 3.png."></p>
-<figcaption>Short shell loops can rename, convert and count many files at once.</figcaption>
-</figure>
-</div>
-<p>These are small commands we keep coming back to. Each one was run in Bash before we wrote it down here, and the outputs are real.</p>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Bulk renaming and in-place editing change files for good. Try each command in a scratch folder first, or on a copy.</p>
-</div>
-</div>
-<section id="where-are-we" class="level2">
-<h2 class="anchored" data-anchor-id="where-are-we">Where are we?</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">pwd</span></span></code></pre></div></div>
-<p><code>pwd</code> prints the current working directory.</p>
-</section>
-<section id="open-a-file-with-its-default-application" class="level2">
-<h2 class="anchored" data-anchor-id="open-a-file-with-its-default-application">Open a file with its default application</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">xdg-open</span> filename</span></code></pre></div></div>
-<p><code>xdg-open</code> uses the application the desktop has chosen for that file type, so a PDF opens in the PDF viewer and a folder opens in the file manager.</p>
-</section>
-<section id="look-inside-protected-system-folders" class="level2">
-<h2 class="anchored" data-anchor-id="look-inside-protected-system-folders">Look inside protected system folders</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sudo</span> nautilus    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># or dolphin, thunar</span></span></code></pre></div></div>
-<p>This opens the file manager with administrator rights. Use it only to look. Anything we create or change this way can end up owned by root, and then our normal user cannot edit it. Close it when we are done.</p>
-</section>
-<section id="clean-up-text-with-sed" class="level2">
-<h2 class="anchored" data-anchor-id="clean-up-text-with-sed">Clean up text with <code>sed</code></h2>
-<p>We will use a small file in which blank lines separate the lines:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">printf</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'a\n\nb\n\n\nc\n'</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> file.txt</span></code></pre></div></div>
-<section id="remove-blank-lines" class="level3">
-<h3 class="anchored" data-anchor-id="remove-blank-lines">Remove blank lines</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sed</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'/^$/d'</span> file.txt</span></code></pre></div></div>
-<pre><code>a
-b
-c</code></pre>
-</section>
-<section id="add-a-hyphen-before-each-line" class="level3">
-<h3 class="anchored" data-anchor-id="add-a-hyphen-before-each-line">Add a hyphen before each line</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sed</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'s/^/-/'</span> file.txt</span></code></pre></div></div>
-<pre><code>-a
--
--b
--
--
--c</code></pre>
-<p>Blank lines get a hyphen too. To skip them, run the blank-line removal first, or use <code>sed '/./s/^/-/' file.txt</code>.</p>
-</section>
-<section id="put-a-blank-line-after-every-line" class="level3">
-<h3 class="anchored" data-anchor-id="put-a-blank-line-after-every-line">Put a blank line after every line</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sed</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-i</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'s/$/\n/'</span> file.txt</span></code></pre></div></div>
-<p>With GNU <code>sed</code> (the one on most Linux systems), this turns every newline into a double newline. The <code>-i</code> option edits the file in place. To keep a backup, write <code>-i.bak</code> instead. We get the original as <code>file.txt.bak</code>.</p>
-</section>
-</section>
-<section id="count-files" class="level2">
-<h2 class="anchored" data-anchor-id="count-files">Count files</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">find</span> . <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-type</span> f <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">wc</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-l</span></span></code></pre></div></div>
-<p><code>find</code> lists every regular file below the current folder, including subfolders, and <code>wc -l</code> counts the lines. In a test folder with two files and one more inside a subfolder, it printed <code>3</code>. To count only the files directly in the folder, limit the depth:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">find</span> . <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-maxdepth</span> 1 <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-type</span> f <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">wc</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-l</span></span></code></pre></div></div>
-<p>That printed <code>2</code> for the same folder.</p>
-</section>
-<section id="rename-many-files" class="level2">
-<h2 class="anchored" data-anchor-id="rename-many-files">Rename many files</h2>
-<section id="number-files-in-order" class="level3">
-<h3 class="anchored" data-anchor-id="number-files-in-order">Number files in order</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ls</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-v</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cat</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-n</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">while</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">read</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">n</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">f</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">do</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mv</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-n</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$f</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">.jpg"</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">done</span></span></code></pre></div></div>
-<p>Here <code>ls -v</code> sorts names in natural order (<code>z2</code> before <code>z10</code>), <code>cat -n</code> puts a number in front of each name, and the loop renames each file to that number. The example renames everything to <code>.jpg</code>, so change the extension to suit. The <code>-n</code> option stops <code>mv</code> from overwriting an existing file.</p>
-<p>On six files (<code>a.jpg</code>, <code>b.jpg</code>, <code>c.jpg</code>, <code>my pic.jpg</code>, <code>z2.jpg</code>, <code>z10.jpg</code>) this gave <code>1.jpg</code> to <code>6.jpg</code>, and the name with a space worked too.</p>
-</section>
-<section id="number-files-from-a-chosen-start-with-the-same-extension" class="level3">
-<h3 class="anchored" data-anchor-id="number-files-from-a-chosen-start-with-the-same-extension">Number files from a chosen start, with the same extension</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">num</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>0<span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> i <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">do</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mv</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$i</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$(</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">printf</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'%04d'</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$num)</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">.</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${i</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">##</span><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span>.<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">((</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">num</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">));</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">done</span></span></code></pre></div></div>
-<p>This pads the number to four digits and keeps each file’s own extension. Set <code>num=10</code> to start at 10. Three files named <code>a.jpg</code>, <code>b.jpg</code> and <code>c.jpg</code> became <code>0010.jpg</code>, <code>0011.jpg</code> and <code>0012.jpg</code>.</p>
-<p>We use <code>${i##*.}</code> (the part after the last dot), so a name such as <code>my.photo.jpg</code> keeps <code>jpg</code>. The <code>*</code> also matches folders, so run this where only the files to rename are present.</p>
-<p>For a longer discussion of the numbering approach, see <a href="https://stackoverflow.com/questions/3211595/renaming-files-in-a-folder-to-sequential-numbers">this Stack Overflow answer</a>.</p>
-</section>
-<section id="replace-underscores-with-hyphens" class="level3">
-<h3 class="anchored" data-anchor-id="replace-underscores-with-hyphens">Replace underscores with hyphens</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> f <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span>_<span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">do</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mv</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$f</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${f</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">//</span><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">_</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span>-<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">done</span></span></code></pre></div></div>
-<p><code>${f//_/-}</code> replaces every <code>_</code> in the name. Starting from <code>Report_Final_v2.TXT</code>, we got <code>Report-Final-v2.TXT</code>.</p>
-</section>
-<section id="replace-spaces-with-hyphens" class="level3">
-<h3 class="anchored" data-anchor-id="replace-spaces-with-hyphens">Replace spaces with hyphens</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> file <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">' '</span><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">do</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mv</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$file</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${file</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">//</span><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> </span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span>-<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">done</span></span></code></pre></div></div>
-<p><code>My Photo One.JPG</code> became <code>My-Photo-One.JPG</code>.</p>
-</section>
-<section id="rename-to-lowercase" class="level3">
-<h3 class="anchored" data-anchor-id="rename-to-lowercase">Rename to lowercase</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> f <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">do</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mv</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-n</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$f</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${f</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,,</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">done</span></span></code></pre></div></div>
-<p><code>${f,,}</code> lowercases the name. Together, the three steps above turned <code>My Photo One.JPG</code> into <code>my-photo-one.jpg</code> and <code>Report_Final_v2.TXT</code> into <code>report-final-v2.txt</code>.</p>
-</section>
-<section id="the-same-with-perl-rename" class="level3">
-<h3 class="anchored" data-anchor-id="the-same-with-perl-rename">The same with Perl <code>rename</code></h3>
-<p>Many systems also have a <code>rename</code> command that takes a Perl expression (on Debian and Ubuntu, <code>sudo apt install rename</code>). These forms do the same jobs:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">rename</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'s/_/-/g'</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span>         <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># underscores to hyphens</span></span>
-<span id="cb17-2"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">rename</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'y/A-Z/a-z/'</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span>      <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># to lowercase</span></span></code></pre></div></div>
-<p>We did not have this <code>rename</code> installed here, so we only tested the expressions themselves in Perl. <code>My_File_Name_v2.JPG</code> became <code>My-File-Name-v2.JPG</code> with <code>s/_/-/g</code>, and <code>My_File.JPG</code> became <code>my_file.jpg</code> with <code>y/A-Z/a-z/</code>. Note the <code>g</code>: without it, only the first underscore changes (<code>a_b_c</code> became <code>a-b_c</code>).</p>
-</section>
-</section>
-<section id="convert-all-mp4-files-to-mp3" class="level2">
-<h2 class="anchored" data-anchor-id="convert-all-mp4-files-to-mp3">Convert all mp4 files to mp3</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> f <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span>.mp4<span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">do</span></span>
-<span id="cb18-2">  <span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">ffmpeg</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-i</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$f</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-b:a</span> 192K <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-vn</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${f</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%</span>.mp4<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">.mp3"</span></span>
-<span id="cb18-3"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">done</span></span></code></pre></div></div>
-<p><code>-vn</code> drops the video, <code>-b:a 192K</code> sets the audio bitrate, and <code>${f%.mp4}</code> removes the <code>.mp4</code> ending from the name. Because <code>"$f"</code> is in quotes, names with spaces work. A test folder with <code>clip one.mp4</code> and <code>second.mp4</code> ended up with <code>clip one.mp3</code> and <code>second.mp3</code> next to them.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>An older version of this script looped over <code>ls . | grep .mp4</code> and changed <code>IFS</code>. That breaks on names with spaces and also matches any name with “mp4” inside it. A plain <code>for f in *.mp4</code> loop avoids both problems.</p>
-</div>
-</div>
-
-
-</section>
-
- ]]></description>
-  <category>Linux</category>
-  <category>Shell</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/linux-shell-one-liners.html</guid>
-  <pubDate>Tue, 13 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/linux-shell-one-liners.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Recursion in R: Functions That Call Themselves</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/r-recursion.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<p>R, like C and Python, supports <strong>recursion</strong>: a function can call itself, directly or through another function. Every recursive function needs two parts:</p>
-<ul>
-<li>a <strong>base case</strong> that returns an answer without calling itself, so the process stops;</li>
-<li>a <strong>recursive case</strong> that calls the function again on a smaller problem.</li>
-</ul>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/r-recursion.svg" class="img-fluid figure-img" alt="A large circle with the letter R holds a half-size circle with an R, which holds another smaller circle again, shrinking to the right. Lines of R code for a recursive function float beside it."></p>
-<figcaption>An R inside a smaller R inside a smaller R: recursion is a function solving a problem by using a smaller copy of itself.</figcaption>
-</figure>
-</div>
-<section id="a-basic-example" class="level2">
-<h2 class="anchored" data-anchor-id="a-basic-example">A basic example</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">factorial_rec <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(n) {</span>
-<span id="cb1-2">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> (n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">return</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)        <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># base case</span></span>
-<span id="cb1-3">  n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">factorial_rec</span>(n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)     <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># recursive case</span></span>
-<span id="cb1-4">}</span>
-<span id="cb1-5"></span>
-<span id="cb1-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">factorial_rec</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>)</span></code></pre></div></div>
-<pre><code>[1] 120</code></pre>
-<p>The call for 5 waits for the call for 4, which waits for the call for 3, and so on. At <code>n = 1</code> the base case answers, and the results multiply on the way back.</p>
-</section>
-<section id="indirect-recursion" class="level2">
-<h2 class="anchored" data-anchor-id="indirect-recursion">Indirect recursion</h2>
-<p>Two functions can call each other. Here <code>is_even()</code> and <code>is_odd()</code> take turns until <code>n</code> reaches 0:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">is_even <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(n) {</span>
-<span id="cb3-2">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> (n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">return</span>(<span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>)</span>
-<span id="cb3-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">is_odd</span>(n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb3-4">}</span>
-<span id="cb3-5"></span>
-<span id="cb3-6">is_odd <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(n) {</span>
-<span id="cb3-7">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> (n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">return</span>(<span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>)</span>
-<span id="cb3-8">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">is_even</span>(n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb3-9">}</span>
-<span id="cb3-10"></span>
-<span id="cb3-11"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">is_even</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>)</span></code></pre></div></div>
-<pre><code>[1] TRUE</code></pre>
-</section>
-<section id="recall-recursion-without-the-functions-name" class="level2">
-<h2 class="anchored" data-anchor-id="recall-recursion-without-the-functions-name"><code>Recall()</code>: recursion without the function’s name</h2>
-<p><code>Recall()</code> calls the function that is currently running. It helps for anonymous functions, or when we rename a function later and do not want to edit the body:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">fib <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(n) {</span>
-<span id="cb5-2">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> (n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">return</span>(n)</span>
-<span id="cb5-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">Recall</span>(n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">Recall</span>(n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>)</span>
-<span id="cb5-4">}</span>
-<span id="cb5-5"></span>
-<span id="cb5-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fib</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>)</span></code></pre></div></div>
-<pre><code>[1] 55</code></pre>
-</section>
-<section id="recursion-on-nested-lists" class="level2">
-<h2 class="anchored" data-anchor-id="recursion-on-nested-lists">Recursion on nested lists</h2>
-<p>Lists can hold other lists, and recursion follows that shape naturally. This function counts how deeply a list is nested:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">depth <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(x) {</span>
-<span id="cb7-2">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> (<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">is.list</span>(x)) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">return</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>)           <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># not a list: depth 0</span></span>
-<span id="cb7-3">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> (<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">length</span>(x) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">return</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)        <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># empty list: avoid max() of nothing</span></span>
-<span id="cb7-4">  <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">vapply</span>(x, depth, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">numeric</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)))</span>
-<span id="cb7-5">}</span>
-<span id="cb7-6"></span>
-<span id="cb7-7"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">depth</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>))))</span></code></pre></div></div>
-<pre><code>[1] 3</code></pre>
-<p>The outer list, the list holding <code>2</code>, and the list holding <code>3</code> make three levels. Without the empty-list check, <code>depth(list())</code> would warn and return <code>-Inf</code>, because <code>max()</code> of nothing has no answer.</p>
-</section>
-<section id="limits-in-r" class="level2">
-<h2 class="anchored" data-anchor-id="limits-in-r">Limits in R</h2>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>R does <strong>not</strong> optimise tail calls, so every call stays on the stack until the whole chain finishes. Deep recursion can fail.</p>
-</div>
-</div>
-<p>Let’s count down from <code>n</code> with a recursive function and see how deep we can go on a default R session:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">f <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(n) <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> (n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>) <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">else</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">f</span>(n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb9-2"></span>
-<span id="cb9-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">f</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000</span>)</span>
-<span id="cb9-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">f</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5000</span>)</span></code></pre></div></div>
-<pre><code>[1] 1000
-Error: evaluation nested too deeply: infinite recursion / options(expressions=)?</code></pre>
-<p>Three limits matter.</p>
-<section id="the-expressions-limit" class="level3">
-<h3 class="anchored" data-anchor-id="the-expressions-limit">The <code>expressions</code> limit</h3>
-<p>R caps how deeply expressions nest. The default is 5000, and we can raise it (up to 500000):</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">options</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">expressions =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">50000</span>)</span>
-<span id="cb11-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">f</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5000</span>)</span></code></pre></div></div>
-<pre><code>[1] 5000</code></pre>
-</section>
-<section id="the-stack-limit" class="level3">
-<h3 class="anchored" data-anchor-id="the-stack-limit">The stack limit</h3>
-<p>Raising <code>expressions</code> only moves the wall. On our machine, <code>f(20000)</code> then fails with <code>node stack overflow</code>. A different error, <code>C stack usage is too close to the limit</code>, can also appear. Both come from fixed memory limits, and the exact depth depends on the system.</p>
-</section>
-<section id="speed" class="level3">
-<h3 class="anchored" data-anchor-id="speed">Speed</h3>
-<p>Function calls cost more than loop steps. Naive <code>fib(25)</code> took roughly 0.1 to 0.2 seconds here, and each extra step makes it about 1.6 times slower, because the same values are computed again and again.</p>
-</section>
-</section>
-<section id="memoisation" class="level2">
-<h2 class="anchored" data-anchor-id="memoisation">Memoisation</h2>
-<p>Caching results fixes the repeated work. The <code>memoise</code> package (install it with <code>install.packages("memoise")</code>) wraps a function so each answer is computed once:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(memoise)</span>
-<span id="cb13-2"></span>
-<span id="cb13-3">fib_fast <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">memoise</span>(<span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(n) {</span>
-<span id="cb13-4">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> (n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">return</span>(n)</span>
-<span id="cb13-5">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fib_fast</span>(n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fib_fast</span>(n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>)</span>
-<span id="cb13-6">})</span>
-<span id="cb13-7"></span>
-<span id="cb13-8"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fib_fast</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">40</span>)</span></code></pre></div></div>
-<pre><code>[1] 102334155</code></pre>
-<p>Without the cache, the same call would repeat hundreds of millions of steps.</p>
-</section>
-<section id="when-a-loop-is-better" class="level2">
-<h2 class="anchored" data-anchor-id="when-a-loop-is-better">When a loop is better</h2>
-<p>For simple repeated work, a loop is faster and has no depth limit:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1">fib_loop <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(n) {</span>
-<span id="cb15-2">  a <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span></span>
-<span id="cb15-3">  b <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span></span>
-<span id="cb15-4">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> (i <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">seq_len</span>(n)) {</span>
-<span id="cb15-5">    next_value <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> a <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> b</span>
-<span id="cb15-6">    a <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> b</span>
-<span id="cb15-7">    b <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> next_value</span>
-<span id="cb15-8">  }</span>
-<span id="cb15-9">  a</span>
-<span id="cb15-10">}</span>
-<span id="cb15-11"></span>
-<span id="cb15-12"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fib_loop</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">40</span>)</span></code></pre></div></div>
-<pre><code>[1] 102334155</code></pre>
-<p><code>Reduce()</code> is another option for folds, for example <code>Reduce("*", 1:5)</code> gives <code>120</code>, the same as <code>factorial_rec(5)</code>.</p>
-</section>
-<section id="when-recursion-fits" class="level2">
-<h2 class="anchored" data-anchor-id="when-recursion-fits">When recursion fits</h2>
-<p>Recursion is a good choice when the problem is naturally recursive:</p>
-<ul>
-<li>walking nested lists or JSON-like data;</li>
-<li>working with trees (for example from <code>rpart</code> or <code>data.tree</code>);</li>
-<li>going through R’s own code (language objects);</li>
-<li>divide-and-conquer methods such as merge sort and quicksort.</li>
-</ul>
-<p>Rule of thumb: use recursion when it makes the code <strong>clearer</strong>. Switch to a loop when the depth may pass about 1000, when speed matters, or when we hit the <code>expressions</code> or stack limits above.</p>
-
-
-</section>
-
- ]]></description>
-  <category>R</category>
-  <category>Programming</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/r-recursion.html</guid>
-  <pubDate>Tue, 13 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/r-recursion.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>
