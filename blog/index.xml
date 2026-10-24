@@ -507,6 +507,519 @@ Note
   <media:content url="https://www.statmania.info/blog/img/c-pointer-address.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 <item>
+  <title>What void Means in C: Return Type vs. Parameter List</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/c-void-return-and-parameter.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/c-void-return-and-parameter.svg" class="img-fluid figure-img" alt="Two function boxes. void show(int n) takes an int but has a dashed empty output. int fortyTwo(void) has a dashed empty input and returns 42."></p>
+<figcaption>void on the way out means no result; void on the way in means no arguments.</figcaption>
+</figure>
+</div>
+<p>Consider this function:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> myFunction<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-2">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-3"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>It <strong>takes an argument</strong> and <strong>returns a value</strong>, so replacing either part with <code>void</code> would break it. <code>void</code> is for the other kinds of functions, and it means something different depending on where we write it.</p>
+<section id="the-four-combinations" class="level2">
+<h2 class="anchored" data-anchor-id="the-four-combinations">The four combinations</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span>  myFunction<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// takes an int, returns an int</span></span>
+<span id="cb2-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span>  myFunction<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// takes nothing, returns an int</span></span>
+<span id="cb2-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span> myFunction<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// takes an int, returns nothing</span></span>
+<span id="cb2-4"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span> myFunction<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// takes nothing, returns nothing</span></span></code></pre></div></div>
+</section>
+<section id="case-1-void-as-the-return-type" class="level2">
+<h2 class="anchored" data-anchor-id="case-1-void-as-the-return-type">Case 1: <code>void</code> as the return type</h2>
+<p>The function has no result. Its whole job is a side effect, such as printing, writing to a file, or changing an array in place.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span> greet<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> times<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb3-2">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> times<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span></span>
+<span id="cb3-3">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Hello</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb3-4"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>We call it as a statement. Nothing comes back, so there is nothing to pass to <code>printf</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1">greet<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>                 <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// correct</span></span>
+<span id="cb4-2">printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> greet<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">));</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// error: invalid use of void expression</span></span></code></pre></div></div>
+<p>A sorting function is a typical example:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span> bubbleSort<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[],</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// sorts a[] in place, returns nothing</span></span></code></pre></div></div>
+<p>The array is changed through the pointer, so no return value is needed. Writing <code>void</code> documents that, and the compiler stops us from using a result that does not exist.</p>
+</section>
+<section id="case-2-void-as-the-parameter-list" class="level2">
+<h2 class="anchored" data-anchor-id="case-2-void-as-the-parameter-list">Case 2: <code>void</code> as the parameter list</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> fortyTwo<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb6-2">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">42</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb6-3"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>Why not simply write <code>int fortyTwo()</code>? In C (before C23), empty parentheses mean <em>unspecified arguments</em>, which is the old pre-prototype style. The compiler does not check calls against it. The test below compiles without a single error:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> f<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">();</span>                       <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// unspecified parameters</span></span>
+<span id="cb7-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> f<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// accepted</span></span></code></pre></div></div>
+<p>With <code>(void)</code> the compiler enforces zero arguments:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb8-1"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> f<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb8-2"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> f<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<pre><code>error: too many arguments to function ‘f’</code></pre>
+<p>So <code>int f(void)</code> gives us type checking, which is the main reason to write it in C. In C++, and from C23 onward, <code>f()</code> and <code>f(void)</code> mean the same thing, but writing <code>(void)</code> is still correct and works with older compilers.</p>
+</section>
+<section id="what-void-does-to-myfunction" class="level2">
+<h2 class="anchored" data-anchor-id="what-void-does-to-myfunction">What <code>void</code> does to <code>myFunction</code></h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Change</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>void myFunction(int x)</code></td>
+<td><code>printf("%d", myFunction(3))</code> no longer compiles. Call it as <code>myFunction(3);</code> instead.</td>
+</tr>
+<tr class="even">
+<td><code>int myFunction(void)</code></td>
+<td><code>myFunction(3)</code> is an error, since it now takes no arguments.</td>
+</tr>
+<tr class="odd">
+<td><code>void myFunction(void)</code></td>
+<td>Both the call and the <code>printf</code> break.</td>
+</tr>
+</tbody>
+</table>
+<p>Our function needs an input and produces an output, so <code>void</code> is the wrong tool for it.</p>
+</section>
+<section id="all-together" class="level2">
+<h2 class="anchored" data-anchor-id="all-together">All together</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb10-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdio.h&gt;</span></span>
+<span id="cb10-2"></span>
+<span id="cb10-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span>  add<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> b<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>  <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> a <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> b<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span>          <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// returns a value</span></span>
+<span id="cb10-4"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span> show<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span> printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span>     <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// side effect only</span></span>
+<span id="cb10-5"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span>  fortyTwo<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>     <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">42</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span>             <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// takes nothing</span></span>
+<span id="cb10-6"></span>
+<span id="cb10-7"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb10-8">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> add<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">));</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// value used</span></span>
+<span id="cb10-9">    show<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>add<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">));</span>             <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// value passed to a void function</span></span>
+<span id="cb10-10">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> fortyTwo<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">());</span>  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// called with no arguments</span></span>
+<span id="cb10-11">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb10-12"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<pre><code>5
+5
+42</code></pre>
+<p><code>show</code> “just prints”, <code>fortyTwo</code> “takes nothing”, and <code>main(void)</code> “takes no command-line arguments”.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>The rule.</strong> A <code>void</code> return means “call me for what I do, not for a value”. A <code>void</code> parameter list means “I take no arguments, and the compiler should enforce that”. If a function needs to take or give a value, use neither.</p>
+</div>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>C</category>
+  <category>Programming</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/c-void-return-and-parameter.html</guid>
+  <pubDate>Fri, 23 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/c-void-return-and-parameter.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
   <title>Create Multiple Files at Once in the Linux Terminal</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://www.statmania.info/blog/posts/linux-create-multiple-files.html</link>
@@ -9963,221 +10476,6 @@ font-style: inherit;">40</span>)</span></code></pre></div></div>
   <guid>https://www.statmania.info/blog/posts/r-recursion.html</guid>
   <pubDate>Tue, 13 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/r-recursion.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>How to Test a Small C Snippet Quickly</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/c-test-code-quickly.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/c-test-code-quickly.svg" class="img-fluid figure-img" alt="A sketch of a person at a computer whose terminal runs gcc test.c and prints hi, beside a hexagonal C logo with scraps of C code floating around."></p>
-<figcaption>Write a few lines of C, then build and run them with one gcc command.</figcaption>
-</figure>
-</div>
-<p>Sometimes we only want to know whether a few lines of C work. Opening a full IDE for that is slow. Here are four quick ways, from no setup at all to a faster loop on our own machine.</p>
-<section id="online-compiler-no-setup" class="level3">
-<h3 class="anchored" data-anchor-id="online-compiler-no-setup">1. Online compiler (no setup)</h3>
-<p>To check an algorithm or a syntax idea, an online sandbox is enough. We don’t need to install anything.</p>
-<ul>
-<li><a href="https://www.onlinegdb.com/online_c_compiler">OnlineGDB</a>: has a debugger with breakpoints.</li>
-<li><a href="https://godbolt.org/">Compiler Explorer (Godbolt)</a>: shows the assembly that GCC or Clang generate from our code.</li>
-<li><a href="https://replit.com/">Replit</a>: good for saving and sharing snippets.</li>
-</ul>
-</section>
-<section id="one-command-in-the-terminal" class="level3">
-<h3 class="anchored" data-anchor-id="one-command-in-the-terminal">2. One command in the terminal</h3>
-<p>If GCC or Clang is installed, we save the snippet as <code>test.c</code> and build and run it in one line:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">gcc</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-Wall</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-Wextra</span> test.c <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-o</span> test <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">&amp;&amp;</span> <span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">./test</span></span></code></pre></div></div>
-<ul>
-<li><code>&amp;&amp;</code> runs <code>./test</code> <strong>only if</strong> the compilation succeeded.</li>
-<li><code>-Wall -Wextra</code> turn on common warnings, so mistakes show up immediately. For example, <code>int x; return x;</code> gives <code>warning: 'x' is used uninitialized</code>.</li>
-</ul>
-<p>We can even skip the file. <code>gcc -x c -</code> reads C code from standard input:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">printf</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'#include &lt;stdio.h&gt;\nint main(void){printf("hi\\n");return 0;}\n'</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">gcc</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-x</span> c <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-o</span> t <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">&amp;&amp;</span> <span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">./t</span></span></code></pre></div></div>
-<pre><code>hi</code></pre>
-</section>
-<section id="editor-shortcuts" class="level3">
-<h3 class="anchored" data-anchor-id="editor-shortcuts">3. Editor shortcuts</h3>
-<p>If we prefer an editor, a plugin can compile and run for us:</p>
-<ul>
-<li><strong>VS Code:</strong> install the <em>Code Runner</em> extension, then press <code>Ctrl + Alt + N</code> (<code>Cmd + Option + N</code> on Mac) with the <code>.c</code> file open.</li>
-<li><strong>Sublime Text:</strong> with a C build system, press <code>Ctrl + B</code> (<code>Cmd + B</code> on Mac).</li>
-</ul>
-</section>
-<section id="feed-input-from-a-file" class="level3">
-<h3 class="anchored" data-anchor-id="feed-input-from-a-file">4. Feed input from a file</h3>
-<p>If the program uses <code>scanf</code>, retyping the values on every run gets tedious. We put them in a file instead. Take this program:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb4-2"></span>
-<span id="cb4-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb4-4">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> b<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb4-5">    scanf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span>a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span>b<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb4-6">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> + </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> = </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> b<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> a <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> b<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb4-7">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb4-8"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>Create <code>input.txt</code> containing <code>3 4</code>, then redirect it into the program with <code>&lt;</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">./test</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> input.txt</span></code></pre></div></div>
-<pre><code>3 + 4 = 7</code></pre>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Catch memory bugs too
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Adding <code>-fsanitize=address,undefined -g</code> to the <code>gcc</code> command makes the program report out-of-bounds access and undefined behaviour while it runs. It is handy for short tests.</p>
-</div>
-</div>
-</section>
-<section id="summary" class="level3">
-<h3 class="anchored" data-anchor-id="summary">Summary</h3>
-<ul>
-<li>Quick idea, no compiler: use an online sandbox.</li>
-<li>Compiler installed: <code>gcc -Wall -Wextra test.c -o test &amp;&amp; ./test</code>.</li>
-<li>Repeated <code>scanf</code> input: <code>./test &lt; input.txt</code>.</li>
-</ul>
-</section>
-<section id="references" class="level3">
-<h3 class="anchored" data-anchor-id="references">References</h3>
-<ul>
-<li><a href="https://stackoverflow.com/questions/6815383/how-to-test-c-or-c-snippet-quickly">Stack Overflow: how to test a C or C++ snippet quickly</a></li>
-<li><a href="https://www.quora.com/How-can-I-test-a-C-or-C++-program-without-having-to-manually-enter-inputs-every-time">Quora: testing a C or C++ program without entering inputs manually</a></li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>C</category>
-  <category>Programming</category>
-  <category>Tips</category>
-  <guid>https://www.statmania.info/blog/posts/c-test-code-quickly.html</guid>
-  <pubDate>Mon, 12 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/c-test-code-quickly.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>
