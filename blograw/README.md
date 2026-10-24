@@ -117,7 +117,7 @@ GitHub Pages updates in a minute or two. Readers' browsers may keep the old `blo
 
 ## Light / dark theme
 
-The navbar has a sun/moon toggle; dark is the default and the choice is remembered per browser. Quarto does the switching (`theme:` in `_quarto.yml`: `dark: [cosmo, theme-dark.scss]`, `light: cosmo`; code highlighting `dracula` / `github`), set by the Blogkit extension. The dark look is the base of the extension's `styles.css`; the light overrides are in the last section of that file under `body.quarto-light`, and `site.css` keeps the navbar, post banner and homepage hero dark bands in light mode. When you add new components, give them colours through the `--bk-*` CSS variables so both themes work.
+The navbar has a sun/moon toggle; dark is the default and the choice is remembered per browser. Quarto does the switching (`theme:` in `_quarto.yml`: `dark: [cosmo, theme-dark.scss]`, `light: cosmo`; code highlighting `dracula` / `github`), set by the Blogkit extension. The dark look is the base of the extension's `styles.css`; the light overrides are in the last section of that file under `body.quarto-light`, and the navbar, post banner and homepage hero follow the theme too (`site.css` only adds the starfield and hero). When you add new components, give them colours through the `--bk-*` CSS variables so both themes work.
 
 ## Editing manual: where each thing on the pages comes from
 

@@ -133,7 +133,7 @@ then push to `master` on GitHub Pages.
 >    generic, add a line to its `CHANGELOG.md`), commit and push that repo.
 > 2. Here run `cd blograw && quarto update extension statmania/quarto-blogkit` (or
 >    `quarto add ../../quarto-blogkit` to test before pushing), then a full `quarto render`.
-> 3. Only things that are truly specific to this site (starfield, `.sm-*` hero, dark bands, branding)
+> 3. Only things that are truly specific to this site (starfield, `.sm-*` hero, branding)
 >    go in `site.css` / `_quarto.yml` / `index.qmd` here.
 >
 > Never hand-edit `_extensions/blogkit/` in this repo: the next update overwrites it, and the
@@ -186,8 +186,7 @@ the empty-looking `theme-dark.scss` only exists because Quarto decides dark vs l
 so a dark scheme must actually be dark) and `highlight-style: {light: github, dark: dracula}`.
 Quarto adds a navbar toggle and puts `quarto-light` / `quarto-dark` on `<body>`. the extension's `styles.css` is the
 dark design; its final "Light theme" section overrides variables on `:root:has(body.quarto-light)` and
-fixes hardcoded colours under `body.quarto-light`. Navbar and post title banner re-assert
-the dark palette locally (dark bands on a light page); the homepage hero follows the theme; the starfield is hidden in light mode. Use `--sm-*`
+fixes hardcoded colours under `body.quarto-light`. Navbar, post title banner and homepage hero all follow the theme; the starfield is hidden in light mode. Use `--sm-*`
 variables, not hex colours, in new CSS.
 
 ## Starfield background
