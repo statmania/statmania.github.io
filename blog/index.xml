@@ -4187,6 +4187,307 @@ Warning
   <media:content url="https://www.statmania.info/blog/img/c-print-array-with-label.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 <item>
+  <title>Printing a 2D Array in Matrix Form in C</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/c-print-2d-array-in-matrix-form.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/c-print-2d-array-matrix.svg" class="img-fluid figure-img" alt="A 3 by 3 grid holding 1, 2, 3, 14, 25, 36 and 107, 208, 309. An arrow across the top marks the inner loop over columns, an arrow down the side marks the outer loop over rows, and a terminal on the right shows the same numbers in aligned rows."></p>
+<figcaption>The outer loop walks down the rows, the inner loop walks across the columns, and a newline ends each printed row.</figcaption>
+</figure>
+</div>
+<p>To print a 2D array as a matrix, we use <strong>nested <code>for</code> loops</strong>. The outer loop moves from row to row. The inner loop prints every element of the current row. Right after the inner loop finishes, we print a newline (<code>\n</code>) so the next row starts on a new line.</p>
+<section id="a-complete-example" class="level2">
+<h2 class="anchored" data-anchor-id="a-complete-example">A complete example</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdio.h&gt;</span></span>
+<span id="cb1-2"></span>
+<span id="cb1-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">()</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-4">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> rows <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-5">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> cols <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-6"></span>
+<span id="cb1-7">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 1. Initialise a 2D array</span></span>
+<span id="cb1-8">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> matrix<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">][</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-9">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">},</span></span>
+<span id="cb1-10">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">14</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">36</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">},</span></span>
+<span id="cb1-11">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">107</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">208</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">309</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-12">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">};</span></span>
+<span id="cb1-13"></span>
+<span id="cb1-14">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"The matrix is:</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb1-15"></span>
+<span id="cb1-16">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 2. Nested loops: rows outside, columns inside</span></span>
+<span id="cb1-17">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> rows<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-18">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> j <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> j <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> cols<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> j<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-19">            printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%4d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> matrix<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">][</span>j<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]);</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// width 4 keeps the columns aligned</span></span>
+<span id="cb1-20">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-21">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>                      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// end the row</span></span>
+<span id="cb1-22">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-23"></span>
+<span id="cb1-24">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-25"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>Output:</p>
+<pre class="text"><code>The matrix is:
+   1   2   3
+  14  25  36
+ 107 208 309</code></pre>
+</section>
+<section id="key-formatting-tricks" class="level2">
+<h2 class="anchored" data-anchor-id="key-formatting-tricks">Key formatting tricks</h2>
+<ul>
+<li><p><strong>Put <code>printf("\n")</code> after the inner loop but inside the outer loop.</strong> If it is missing, the whole matrix prints as one long line of numbers. If it is inside the inner loop, every number lands on its own line.</p></li>
+<li><p><strong>Use a width specifier such as <code>%4d</code>.</strong> It reserves at least four characters for each integer, so numbers with one, two or three digits still line up in vertical columns. Choose a width one larger than the longest number, so there is always a gap between columns.</p></li>
+<li><p><strong>A tab is the alternative.</strong> Instead of <code>%4d</code>, we can print <code>printf("%d\t", matrix[i][j]);</code>. This gives:</p>
+<pre class="text"><code>1 2   3
+14    25  36
+107   208 309</code></pre>
+<p>Tabs are quick, but how wide they look depends on the terminal, and they can drift out of line when the numbers have different lengths. A width specifier gives the same result everywhere.</p></li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Use <code>%-4d</code> to left-align each number inside its column, or <code>%6.2f</code> for floating-point matrices (width 6, two decimals).</p>
+</div>
+</div>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Task</th>
+<th style="text-align: left;">How</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Visit every element</td>
+<td style="text-align: left;">outer loop over <code>i</code> (rows), inner loop over <code>j</code> (columns)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Start a new row</td>
+<td style="text-align: left;"><code>printf("\n");</code> after the inner loop</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Align the columns</td>
+<td style="text-align: left;">a width in the format, such as <code>%4d</code></td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+
+ ]]></description>
+  <category>C</category>
+  <category>Programming</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/c-print-2d-array-in-matrix-form.html</guid>
+  <pubDate>Mon, 19 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/c-print-2d-array-matrix.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
   <title>Why an Uninitialized C Array Prints Garbage (and How to Avoid It)</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://www.statmania.info/blog/posts/c-uninitialized-array.html</link>
@@ -7681,138 +7982,6 @@ font-style: inherit;"># reopen the last message in the editor and rewrite it</sp
   <guid>https://www.statmania.info/blog/posts/git-multiline-commit-message.html</guid>
   <pubDate>Sun, 18 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/git-multiline-commit.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Why Learn a Programming Language in the AI Age?</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/why-learn-to-code-in-the-ai-age.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/learn-to-code-ai-age.svg" class="img-fluid figure-img" alt="Three cards: Emergency (AI offline or a server down at night), Save tokens (tiny edits by hand, AI for the big work), and Fundamentals (a stack from our code down to the hardware)."></p>
-<figcaption>Three reasons among eight: emergencies, saving tokens for the big work, and knowing the fundamentals.</figcaption>
-</figure>
-</div>
-<p>Learning a programming language in the age of AI is still worth it, but <strong>the reason has shifted</strong>.</p>
-<p>In the past, learning to code was mostly about memorising syntax and making a computer do one specific task. Today, AI can write basic code, fix bugs and generate whole scripts in seconds. That does not make programmers obsolete; it makes the ones who understand the code <strong>more powerful</strong>. Here is why a computer language is still worth learning.</p>
-<section id="we-must-direct-the-ai" class="level2">
-<h2 class="anchored" data-anchor-id="we-must-direct-the-ai">1. We Must Direct the AI</h2>
-<p>AI is a tool, and a tool needs a skilled operator. To get good code from an AI, we have to describe the problem precisely. Without programming logic, data structures and some feel for how systems work, we won’t know how to break a big problem into smaller tasks, what to ask for, or when the answer is wrong or insecure.</p>
-<p>We cannot manage an AI well if we don’t know the language it is speaking.</p>
-</section>
-<section id="we-should-know-how-the-system-works" class="level2">
-<h2 class="anchored" data-anchor-id="we-should-know-how-the-system-works">2. We Should Know How the System Works</h2>
-<p>Code runs on something: memory, a file system, processes, a network, a compiler or interpreter. AI-written code sits on top of all of it, and the bugs often come from underneath. For example, in C:</p>
-<ul>
-<li>an AI-written function returns a pointer to a local variable. It compiles, and it may even seem to work, until it doesn’t;</li>
-<li>a loop reads one element past the end of an array;</li>
-<li>a program is “fast on my laptop” but slow on the server because of how it uses memory or disk.</li>
-</ul>
-<p>If we don’t know about the stack, the heap, integer overflow or how a request travels over a network, we cannot see these problems in generated code, and we cannot even ask the right question about them. The fundamentals are the questions we know to ask, and the way we judge the answers.</p>
-</section>
-<section id="the-last-mile-integration-and-debugging" class="level2">
-<h2 class="anchored" data-anchor-id="the-last-mile-integration-and-debugging">3. The “Last Mile”: Integration and Debugging</h2>
-<p>AI can produce a block of code, but a complete application has to fit into the systems around it.</p>
-<ul>
-<li><strong>Integration:</strong> connecting the code to our databases, servers and user interfaces.</li>
-<li><strong>Debugging:</strong> when the code breaks (and it will), someone has to trace the error, read the logs and fix the logic. AI sometimes writes code that looks right but fails on edge cases, and a person who can code is needed to catch it.</li>
-</ul>
-</section>
-<section id="emergencies-dont-wait-for-the-ai" class="level2">
-<h2 class="anchored" data-anchor-id="emergencies-dont-wait-for-the-ai">4. Emergencies Don’t Wait for the AI</h2>
-<p>Sooner or later there is an emergency: a server is down at 2 a.m., a script has to run correctly before a deadline in an hour, or a bug is losing data right now. In that moment:</p>
-<ul>
-<li>the AI service may be unavailable, or our usage limit may be used up;</li>
-<li>we may be offline, or working on a private machine where we can’t paste code and logs into a chat;</li>
-<li>the AI doesn’t know our whole system and can’t see what we can see.</li>
-</ul>
-<p>That is not the time to start learning the basics. In an emergency we need to read the code, find the fault and make the fix ourselves, calmly and quickly. Think of it as a fire drill: we practise before we need it.</p>
-</section>
-<section id="save-the-tokens-for-the-big-work" class="level2">
-<h2 class="anchored" data-anchor-id="save-the-tokens-for-the-big-work">5. Save the Tokens for the Big Work</h2>
-<p>AI usage costs tokens, time and sometimes money, and most plans have limits. A tiny edit is often faster to do by hand than to describe:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Do it by hand</th>
-<th style="text-align: left;">Ask the AI</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">change <code>#define N 10</code> to <code>#define N 20</code></td>
-<td style="text-align: left;">write a new module or a test suite</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">rename a variable, fix a typo</td>
-<td style="text-align: left;">explain an unfamiliar codebase</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">fix an off-by-one in a loop bound</td>
-<td style="text-align: left;">translate code between languages</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">change a format string</td>
-<td style="text-align: left;">design and compare several approaches</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">move a line up or down</td>
-<td style="text-align: left;">find the cause of a bug we can’t locate</td>
-</tr>
-</tbody>
-</table>
-<p>Typing a one-line change takes seconds. Writing a prompt, waiting, reading the answer and checking that the AI did not also “improve” five other lines takes longer, and spends tokens we may want later for the work that really needs them. If we can code, we can keep the AI for the heavy lifting.</p>
-</section>
-<section id="computational-thinking-and-problem-solving" class="level2">
-<h2 class="anchored" data-anchor-id="computational-thinking-and-problem-solving">6. Computational Thinking and Problem Solving</h2>
-<p>Learning a language is not just typing syntax. It teaches <strong>computational thinking</strong>: breaking a complex, vague problem into logical, step-by-step parts. That skill is useful in any career, and especially when we manage AI projects. AI is good at solving <em>defined</em> problems, while people are still better at <em>defining</em> them in the first place.</p>
-</section>
-<section id="security-privacy-and-ethics" class="level2">
-<h2 class="anchored" data-anchor-id="security-privacy-and-ethics">7. Security, Privacy and Ethics</h2>
-<p>AI generates code, but we are still responsible for the final product. Copying AI code blindly can introduce vulnerabilities such as SQL injection or leaked data. Understanding the code is the only way to audit it, protect users’ data and make sure the program does what it should.</p>
-</section>
-<section id="someone-builds-and-oversees-the-ai" class="level2">
-<h2 class="anchored" data-anchor-id="someone-builds-and-oversees-the-ai">8. Someone Builds and Oversees the AI</h2>
-<p>AI models don’t build themselves. Their progress needs people who understand mathematics, logic and programming languages (such as Python, C++ and R) to:</p>
-<ul>
-<li>build the infrastructure that runs the models,</li>
-<li>fine-tune the algorithms,</li>
-<li>manage the data pipelines,</li>
-<li>keep the systems secure and ethical.</li>
-</ul>
-<p>As AI takes over basic coding tasks, the value moves toward <strong>architects and system designers</strong>: people who can oversee the AI, combine several tools, and design the overall system.</p>
-</section>
-<section id="summary" class="level2">
-<h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<p>In the AI age, learning to code is no longer just about being a translator for the computer. It is about becoming the <strong>conductor of an orchestra</strong>: AI provides the instruments, and someone who understands the language of code makes them play in harmony. And when the orchestra stops, as in an emergency, it is that person who has to keep playing.</p>
-<p>If we are learning to code today, the practical advice is:</p>
-<ol type="1">
-<li>Learn the <strong>fundamentals</strong> (one language well, plus how memory, files and networks work), not just syntax.</li>
-<li>Write and fix the <strong>small things by hand</strong>, so the skill stays sharp and the tokens last.</li>
-<li>Use AI for the <strong>big, repetitive or exploratory</strong> work, and always read and test what it gives us.</li>
-<li>Practise the <strong>emergency</strong>: now and then, solve a problem with the AI switched off.</li>
-</ol>
-
-
-</section>
-
- ]]></description>
-  <category>Programming</category>
-  <category>Learning</category>
-  <category>AI</category>
-  <guid>https://www.statmania.info/blog/posts/why-learn-to-code-in-the-ai-age.html</guid>
-  <pubDate>Sun, 18 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/learn-to-code-ai-age.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>
