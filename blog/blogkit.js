@@ -445,6 +445,13 @@
   }
 
   // ---------- pager (shared by tags page and author pages) ----------
+  // Pager clicks jump to the top. Some pages re-render later (on hashchange), which shrinks the page
+  // and would cancel a smooth scroll, so the jump is instant and repeated after the next render.
+  var pendingTop = false;
+  function toTop() {
+    window.scrollTo({top: 0, behavior: 'instant'});
+    requestAnimationFrame(function () { window.scrollTo({top: 0, behavior: 'instant'}); setTimeout(function () { window.scrollTo({top: 0, behavior: 'instant'}); }, 120); });
+  }
   function pager(nav, pages, page, onPage) {
     nav.textContent = '';
     nav.hidden = pages < 2;
@@ -453,7 +460,7 @@
       b.type = 'button';
       b.disabled = !!off;
       if (cur) b.setAttribute('aria-current', 'page');
-      b.addEventListener('click', function () { onPage(n); window.scrollTo({top: 0, behavior: 'smooth'}); });
+      b.addEventListener('click', function () { pendingTop = true; onPage(n); toTop(); });
       nav.appendChild(b);
     }
     btn('‹ Prev', page - 1, false, page === 1);
@@ -507,7 +514,7 @@
         location.hash = (val ? o.param + '=' + encodeURIComponent(val) : '') + (n > 1 ? (val ? '&' : '') + 'page=' + n : '');
       });
     }
-    window.addEventListener('hashchange', render);
+    window.addEventListener('hashchange', function () { render(); if (pendingTop) { pendingTop = false; toTop(); } });
     render();
   }
   function tagsPage(D) {
@@ -577,7 +584,7 @@
     function change() { st.cat = selCat.value; st.tag = selTag.value; st.page = 1; write(); render(); }
     selCat.addEventListener('change', change);
     selTag.addEventListener('change', change);
-    window.addEventListener('hashchange', function () { read(); render(); });
+    window.addEventListener('hashchange', function () { read(); render(); if (pendingTop) { pendingTop = false; toTop(); } });
     read(); render();
   }
 
