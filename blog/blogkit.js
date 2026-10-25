@@ -181,13 +181,17 @@
     posts.forEach(function (p) { new Set(p.tags).forEach(function (t) { all.push(t); }); });
     return counter(all);
   }
+  var SIDEBAR_TAGS = 15;   // sidebar cloud shows only the most-used tags, then a link to tags.html
   function cloud(posts) {
     var sec = el('section', 'bk-widget bk-tags');
     sec.setAttribute('aria-label', 'Tag cloud');
     sec.appendChild(el('h3', 'bk-widget-title', t('tags')));
     var box = el('div', 'bk-tag-cloud');
-    box.appendChild(chips(tagCounts(posts)));
+    var all = tagCounts(posts), top = {};
+    byCount(all).slice(0, SIDEBAR_TAGS).forEach(function (k) { top[k] = all[k]; });
+    box.appendChild(chips(top));
     sec.appendChild(box);
+    sec.appendChild(link(base + 'tags.html', t('allTags') + ' \u203a', 'bk-tags-all'));
     return sec;
   }
   function sidebarWidgets(D) {
@@ -204,14 +208,27 @@
     }
     var w = el('div');
     w.id = 'bk-widgets';
-    w.appendChild(archive(D.posts));
     w.appendChild(cloud(D.posts));
+    w.appendChild(archive(D.posts));
     // Posts on small screens: Quarto hides the sidebar, so widgets go under the article.
     function place() {
       var bottom = small.matches && side.querySelector('#TOC') && main;
+      var track = side.querySelector('.bk-toc-track');
       w.classList.toggle('bk-widgets-bottom', !!bottom);
-      (bottom ? main : side).appendChild(w);
+      (bottom ? main : (track || side)).appendChild(w);   // desktop: widgets ride with the TOC in one sticky block
+      stick();
     }
+    // The block sticks at the top while reading. "On this page" must stay fully in view, so only
+    // the widgets below it may run past the window bottom (they show at the end of the article).
+    function stick() {
+      var track = side.querySelector('.bk-toc-track'), toc = track && track.querySelector('#TOC');
+      if (!track) return;
+      var h = toc ? toc.offsetHeight : 0;
+      track.style.top = Math.min(88, window.innerHeight - h - 16) + 'px';
+    }
+    window.addEventListener('resize', stick);
+    window.addEventListener('load', stick);
+    if (window.ResizeObserver) { var ro = new ResizeObserver(stick); var tr = side.querySelector('.bk-toc-track'); if (tr) ro.observe(tr); }
     place();
     if (small.addEventListener) small.addEventListener('change', place);
   }
@@ -436,13 +453,16 @@
       b.type = 'button';
       b.disabled = !!off;
       if (cur) b.setAttribute('aria-current', 'page');
-      b.addEventListener('click', function () { onPage(n); });
+      b.addEventListener('click', function () { onPage(n); window.scrollTo({top: 0, behavior: 'smooth'}); });
       nav.appendChild(b);
     }
     btn('‹ Prev', page - 1, false, page === 1);
     for (var i = 1; i <= pages; i++) btn(String(i), i, i === page, false);
     btn('Next ›', page + 1, false, page === pages);
   }
+  document.addEventListener('click', function (e) {
+    if (e.target.closest && e.target.closest('.pagination a.page-link')) window.scrollTo({top: 0, behavior: 'smooth'});
+  });
   function hashParams() { return new URLSearchParams(location.hash.slice(1)); }
 
   // ---------- tags page and categories page (same widget, different facet) ----------
@@ -552,7 +572,6 @@
       count.textContent = t('of', {a: hit.length, b: posts.length});
       pager(nav, pages, st.page, function (n) {
         st.page = n; write(); render();
-        root.scrollIntoView({behavior: 'smooth'});
       });
     }
     function change() { st.cat = selCat.value; st.tag = selTag.value; st.page = 1; write(); render(); }
