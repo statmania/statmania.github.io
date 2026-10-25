@@ -1104,6 +1104,363 @@ Tip
   <media:content url="https://www.statmania.info/blog/img/laptop-battery-20-80.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 <item>
+  <title>Adding giscus Comments to a Quarto Blog</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/quarto-blog-adding-giscus-comments.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/quarto-giscus-comments.svg" class="img-fluid figure-img" alt="A blog post page contains a giscus comment box. The giscus app passes comments to and from a list of discussions in a GitHub repository."></p>
+<figcaption>Each blog post embeds a giscus box, which reads and writes a discussion in the GitHub repository</figcaption>
+</figure>
+</div>
+<p><a href="https://giscus.app">giscus</a> is an open-source, ad-free comment system that stores every comment as a <strong>GitHub Discussion</strong>. Readers sign in with GitHub, and we get moderation, notifications and email replies without running a server. Quarto supports giscus natively, so the whole setup is a few GitHub settings plus one block of YAML.</p>
+<section id="step-1-prepare-the-github-repository" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-prepare-the-github-repository">Step 1: Prepare the GitHub repository</h2>
+<p>The comments live in a repository, so we prepare it first.</p>
+<ol type="1">
+<li><strong>Make the repository public.</strong> giscus does not work with a private repository.</li>
+<li><strong>Enable Discussions.</strong> On the repository page, open <em>Settings</em>, scroll to <em>Features</em> and tick <strong>Discussions</strong>.</li>
+<li><strong>Install the giscus app.</strong> Open the <a href="https://github.com/apps/giscus">giscus app page</a>, click <em>Install</em>, and give it access to the chosen repository.</li>
+<li><strong>Get the IDs.</strong> On <a href="https://giscus.app">giscus.app</a>, type <code>username/repo-name</code> in the <em>Repository</em> box and choose a discussion <em>Category</em> (for example <code>General</code>). Keep the page open: further down it prints a <code>&lt;script&gt;</code> block with the values <code>data-repo-id</code> and <code>data-category-id</code>. We need both in the next step.</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Choose the category <strong>General</strong> (or a dedicated one) rather than <em>Announcements</em>. Announcements is meant for posts from maintainers, so it can limit who may start a discussion.</p>
+</div>
+</div>
+</section>
+<section id="step-2-add-the-configuration" class="level2">
+<h2 class="anchored" data-anchor-id="step-2-add-the-configuration">Step 2: Add the configuration</h2>
+<p>giscus gives us HTML, but Quarto writes the script tag for us. We only translate each <code>data-*</code> attribute into a YAML key: <code>data-repo-id</code> becomes <code>repo-id</code>, <code>data-category-id</code> becomes <code>category-id</code>, and so on.</p>
+<p>The block goes under the <code>website:</code> key in <code>_quarto.yml</code> when we want comments on <strong>every</strong> page:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">website</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span></span>
+<span id="cb1-2"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">comments</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span></span>
+<span id="cb1-3"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">giscus</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span></span>
+<span id="cb1-4"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">      </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">repo</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> username/repo-name</span></span>
+<span id="cb1-5"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">      </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">repo-id</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"R_kgDOxxxxxxx"</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">          # from giscus.app</span></span>
+<span id="cb1-6"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">      </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">category</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"General"</span></span>
+<span id="cb1-7"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">      </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">category-id</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"DIC_kwDOxxxxxxx"</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">    # from giscus.app</span></span>
+<span id="cb1-8"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">      </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mapping</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> pathname</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">                 # how a page is matched to a discussion</span></span>
+<span id="cb1-9"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">      </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">reactions-enabled</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">true</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">           # emoji reactions</span></span>
+<span id="cb1-10"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">      </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">input-position</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> bottom</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">            # comment box below the comments</span></span>
+<span id="cb1-11"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">      </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">loading</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> lazy</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">                     # load only when scrolled into view</span></span></code></pre></div></div>
+<p>The <code>mapping</code> option decides how a page finds its discussion. <code>pathname</code> and <code>url</code> are the common choices: each page gets one discussion, created the first time someone comments.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Changing <code>mapping</code> later, or moving a post to a new address, starts a new, empty discussion for it. Choose once and keep the URLs stable.</p>
+</div>
+</div>
+</section>
+<section id="step-3-comments-on-posts-only" class="level2">
+<h2 class="anchored" data-anchor-id="step-3-comments-on-posts-only">Step 3: Comments on posts only</h2>
+<p>A blog usually wants comments under the posts, but not on the <em>About</em> page or the homepage. For that, keep the block <strong>out</strong> of <code>_quarto.yml</code> and put it in <code>posts/_metadata.yml</code> instead. Every file in that folder inherits it.</p>
+<p>In a <code>_metadata.yml</code> file the options are top-level keys, so there is no <code>website:</code> line:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># posts/_metadata.yml</span></span>
+<span id="cb2-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">comments</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span></span>
+<span id="cb2-3"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">giscus</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span></span>
+<span id="cb2-4"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">repo</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> username/repo-name</span></span>
+<span id="cb2-5"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">repo-id</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"R_kgDOxxxxxxx"</span></span>
+<span id="cb2-6"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">category</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"General"</span></span>
+<span id="cb2-7"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">category-id</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"DIC_kwDOxxxxxxx"</span></span>
+<span id="cb2-8"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mapping</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> url</span></span>
+<span id="cb2-9"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">reactions-enabled</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">true</span></span>
+<span id="cb2-10"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">input-position</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> bottom</span></span>
+<span id="cb2-11"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">language</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> en</span></span></code></pre></div></div>
+<p>Then render. A single post is enough to test it:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">quarto</span> render posts/my-post.qmd</span></code></pre></div></div>
+<p>Posts that were rendered earlier only get the comment box when they are rendered again, so after the first setup it is worth running a full <code>quarto render</code>.</p>
+</section>
+<section id="hiding-comments-on-one-page" class="level2">
+<h2 class="anchored" data-anchor-id="hiding-comments-on-one-page">Hiding comments on one page</h2>
+<p>Even inside the folder, a single page can opt out through its front matter:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">---</span></span>
+<span id="cb4-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">title</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A post without comments"</span></span>
+<span id="cb4-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">comments</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">false</span></span>
+<span id="cb4-4"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">---</span></span></code></pre></div></div>
+</section>
+<section id="theme" class="level2">
+<h2 class="anchored" data-anchor-id="theme">Theme</h2>
+<p>If the site has a light and a dark theme, we can leave <code>theme</code> out. Quarto then follows the reader’s choice from the theme toggle. To force one look instead, set <code>theme: light</code>, <code>theme: dark</code> or <code>theme: preferred_color_scheme</code> (follow the operating system) under <code>giscus:</code>.</p>
+</section>
+<section id="troubleshooting" class="level2">
+<h2 class="anchored" data-anchor-id="troubleshooting">Troubleshooting</h2>
+<ul>
+<li><strong>The box says “giscus is not installed on this repository”:</strong> install the app (step 1.3) for that exact repository.</li>
+<li><strong>No box appears at all:</strong> check that the block sits in the right file (<code>website:</code> for <code>_quarto.yml</code>, top level for <code>_metadata.yml</code>) and that the page was re-rendered.</li>
+<li><strong>“Discussion not found” appears and never changes:</strong> the discussion is only created when the first comment is posted, so this is normal for a new page.</li>
+</ul>
+</section>
+<section id="reference" class="level2">
+<h2 class="anchored" data-anchor-id="reference">Reference</h2>
+<ul>
+<li><a href="https://quarto.org/docs/reference/projects/websites.html#comments">Quarto: website comments</a>, for every option of the <code>comments</code> key.</li>
+<li><a href="https://giscus.app">giscus.app</a>, for the configuration page that generates the IDs.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>Quarto</category>
+  <category>Blogging</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/quarto-blog-adding-giscus-comments.html</guid>
+  <pubDate>Sat, 24 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/quarto-giscus-comments.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
   <title>What Is Git? A Plain-English Explanation</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://www.statmania.info/blog/posts/what-is-git-explained-simply.html</link>
@@ -7456,299 +7813,6 @@ font-style: inherit;"># reopen the last message in the editor and rewrite it</sp
   <guid>https://www.statmania.info/blog/posts/why-learn-to-code-in-the-ai-age.html</guid>
   <pubDate>Sun, 18 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/learn-to-code-ai-age.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>pdfLaTeX vs XeLaTeX: Which LaTeX Engine Should We Use?</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/pdflatex-vs-xelatex.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/pdflatex-vs-xelatex.svg" class="img-fluid figure-img" alt="Two terminal windows side by side: pdflatex labelled fast and traditional, and xelatex labelled multilingual, showing sample text in several scripts."></p>
-<figcaption>pdfLaTeX is the fast, traditional engine; XeLaTeX adds system fonts and native Unicode.</figcaption>
-</figure>
-</div>
-<p><strong>pdfLaTeX</strong> is the traditional, default LaTeX engine. It compiles quickly and works with almost every package ever written. <strong>XeLaTeX</strong> is a newer engine built for <strong>Unicode</strong> and for <strong>system fonts</strong> (TrueType and OpenType). Both produce a PDF from the same kind of <code>.tex</code> file, but they handle fonts and text differently, so the preamble we write has to match the engine we choose.</p>
-<p>(A third engine, <strong>LuaLaTeX</strong>, also supports Unicode and system fonts, and lets us script the document in Lua. Everything below about XeLaTeX applies to it in broad strokes.)</p>
-<section id="the-key-differences" class="level2">
-<h2 class="anchored" data-anchor-id="the-key-differences">The Key Differences</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Feature</th>
-<th style="text-align: left;">pdfLaTeX</th>
-<th style="text-align: left;">XeLaTeX</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Default engine</td>
-<td style="text-align: left;">Yes (historical standard)</td>
-<td style="text-align: left;">No</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">System fonts (<code>.ttf</code> / <code>.otf</code>)</td>
-<td style="text-align: left;">No (needs TeX-ready font packages)</td>
-<td style="text-align: left;">Yes, through <code>fontspec</code></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Unicode text</td>
-<td style="text-align: left;">Limited to what the font encoding covers</td>
-<td style="text-align: left;">Native UTF-8</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Non-Latin scripts (Arabic, Bengali, Chinese)</td>
-<td style="text-align: left;">Difficult; needs extra workarounds</td>
-<td style="text-align: left;">Supported with a suitable font</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Compile speed</td>
-<td style="text-align: left;">Fast</td>
-<td style="text-align: left;">Slower</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Micro-typography (<code>microtype</code>)</td>
-<td style="text-align: left;">Full support</td>
-<td style="text-align: left;">Partial (character protrusion only)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Old pdfLaTeX-only packages</td>
-<td style="text-align: left;">Work</td>
-<td style="text-align: left;">Some fail</td>
-</tr>
-</tbody>
-</table>
-<section id="speed" class="level3">
-<h3 class="anchored" data-anchor-id="speed">Speed</h3>
-<p>XeLaTeX does extra work: it loads system fonts and shapes the text. On our machine a one-line document compiled in about 0.13 s with pdfLaTeX and about 0.7 s with XeLaTeX (TeX Live 2026). The gap is far less dramatic than the ratio sounds, and on a real thesis the time goes to packages, figures and bibliographies. Still, pdfLaTeX is the faster engine for quick edit-compile cycles.</p>
-</section>
-<section id="fonts-and-unicode" class="level3">
-<h3 class="anchored" data-anchor-id="fonts-and-unicode">Fonts and Unicode</h3>
-<p>pdfLaTeX works with TeX fonts and font encodings such as T1. Modern LaTeX reads UTF-8 input by default, but a character only prints if the font encoding has it. Try Bengali text with pdfLaTeX and it stops:</p>
-<pre><code>! LaTeX Error: Unicode character আ (U+0986)
-               not set up for use with LaTeX.</code></pre>
-<p>XeLaTeX has no such limit. With <code>fontspec</code> we name any installed font, and the same text compiles:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb2-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">\documentclass</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">article</span>}</span>
-<span id="cb2-2"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">\usepackage</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">fontspec</span>}</span>
-<span id="cb2-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">\setmainfont</span>{Noto Serif Bengali}</span>
-<span id="cb2-4"></span>
-<span id="cb2-5"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">\begin</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">document</span>}</span>
-<span id="cb2-6">আমার দেশ বাংলাদেশ</span>
-<span id="cb2-7"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">\end</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">document</span>}</span></code></pre></div></div>
-</section>
-<section id="typography-and-compatibility" class="level3">
-<h3 class="anchored" data-anchor-id="typography-and-compatibility">Typography and Compatibility</h3>
-<p><code>microtype</code> makes subtle spacing and margin adjustments that improve the look of a page. It gives its full effect in pdfLaTeX; with XeLaTeX only part of it is available. pdfLaTeX also has the longest track record with journals and publishers, so for an academic submission we should check the journal’s instructions, because many still ask for pdfLaTeX.</p>
-</section>
-</section>
-<section id="which-one-should-we-choose" class="level2">
-<h2 class="anchored" data-anchor-id="which-one-should-we-choose">Which One Should We Choose?</h2>
-<ul>
-<li><strong>Choose pdfLaTeX</strong> for a standard paper, report or thesis in a Latin script, when we want speed and maximum package compatibility.</li>
-<li><strong>Choose XeLaTeX</strong> (or LuaLaTeX) when we need an operating-system font such as Times New Roman or a designer font, or when we write in a non-Latin script or mix several languages.</li>
-</ul>
-</section>
-<section id="compiling-from-the-terminal" class="level2">
-<h2 class="anchored" data-anchor-id="compiling-from-the-terminal">1. Compiling from the Terminal</h2>
-<p>Use the executable that matches the engine:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">pdflatex</span> document.tex</span></code></pre></div></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">xelatex</span> document.tex</span></code></pre></div></div>
-<p>pdfLaTeX reads the source, uses TeX fonts and writes the PDF directly. XeLaTeX reads the source, fetches fonts through the operating system, produces an intermediate <code>.xdv</code> file, and passes it to a driver (<code>xdvipdfmx</code>) that writes the final PDF. We don’t see the second step; it happens inside the single <code>xelatex</code> command.</p>
-</section>
-<section id="switching-the-engine-in-an-editor" class="level2">
-<h2 class="anchored" data-anchor-id="switching-the-engine-in-an-editor">2. Switching the Engine in an Editor</h2>
-<p>In an editor we change the engine in the settings instead of on the command line.</p>
-<p><strong>Overleaf</strong></p>
-<ol type="1">
-<li>Click the <strong>Menu</strong> button at the top left.</li>
-<li>Under <strong>Compiler</strong>, change the dropdown from pdfLaTeX to XeLaTeX.</li>
-<li>Click <strong>Recompile</strong>.</li>
-</ol>
-<p><strong>TeXstudio</strong></p>
-<ol type="1">
-<li>Go to <strong>Options → Configure TeXstudio</strong>.</li>
-<li>Open the <strong>Build</strong> tab.</li>
-<li>Set <strong>Default Compiler</strong> to PdfLaTeX or XeLaTeX.</li>
-</ol>
-</section>
-<section id="the-preamble-each-engine-needs" class="level2">
-<h2 class="anchored" data-anchor-id="the-preamble-each-engine-needs">3. The Preamble Each Engine Needs</h2>
-<p>The preamble (the setup code above <code>\begin{document}</code>) must match the engine.</p>
-<section id="pdflatex" class="level3">
-<h3 class="anchored" data-anchor-id="pdflatex">pdfLaTeX</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb5-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">\documentclass</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">article</span>}</span>
-<span id="cb5-2"></span>
-<span id="cb5-3"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">% Rendering options for pdfLaTeX</span></span>
-<span id="cb5-4"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">\usepackage</span>[utf8]{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">inputenc</span>} <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">% Allows typing Unicode characters directly</span></span>
-<span id="cb5-5"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">\usepackage</span>[T1]{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">fontenc</span>}    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">% 8-bit font encoding: better hyphenation and copy-paste</span></span>
-<span id="cb5-6"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">\usepackage</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">lmodern</span>}        <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">% Latin Modern, a scalable vector font</span></span>
-<span id="cb5-7"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">\usepackage</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">microtype</span>}      <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">% Subtle spacing and margin adjustments</span></span>
-<span id="cb5-8"></span>
-<span id="cb5-9"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">\begin</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">document</span>}</span>
-<span id="cb5-10">Hello World! This is rendered via pdfLaTeX.</span>
-<span id="cb5-11"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">\end</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">document</span>}</span></code></pre></div></div>
-</section>
-<section id="xelatex" class="level3">
-<h3 class="anchored" data-anchor-id="xelatex">XeLaTeX</h3>
-<p>Drop <code>inputenc</code>, <code>fontenc</code> and <code>lmodern</code>, and load <code>fontspec</code> instead:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb6-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">\documentclass</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">article</span>}</span>
-<span id="cb6-2"></span>
-<span id="cb6-3"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">% Rendering options for XeLaTeX</span></span>
-<span id="cb6-4"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">\usepackage</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">fontspec</span>}</span>
-<span id="cb6-5"></span>
-<span id="cb6-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">% Use any font installed on the computer</span></span>
-<span id="cb6-7"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">\setmainfont</span>{Times New Roman}</span>
-<span id="cb6-8"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">\setsansfont</span>{Arial}</span>
-<span id="cb6-9"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">\setmonofont</span>{Courier New}</span>
-<span id="cb6-10"></span>
-<span id="cb6-11"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">\begin</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">document</span>}</span>
-<span id="cb6-12">Hello World! This is rendered via XeLaTeX using system fonts.</span>
-<span id="cb6-13"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">\end</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">document</span>}</span></code></pre></div></div>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>The fonts must be installed.</strong> <code>\setmainfont{Times New Roman}</code> fails on a machine without that font: <code>fontspec Error: The font "Times New Roman" cannot be found</code>. On Debian and Ubuntu, Times New Roman and Arial come from the <code>ttf-mscorefonts-installer</code> package. For documents that must compile anywhere, pick a font that ships with TeX Live, or an open font such as Noto or DejaVu.</p>
-</div>
-</div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>Don’t mix the two preambles.</strong> <code>\usepackage[utf8]{inputenc}</code> and <code>\usepackage[T1]{fontenc}</code> are for pdfLaTeX; with XeLaTeX they are unnecessary; XeLaTeX warns that <code>inputenc</code> is “ignored with utf8 based engines”. <code>fontspec</code> only works with XeLaTeX and LuaLaTeX, and stops with an error under pdfLaTeX.</p>
-</div>
-</div>
-</section>
-</section>
-<section id="summary" class="level2">
-<h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<p>For plain English (or other Latin-script) documents, pdfLaTeX is quick and safe. The moment we need a specific system font or a non-Latin script, switch to XeLaTeX, change the preamble to use <code>fontspec</code>, and compile again.</p>
-
-
-</section>
-
- ]]></description>
-  <category>LaTeX</category>
-  <category>Tools</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/pdflatex-vs-xelatex.html</guid>
-  <pubDate>Sat, 17 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/pdflatex-vs-xelatex.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>
