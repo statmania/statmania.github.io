@@ -1,11 +1,12 @@
 ---
 title: "Double Summation (ΣΣ) in Statistics, and How to Code It in C"
-description: "What a double sum means, why statistics keeps using it (grand mean, total sum of squares, ANOVA), and how two nested for loops in C compute it, with a short store-sales example."
+description: "What a double sum means, why statistics keeps using it (grand mean, total sum of squares, ANOVA), and how two nested for loops in C compute it, with a short store-sales example built up in small code chunks, plus a length-times-width area example."
 date: "2026-10-19"
 categories: [C, Statistics, Tutorial]
 tags: [c, statistics, loops, arrays]
 author: "Abdullah Al Mahmud"
 image: ../img/double-summation-c.png
+draft: true
 ---
 
 ![A double sum adds each row first, then adds the row totals.](../img/double-summation-c.svg){fig-alt="A table of weekly sales for three stores over four weeks, with row totals 52, 79 and 40 and a grand total of 171."}
@@ -62,7 +63,9 @@ The row totals are 52, 79 and 40, so the grand total is 52 + 79 + 40 = 171 units
 
 ## The C Implementation
 
-A double sum is a pair of **nested `for` loops**: the outer loop is the outer $\sum$ (rows) and the inner loop is the inner $\sum$ (columns). The table is a 2D array, `y[i][j]`.
+A double sum is a pair of **nested `for` loops**: the outer loop is the outer $\sum$ (rows) and the inner loop is the inner $\sum$ (columns). The table is a 2D array, `y[i][j]`. We build the program one calculation at a time.
+
+### Setup: the Table
 
 ```c
 #include <stdio.h>
@@ -77,17 +80,34 @@ int main(void) {
         {20, 18, 22, 19},
         { 9, 10,  8, 13}
     };
+```
 
-    // grand total: sum over i, then over j
+### Chunk 1: the Grand Total
+
+$\sum_i\sum_j y_{ij}$: the outer loop moves down the stores, the inner loop across the weeks.
+
+```c
     int total = 0;
     for (int i = 0; i < STORES; i++) {
         for (int j = 0; j < WEEKS; j++) {
             total += y[i][j];
         }
     }
-    double grand_mean = (double)total / (STORES * WEEKS);
+```
 
-    // total sum of squares: SST = sum_i sum_j (y_ij - grand_mean)^2
+### Chunk 2: the Grand Mean
+
+No loop is needed, because the total is already there. We divide by the number of cells, $a \times n$.
+
+```c
+    double grand_mean = (double)total / (STORES * WEEKS);
+```
+
+### Chunk 3: the Total Sum of Squares
+
+$SST = \sum_i\sum_j (y_{ij}-\bar y_{..})^2$ needs the grand mean first, which is why it is a second pass over the table.
+
+```c
     double sst = 0.0;
     for (int i = 0; i < STORES; i++) {
         for (int j = 0; j < WEEKS; j++) {
@@ -95,7 +115,11 @@ int main(void) {
             sst += d * d;
         }
     }
+```
 
+### Chunk 4: Print and Close
+
+```c
     printf("Grand total     = %d\n", total);
     printf("Grand mean      = %.2f\n", grand_mean);
     printf("Total sum of sq = %.2f\n", sst);
@@ -103,7 +127,7 @@ int main(void) {
 }
 ```
 
-Compiled with `gcc -Wall -Wextra` and run:
+Joined in this order (setup, chunks 1 to 4) and compiled with `gcc -Wall -Wextra`, the program prints:
 
 ```
 Grand total     = 171
@@ -112,8 +136,71 @@ Total sum of sq = 232.25
 ```
 
 ::: {.callout-note}
-**Two details.** The sum starts at 0 (the identity for addition), and `(double)total` converts before dividing; `171 / 12` in integer arithmetic would give 14, not 14.25. We also need the grand mean *before* the second double sum, which is why the sum of squares is a separate pass.
+**Two details.** The sum starts at 0 (the identity for addition), and `(double)total` converts before dividing; `171 / 12` in integer arithmetic would give 14, not 14.25.
 :::
+
+## A Second Example: Two Variables, Length and Width
+
+Here the double sum has two *different* variables. A farm is divided by 3 horizontal strips of length $l_i$ and 3 vertical strips of width $w_j$, giving 9 plots. Plot $(i, j)$ has area $l_i \times w_j$, and the total area is
+
+$$
+A = \sum_{i=1}^{3}\sum_{j=1}^{3} l_i\, w_j, \qquad l = (2, 3, 4)\ \text{m}, \quad w = (1, 2, 3)\ \text{m}.
+$$
+
+### The Sum Written Out
+
+Each plot's area $l_i w_j$ (in m²), with the row sums on the right:
+
+| | $w_1 = 1$ | $w_2 = 2$ | $w_3 = 3$ | Row sum |
+| :--- | ---: | ---: | ---: | ---: |
+| $l_1 = 2$ | 2 | 4 | 6 | 12 |
+| $l_2 = 3$ | 3 | 6 | 9 | 18 |
+| $l_3 = 4$ | 4 | 8 | 12 | 24 |
+
+The inner sum fixes $i$ and runs over $j$; for $i = 1$ it is $2\cdot1 + 2\cdot2 + 2\cdot3 = 12$. The outer sum adds the three row sums:
+
+$$
+A = \underbrace{12}_{i=1} + \underbrace{18}_{i=2} + \underbrace{24}_{i=3} = 54 \ \text{m}^2
+$$
+
+### Chunk 1: Total Area, Plot by Plot
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    int l[] = {2, 3, 4};   // lengths
+    int w[] = {1, 2, 3};   // widths
+
+    int area = 0;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            area += l[i] * w[j];   // plot (i, j)
+        }
+    }
+```
+
+### Chunk 2: A Check with Two Single Sums
+
+Since $l_i$ does not depend on $j$, it factors out of the inner sum, and the double sum splits into a product: $\sum_i\sum_j l_i w_j = \left(\sum_i l_i\right)\left(\sum_j w_j\right)$.
+
+```c
+    int sum_l = 0, sum_w = 0;
+    for (int i = 0; i < 3; i++) sum_l += l[i];
+    for (int j = 0; j < 3; j++) sum_w += w[j];
+
+    printf("Double sum     = %d m^2\n", area);
+    printf("(sum l)(sum w) = %d m^2\n", sum_l * sum_w);
+    return 0;
+}
+```
+
+```
+Double sum     = 54 m^2
+(sum l)(sum w) = 54 m^2
+```
+
+Both give 54 m², as $9 \times 6 = 54$. The product shortcut only works when each term is a function of $i$ times a function of $j$; the store table above has no such structure, so it needs the full double loop.
 
 ## Summary
 
