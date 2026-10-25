@@ -10,10 +10,14 @@ image: ../img/linux-shell-one-liners.png
 
 ![Short shell loops can rename, convert and count many files at once.](../img/linux-shell-one-liners.svg){fig-alt="A terminal window shows an ls command, a for loop over mp4 files, and find piped to wc -l. Beside it, three messy file names are renamed to 1.jpg, 2.jpg and 3.png."}
 
-These are small commands we keep coming back to. Each one was run in Bash before we wrote it down here, and the outputs are real.
+These are small commands we keep coming back to. Each one was run in Bash before we wrote it down here, and the outputs are real. We use fish, so wherever a command differs in fish we also give the fish version (tested in fish 3.3).
 
 ::: {.callout-warning}
 Bulk renaming and in-place editing change files for good. Try each command in a scratch folder first, or on a copy.
+:::
+
+::: {.callout-note}
+`pwd`, `xdg-open`, `sed`, `find | wc -l` and `rename` work unchanged in fish. Only the loops and the `${...}` name tricks need a fish version, because fish has no `${f%.mp4}`-style expansion and no `$((...))`. Instead it uses `string` and `math`, and a loop ends with `end` rather than `done`.
 :::
 
 ## Where are we?
@@ -111,6 +115,14 @@ Here `ls -v` sorts names in natural order (`z2` before `z10`), `cat -n` puts a n
 
 On six files (`a.jpg`, `b.jpg`, `c.jpg`, `my pic.jpg`, `z2.jpg`, `z10.jpg`) this gave `1.jpg` to `6.jpg`, and the name with a space worked too.
 
+In fish:
+
+```fish
+ls -v | cat -n | while read -l n f; mv -n $f $n.jpg; end
+```
+
+Variables are not split on spaces in fish, so `$f` needs no quotes. The same six files gave `1.jpg` to `6.jpg`.
+
 ### Number files from a chosen start, with the same extension
 
 ```bash
@@ -120,6 +132,14 @@ num=0; for i in *; do mv "$i" "$(printf '%04d' $num).${i##*.}"; ((num++)); done
 This pads the number to four digits and keeps each file's own extension. Set `num=10` to start at 10. Three files named `a.jpg`, `b.jpg` and `c.jpg` became `0010.jpg`, `0011.jpg` and `0012.jpg`.
 
 We use `${i##*.}` (the part after the last dot), so a name such as `my.photo.jpg` keeps `jpg`. The `*` also matches folders, so run this where only the files to rename are present.
+
+In fish:
+
+```fish
+set num 0; for i in *; mv $i (printf '%04d' $num).(string replace -r '^.*\.' '' $i); set num (math $num + 1); end
+```
+
+`string replace -r '^.*\.' ''` removes everything up to the last dot, leaving the extension, and `math` replaces `((num++))`. Starting at `num=10`, `a.jpg`, `b.jpg` and `my.photo.png` became `0010.jpg`, `0011.jpg` and `0012.png`.
 
 For a longer discussion of the numbering approach, see [this Stack Overflow answer](https://stackoverflow.com/questions/3211595/renaming-files-in-a-folder-to-sequential-numbers).
 
@@ -131,6 +151,12 @@ for f in *_*; do mv -- "$f" "${f//_/-}"; done
 
 `${f//_/-}` replaces every `_` in the name. Starting from `Report_Final_v2.TXT`, we got `Report-Final-v2.TXT`.
 
+In fish:
+
+```fish
+for f in *_*; mv -- $f (string replace -a _ - $f); end
+```
+
 ### Replace spaces with hyphens
 
 ```bash
@@ -139,6 +165,12 @@ for file in *' '*; do mv -- "$file" "${file// /-}"; done
 
 `My Photo One.JPG` became `My-Photo-One.JPG`.
 
+In fish:
+
+```fish
+for file in *" "*; mv -- $file (string replace -a ' ' - $file); end
+```
+
 ### Rename to lowercase
 
 ```bash
@@ -146,6 +178,12 @@ for f in *; do mv -n -- "$f" "${f,,}"; done
 ```
 
 `${f,,}` lowercases the name. Together, the three steps above turned `My Photo One.JPG` into `my-photo-one.jpg` and `Report_Final_v2.TXT` into `report-final-v2.txt`.
+
+In fish:
+
+```fish
+for f in *; mv -n -- $f (string lower -- $f); end
+```
 
 ### The same with Perl `rename`
 
@@ -167,6 +205,16 @@ done
 ```
 
 `-vn` drops the video, `-b:a 192K` sets the audio bitrate, and `${f%.mp4}` removes the `.mp4` ending from the name. Because `"$f"` is in quotes, names with spaces work. A test folder with `clip one.mp4` and `second.mp4` ended up with `clip one.mp3` and `second.mp3` next to them.
+
+In fish:
+
+```fish
+for f in *.mp4
+    ffmpeg -i $f -b:a 192K -vn (string replace -r '\.mp4$' '' $f).mp3
+end
+```
+
+The command substitution `(...)` followed by `.mp3` is joined into one name, so `clip one.mp4` becomes `clip one.mp3`.
 
 ::: {.callout-tip}
 An older version of this script looped over `ls . | grep .mp4` and changed `IFS`. That breaks on names with spaces and also matches any name with "mp4" inside it. A plain `for f in *.mp4` loop avoids both problems.

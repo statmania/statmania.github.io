@@ -1,0 +1,261 @@
+---
+title: "Fish vs Bash Syntax: A Practical Cheat Sheet"
+description: "Side-by-side Bash and fish syntax for variables, loops, conditions, functions, arrays, strings and math, plus the behavioural differences that matter when switching shells."
+date: "2026-10-25"
+categories: [Linux, Shell, Tutorial]
+tags: [linux, command-line, beginners]
+author: "Abdullah Al Mahmud"
+image: ../img/fish-shell.jpeg
+---
+
+![Fish is built to be friendly at the prompt; Bash is the shell that runs almost everywhere.](../img/fish-shell.jpeg){fig-alt="A terminal running the fish shell."}
+
+Bash is the default shell on most Linux systems and follows the POSIX conventions that countless scripts rely on. Fish (the *Friendly Interactive SHell*) deliberately breaks from them to get a cleaner syntax and a better interactive experience. It is not POSIX-compliant, so Bash habits do not always carry over.
+
+The examples below were run in fish 3.3 and Bash 5. They are the differences we meet most often.
+
+## Syntax at a glance
+
+| Feature | Bash | Fish |
+|---|---|---|
+| POSIX compliant | Yes | No |
+| Set a variable | `NAME=value` (no spaces around `=`) | `set NAME value` |
+| Export a variable | `export NAME=value` | `set -gx NAME value` |
+| Local variable | `local name=value` (in a function) | `set -l name value` |
+| Command substitution | `` `cmd` `` or `$(cmd)` | `(cmd)` |
+| For loop | `for f in *.txt; do echo "$f"; done` | `for f in *.txt; echo $f; end` |
+| While loop | `while cond; do ...; done` | `while cond; ...; end` |
+| Condition | `if [ -f file.txt ]; then ...; fi` | `if test -f file.txt; ...; end` |
+| Last exit code | `$?` | `$status` |
+| Arguments | `$1`, `$@`, `$#` | `$argv[1]`, `$argv`, `(count $argv)` |
+| Arrays | `arr=(one two); echo ${arr[0]}` | `set arr one two; echo $arr[1]` |
+| Strings | `${foo%bar}`, `${foo#bar}`, `${foo/bar/baz}` | the `string` builtin |
+| Arithmetic | `$((2 + 3))` | `math 2 + 3` |
+| Function | `greet() { echo "Hi $1"; }` | `function greet; echo "Hi $argv[1]"; end` |
+| Alias | `alias gs='git status'` | `abbr -a gs 'git status'` (or `alias`) |
+
+The main pattern: Bash closes blocks with `fi`, `done` and `esac`, and fish closes every block with `end`.
+
+## Variables
+
+```bash
+# Bash
+name="Ada Lovelace"
+export EDITOR=vim
+```
+
+```fish
+# fish
+set name "Ada Lovelace"
+set -gx EDITOR vim
+```
+
+The `set` flags control scope: `-l` local to the block or function, `-g` global to the session, `-x` exported to child processes, `-U` universal (shared by all fish sessions and remembered across restarts). Remove a variable with `set -e name`.
+
+Fish does **not** split variables on whitespace, so the quoting habit `"$file"` is mostly unnecessary. A file called `my pic.jpg` stored in `$f` is passed as one argument:
+
+```fish
+set f "my pic.jpg"
+mv $f renamed.jpg      # works, no quotes needed
+```
+
+## Command substitution
+
+```bash
+files=$(ls | wc -l)
+```
+
+```fish
+set files (ls | wc -l)
+```
+
+In fish the output is split on **newlines** only, so a command that prints three lines gives a list of three items:
+
+```fish
+set lines (printf 'x y\nz\n')
+count $lines           # 2
+```
+
+## Conditions and tests
+
+```bash
+if [ -f file.txt ]; then
+    echo "found"
+elif [ -d file.txt ]; then
+    echo "a folder"
+else
+    echo "missing"
+fi
+```
+
+```fish
+if test -f file.txt
+    echo "found"
+else if test -d file.txt
+    echo "a folder"
+else
+    echo "missing"
+end
+```
+
+Fish has no `[ ... ]` or `[[ ... ]]` syntax. It uses the `test` command, which also accepts `-gt`, `-lt`, `-eq` and string comparisons with `=`.
+
+Chaining works with `&&` and `||` in recent fish versions, and fish also has the words `and`, `or` and `not`:
+
+```fish
+mkdir build; and cd build
+make; or echo "build failed"
+```
+
+The exit code of the last command is `$status`, not `$?`:
+
+```fish
+false
+echo $status           # 1
+```
+
+### Switch statements
+
+```bash
+case "$animal" in
+    c*) echo "starts with c" ;;
+    *)  echo "other" ;;
+esac
+```
+
+```fish
+switch $animal
+    case 'c*'
+        echo "starts with c"
+    case '*'
+        echo "other"
+end
+```
+
+Fish does not fall through and needs no `;;`.
+
+## Loops
+
+```bash
+for i in $(seq 1 3); do echo $i; done
+for ((i = 0; i < 3; i++)); do echo $i; done
+```
+
+```fish
+for i in (seq 1 3); echo $i; end
+```
+
+Fish has no C-style `for ((...))` loop, so use `seq` (or `while` with `math`). A countdown:
+
+```fish
+set n 3
+while test $n -gt 0
+    echo $n
+    set n (math $n - 1)
+end
+```
+
+## Arrays
+
+Every fish variable is a list. Indexing starts at **1**, negative indices count from the end, and ranges are supported:
+
+```fish
+set arr one two three
+echo $arr[1]           # one
+echo $arr[-1]          # three
+echo $arr[2..3]        # two three
+count $arr             # 3
+set -a arr four        # append
+```
+
+```bash
+arr=(one two three)
+echo ${arr[0]}         # one (Bash indexes from 0)
+echo ${arr[-1]}        # three
+echo ${#arr[@]}        # 3
+```
+
+## Strings
+
+Bash uses parameter-expansion tricks like `${f%.txt}`. Fish has a single `string` command with sub-commands, which is easier to read and remember:
+
+| Task | Bash | Fish |
+|---|---|---|
+| Remove extension | `${f%.*}` | `string replace -r '\.[^.]*$' '' $f` |
+| Replace all | `${f//a/b}` | `string replace -a a b $f` |
+| Lowercase / uppercase | `${f,,}` / `${f^^}` | `string lower $f` / `string upper $f` |
+| Length | `${#f}` | `string length $f` |
+| Substring | `${f:0:6}` | `string sub -s 1 -l 6 $f` |
+| Split | `IFS=. read -ra p <<< "$f"` | `string split . $f` |
+| Regex match | `[[ $s =~ [0-9]+ ]]` | `string match -r '\d+' $s` |
+
+For example, `string split . report.final.txt` prints `report`, `final` and `txt` on separate lines.
+
+## Arithmetic
+
+```bash
+echo $((2 + 3 * 4))    # 14
+```
+
+```fish
+echo (math 2 + 3 '*' 4)   # 14
+echo (math 7 / 2)         # 3.5
+```
+
+Quote `*` in `math`, otherwise fish treats it as a wildcard. Unlike Bash's integer-only `$((...))`, `math` returns decimals.
+
+## Functions
+
+```bash
+greet() {
+    echo "Hi, $1"
+}
+```
+
+```fish
+function greet
+    echo "Hi, $argv[1]"
+end
+```
+
+To keep a fish function for later sessions, run `funcsave greet`. It writes `~/.config/fish/functions/greet.fish`. Use `functions greet` to view a function's code.
+
+## Other behaviours that surprise Bash users
+
+- **No match is an error.** In Bash, an unmatched `*.xyz` stays as the literal text. Fish stops with `No matches for wildcard`, which prevents a command from running on a name that does not exist.
+- **Redirections.** `2>&1` and `&>` work as in Bash. Heredocs (`<<EOF`) and process substitution with `<(cmd)` are different or missing: fish uses `psub` (`diff (sort a | psub) (sort b | psub)`), and for multiline input we pipe `printf` or `echo`.
+- **Config file.** Bash reads `~/.bashrc`. Fish reads `~/.config/fish/config.fish`. Add to the path with `fish_add_path ~/bin` instead of editing `PATH` by hand.
+- **Abbreviations vs aliases.** `abbr` expands to the full command as we type, so history and the screen show what really ran. `alias` in fish is just a small function.
+- **Interactive extras.** Syntax highlighting, history-based autosuggestions (accept with →) and tab completions from man pages are on by default. `fish_config` opens a web page for choosing themes and prompts.
+- **Portability.** Bash scripts run nearly everywhere. Fish scripts need fish installed and break if Bash runs them.
+
+## Scripts: keep Bash for portable ones
+
+Put the interpreter on the first line so that each script runs under the shell it was written for, whichever shell we type it in:
+
+```bash
+#!/usr/bin/env bash      # portable script
+```
+
+```fish
+#!/usr/bin/env fish      # fish script
+```
+
+A common setup is to use fish interactively and write shared or server scripts in Bash. We can still run a one-off Bash command from fish with `bash -c 'echo $((2+3))'`.
+
+## Using Bash tools from fish
+
+Some tools (for example `nvm`, `conda` or Python's `venv` activation) ship Bash-only setup scripts. Look for a fish version first (`activate.fish` for virtual environments), a fish plugin, or a helper such as `bass`, which runs a Bash script and copies the resulting variables into fish.
+
+## Summary
+
+- Use `set` instead of `NAME=value`, and `end` instead of `fi`/`done`/`esac`.
+- Variables are lists, indexed from 1, and are not word-split.
+- Use `string` and `math` instead of `${...}` and `$((...))`.
+- Use `$status` and `$argv` instead of `$?` and `$1`.
+- Keep portable scripts in Bash and use fish for daily interactive work.
+
+## References
+
+- [Fish for bash users (fish documentation)](https://fishshell.com/docs/current/fish_for_bash_users.html)
+- [Bash vs Zsh vs Fish (Tecmint)](https://www.tecmint.com/bash-vs-zsh-vs-fish/)

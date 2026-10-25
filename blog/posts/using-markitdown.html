@@ -8,7 +8,7 @@
 
 <meta name="author" content="Abdullah Al Mahmud">
 <meta name="dcterms.date" content="2026-09-11">
-<meta name="description" content="Microsoft’s MarkItDown CLI only converts one file at a time — here’s how to batch an entire folder of PDFs with a shell loop or a short Python script.">
+<meta name="description" content="Microsoft’s MarkItDown CLI only converts one file at a time — here’s how to batch an entire folder of PDFs with a shell loop (Bash, Zsh, fish or PowerShell) or a short Python script.">
 
 <title>Batch-Converting PDFs to Markdown with MarkItDown – Stat Mania</title>
 <style>
@@ -125,11 +125,11 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
 <link rel="stylesheet" href="../site_libs/quarto-contrib/quarto-project/blogkit/styles.css">
 <link rel="stylesheet" href="../site.css">
 <meta property="og:title" content="Batch-Converting PDFs to Markdown with MarkItDown – Stat Mania">
-<meta property="og:description" content="Microsoft’s MarkItDown CLI only converts one file at a time — here’s how to batch an entire folder of PDFs with a shell loop or a short Python script.">
+<meta property="og:description" content="Microsoft’s MarkItDown CLI only converts one file at a time — here’s how to batch an entire folder of PDFs with a shell loop (Bash, Zsh, fish or PowerShell) or a short Python script.">
 <meta property="og:image" content="https://www.statmania.info/blog/img/r-shell.jpeg">
 <meta property="og:site_name" content="Stat Mania">
 <meta name="twitter:title" content="Batch-Converting PDFs to Markdown with MarkItDown – Stat Mania">
-<meta name="twitter:description" content="Microsoft’s MarkItDown CLI only converts one file at a time — here’s how to batch an entire folder of PDFs with a shell loop or a short Python script.">
+<meta name="twitter:description" content="Microsoft’s MarkItDown CLI only converts one file at a time — here’s how to batch an entire folder of PDFs with a shell loop (Bash, Zsh, fish or PowerShell) or a short Python script.">
 <meta name="twitter:image" content="https://www.statmania.info/blog/img/r-shell.jpeg">
 <meta name="twitter:card" content="summary_large_image">
 </head>
@@ -391,7 +391,7 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
       <h1 class="title">Batch-Converting PDFs to Markdown with MarkItDown</h1>
                   <div>
         <div class="description">
-          Microsoft’s MarkItDown CLI only converts one file at a time — here’s how to batch an entire folder of PDFs with a shell loop or a short Python script.
+          Microsoft’s MarkItDown CLI only converts one file at a time — here’s how to batch an entire folder of PDFs with a shell loop (Bash, Zsh, fish or PowerShell) or a short Python script.
         </div>
       </div>
                           <div class="quarto-categories">
@@ -462,31 +462,36 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> file <span class="kw">in</span> <span class="pp">*</span>.pdf<span class="kw">;</span> <span class="cf">do</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">markitdown</span> <span class="st">"</span><span class="va">$file</span><span class="st">"</span> <span class="at">-o</span> <span class="st">"</span><span class="va">${file</span><span class="op">%</span>.pdf<span class="va">}</span><span class="st">.md"</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>fish (Linux &amp; macOS):</strong></p>
+<pre class="fish"><code>for file in *.pdf
+    markitdown $file -o (string replace -r '\.pdf$' '.md' $file)
+end</code></pre>
+<p>fish does not split variables on spaces, so <code>$file</code> needs no quotes, and <code>string replace</code> swaps the <code>.pdf</code> ending for <code>.md</code> (fish has no <code>${file%.pdf}</code>). On one line: <code>for file in *.pdf; markitdown $file -o (string replace -r '\.pdf$' '.md' $file); end</code>.</p>
 <p><strong>PowerShell (Windows):</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-ChildItem</span> <span class="op">*.</span><span class="fu">pdf</span> <span class="op">|</span> <span class="fu">ForEach-Object</span> <span class="op">{</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    markitdown <span class="va">$_</span><span class="op">.</span><span class="fu">FullName</span> <span class="op">-</span>o <span class="op">(</span><span class="va">$_</span><span class="op">.</span><span class="fu">BaseName</span> <span class="op">+</span> <span class="st">".md"</span><span class="op">)</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-ChildItem</span> <span class="op">*.</span><span class="fu">pdf</span> <span class="op">|</span> <span class="fu">ForEach-Object</span> <span class="op">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    markitdown <span class="va">$_</span><span class="op">.</span><span class="fu">FullName</span> <span class="op">-</span>o <span class="op">(</span><span class="va">$_</span><span class="op">.</span><span class="fu">BaseName</span> <span class="op">+</span> <span class="st">".md"</span><span class="op">)</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="batch-converting-with-the-python-api" class="level2">
 <h2 class="anchored" data-anchor-id="batch-converting-with-the-python-api">Batch Converting with the Python API</h2>
 <p>For more control — say, catching per-file failures instead of letting one bad PDF kill the whole batch — call MarkItDown directly from Python:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> markitdown <span class="im">import</span> MarkItDown</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>md <span class="op">=</span> MarkItDown()</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>input_dir <span class="op">=</span> Path(<span class="st">"./my_pdfs"</span>)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>output_dir <span class="op">=</span> Path(<span class="st">"./converted_markdown"</span>)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>output_dir.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> pdf_path <span class="kw">in</span> input_dir.glob(<span class="st">"*.pdf"</span>):</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        result <span class="op">=</span> md.convert(<span class="bu">str</span>(pdf_path))</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        output_file <span class="op">=</span> output_dir <span class="op">/</span> <span class="ss">f"</span><span class="sc">{</span>pdf_path<span class="sc">.</span>stem<span class="sc">}</span><span class="ss">.md"</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        output_file.write_text(result.text_content, encoding<span class="op">=</span><span class="st">"utf-8"</span>)</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Converted: </span><span class="sc">{</span>pdf_path<span class="sc">.</span>name<span class="sc">}</span><span class="ss"> -&gt; </span><span class="sc">{</span>output_file<span class="sc">.</span>name<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Failed to convert </span><span class="sc">{</span>pdf_path<span class="sc">.</span>name<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> markitdown <span class="im">import</span> MarkItDown</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>md <span class="op">=</span> MarkItDown()</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>input_dir <span class="op">=</span> Path(<span class="st">"./my_pdfs"</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>output_dir <span class="op">=</span> Path(<span class="st">"./converted_markdown"</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>output_dir.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> pdf_path <span class="kw">in</span> input_dir.glob(<span class="st">"*.pdf"</span>):</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        result <span class="op">=</span> md.convert(<span class="bu">str</span>(pdf_path))</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        output_file <span class="op">=</span> output_dir <span class="op">/</span> <span class="ss">f"</span><span class="sc">{</span>pdf_path<span class="sc">.</span>stem<span class="sc">}</span><span class="ss">.md"</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        output_file.write_text(result.text_content, encoding<span class="op">=</span><span class="st">"utf-8"</span>)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Converted: </span><span class="sc">{</span>pdf_path<span class="sc">.</span>name<span class="sc">}</span><span class="ss"> -&gt; </span><span class="sc">{</span>output_file<span class="sc">.</span>name<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Failed to convert </span><span class="sc">{</span>pdf_path<span class="sc">.</span>name<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 
 
 </section>

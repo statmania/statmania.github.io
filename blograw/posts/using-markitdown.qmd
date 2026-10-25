@@ -1,6 +1,6 @@
 ---
 title: "Batch-Converting PDFs to Markdown with MarkItDown"
-description: "Microsoft's MarkItDown CLI only converts one file at a time — here's how to batch an entire folder of PDFs with a shell loop or a short Python script."
+description: "Microsoft's MarkItDown CLI only converts one file at a time — here's how to batch an entire folder of PDFs with a shell loop (Bash, Zsh, fish or PowerShell) or a short Python script."
 author: "Abdullah Al Mahmud"
 date: "2026-09-11"
 categories: [Tools, Python, CLI]
@@ -41,6 +41,16 @@ for file in *.pdf; do
     markitdown "$file" -o "${file%.pdf}.md"
 done
 ```
+
+**fish (Linux & macOS):**
+
+```fish
+for file in *.pdf
+    markitdown $file -o (string replace -r '\.pdf$' '.md' $file)
+end
+```
+
+fish does not split variables on spaces, so `$file` needs no quotes, and `string replace` swaps the `.pdf` ending for `.md` (fish has no `${file%.pdf}`). On one line: `for file in *.pdf; markitdown $file -o (string replace -r '\.pdf$' '.md' $file); end`.
 
 **PowerShell (Windows):**
 
