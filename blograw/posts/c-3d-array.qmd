@@ -1,0 +1,84 @@
+---
+title: "3D Arrays in C: Layers, Rows and Columns"
+description: "How a three-dimensional array works in C: declaring int a[layers][rows][columns], initialising it, reading one element with three indices, and printing it with three nested loops."
+date: "2026-10-20"
+categories: [C, Programming, Tutorial]
+tags: [c, arrays, loops, indexing]
+author: "Abdullah Al Mahmud"
+image: ../img/c-3d-array.png
+---
+
+![A 2 × 3 × 4 array is two layers, each a grid of 3 rows and 4 columns; a[1][0][2] is layer 1, row 0, column 2.](../img/c-3d-array.svg){fig-alt="Two stacked grids labelled Layer 0 holding 1 to 12 and Layer 1 holding 13 to 24, each with 3 rows and 4 columns. The value 15 in Layer 1 is highlighted and labelled a[1][0][2]."}
+
+A **3D array** in C is an array of matrices: a stack of 2D arrays. We can picture it as the pages of a book, where each page is a grid of rows and columns.
+
+Here we create an array with **2 layers, 3 rows and 4 columns**, fill it with the numbers 1 to 24, and print it layer by layer.
+
+## A complete example
+
+```c
+#include <stdio.h>
+
+int main() {
+    // 1. Initialise a 3D array: [layers][rows][columns]
+    int a[2][3][4] = {
+        // Layer 0 (a 3 x 4 matrix)
+        {
+            {1, 2, 3, 4},
+            {5, 6, 7, 8},
+            {9, 10, 11, 12}
+        },
+        // Layer 1 (another 3 x 4 matrix)
+        {
+            {13, 14, 15, 16},
+            {17, 18, 19, 20},
+            {21, 22, 23, 24}
+        }
+    };
+
+    // 2. Three nested loops, one per dimension
+    for (int i = 0; i < 2; i++) {            // layers
+        printf("--- Layer %d ---\n", i);
+
+        for (int j = 0; j < 3; j++) {        // rows
+            for (int k = 0; k < 4; k++) {    // columns
+                printf("%4d", a[i][j][k]);
+            }
+            printf("\n");                    // end of a row
+        }
+        printf("\n");                        // blank line between layers
+    }
+
+    // 3. Read one element with three coordinates
+    printf("a[1][0][2] = %d\n", a[1][0][2]);
+
+    return 0;
+}
+```
+
+Output:
+
+```text
+--- Layer 0 ---
+   1   2   3   4
+   5   6   7   8
+   9  10  11  12
+
+--- Layer 1 ---
+  13  14  15  16
+  17  18  19  20
+  21  22  23  24
+
+a[1][0][2] = 15
+```
+
+## Core ideas
+
+- **Declaration:** `int a[layers][rows][columns];`. The sizes in the example are 2, 3 and 4, so the array holds 2 × 3 × 4 = 24 integers.
+- **Access:** an element needs three coordinates, in the same order as the declaration. `a[1][0][2]` is layer 1, row 0, column 2, which holds `15`. Like every C index, each one starts at 0.
+- **Three loops:** to visit every element we need three nested `for` loops: the outer one over the layers, the middle one over the rows, and the inner one over the columns. The innermost index changes fastest, which is also how the numbers sit in memory.
+- **Initialiser braces:** each level of braces matches one dimension: the outer pair holds the layers, each layer holds its rows, and each row holds its columns. Missing values are filled with `0`.
+
+::: {.callout-tip}
+Printing one layer is exactly the [2D matrix printing](c-print-2d-array-in-matrix-form.qmd) we have already seen. The 3D version just repeats it once for every layer.
+:::

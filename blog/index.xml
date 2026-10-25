@@ -4187,6 +4187,440 @@ Warning
   <media:content url="https://www.statmania.info/blog/img/c-print-array-with-label.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 <item>
+  <title>3D Arrays in C: Layers, Rows and Columns</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/c-3d-array.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/c-3d-array.svg" class="img-fluid figure-img" alt="Two stacked grids labelled Layer 0 holding 1 to 12 and Layer 1 holding 13 to 24, each with 3 rows and 4 columns. The value 15 in Layer 1 is highlighted and labelled a[1][0][2]."></p>
+<figcaption>A 2 × 3 × 4 array is two layers, each a grid of 3 rows and 4 columns; a[1][0][2] is layer 1, row 0, column 2.</figcaption>
+</figure>
+</div>
+<p>A <strong>3D array</strong> in C is an array of matrices: a stack of 2D arrays. We can picture it as the pages of a book, where each page is a grid of rows and columns.</p>
+<p>Here we create an array with <strong>2 layers, 3 rows and 4 columns</strong>, fill it with the numbers 1 to 24, and print it layer by layer.</p>
+<section id="a-complete-example" class="level2">
+<h2 class="anchored" data-anchor-id="a-complete-example">A complete example</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">#include </span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">&lt;stdio.h&gt;</span></span>
+<span id="cb1-2"></span>
+<span id="cb1-3"><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">()</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-4">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 1. Initialise a 3D array: [layers][rows][columns]</span></span>
+<span id="cb1-5">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">][</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">][</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-6">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Layer 0 (a 3 x 4 matrix)</span></span>
+<span id="cb1-7">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-8">            <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">},</span></span>
+<span id="cb1-9">            <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">},</span></span>
+<span id="cb1-10">            <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">9</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">11</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-11">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">},</span></span>
+<span id="cb1-12">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Layer 1 (another 3 x 4 matrix)</span></span>
+<span id="cb1-13">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-14">            <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">14</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">},</span></span>
+<span id="cb1-15">            <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">17</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">18</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">19</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">},</span></span>
+<span id="cb1-16">            <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">21</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">22</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">23</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">24</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-17">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-18">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">};</span></span>
+<span id="cb1-19"></span>
+<span id="cb1-20">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 2. Three nested loops, one per dimension</span></span>
+<span id="cb1-21">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>            <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// layers</span></span>
+<span id="cb1-22">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"--- Layer </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> ---</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb1-23"></span>
+<span id="cb1-24">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> j <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> j <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> j<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// rows</span></span>
+<span id="cb1-25">            <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> k <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> k <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span> k<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// columns</span></span>
+<span id="cb1-26">                printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%4d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">][</span>j<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">][</span>k<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]);</span></span>
+<span id="cb1-27">            <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-28">            printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>                    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// end of a row</span></span>
+<span id="cb1-29">        <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-30">        printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">);</span>                        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// blank line between layers</span></span>
+<span id="cb1-31">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-32"></span>
+<span id="cb1-33">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// 3. Read one element with three coordinates</span></span>
+<span id="cb1-34">    printf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"a[1][0][2] = </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> a<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">][</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">][</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]);</span></span>
+<span id="cb1-35"></span>
+<span id="cb1-36">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb1-37"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>Output:</p>
+<pre class="text"><code>--- Layer 0 ---
+   1   2   3   4
+   5   6   7   8
+   9  10  11  12
+
+--- Layer 1 ---
+  13  14  15  16
+  17  18  19  20
+  21  22  23  24
+
+a[1][0][2] = 15</code></pre>
+</section>
+<section id="core-ideas" class="level2">
+<h2 class="anchored" data-anchor-id="core-ideas">Core ideas</h2>
+<ul>
+<li><strong>Declaration:</strong> <code>int a[layers][rows][columns];</code>. The sizes in the example are 2, 3 and 4, so the array holds 2 × 3 × 4 = 24 integers.</li>
+<li><strong>Access:</strong> an element needs three coordinates, in the same order as the declaration. <code>a[1][0][2]</code> is layer 1, row 0, column 2, which holds <code>15</code>. Like every C index, each one starts at 0.</li>
+<li><strong>Three loops:</strong> to visit every element we need three nested <code>for</code> loops: the outer one over the layers, the middle one over the rows, and the inner one over the columns. The innermost index changes fastest, which is also how the numbers sit in memory.</li>
+<li><strong>Initialiser braces:</strong> each level of braces matches one dimension: the outer pair holds the layers, each layer holds its rows, and each row holds its columns. Missing values are filled with <code>0</code>.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Printing one layer is exactly the <a href="../posts/c-print-2d-array-in-matrix-form.html">2D matrix printing</a> we have already seen. The 3D version just repeats it once for every layer.</p>
+</div>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>C</category>
+  <category>Programming</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/c-3d-array.html</guid>
+  <pubDate>Mon, 19 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/c-3d-array.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
   <title>Printing a 2D Array in Matrix Form in C</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://www.statmania.info/blog/posts/c-print-2d-array-in-matrix-form.html</link>
@@ -7724,264 +8158,6 @@ font-style: inherit;">);</span></span></code></pre></div></div>
   <guid>https://www.statmania.info/blog/posts/c-shortcut-if-else-ternary.html</guid>
   <pubDate>Sun, 18 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/c-ternary-shortcut.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>How to Write a Multiline Git Commit Message (4 Methods)</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/git-multiline-commit-message.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/git-multiline-commit.svg" class="img-fluid figure-img" alt="A terminal showing a commit message: the subject line 'Fix login timeout bug' under 50 characters, a blank line, and a wrapped body, with labels for each part."></p>
-<figcaption>A commit message is a short subject, a blank line, then a body that explains why.</figcaption>
-</figure>
-</div>
-<p>A one-line <code>git commit -m "..."</code> is fine for tiny changes. When a change needs explaining, a commit message has a <strong>subject</strong> (one short line), a <strong>blank line</strong>, and a <strong>body</strong> (the details). Git offers four ways to write one. I tried each in a fresh repository, and the messages below are what <code>git log</code> showed.</p>
-<section id="method-1-the-default-text-editor-recommended" class="level2">
-<h2 class="anchored" data-anchor-id="method-1-the-default-text-editor-recommended">Method 1: The Default Text Editor (Recommended)</h2>
-<p>Leave out <code>-m</code> entirely:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> commit</span></code></pre></div></div>
-<p>Git opens our editor (Vim, Nano, VS Code, …) with a template. We type the subject on the first line, leave the second line <strong>blank</strong>, write the body from line 3, then save and close to finish the commit. An empty message aborts the commit. Lines that start with <code>#</code> are comments and are removed.</p>
-<p>To choose the editor once and for all:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> config <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--global</span> core.editor <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"nano"</span></span>
-<span id="cb2-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> config <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--global</span> core.editor <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"code --wait"</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># VS Code</span></span></code></pre></div></div>
-<p>This is the most comfortable method for long messages, because we can see the whole message and edit it freely.</p>
-</section>
-<section id="method-2-several--m-flags" class="level2">
-<h2 class="anchored" data-anchor-id="method-2-several--m-flags">Method 2: Several <code>-m</code> Flags</h2>
-<p>Each <code>-m</code> becomes its own <strong>paragraph</strong>, with a blank line between them:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Add authentication feature"</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"This paragraph explains why the change was made."</span></span></code></pre></div></div>
-<p>Result in <code>git log</code>:</p>
-<pre><code>Add authentication feature
-
-This paragraph explains why the change was made.</code></pre>
-<p>The first <code>-m</code> is the subject and the rest are body paragraphs. It is quick, but each <code>-m</code> is a single paragraph, so it is awkward for bullet lists.</p>
-</section>
-<section id="method-3-quotes-that-span-several-lines" class="level2">
-<h2 class="anchored" data-anchor-id="method-3-quotes-that-span-several-lines">Method 3: Quotes That Span Several Lines</h2>
-<p>Open the quotes, press Enter inside them to start a new line, and close the quotes at the end. The shell shows a <code>&gt;</code> continuation prompt (fish just continues on the next line):</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Fix login timeout bug</span></span>
-<span id="cb5-2"></span>
-<span id="cb5-3"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">- Increased token expiration to 2 hours</span></span>
-<span id="cb5-4"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">- Resolved edge case where session cleared unexpectedly"</span></span></code></pre></div></div>
-<p>Result:</p>
-<pre><code>Fix login timeout bug
-
-- Increased token expiration to 2 hours
-- Resolved edge case where session cleared unexpectedly</code></pre>
-<p>This worked in bash and in fish. Remember the blank line after the subject: press Enter twice. In bash and zsh we can also write <code>\n</code> explicitly with the <code>$'...'</code> form (plain <code>"...\n..."</code> does <strong>not</strong> create a line break):</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">$'Quoted with dollar sign</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\n\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Body line from ANSI-C quoting.'</span></span></code></pre></div></div>
-</section>
-<section id="method-4-read-the-message-from-a-file" class="level2">
-<h2 class="anchored" data-anchor-id="method-4-read-the-message-from-a-file">Method 4: Read the Message from a File</h2>
-<p>For a long message, write it in a file first (the file name does not matter), then pass it with <code>-F</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-F</span> commit_msg.txt</span></code></pre></div></div>
-<p>The same works without a file. In <strong>bash or zsh</strong> a here-document supplies the message (<code>-F -</code> means “read from standard input”; the word after <code>&lt;&lt;</code> marks where the message ends):</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-F</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;&lt;'EOF'</span></span>
-<span id="cb9-2"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Add RSS link</span></span>
-<span id="cb9-3"></span>
-<span id="cb9-4"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Shown in the hero stats line.</span></span>
-<span id="cb9-5"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">EOF</span></span></code></pre></div></div>
-<p><strong>fish</strong> has no here-documents, so pipe <code>printf</code> into it instead:</p>
-<pre class="fish"><code>printf 'Add feature X\n\nBody via printf in fish.\n' | git commit -F -</code></pre>
-<p>Both give the usual subject, blank line and body.</p>
-</section>
-<section id="works-with--a-too" class="level2">
-<h2 class="anchored" data-anchor-id="works-with--a-too">Works with <code>-a</code> Too</h2>
-<p>Everything above combines with <code>-a</code> (stage all tracked changes, then commit). The message is written in the same way:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-a</span>                                  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># editor</span></span>
-<span id="cb11-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-a</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Update f"</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Body text."</span>    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># several -m</span></span>
-<span id="cb11-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-a</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-F</span> commit_msg.txt                <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># message from a file</span></span>
-<span id="cb11-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-a</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Fix login timeout bug</span></span>
-<span id="cb11-5"></span>
-<span id="cb11-6"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">- Increased token expiration to 2 hours"</span>       <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># multi-line quotes</span></span></code></pre></div></div>
-<p>I tried the second form in a test repository, and <code>git log</code> showed the subject, a blank line and the body as usual. (The short <code>-am</code> also works, but it suits one-line messages.)</p>
-</section>
-<section id="check-or-fix-the-message" class="level2">
-<h2 class="anchored" data-anchor-id="check-or-fix-the-message">Check or Fix the Message</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> log <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-1</span>            <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># show the last commit with its full message</span></span>
-<span id="cb12-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--amend</span>    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># reopen the last message in the editor and rewrite it</span></span></code></pre></div></div>
-<p>Only amend commits that have not been pushed. Rewriting a pushed commit changes its history for everyone who pulled it.</p>
-</section>
-<section id="which-method" class="level2">
-<h2 class="anchored" data-anchor-id="which-method">Which Method?</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Method</th>
-<th style="text-align: left;">Best for</th>
-<th style="text-align: left;">Watch out for</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">1. Editor (<code>git commit</code>)</td>
-<td style="text-align: left;">long, careful messages</td>
-<td style="text-align: left;">needs an editor set up</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2. Several <code>-m</code></td>
-<td style="text-align: left;">a subject plus one or two paragraphs</td>
-<td style="text-align: left;">no bullet lists</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">3. Multi-line quotes</td>
-<td style="text-align: left;">short messages with a list, typed in the terminal</td>
-<td style="text-align: left;">quotes inside the message</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">4. <code>-F</code> file or stdin</td>
-<td style="text-align: left;">long messages, scripts</td>
-<td style="text-align: left;">the shell syntax differs (bash vs fish)</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="best-practices-for-multiline-commits" class="level2">
-<h2 class="anchored" data-anchor-id="best-practices-for-multiline-commits">Best Practices for Multiline Commits</h2>
-<ul>
-<li><strong>Subject:</strong> about 50 characters or fewer, starting with a capital letter, without a final period. Use the imperative mood, as if giving an order: “Fix bug”, not “Fixed bug”.</li>
-<li><strong>Blank line:</strong> always leave line 2 empty. Git and many tools (<code>git log --oneline</code>, GitHub) treat the first paragraph as the title and the rest as the body.</li>
-<li><strong>Body:</strong> wrap lines at about 72 characters and explain <strong>why</strong> the change was made and what it achieves, rather than how it was coded. The code already shows the “how”.</li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>Git</category>
-  <category>DevOps</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/git-multiline-commit-message.html</guid>
-  <pubDate>Sun, 18 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/git-multiline-commit.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>
