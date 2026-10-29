@@ -1,0 +1,144 @@
+---
+title: "The Dots Argument (...) in R Functions"
+description: "What the ... argument does in R: passing extra arguments to an inner function, collecting any number of inputs with list(...), and why its position in the argument list matters."
+date: "2026-10-27"
+categories: [R, Programming, Tutorial]
+tags: [r, functions]
+author: "Abdullah Al Mahmud"
+image: ../img/r-shell.jpeg
+---
+
+![Trying out `...` in the R console.](../img/r-shell.jpeg){fig-alt="An R session running in a terminal window."}
+
+In R, `...` (dot-dot-dot, also called the *ellipsis* or *dots* argument) is a special parameter that lets a function accept any number of extra arguments. It has two main uses:
+
+1. passing arguments on to another function, and
+2. collecting a variable-length set of inputs, as `c()`, `paste()` and `list()` do.
+
+## Use 1: Passing arguments to an inner function
+
+A wrapper can fix some settings and let the caller customise everything else, without listing every possible argument.
+
+```r
+# Force the colour and symbol, but let the user set titles, labels, axes, ...
+my_plot <- function(x, y, ...) {
+  plot(x, y, col = "royalblue", pch = 16, ...)
+}
+
+# main and xlab are not named in my_plot(), yet they reach plot()
+my_plot(1:10, 1:10, main = "My Custom Chart", xlab = "X Axis Index")
+```
+
+## Use 2: Collecting inputs with `list(...)`
+
+To use the extra arguments inside the function, convert `...` into an ordinary list.
+
+```r
+summarize_inputs <- function(...) {
+  input_list <- list(...)
+  cat("We received", length(input_list), "arguments.\n")
+  print(names(input_list))
+  invisible(input_list)
+}
+
+res <- summarize_inputs(a = 10, b = "hello", c = TRUE)
+```
+
+```
+We received 3 arguments.
+[1] "a" "b" "c"
+```
+
+Two related helpers are worth knowing: `...length()` gives the number of arguments, and `..1`, `..2`, ... pick them by position.
+
+## Where does `...` go?
+
+### At the end: fixed inputs first, extras last
+
+Put `...` last when the function has required inputs and `...` only catches optional settings for a downstream call.
+
+```r
+my_plot <- function(x, y, ...) {
+  plot(x, y, ...)
+}
+
+# 1:10 goes to x, 1:10 to y, and col travels down through ...
+my_plot(1:10, 1:10, col = "red")
+```
+
+### At the beginning: collect data first
+
+Put `...` first when the function's job is to gather an unknown number of objects (like `c()` or `paste()`). Every argument *after* `...` must then be named in the call, because R never matches them by position.
+
+```r
+f <- function(..., named_arg = "default") {
+  list(n = length(list(...)), named_arg = named_arg)
+}
+
+str(f(1, 2, 3, "custom_value"))                       # swallowed by ...
+str(f(1, 2, 3, named_arg = "custom_value"))           # as intended
+```
+
+```
+List of 2
+ $ n        : int 4
+ $ named_arg: chr "default"
+List of 2
+ $ n        : int 3
+ $ named_arg: chr "custom_value"
+```
+
+In the first call `"custom_value"` is counted as a fourth data input and `named_arg` keeps its default.
+
+## Combining both uses
+
+A single `...` can only do one job. If it collects the data, the styling arguments end up in the data too. In the example below, passing `col` and `border` through `list(...)` makes `mean()` fail on them. So we take the data as an explicit argument and keep `...` for the plot settings.
+
+```r
+analyze_and_plot <- function(data_list, plot_title = "Data Analysis", ...) {
+  means <- sapply(data_list, mean, na.rm = TRUE)
+  cat("Calculated means for", length(data_list), "groups:\n")
+  print(means)
+
+  # col, border, las, ... go straight to boxplot()
+  boxplot(data_list, main = plot_title, ...)
+  invisible(means)
+}
+
+groups <- list(
+  A = c(10, 12, 15, 14, 18),
+  B = c(22, 25, 28, 21, 24),
+  C = c(5, 7, 8, 6, 9)
+)
+
+analyze_and_plot(
+  groups,
+  plot_title = "Experimental Results",
+  col = c("tomato", "gold", "deepskyblue"),
+  border = "darkgray"
+)
+```
+
+```
+Calculated means for 3 groups:
+   A    B    C
+13.8 24.0  7.0
+```
+
+::: {.callout-warning}
+## Pitfalls
+
+- **Misspelt arguments pass silently through `...`.** `plot(1:3, 1:3, colr = "red")` raises no error. R only warns that `"colr" is not a graphical parameter`, and the colour is ignored, so check the warnings.
+- **One `...` cannot serve two purposes.** Decide whether it holds data or settings. Use `list(...)` for the first, and an explicit argument plus `...` for the second.
+- **Arguments after `...` need their full name.** Partial matching does not apply to them.
+:::
+
+## Key takeaways
+
+- `list(...)` turns the extra arguments into a list you can count, name-check or loop over.
+- Passing `...` to another function forwards settings without the wrapper knowing they exist.
+- Put `...` last for optional pass-through settings, and first for collecting data, remembering that anything after it must be named.
+
+## Reference
+
+- DataFlair, [R Arguments Introduction](https://data-flair.training/blogs/r-arguments-introduction/)

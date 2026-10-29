@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" font-family="'JetBrains Mono','Fira Code',Consolas,monospace">
+  <title>Function call versus inlined function</title>
+  <desc>Left: a loop that jumps to square() on every iteration. Right: the same loop with the body x*x pasted in place, with no jump.</desc>
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0a1230"/><stop offset="1" stop-color="#101c4a"/></linearGradient>
+  <marker id="y" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#ffd23f"/></marker></defs>
+  <rect width="800" height="420" fill="url(#bg)"/>
+  <text x="400" y="42" text-anchor="middle" font-size="22" fill="#e6ecff" font-weight="bold">inline: paste the body, skip the jump</text>
+  <g font-size="17">
+    <rect x="40" y="80" width="300" height="130" rx="10" fill="#14255e" stroke="#4d8dff" stroke-width="2"/>
+    <text x="60" y="112" fill="#9cc0ff">for (i...) {</text><text x="80" y="142" fill="#e6ecff">s += square(i);</text><text x="60" y="172" fill="#9cc0ff">}</text>
+    <rect x="40" y="260" width="300" height="80" rx="10" fill="#14255e" stroke="#4d8dff" stroke-width="2"/>
+    <text x="60" y="308" fill="#e6ecff">square(x): x * x</text>
+    <path d="M200 215 C 260 235, 260 250, 200 256" fill="none" stroke="#ffd23f" stroke-width="3" marker-end="url(#y)"/>
+    <text x="40" y="375" fill="#ffd23f" font-size="15">call + return every iteration</text>
+    <rect x="460" y="80" width="300" height="130" rx="10" fill="#14255e" stroke="#ffd23f" stroke-width="2"/>
+    <text x="480" y="112" fill="#9cc0ff">for (i...) {</text><text x="500" y="142" fill="#ffd23f">s += i * i;</text><text x="480" y="172" fill="#9cc0ff">}</text>
+    <text x="460" y="260" fill="#ffd23f" font-size="15">no jump, no frame,</text>
+    <text x="460" y="285" fill="#ffd23f" font-size="15">the compiler can optimise further</text>
+  </g>
+  <text x="400" y="150" text-anchor="middle" font-size="40" fill="#ffd23f">→</text>
+</svg>

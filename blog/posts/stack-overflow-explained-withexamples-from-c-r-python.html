@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Abdullah Al Mahmud">
+<meta name="dcterms.date" content="2026-10-29">
+<meta name="description" content="What a stack overflow is, how C, R and Python each fail on runaway or very deep recursion, and seven ways to avoid it: loops, explicit stacks, halving, trampolines and more. Examples were run and the output is real.">
+
+<title>Stack Overflow Explained, with Examples from C, R and Python – Stat Mania</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-de63f62b328812d8e578a4d74e282472.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-ccafe2c99a4564d55934ca8539ca9f46.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-52e7a1fd6f08fa3fe250bdb5f5fe2fe1.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-de4fa3b7647c5fefd9d59d6b8dfc486f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-BEELJ2ZRED"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+<link rel="stylesheet" href="../site_libs/quarto-contrib/quarto-project/blogkit/styles.css">
+<link rel="stylesheet" href="../site.css">
+<meta property="og:title" content="Stack Overflow Explained, with Examples from C, R and Python – Stat Mania">
+<meta property="og:description" content="What a stack overflow is, how C, R and Python each fail on runaway or very deep recursion, and seven ways to avoid it: loops, explicit stacks, halving, trampolines and more. Examples were run and the output is real.">
+<meta property="og:image" content="https://www.statmania.info/blog/img/stack-overflow-explained.png">
+<meta property="og:site_name" content="Stat Mania">
+<meta property="og:image:height" content="630">
+<meta property="og:image:width" content="1200">
+<meta name="twitter:title" content="Stack Overflow Explained, with Examples from C, R and Python – Stat Mania">
+<meta name="twitter:description" content="What a stack overflow is, how C, R and Python each fail on runaway or very deep recursion, and seven ways to avoid it: loops, explicit stacks, halving, trampolines and more. Examples were run and the output is real.">
+<meta name="twitter:image" content="https://www.statmania.info/blog/img/stack-overflow-explained.png">
+<meta name="twitter:image-height" content="630">
+<meta name="twitter:image-width" content="1200">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-fixed quarto-dark"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = true;
+    const darkModeDefault = authorPrefersDark;
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../logo.svg" alt="Stat Mania Logo." class="navbar-logo light-content">
+    <img src="../logo.svg" alt="Stat Mania Logo." class="navbar-logo dark-content">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Stat Mania</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> <i class="bi bi-house" role="img">
+</i> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tags.html"> <i class="bi bi-tags" role="img">
+</i> 
+<span class="menu-text">Tags</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../categories.html"> <i class="bi bi-collection" role="img">
+</i> 
+<span class="menu-text">Categories</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-language" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-code-slash" role="img">
+</i> 
+ <span class="menu-text">Language</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-language">    
+        <li>
+    <a class="dropdown-item" href="../tags.html#tag=r"><i class="bi bi-bar-chart-line" role="img">
+</i> 
+ <span class="dropdown-text">R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../tags.html#tag=c"><i class="bi bi-braces" role="img">
+</i> 
+ <span class="dropdown-text">C</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../tags.html#tag=python"><i class="bi bi-filetype-py" role="img">
+</i> 
+ <span class="dropdown-text">Python</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../tags.html#tag=command-line"><i class="bi bi-terminal" role="img">
+</i> 
+ <span class="dropdown-text">Shell</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="https://www.statmania.info"> <i class="bi bi-globe" role="img">
+</i> 
+<span class="menu-text">Portal</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> <i class="bi bi-info-circle" role="img">
+</i> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com"> <i class="bi bi-twitter" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Stack Overflow Explained, with Examples from C, R and Python</h1>
+                  <div>
+        <div class="description">
+          What a stack overflow is, how C, R and Python each fail on runaway or very deep recursion, and seven ways to avoid it: loops, explicit stacks, halving, trampolines and more. Examples were run and the output is real.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">C</div>
+                <div class="quarto-category">R</div>
+                <div class="quarto-category">Python</div>
+                <div class="quarto-category">Programming</div>
+                <div class="quarto-category">Tutorial</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Abdullah Al Mahmud </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">October 29, 2026</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#what-a-stack-overflow-actually-is" id="toc-what-a-stack-overflow-actually-is" class="nav-link active" data-scroll-target="#what-a-stack-overflow-actually-is">What a stack overflow actually is</a></li>
+  <li><a href="#c-dies-with-a-segfault" id="toc-c-dies-with-a-segfault" class="nav-link" data-scroll-target="#c-dies-with-a-segfault">C: dies with a segfault</a>
+  <ul class="collapse">
+  <li><a href="#infinite-recursion-no-base-case" id="toc-infinite-recursion-no-base-case" class="nav-link" data-scroll-target="#infinite-recursion-no-base-case">Infinite recursion (no base case)</a></li>
+  <li><a href="#a-correct-recursion-thats-still-too-deep" id="toc-a-correct-recursion-thats-still-too-deep" class="nav-link" data-scroll-target="#a-correct-recursion-thats-still-too-deep">A “correct” recursion that’s still too deep</a></li>
+  <li><a href="#the-sneakier-version-huge-local-arrays" id="toc-the-sneakier-version-huge-local-arrays" class="nav-link" data-scroll-target="#the-sneakier-version-huge-local-arrays">The sneakier version: huge local arrays</a></li>
+  </ul></li>
+  <li><a href="#r-usually-an-r-error-sometimes-a-c-stack-crash" id="toc-r-usually-an-r-error-sometimes-a-c-stack-crash" class="nav-link" data-scroll-target="#r-usually-an-r-error-sometimes-a-c-stack-crash">R: usually an R error, sometimes a C-stack crash</a>
+  <ul class="collapse">
+  <li><a href="#infinite-recursion-rs-expressions-limit" id="toc-infinite-recursion-rs-expressions-limit" class="nav-link" data-scroll-target="#infinite-recursion-rs-expressions-limit">Infinite recursion → R’s <code>expressions</code> limit</a></li>
+  <li><a href="#a-legitimate-deep-recursion-that-still-fails" id="toc-a-legitimate-deep-recursion-that-still-fails" class="nav-link" data-scroll-target="#a-legitimate-deep-recursion-that-still-fails">A legitimate deep recursion that still fails</a></li>
+  </ul></li>
+  <li><a href="#python-a-clean-catchable-recursionerror" id="toc-python-a-clean-catchable-recursionerror" class="nav-link" data-scroll-target="#python-a-clean-catchable-recursionerror">Python: a clean, catchable <code>RecursionError</code></a>
+  <ul class="collapse">
+  <li><a href="#infinite-recursion" id="toc-infinite-recursion" class="nav-link" data-scroll-target="#infinite-recursion">Infinite recursion</a></li>
+  <li><a href="#the-trap-raising-the-limit-can-segfault" id="toc-the-trap-raising-the-limit-can-segfault" class="nav-link" data-scroll-target="#the-trap-raising-the-limit-can-segfault">The trap: raising the limit can segfault</a></li>
+  <li><a href="#a-correct-deep-recursion-that-still-fails" id="toc-a-correct-deep-recursion-that-still-fails" class="nav-link" data-scroll-target="#a-correct-deep-recursion-that-still-fails">A correct deep recursion that still fails</a></li>
+  </ul></li>
+  <li><a href="#how-to-avoid-it-in-any-language" id="toc-how-to-avoid-it-in-any-language" class="nav-link" data-scroll-target="#how-to-avoid-it-in-any-language">How to avoid it, in any language</a>
+  <ul class="collapse">
+  <li><a href="#always-have-a-reachable-base-case-that-shrinks-the-problem" id="toc-always-have-a-reachable-base-case-that-shrinks-the-problem" class="nav-link" data-scroll-target="#always-have-a-reachable-base-case-that-shrinks-the-problem">1. Always have a reachable base case that shrinks the problem</a></li>
+  <li><a href="#convert-linear-recursion-to-a-loop-the-best-fix-when-you-can" id="toc-convert-linear-recursion-to-a-loop-the-best-fix-when-you-can" class="nav-link" data-scroll-target="#convert-linear-recursion-to-a-loop-the-best-fix-when-you-can">2. Convert linear recursion to a loop (the best fix when you can)</a></li>
+  <li><a href="#use-an-explicit-stack-manual-recursion" id="toc-use-an-explicit-stack-manual-recursion" class="nav-link" data-scroll-target="#use-an-explicit-stack-manual-recursion">3. Use an explicit stack (manual recursion)</a></li>
+  <li><a href="#halve-the-problem-instead-of-decrementing-it" id="toc-halve-the-problem-instead-of-decrementing-it" class="nav-link" data-scroll-target="#halve-the-problem-instead-of-decrementing-it">4. Halve the problem instead of decrementing it</a></li>
+  <li><a href="#memoisation-fixes-redundant-recursion-not-deep-recursion" id="toc-memoisation-fixes-redundant-recursion-not-deep-recursion" class="nav-link" data-scroll-target="#memoisation-fixes-redundant-recursion-not-deep-recursion">5. Memoisation: fixes <em>redundant</em> recursion, not deep recursion</a></li>
+  <li><a href="#trampoline-portable-fake-tail-recursion" id="toc-trampoline-portable-fake-tail-recursion" class="nav-link" data-scroll-target="#trampoline-portable-fake-tail-recursion">6. Trampoline: portable “fake tail recursion”</a></li>
+  <li><a href="#last-resort-increase-the-stack-a-band-aid-not-a-fix" id="toc-last-resort-increase-the-stack-a-band-aid-not-a-fix" class="nav-link" data-scroll-target="#last-resort-increase-the-stack-a-band-aid-not-a-fix">7. Last resort: increase the stack (a band-aid, not a fix)</a></li>
+  </ul></li>
+  <li><a href="#summary-what-to-do" id="toc-summary-what-to-do" class="nav-link" data-scroll-target="#summary-what-to-do">Summary: what to do</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../img/stack-overflow-explained.svg" class="img-fluid figure-img" alt="A column of stack frames growing downward past a dashed stack-limit line, with notes for C, R and Python."></p>
+<figcaption>Frames pile up on the call stack until they pass its limit.</figcaption>
+</figure>
+</div>
+<p>This post follows <a href="../posts/recursion-with-c-examples.html">Recursion in C</a> and <a href="../posts/r-recursion.html">Recursion in R</a>: what happens when recursion goes too deep, and what to do about it.</p>
+<section id="what-a-stack-overflow-actually-is" class="level2">
+<h2 class="anchored" data-anchor-id="what-a-stack-overflow-actually-is">What a stack overflow actually is</h2>
+<p>Every function call pushes a <strong>stack frame</strong> onto the <strong>call stack</strong>, a block of memory holding that call’s parameters, local variables, and return address. The stack is a <strong>fixed-size region</strong> decided when the program starts (typically <strong>8 MB</strong> for the main thread on Linux and <strong>1 MB</strong> on Windows).</p>
+<pre><code>   high address
+   ┌──────────────┐
+   │  frame main  │
+   ├──────────────┤
+   │  frame f(3)  │  ← each recursive call pushes another frame
+   ├──────────────┤
+   │  frame f(2)  │
+   ├──────────────┤
+   │  frame f(1)  │
+   ├──────────────┤
+   │     ...      │  ← keep pushing → grow downward
+   └──────────────┘
+   low address         ← the stack limit is here</code></pre>
+<p>When frames keep piling up past that limit, the program <strong>writes off the end of the stack</strong>: a <strong>stack overflow</strong>. What happens next depends on the language’s runtime:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Language</th>
+<th>On overflow</th>
+<th>Catchable?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>C</strong></td>
+<td>Segfault (SIGSEGV) — process dies</td>
+<td>❌ No</td>
+</tr>
+<tr class="even">
+<td><strong>R</strong></td>
+<td><code>Error: evaluation nested too deeply</code> (or <code>node stack overflow</code> when <code>expressions</code> is raised)</td>
+<td>✅ Yes (an R error)</td>
+</tr>
+<tr class="odd">
+<td><strong>R</strong> (C stack exhausted)</td>
+<td><code>Error: C stack usage … is too close to the limit</code>, can crash</td>
+<td>⚠️ Sometimes</td>
+</tr>
+<tr class="even">
+<td><strong>Python</strong></td>
+<td><code>RecursionError</code></td>
+<td>✅ Yes (a Python exception)</td>
+</tr>
+</tbody>
+</table>
+<p>The <strong>cause is always one of two things</strong>: 1. <strong>No base case</strong>, or a base case never reached → infinite recursion. 2. <strong>A correct but very deep recursion</strong> (depth ~10⁵–10⁶) → legitimate algorithm, too many frames.</p>
+<hr>
+</section>
+<section id="c-dies-with-a-segfault" class="level2">
+<h2 class="anchored" data-anchor-id="c-dies-with-a-segfault">C: dies with a segfault</h2>
+<section id="infinite-recursion-no-base-case" class="level3">
+<h3 class="anchored" data-anchor-id="infinite-recursion-no-base-case">Infinite recursion (no base case)</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> sum<span class="op">(</span><span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> n <span class="op">+</span> sum<span class="op">(</span>n <span class="op">-</span> <span class="dv">1</span><span class="op">);</span>   <span class="co">// ❌ never stops</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"</span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> sum<span class="op">(</span><span class="dv">3</span><span class="op">));</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<pre><code>$ gcc so1.c -o so1 &amp;&amp; ./so1
+Segmentation fault (core dumped)</code></pre>
+<p>Each call pushes a frame; after a few hundred thousand frames (depending on frame size and stack limit), the stack runs out and the CPU faults on the write. There is <strong>no error message and no recovery</strong>; the process is just gone.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>With optimisation the result can differ. Compiled with <code>gcc -O2</code>, this same program did <strong>not</strong> crash on our machine: it ran forever, because the compiler turned the tail call into a loop. A runaway recursion is a bug either way, but do not count on a segfault to reveal it.</p>
+</div>
+</div>
+</section>
+<section id="a-correct-recursion-thats-still-too-deep" class="level3">
+<h3 class="anchored" data-anchor-id="a-correct-recursion-thats-still-too-deep">A “correct” recursion that’s still too deep</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> sum_to<span class="op">(</span><span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>n <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span>          <span class="co">// ✅ proper base case</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> n <span class="op">+</span> sum_to<span class="op">(</span>n <span class="op">-</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">// sum_to(10000000);  → segfault at -O0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The base case is fine, but <strong>depth = n</strong> frames. At 10⁷ calls × a few dozen bytes per frame, that is hundreds of MB of stack, far past the 8 MB limit. We compiled it with plain <code>gcc</code> and it segfaulted.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>With <code>gcc -O2</code> the same program ran without crashing, because GCC rewrote the recursion as a loop. (It printed <code>-2004260032</code>, since the true sum overflows <code>int</code>; use <code>long</code> for real work.) The C standard does not promise this optimisation, so the code is still unsafe.</p>
+</div>
+</div>
+</section>
+<section id="the-sneakier-version-huge-local-arrays" class="level3">
+<h3 class="anchored" data-anchor-id="the-sneakier-version-huge-local-arrays">The sneakier version: huge local arrays</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> recurse<span class="op">(</span><span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> buffer<span class="op">[</span><span class="dv">100000</span><span class="op">];</span>            <span class="co">// ~400 KB per frame!</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    recurse<span class="op">(</span>n <span class="op">+</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>About <strong>20 calls</strong> are enough to fill an 8 MB stack, because each frame carries a 400 KB local array. This is why frame size matters as much as depth. (We ran a version that recurses 1000 levels; it segfaulted.)</p>
+<p><strong>Inspect your limits:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">ulimit</span> <span class="at">-s</span>              <span class="co"># stack size in KB (e.g. 8192 = 8 MB)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="at">-fstack-usage</span> ...  <span class="co"># per-function frame sizes in a .su file</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+</section>
+</section>
+<section id="r-usually-an-r-error-sometimes-a-c-stack-crash" class="level2">
+<h2 class="anchored" data-anchor-id="r-usually-an-r-error-sometimes-a-c-stack-crash">R: usually an R error, sometimes a C-stack crash</h2>
+<section id="infinite-recursion-rs-expressions-limit" class="level3">
+<h3 class="anchored" data-anchor-id="infinite-recursion-rs-expressions-limit">Infinite recursion → R’s <code>expressions</code> limit</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="cf">function</span>(n) n <span class="sc">+</span> <span class="fu">f</span>(n <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>(<span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<pre><code>Error: evaluation nested too deeply: infinite recursion / options(expressions=)?</code></pre>
+<p>R doesn’t let nesting run away silently: it counts nested expressions and stops at <code>options(expressions)</code>, which defaults to <strong>5000</strong>. This is a <strong>catchable R error</strong> (you can wrap it in <code>tryCatch</code>), not a process crash.</p>
+</section>
+<section id="a-legitimate-deep-recursion-that-still-fails" class="level3">
+<h3 class="anchored" data-anchor-id="a-legitimate-deep-recursion-that-still-fails">A legitimate deep recursion that still fails</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>sum_to <span class="ot">&lt;-</span> <span class="cf">function</span>(n) <span class="cf">if</span> (n <span class="sc">==</span> <span class="dv">0</span>) <span class="dv">0</span> <span class="cf">else</span> n <span class="sc">+</span> <span class="fu">sum_to</span>(n <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sum_to</span>(<span class="dv">100</span>)     <span class="co"># fine</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sum_to</span>(<span class="dv">10000</span>)   <span class="co"># Error: evaluation nested too deeply</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>You can raise the limit:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">expressions =</span> <span class="dv">100000</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum_to</span>(<span class="dv">10000</span>)    <span class="co"># works</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sum_to</span>(<span class="dv">100000</span>)   <span class="co"># Error: node stack overflow</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>R 4.6 stopped the second call with <code>node stack overflow</code>, R’s own evaluation stack. Other builds, or functions with larger frames, can instead hit the <strong>C stack</strong> and report:</p>
+<pre><code>Error: C stack usage  7970000 is too close to the limit</code></pre>
+<p>That is the <em>actual</em> OS stack filling, closer to C’s situation. Raising <code>expressions</code> does not grow the stack; it only moves the point where R complains.</p>
+<p><strong>Inspect it:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getOption</span>(<span class="st">"expressions"</span>)   <span class="co"># 5000 by default</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">expressions =</span> <span class="dv">20000</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+</section>
+</section>
+<section id="python-a-clean-catchable-recursionerror" class="level2">
+<h2 class="anchored" data-anchor-id="python-a-clean-catchable-recursionerror">Python: a clean, catchable <code>RecursionError</code></h2>
+<section id="infinite-recursion" class="level3">
+<h3 class="anchored" data-anchor-id="infinite-recursion">Infinite recursion</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sum_to(n):</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> n <span class="op">+</span> sum_to(n <span class="op">-</span> <span class="dv">1</span>)     <span class="co"># no base case</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>sum_to(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<pre><code>RecursionError: maximum recursion depth exceeded</code></pre>
+<p>Python counts <strong>Python frames</strong> and stops at <code>sys.getrecursionlimit()</code> — default <strong>1000</strong>. Unlike C, this is a normal exception you can catch:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    sum_to(<span class="dv">3</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">RecursionError</span>:</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"too deep!"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="the-trap-raising-the-limit-can-segfault" class="level3">
+<h3 class="anchored" data-anchor-id="the-trap-raising-the-limit-can-segfault">The trap: raising the limit can segfault</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>sys.setrecursionlimit(<span class="dv">1000000</span>)   <span class="co"># ⚠️ dangerous</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>sum_to(<span class="dv">1000000</span>)                  <span class="co"># segfault, not RecursionError</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>setrecursionlimit</code> only raises <strong>Python’s counter</strong>. The <strong>C stack</strong> behind it is still ~8 MB. If CPython’s own C-level recursion runs out before the Python counter trips, you get a <strong>hard segfault</strong>, with no exception and no message. On Python 3.10 this exact example dumped core on our machine. (Recent CPython versions add C-stack guards that convert some of these to <code>RecursionError</code>, but it is not safe to rely on.)</p>
+</section>
+<section id="a-correct-deep-recursion-that-still-fails" class="level3">
+<h3 class="anchored" data-anchor-id="a-correct-deep-recursion-that-still-fails">A correct deep recursion that still fails</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sum_to(n):</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> n <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">0</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> n <span class="op">+</span> sum_to(n <span class="op">-</span> <span class="dv">1</span>)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>sum_to(<span class="dv">100</span>)     <span class="co"># ✅ 5050</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>sum_to(<span class="dv">10000</span>)   <span class="co"># ❌ RecursionError: maximum recursion depth exceeded in comparison</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+</section>
+</section>
+<section id="how-to-avoid-it-in-any-language" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-avoid-it-in-any-language">How to avoid it, in any language</h2>
+<section id="always-have-a-reachable-base-case-that-shrinks-the-problem" class="level3">
+<h3 class="anchored" data-anchor-id="always-have-a-reachable-base-case-that-shrinks-the-problem">1. Always have a reachable base case that shrinks the problem</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> sum<span class="op">(</span><span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>n <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span>   <span class="co">// base case</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> n <span class="op">+</span> sum<span class="op">(</span>n <span class="op">-</span> <span class="dv">1</span><span class="op">);</span>  <span class="co">// shrinks toward base</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>If the argument doesn’t move toward the base on every call, it’s infinite.</p>
+</section>
+<section id="convert-linear-recursion-to-a-loop-the-best-fix-when-you-can" class="level3">
+<h3 class="anchored" data-anchor-id="convert-linear-recursion-to-a-loop-the-best-fix-when-you-can">2. Convert linear recursion to a loop (the best fix when you can)</h3>
+<p>This is the real solution for <code>sum</code>, <code>factorial</code>, and any “n → n−1” chain. Depth O(n) becomes depth O(1):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">// C</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="dt">long</span> sum_to<span class="op">(</span><span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">long</span> s <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">1</span><span class="op">;</span> i <span class="op">&lt;=</span> n<span class="op">;</span> i<span class="op">++)</span> s <span class="op">+=</span> i<span class="op">;</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> s<span class="op">;</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Python</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sum_to(n):</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>(<span class="bu">range</span>(n <span class="op">+</span> <span class="dv">1</span>))     <span class="co"># or a loop</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># R</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>sum_to <span class="ot">&lt;-</span> <span class="cf">function</span>(n) <span class="fu">sum</span>(<span class="fu">seq_len</span>(n))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>No stack growth at all — the loop lives in <strong>one frame</strong>.</p>
+</section>
+<section id="use-an-explicit-stack-manual-recursion" class="level3">
+<h3 class="anchored" data-anchor-id="use-an-explicit-stack-manual-recursion">3. Use an explicit stack (manual recursion)</h3>
+<p>For trees/graphs where recursion is natural, keep your own stack on the heap, which is much larger than the call stack:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dfs(root):</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    stack <span class="op">=</span> [root]</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> stack:</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>        node <span class="op">=</span> stack.pop()</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>        visit(node)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>        stack.extend(node.children)   <span class="co"># no call frames, no depth limit</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">// C — same idea</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> dfs<span class="op">(</span>Node <span class="op">*</span>root<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    Node <span class="op">*</span>stack<span class="op">[</span><span class="dv">1000</span><span class="op">];</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> top <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    stack<span class="op">[</span>top<span class="op">++]</span> <span class="op">=</span> root<span class="op">;</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span>top <span class="op">&gt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>        Node <span class="op">*</span>n <span class="op">=</span> stack<span class="op">[--</span>top<span class="op">];</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>        visit<span class="op">(</span>n<span class="op">);</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n<span class="op">-&gt;</span>nchild<span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>            stack<span class="op">[</span>top<span class="op">++]</span> <span class="op">=</span> n<span class="op">-&gt;</span>child<span class="op">[</span>i<span class="op">];</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="halve-the-problem-instead-of-decrementing-it" class="level3">
+<h3 class="anchored" data-anchor-id="halve-the-problem-instead-of-decrementing-it">4. Halve the problem instead of decrementing it</h3>
+<p>The <code>power</code> example from the <a href="../posts/recursion-with-c-examples.html">C recursion post</a> is the template. <code>n → n−1</code> gives depth <strong>n</strong>; <code>n → n/2</code> gives depth <strong>log₂ n</strong> — a million-step problem becomes ~20 frames:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> power(x, n):</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> n <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    half <span class="op">=</span> power(x, n <span class="op">//</span> <span class="dv">2</span>)     <span class="co"># depth = log2(n), not n</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> half <span class="op">*</span> half <span class="cf">if</span> n <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> x <span class="op">*</span> half <span class="op">*</span> half</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>power(2, 1000000)</code> recurses about 20 levels (we ran it in Python without trouble). <code>sum_to(1000000)</code> with <code>n-1</code> would need a million.</p>
+</section>
+<section id="memoisation-fixes-redundant-recursion-not-deep-recursion" class="level3">
+<h3 class="anchored" data-anchor-id="memoisation-fixes-redundant-recursion-not-deep-recursion">5. Memoisation: fixes <em>redundant</em> recursion, not deep recursion</h3>
+<p>Naive Fibonacci is O(2ⁿ) calls but only depth n.&nbsp;Memoizing cuts the <em>number</em> of calls dramatically, but <strong>does not reduce depth</strong> — <code>fib(10000)</code> still recurses 10,000 levels. Use it for speed, not for stack safety.</p>
+</section>
+<section id="trampoline-portable-fake-tail-recursion" class="level3">
+<h3 class="anchored" data-anchor-id="trampoline-portable-fake-tail-recursion">6. Trampoline: portable “fake tail recursion”</h3>
+<p>C, R, and Python <strong>do not guarantee tail-call optimization (TCO)</strong>. So <code>return f(x)</code> still pushes a frame. A <strong>trampoline</strong> turns recursion into a loop:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> trampoline(f, <span class="op">*</span>args):</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> f(<span class="op">*</span>args)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="bu">callable</span>(result):</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>        result <span class="op">=</span> result()</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> result</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sum_to(n, acc<span class="op">=</span><span class="dv">0</span>):</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> n <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> acc</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="kw">lambda</span>: sum_to(n <span class="op">-</span> <span class="dv">1</span>, acc <span class="op">+</span> n)   <span class="co"># return a thunk, don't call</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(trampoline(sum_to, <span class="dv">1000000</span>))          <span class="co"># 500000500000, no RecursionError</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Each “recursive” step returns a thunk and the loop calls it, so only <strong>one frame</strong> is ever live. This is how you do deep recursion in Python without touching the limit.</p>
+</section>
+<section id="last-resort-increase-the-stack-a-band-aid-not-a-fix" class="level3">
+<h3 class="anchored" data-anchor-id="last-resort-increase-the-stack-a-band-aid-not-a-fix">7. Last resort: increase the stack (a band-aid, not a fix)</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="bu">ulimit</span> <span class="at">-s</span> 65536        <span class="co"># Linux: 64 MB stack for this shell/process</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> threading</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>threading.stack_size(<span class="dv">64</span> <span class="op">*</span> <span class="dv">1024</span> <span class="op">*</span> <span class="dv">1024</span>)   <span class="co"># Python: run in a big-stack thread</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># no clean per-script control of the C stack: rewrite the function instead</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This buys headroom but <strong>doesn’t remove the bug</strong> — a truly infinite recursion still overflows, just later. Treat it as a stopgap while you rewrite.</p>
+<hr>
+</section>
+</section>
+<section id="summary-what-to-do" class="level2">
+<h2 class="anchored" data-anchor-id="summary-what-to-do">Summary: what to do</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Situation</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>No base case / never reached</td>
+<td>Add one; ensure the argument moves toward it</td>
+</tr>
+<tr class="even">
+<td>Simple linear recursion (<code>n-1</code> chain)</td>
+<td><strong>Rewrite as a loop</strong> — depth O(1)</td>
+</tr>
+<tr class="odd">
+<td>Tree/graph traversal</td>
+<td><strong>Explicit stack</strong> on the heap</td>
+</tr>
+<tr class="even">
+<td>Divide-and-conquer</td>
+<td>Ensure it <strong>halves</strong> (depth log n)</td>
+</tr>
+<tr class="odd">
+<td>Deep recursion, can’t rewrite easily</td>
+<td><strong>Trampoline</strong> (portable; no TCO in C/R/Python)</td>
+</tr>
+<tr class="even">
+<td>Need more headroom temporarily</td>
+<td>Raise stack (<code>ulimit -s</code>, thread stack size) — stopgap</td>
+</tr>
+<tr class="odd">
+<td>Just need speed</td>
+<td>Memoise, but it will not fix depth</td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><strong>The one-line rule:</strong> recursion depth is a resource like memory, and O(n) depth is a bomb for large <code>n</code>. Prefer <strong>iteration</strong> (O(1) depth), <strong>halving</strong> (O(log n) depth), or an <strong>explicit heap stack</strong> whenever the input can be large. Languages differ in <em>how loudly</em> they fail (C segfaults, Python and R raise catchable errors), but none of them will save us from a bad recursion design.</p>
+</blockquote>
+
+
+</section>
+
+</main> <!-- /main -->
+<script>
+/* Blog-wide "See hint" / "Reveal code" toggles.
+   Markup in a post:
+     ::: {.reveal-code}
+     ::: {.hint}
+     Hint text
+     :::
+
+     ```c
+     code
+     ```
+     :::
+   Without JavaScript the code and hint simply stay visible. */
+(function () {
+  function init() {
+    document.querySelectorAll('.reveal-code').forEach(function (box, n) {
+      var hint = box.querySelector(':scope > .hint');
+      var code = box.querySelector(':scope > .code-copy-outer-scaffold, :scope > .sourceCode, :scope > pre');
+      if (!code) return;
+      var bar = document.createElement('div');
+      bar.className = 'rc-bar';
+      function button(label, target, shown, hidden) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'rc-btn';
+        b.textContent = shown;
+        b.setAttribute('aria-expanded', 'false');
+        b.setAttribute('aria-controls', target.id);
+        b.addEventListener('click', function () {
+          var open = target.classList.toggle('rc-open');
+          b.textContent = open ? hidden : shown;
+          b.setAttribute('aria-expanded', open);
+        });
+        bar.appendChild(b);
+      }
+      code.id = code.id || 'rc-code-' + n;
+      if (hint) {
+        hint.id = hint.id || 'rc-hint-' + n;
+        button('hint', hint, 'See hint', 'Hide hint');
+      }
+      button('code', code, 'Reveal code', 'Hide code');
+      box.insertBefore(bar, box.firstChild);
+      box.classList.add('rc-ready');
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+<script>
+/* Blogkit: load blogkit.js from the site root, whatever the page depth. */
+(function () {
+  var m = document.querySelector('meta[name="quarto:offset"]');
+  var base = m ? m.getAttribute('content') : '';
+  if (base === './') base = '';
+  var s = document.createElement('script');
+  s.src = base + 'blogkit.js';
+  s.dataset.base = base;
+  document.body.appendChild(s);
+})();
+</script>
+<!-- Shared Quarto include: adds the site-wide starfield to a page.
+     Use from any Quarto project's _quarto.yml (path relative to that project):
+       format: { html: { include-after-body: ../starfield-include.html } }
+     It adds the canvas and loads /starfield.js from the site root, working out
+     the root from the URL so it is the same for every page depth. The page's
+     CSS must still make the canvas fixed at z-index -1 (see blograw/site.css
+     or courses/rprogramming/dark.scss). -->
+<canvas class="sm-canvas" aria-hidden="true"></canvas>
+<script>
+(function () {
+  var p = location.pathname;
+  // Root = everything before the first top-level site section in the URL
+  // (site is served from the domain root; locally may be under a prefix).
+  var m = p.match(/^(.*?\/)(blog|courses|slide|games|utility|question|quiz|ds|research)\//);
+  var s = document.createElement('script');
+  s.src = (m ? m[1] : '/') + 'starfield.js';
+  document.body.appendChild(s);
+})();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/www\.statmania\.info\/blog\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<input type="hidden" id="giscus-base-theme" value="dark">
+<input type="hidden" id="giscus-alt-theme" value="light">
+<script>
+  function loadGiscus() {
+    // Function to get the theme based on body class
+    const getTheme = () => {
+      let baseTheme = document.getElementById('giscus-base-theme').value;
+      let altTheme = document.getElementById('giscus-alt-theme').value;
+      if (authorPrefersDark) {
+          [baseTheme, altTheme] = [altTheme, baseTheme];
+      }
+      return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
+    };
+    const script = document.createElement("script");
+    script.src = "https://giscus.app/client.js";
+    script.async = true;
+    script.dataset.repo = "statmania/statmania.github.io";
+    script.dataset.repoId = "MDEwOlJlcG9zaXRvcnkzNDkzMTE4MjI=";
+    script.dataset.category = "General";
+    script.dataset.categoryId = "DIC_kwDOFNITTs4DJlzF";
+    script.dataset.mapping = "url";
+    script.dataset.reactionsEnabled = "1";
+    script.dataset.emitMetadata = "0";
+    script.dataset.inputPosition = "bottom";
+    script.dataset.theme = getTheme();
+    script.dataset.lang = "en";
+    script.crossOrigin = "anonymous";
+    // Append the script to the desired div instead of at the end of the body
+    document.getElementById("quarto-content").appendChild(script);
+  }
+  loadGiscus();
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026 Stat Mania</p>
+</div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+    <a class="nav-link" href="../tags.html">
+<p>Tags</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="../categories.html">
+<p>Categories</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="../about.html">
+<p>About</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://www.statmania.info">
+<p>Portal</p>
+</a>
+  </li>  
+</ul>
+    </div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+    <a class="nav-link" href="../index.xml">
+<p>RSS</p>
+</a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
