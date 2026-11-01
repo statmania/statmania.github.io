@@ -1,0 +1,72 @@
+---
+title: "Create a Sequence of Numbers in Excel and Google Sheets"
+description: "Three ways to generate 1, 2, 3, ... in a spreadsheet: the SEQUENCE function, the fill handle, and the ROW function, with examples of custom starts, steps, descending series and padded IDs."
+date: "2026-11-01"
+categories: [Excel, Tutorial]
+tags: [excel, beginners, workflow]
+author: "Abdullah Al Mahmud"
+image: ../img/excel-r-programming.jpeg
+---
+
+![A spreadsheet and code side by side.](../img/excel-r-programming.jpeg){fig-alt="Illustration combining an Excel spreadsheet with R programming."}
+
+We can create a sequence of numbers in Excel or Google Sheets in several ways, depending on whether we want a dynamic formula, a quick draggable series, or numbering that survives row changes. Here are three methods.
+
+## 1. The SEQUENCE Function (Fastest and Dynamic)
+
+`SEQUENCE` is available in modern Excel (Microsoft 365 and Excel 2021) and in Google Sheets. One formula fills a whole block of cells, spilling the numbers across rows and columns.
+
+```
+=SEQUENCE(rows, [columns], [start], [step])
+```
+
+Only `rows` is required. The defaults are one column, a start of 1 and a step of 1.
+
+| Formula | Result |
+|---|---|
+| `=SEQUENCE(10)` | 1 to 10 in a single column |
+| `=SEQUENCE(5, 2)` | 5 rows and 2 columns, filled row by row with 1 to 10 |
+| `=SEQUENCE(10, 1, 5, 3)` | 10 numbers starting at 5, rising by 3: 5, 8, 11, ... |
+| `=SEQUENCE(10, 1, 10, -5)` | A descending series: 10, 5, 0, -5, ... |
+
+::: {.callout-note}
+A negative `step` gives a descending sequence.
+:::
+
+## 2. The Fill Handle (Manual and Quick)
+
+The fill handle is the small green square at the bottom-right corner of the selected cell(s). Drag it, and the spreadsheet continues the pattern.
+
+- **A simple 1, 2, 3, ... list:** type `1` in the first cell and `2` in the cell below. Select both, hover over the fill handle until a plus sign appears, and drag down.
+- **Any other pattern:** type two numbers that set the rule, such as 2 and 4 for even numbers or 1 and 3 for odd numbers, select them, and drag down.
+- **Dragging a single number:** this normally copies the same value. Click the small *AutoFill Options* icon that appears and choose *Fill Series* to turn the copies into a sequence. In Excel, holding `Ctrl` while dragging a single number forces it to increment.
+
+## 3. The ROW Function (Numbering That Adjusts Itself)
+
+If we want a column of numbers that updates when rows are added or deleted, `ROW` is a good choice. Placed in cell `A1`:
+
+```
+=ROW(A1)
+```
+
+returns 1. Copying or dragging it down gives 2, 3, 4, and so on.
+
+To make padded purchase-order or ID numbers, combine `ROW` with `TEXT`:
+
+```
+=TEXT(ROW(A1), "000-000")
+```
+
+This turns row 1 into `000-001`.
+
+## Which Method Should We Use?
+
+- Need a quick list with no formulas? Use the **fill handle**.
+- Need a flexible, formula-driven series with a custom start or step? Use **`SEQUENCE`**.
+- Need numbers that stay correct as rows change, or formatted IDs? Use **`ROW`** (with `TEXT`).
+
+## References
+
+1. [6 ways to number in Excel](https://blog.eamonncottrell.com/6-ways-to-number-in-excel)
+2. [SEQUENCE function in Excel: auto-generate number series](https://www.ablebits.com/office-addins-blog/sequence-function-excel-auto-generate-number-series/)
+3. [Automatically number rows in Excel](https://support.microsoft.com/en-us/excel/get-started/automatically-number-rows-in-excel), Microsoft Support
