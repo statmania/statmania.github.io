@@ -432,6 +432,707 @@ Note
   <media:content url="https://www.statmania.info/blog/img/excel-r-programming.jpeg" medium="image" type="image/jpeg"/>
 </item>
 <item>
+  <title>Pie Chart vs Bar Chart: When to Use Each (with ggplot2 Examples)</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/pie-vs-bar-chart.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/pie-vs-bar-chart.png" class="img-fluid figure-img" alt="A pie chart with four slices next to a bar chart of the same four values."></p>
+<figcaption>The same four numbers as a pie chart and as a bar chart.</figcaption>
+</figure>
+</div>
+<p>Both charts show categories, but they answer different questions. A <strong>pie chart</strong> shows how a whole is divided. A <strong>bar chart</strong> compares values. Let’s see when each one works, and how to draw them with <code>ggplot2</code>.</p>
+<section id="when-to-use-a-pie-chart" class="level2">
+<h2 class="anchored" data-anchor-id="when-to-use-a-pie-chart">When to Use a Pie Chart</h2>
+<p>Use a pie chart only when the categories are parts of a whole and add up to 100%.</p>
+<p><strong>Best conditions</strong></p>
+<ul>
+<li>There are few categories, ideally five or fewer.</li>
+<li>We want to emphasise one dominant slice or a clear share, such as a half or a quarter.</li>
+</ul>
+<p><strong>Examples</strong></p>
+<ul>
+<li>What percentage of total company revenue comes from each product line?</li>
+<li>What portion of the human body’s mass consists of different chemical elements?</li>
+</ul>
+<p><strong>Limitations</strong></p>
+<ul>
+<li>It is hard to read when slices are similar in size.</li>
+<li>It becomes cluttered with too many categories.</li>
+</ul>
+<section id="a-pie-chart-in-ggplot2" class="level3">
+<h3 class="anchored" data-anchor-id="a-pie-chart-in-ggplot2">A pie chart in ggplot2</h3>
+<p><code>ggplot2</code> has no <code>geom_pie()</code>. A pie chart is a stacked bar drawn in polar coordinates: one bar of width 1, then <code>coord_polar("y")</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(ggplot2)</span>
+<span id="cb1-2"></span>
+<span id="cb1-3">revenue <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb1-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">product =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Software"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Services"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Hardware"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Training"</span>),</span>
+<span id="cb1-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">share   =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">52</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">28</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">14</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>)</span>
+<span id="cb1-6">)</span>
+<span id="cb1-7"></span>
+<span id="cb1-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(revenue, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> share, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> product)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_col</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">coord_polar</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">theta =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"y"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-11">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_text</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(share, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"%"</span>)),</span>
+<span id="cb1-12">            <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">position =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">position_stack</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">vjust =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-13">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_fill_brewer</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">palette =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Dark2"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-14">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Share of revenue by product line"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/pie-vs-bar-chart_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The pie works here: four categories, one clearly dominant, and the slices sum to 100%. Even so, labelling each slice with its percentage helps, because we judge angles poorly.</p>
+</section>
+</section>
+<section id="when-to-use-a-bar-chart" class="level2">
+<h2 class="anchored" data-anchor-id="when-to-use-a-bar-chart">When to Use a Bar Chart</h2>
+<p>Use a bar chart to compare values across categories or to follow change over time. It is the safer and clearer choice for almost all data sets.</p>
+<p><strong>Best conditions</strong></p>
+<ul>
+<li>We are comparing quantities, counts, averages or independent numbers.</li>
+<li>There are many categories, or small differences that need precision.</li>
+<li>We are showing data over time, such as monthly sales or yearly growth.</li>
+</ul>
+<p><strong>Examples</strong></p>
+<ul>
+<li>How many units did each store sell last month?</li>
+<li>How do the average test scores compare across ten classrooms?</li>
+</ul>
+<p><strong>Advantage</strong></p>
+<ul>
+<li>Bars share a common baseline (the axis), so comparing lengths is easy and accurate.</li>
+</ul>
+<section id="the-same-data-as-a-bar-chart" class="level3">
+<h3 class="anchored" data-anchor-id="the-same-data-as-a-bar-chart">The same data as a bar chart</h3>
+<p>Here are the revenue shares again. Sorting the bars makes the ranking obvious.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(revenue, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">reorder</span>(product, share), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> share)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb2-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_col</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb2-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_text</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(share, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"%"</span>)), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">hjust =</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.2</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb2-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">coord_flip</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb2-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_y_continuous</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">limits =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">60</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb2-6">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Share of revenue by product line"</span>,</span>
+<span id="cb2-7">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Share of revenue (%)"</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/pie-vs-bar-chart_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="where-pies-fail-similar-slices" class="level3">
+<h3 class="anchored" data-anchor-id="where-pies-fail-similar-slices">Where pies fail: similar slices</h3>
+<p>Suppose five regions have almost equal sales. We draw both charts side by side with the <code>patchwork</code> package (<code>install.packages("patchwork")</code>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(patchwork)</span>
+<span id="cb3-2"></span>
+<span id="cb3-3">regions <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb3-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">region =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"North"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"South"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"East"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"West"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Central"</span>),</span>
+<span id="cb3-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sales  =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">22</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">21</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">19</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">18</span>)</span>
+<span id="cb3-6">)</span>
+<span id="cb3-7"></span>
+<span id="cb3-8">pie <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(regions, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> sales, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> region)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_col</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">coord_polar</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">theta =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"y"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-11">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_fill_brewer</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">palette =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Set2"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-12">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Pie"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span>)</span>
+<span id="cb3-13"></span>
+<span id="cb3-14">bar <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(regions, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">reorder</span>(region, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>sales), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> sales)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-15">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_col</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-16">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Bar"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Sales"</span>)</span>
+<span id="cb3-17"></span>
+<span id="cb3-18">pie <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> bar</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/pie-vs-bar-chart_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In the pie, which region is biggest? The slices look nearly identical. In the bar chart, the ranking is immediate.</p>
+</section>
+<section id="many-categories" class="level3">
+<h3 class="anchored" data-anchor-id="many-categories">Many categories</h3>
+<p>With ten classrooms, a pie would be a mess of thin slices. A horizontal bar chart, sorted, stays readable and leaves room for long labels.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">scores <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb4-2">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">class =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Class"</span>, LETTERS[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>]),</span>
+<span id="cb4-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mean  =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">71</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">64</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">78</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">69</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">82</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">75</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">60</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">73</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">67</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">80</span>)</span>
+<span id="cb4-4">)</span>
+<span id="cb4-5"></span>
+<span id="cb4-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(scores, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">reorder</span>(class, mean), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> mean)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_col</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"darkorange"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">coord_flip</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Average test score by classroom"</span>,</span>
+<span id="cb4-10">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Average score"</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/pie-vs-bar-chart_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="change-over-time" class="level3">
+<h3 class="anchored" data-anchor-id="change-over-time">Change over time</h3>
+<p>A pie cannot show a trend. A bar (or line) chart can.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">sales <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb5-2">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">month =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">factor</span>(month.abb, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">levels =</span> month.abb),</span>
+<span id="cb5-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">units =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">120</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">135</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">150</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">162</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">158</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">175</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">181</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">170</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">190</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">205</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">230</span>)</span>
+<span id="cb5-4">)</span>
+<span id="cb5-5"></span>
+<span id="cb5-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(sales, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> month, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> units)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_col</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"seagreen"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Units sold per month"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Units"</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/pie-vs-bar-chart_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Bar charts should start at zero. Truncating the axis exaggerates differences, because the reader compares bar lengths.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="quick-comparison" class="level2">
+<h2 class="anchored" data-anchor-id="quick-comparison">Quick Comparison</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Pie chart</th>
+<th>Bar chart</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Primary purpose</td>
+<td>Part-to-whole relationships (percentages)</td>
+<td>Comparing quantities and ranking categories</td>
+</tr>
+<tr class="even">
+<td>Data requirement</td>
+<td>Must sum to 100%</td>
+<td>Any numeric metric or count</td>
+</tr>
+<tr class="odd">
+<td>Category limit</td>
+<td>Best with 5 or fewer</td>
+<td>Handles many categories easily</td>
+</tr>
+<tr class="even">
+<td>General rule</td>
+<td>Use sparingly</td>
+<td>When in doubt, use a bar chart</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ol type="1">
+<li><a href="https://www.atlassian.com/data/charts/how-to-choose-pie-chart-vs-bar-chart">How to choose between a pie chart and a bar chart</a>, Atlassian</li>
+<li><a href="https://dreveal.com/why-pie-charts-are-hard-to-read-and-why-bar-charts-are-better/">Why pie charts are hard to read, and why bar charts are better</a></li>
+<li><a href="https://stats.libretexts.org/Courses/Red_Rocks_Community_College/Introduction_to_Statistics_(RRCC)/03%3A_Visualizing_Data/3.01%3A_Graphical_Displays_for_Categorical_Data-_Bar_Charts_Pie_Charts">Graphical displays for categorical data: bar charts and pie charts</a>, Statistics LibreTexts</li>
+</ol>
+
+
+</section>
+
+ ]]></description>
+  <category>R</category>
+  <category>Statistics</category>
+  <category>Visualization</category>
+  <guid>https://www.statmania.info/blog/posts/pie-vs-bar-chart.html</guid>
+  <pubDate>Sat, 31 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/pie-vs-bar-chart.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
   <title>Timing C Code with clock(): A Benchmarking Guide</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://www.statmania.info/blog/posts/c-clock-benchmarking.html</link>
@@ -7227,282 +7928,6 @@ Note
   <guid>https://www.statmania.info/blog/posts/linux-create-multiple-files.html</guid>
   <pubDate>Fri, 23 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/linux-create-multiple-files.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Convert PowerPoint (PPT, PPTX) to PDF from the Command Line, in Bulk</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/pptx-to-pdf-command-line.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/pptx-to-pdf-command-line.svg" class="img-fluid figure-img" alt="A sketch of a person at a laptop running libreoffice --headless --convert-to pdf; three PPTX files on the left become three PDF pages on the right."></p>
-<figcaption>One command turns every .pptx in a folder into a PDF.</figcaption>
-</figure>
-</div>
-<p>Opening each presentation and choosing <em>Export as PDF</em> is fine for one file and painful for fifty. The terminal can do it for us. The simplest tool is LibreOffice running without a window; the rest of this post covers a few alternatives.</p>
-<section id="libreoffice-linux-macos-windows" class="level2">
-<h2 class="anchored" data-anchor-id="libreoffice-linux-macos-windows">LibreOffice (Linux, macOS, Windows)</h2>
-<p>LibreOffice is installed on many Linux distributions already, and its <code>--headless</code> mode converts files without opening the GUI.</p>
-<p>Convert a single file:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">libreoffice</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--headless</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--convert-to</span> pdf presentation.pptx</span></code></pre></div></div>
-<p>Convert every <code>.pptx</code> in the current folder:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">libreoffice</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--headless</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--convert-to</span> pdf <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span>.pptx</span></code></pre></div></div>
-<p>The PDFs are written to the current directory. To put them somewhere else, add <code>--outdir</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">libreoffice</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--headless</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--convert-to</span> pdf <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--outdir</span> pdf/ <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span>.pptx</span></code></pre></div></div>
-<p>Old <code>.ppt</code> files work the same way; use <code>*.ppt</code> instead.</p>
-<section id="a-whole-folder-tree" class="level3">
-<h3 class="anchored" data-anchor-id="a-whole-folder-tree">A whole folder tree</h3>
-<p>The glob <code>*.pptx</code> only sees one folder. To convert files in sub-folders too, let <code>find</code> feed them in, keeping each PDF next to its source:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">find</span> . <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-type</span> f <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\(</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-iname</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'*.pptx'</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-o</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-iname</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'*.ppt'</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\)</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-print0</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span></span>
-<span id="cb4-2">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">while</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">IFS</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">read</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-r</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-d</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">''</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">f</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">do</span></span>
-<span id="cb4-3">    <span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">libreoffice</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--headless</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--convert-to</span> pdf <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--outdir</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dirname</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$f</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$f</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb4-4">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">done</span></span></code></pre></div></div>
-<p><code>-print0</code> with <code>read -d ''</code> keeps file names that contain spaces intact.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>If LibreOffice is already open in the GUI, a headless run may do nothing. Close the window first. On macOS the executable is usually <code>/Applications/LibreOffice.app/Contents/MacOS/soffice</code>, and on Linux <code>soffice</code> is the same program as <code>libreoffice</code>.</p>
-</div>
-</div>
-</section>
-</section>
-<section id="unoconv-linux" class="level2">
-<h2 class="anchored" data-anchor-id="unoconv-linux">unoconv (Linux)</h2>
-<p><code>unoconv</code> is a command-line wrapper around LibreOffice.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sudo</span> apt-get install unoconv</span>
-<span id="cb5-2"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">unoconv</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-f</span> pdf presentation.ppt</span></code></pre></div></div>
-<p>It needs LibreOffice installed too, so for a plain conversion the direct command above is simpler.</p>
-</section>
-<section id="win2pdf-windows" class="level2">
-<h2 class="anchored" data-anchor-id="win2pdf-windows">Win2PDF (Windows)</h2>
-<p>On Windows with Win2PDF Pro, the <code>win2pdfd.exe</code> utility converts from the command line:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode cmd code-with-copy"><code class="sourceCode dosbat"><span id="cb6-1">win2pdfd.exe ppt2pdf <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"source.ppt"</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"dest.pdf"</span></span>
-<span id="cb6-2">win2pdfd.exe pptx2pdf <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"source.pptx"</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"dest.pdf"</span></span></code></pre></div></div>
-<p>This is a commercial product; see the Win2PDF documentation for the details.</p>
-</section>
-<section id="onlyoffice-document-builder" class="level2">
-<h2 class="anchored" data-anchor-id="onlyoffice-document-builder">ONLYOFFICE Document Builder</h2>
-<p>Unlike LibreOffice, ONLYOFFICE has no single conversion flag. Its Document Builder (Windows, Linux, macOS) runs a small JavaScript file. Save this as <code>convert.js</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb7-1">builder<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">OpenFile</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"presentation.pptx"</span>)<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb7-2">builder<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">SaveFile</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"pdf"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"presentation.pdf"</span>)<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb7-3">builder<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">CloseFile</span>()<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span></code></pre></div></div>
-<p>and run it:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">documentbuilder</span> convert.js      <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Linux and macOS</span></span>
-<span id="cb8-2"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">docbuilder.exe</span> convert.js       <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Windows</span></span></code></pre></div></div>
-<p>There is no built-in recursive mode. To convert a folder tree, wrap the call in a Bash or PowerShell loop that generates the script (or passes the paths) for each file. If we run a self-hosted ONLYOFFICE Document Server, its Conversion API can do the same job through an HTTP POST with <code>curl</code>.</p>
-</section>
-<section id="which-one-to-use" class="level2">
-<h2 class="anchored" data-anchor-id="which-one-to-use">Which one to use</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Need</th>
-<th>Tool</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>One file or one folder</td>
-<td><code>libreoffice --headless --convert-to pdf</code></td>
-</tr>
-<tr class="even">
-<td>Many folders</td>
-<td>the <code>find</code> loop above</td>
-</tr>
-<tr class="odd">
-<td>Windows with Win2PDF Pro</td>
-<td><code>win2pdfd.exe</code></td>
-</tr>
-<tr class="even">
-<td>Already using ONLYOFFICE</td>
-<td>Document Builder or the Conversion API</td>
-</tr>
-</tbody>
-</table>
-<p>For most of us, headless LibreOffice is enough: one command, no scripting. Check a converted PDF or two, since fonts missing on the machine are replaced and can change the layout.</p>
-</section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<ul>
-<li><a href="https://askubuntu.com/questions/11130/how-can-i-convert-a-ppt-to-a-pdf-from-the-command-line">Ask Ubuntu: How can I convert a PPT to a PDF from the command line?</a></li>
-<li><a href="https://www.win2pdf.com/doc/command-line-ppt-to-pdf.html">Win2PDF: command-line PPT to PDF</a> and <a href="https://www.win2pdf.com/doc/command-line-pptx-to-pdf.html">PPTX to PDF</a></li>
-<li><a href="https://api.onlyoffice.com/docs/document-builder/using-cli/overview">ONLYOFFICE Document Builder: using the CLI</a></li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>Linux</category>
-  <category>Tools</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/pptx-to-pdf-command-line.html</guid>
-  <pubDate>Fri, 23 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/pptx-to-pdf-command-line.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>
