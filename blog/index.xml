@@ -12,6 +12,184 @@
 <generator>quarto-1.9.38</generator>
 <lastBuildDate>Sun, 01 Nov 2026 18:00:00 GMT</lastBuildDate>
 <item>
+  <title>Committing with Git While an AI Coding Agent Is Working</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/git-commiting-while-ai-agent-is-working.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/git-commiting-while-ai-agent-is-working.svg" class="img-fluid figure-img" alt="A main branch of commits, with a separate agent branch in its own worktree that merges back after review and testing."></p>
+<figcaption>The agent works on its own branch; we review and merge when it is done.</figcaption>
+</figure>
+</div>
+<p>An AI coding agent such as Claude Code edits our files directly, one step at a time. That is convenient, but it raises a practical question: can we run <code>git commit</code> while the agent is still working? The short answer is <strong>no, wait</strong>. Let’s see why, and what to do instead.</p>
+<section id="how-an-ai-agent-works-on-our-files" class="level2">
+<h2 class="anchored" data-anchor-id="how-an-ai-agent-works-on-our-files">How an AI Agent Works on Our Files</h2>
+<p>An agent does not produce a finished feature in one go. It works in small steps:</p>
+<ol type="1">
+<li>It reads the relevant files.</li>
+<li>It edits a file, then often another one.</li>
+<li>It runs the code or the tests, sees an error, and edits again.</li>
+</ol>
+<p>So at any moment in the middle of a task, our working directory may hold half-finished changes: a function that is renamed in one file but not yet in the others, or code that does not compile. These files are real and Git can see them, but they are not a state we want to keep.</p>
+</section>
+<section id="why-we-should-wait-before-committing" class="level2">
+<h2 class="anchored" data-anchor-id="why-we-should-wait-before-committing">Why We Should Wait Before Committing</h2>
+<ul>
+<li><strong>Incomplete code in the history.</strong> <code>git commit -a</code> snapshots whatever is on disk right now. A commit made mid-task records broken or partial work, which pollutes the history and makes <code>git bisect</code> and <code>git revert</code> much less useful later.</li>
+<li><strong>Mixed-up changes.</strong> If we commit or stage files while the agent keeps editing, the commit contains only part of its work, and the rest shows up as new unstaged changes. It becomes hard to tell which edits belong together.</li>
+<li><strong>Git lock errors.</strong> Git allows only one operation on the index at a time. If the agent runs <code>git status</code> or <code>git add</code> at the same moment as we do, one of us may see an error such as <code>fatal: Unable to create '.git/index.lock': File exists</code>.</li>
+<li><strong>Edit conflicts.</strong> If we edit a file ourselves while the agent is working on it, the agent may fail to apply its next edit, or may work from an outdated copy and overwrite our change.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Claude Code does not commit by itself. By default it commits only when we ask it to, for example “commit these changes”. So waiting costs us nothing: the finished task can be committed by us, or by the agent on request.</p>
+</div>
+</div>
+</section>
+<section id="what-to-do-instead" class="level2">
+<h2 class="anchored" data-anchor-id="what-to-do-instead">What to Do Instead</h2>
+<p><strong>1. Let the agent finish.</strong> Wait until the prompt returns or the agent says the task is complete.</p>
+<p><strong>2. Review what changed.</strong> Look at the summary first, then the details:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> status</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> diff</span></code></pre></div></div>
+<p>Use <code>git diff --stat</code> for a quick overview of which files changed and by how much.</p>
+<p><strong>3. Run the tests.</strong> Make sure the code compiles and the tests pass before committing. The agent said it works, but we should check.</p>
+<p><strong>4. Commit the finished work.</strong> Stage deliberately and write a clear message:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> add <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-p</span></span>
+<span id="cb2-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Add input validation to the signup form"</span></span></code></pre></div></div>
+<p><code>git add -p</code> lets us choose hunk by hunk, so unrelated edits do not slip into the commit.</p>
+</section>
+<section id="useful-habits" class="level2">
+<h2 class="anchored" data-anchor-id="useful-habits">Useful Habits</h2>
+<p><strong>Start from a clean state.</strong> Before giving the agent a task, commit or stash our own work. Then <code>git diff</code> shows only the agent’s changes.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> status          <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># should be clean</span></span>
+<span id="cb3-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> switch <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-c</span> agent/fix-signup   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># optional: a branch for the task</span></span></code></pre></div></div>
+<p><strong>Keep tasks small.</strong> One task, one commit. A small task finishes quickly, and its diff is easy to review.</p>
+<p><strong>Undo safely.</strong> If the result is not what we wanted, a clean starting point makes discarding it easy. To drop the agent’s uncommitted changes to one file:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> restore path/to/file</span></code></pre></div></div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>git restore</code> and <code>git checkout -- &lt;file&gt;</code> throw away uncommitted changes for good. Check <code>git diff</code> first.</p>
+</div>
+</div>
+</section>
+<section id="working-in-parallel-with-a-worktree" class="level2">
+<h2 class="anchored" data-anchor-id="working-in-parallel-with-a-worktree">Working in Parallel with a Worktree</h2>
+<p>Sometimes we want to keep working while the agent runs. The safe way is to give the agent its own copy of the repository using <code>git worktree</code>. Each worktree has its own working directory and branch, but they share one history, so neither of us disturbs the other’s files.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> worktree add ../myproject-agent <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-b</span> agent/task</span>
+<span id="cb5-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> ../myproject-agent</span>
+<span id="cb5-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># start the agent here, while we keep working in the original folder</span></span></code></pre></div></div>
+<p>When the agent is done, we review and commit in the worktree, then merge the branch as usual and clean up:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> worktree remove ../myproject-agent</span></code></pre></div></div>
+</section>
+<section id="quick-summary" class="level2">
+<h2 class="anchored" data-anchor-id="quick-summary">Quick Summary</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Situation</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Agent is still editing</td>
+<td>Don’t stage or commit; wait</td>
+</tr>
+<tr class="even">
+<td>Agent says it is done</td>
+<td><code>git status</code>, <code>git diff</code>, run tests</td>
+</tr>
+<tr class="odd">
+<td>Changes look good</td>
+<td>One clean commit with a clear message</td>
+</tr>
+<tr class="even">
+<td>Want to work at the same time</td>
+<td>Use a separate <code>git worktree</code> and branch</td>
+</tr>
+<tr class="odd">
+<td>Result is wrong</td>
+<td><code>git restore</code> the files, or discard the branch</td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+
+ ]]></description>
+  <category>Git</category>
+  <category>Tools</category>
+  <category>Workflow</category>
+  <guid>https://www.statmania.info/blog/posts/git-commiting-while-ai-agent-is-working.html</guid>
+  <pubDate>Sun, 01 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/git-commiting-while-ai-agent-is-working.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
   <title>Hex Color Codes Explained: How #FF8A3D Becomes a Colour</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://www.statmania.info/blog/posts/hex-color-code-explained.html</link>
@@ -8617,604 +8795,6 @@ font-style: inherit;">"darkgray"</span></span>
   <guid>https://www.statmania.info/blog/posts/r-dots-in-functions.html</guid>
   <pubDate>Mon, 26 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/r-shell.jpeg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Fish vs Bash Syntax: A Practical Cheat Sheet</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/fish-vs-bash-syntax.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/fish-shell.jpeg" class="img-fluid figure-img" alt="A terminal running the fish shell."></p>
-<figcaption>Fish is built to be friendly at the prompt; Bash is the shell that runs almost everywhere.</figcaption>
-</figure>
-</div>
-<p>Bash is the default shell on most Linux systems and follows the POSIX conventions that countless scripts rely on. Fish (the <em>Friendly Interactive SHell</em>) deliberately breaks from them to get a cleaner syntax and a better interactive experience. It is not POSIX-compliant, so Bash habits do not always carry over.</p>
-<p>The examples below were run in fish 3.3 and Bash 5. They are the differences we meet most often.</p>
-<section id="syntax-at-a-glance" class="level2">
-<h2 class="anchored" data-anchor-id="syntax-at-a-glance">Syntax at a glance</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Feature</th>
-<th>Bash</th>
-<th>Fish</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>POSIX compliant</td>
-<td>Yes</td>
-<td>No</td>
-</tr>
-<tr class="even">
-<td>Set a variable</td>
-<td><code>NAME=value</code> (no spaces around <code>=</code>)</td>
-<td><code>set NAME value</code></td>
-</tr>
-<tr class="odd">
-<td>Export a variable</td>
-<td><code>export NAME=value</code></td>
-<td><code>set -gx NAME value</code></td>
-</tr>
-<tr class="even">
-<td>Local variable</td>
-<td><code>local name=value</code> (in a function)</td>
-<td><code>set -l name value</code></td>
-</tr>
-<tr class="odd">
-<td>Command substitution</td>
-<td><code>`cmd`</code> or <code>$(cmd)</code></td>
-<td><code>(cmd)</code></td>
-</tr>
-<tr class="even">
-<td>For loop</td>
-<td><code>for f in *.txt; do echo "$f"; done</code></td>
-<td><code>for f in *.txt; echo $f; end</code></td>
-</tr>
-<tr class="odd">
-<td>While loop</td>
-<td><code>while cond; do ...; done</code></td>
-<td><code>while cond; ...; end</code></td>
-</tr>
-<tr class="even">
-<td>Condition</td>
-<td><code>if [ -f file.txt ]; then ...; fi</code></td>
-<td><code>if test -f file.txt; ...; end</code></td>
-</tr>
-<tr class="odd">
-<td>Last exit code</td>
-<td><code>$?</code></td>
-<td><code>$status</code></td>
-</tr>
-<tr class="even">
-<td>Arguments</td>
-<td><code>$1</code>, <code>$@</code>, <code>$#</code></td>
-<td><code>$argv[1]</code>, <code>$argv</code>, <code>(count $argv)</code></td>
-</tr>
-<tr class="odd">
-<td>Arrays</td>
-<td><code>arr=(one two); echo ${arr[0]}</code></td>
-<td><code>set arr one two; echo $arr[1]</code></td>
-</tr>
-<tr class="even">
-<td>Strings</td>
-<td><code>${foo%bar}</code>, <code>${foo#bar}</code>, <code>${foo/bar/baz}</code></td>
-<td>the <code>string</code> builtin</td>
-</tr>
-<tr class="odd">
-<td>Arithmetic</td>
-<td><code>$((2 + 3))</code></td>
-<td><code>math 2 + 3</code></td>
-</tr>
-<tr class="even">
-<td>Function</td>
-<td><code>greet() { echo "Hi $1"; }</code></td>
-<td><code>function greet; echo "Hi $argv[1]"; end</code></td>
-</tr>
-<tr class="odd">
-<td>Alias</td>
-<td><code>alias gs='git status'</code></td>
-<td><code>abbr -a gs 'git status'</code> (or <code>alias</code>)</td>
-</tr>
-</tbody>
-</table>
-<p>The main pattern: Bash closes blocks with <code>fi</code>, <code>done</code> and <code>esac</code>, and fish closes every block with <code>end</code>.</p>
-</section>
-<section id="variables" class="level2">
-<h2 class="anchored" data-anchor-id="variables">Variables</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Bash</span></span>
-<span id="cb1-2"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">name</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Ada Lovelace"</span></span>
-<span id="cb1-3"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">export</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">EDITOR</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>vim</span></code></pre></div></div>
-<pre class="fish"><code># fish
-set name "Ada Lovelace"
-set -gx EDITOR vim</code></pre>
-<p>The <code>set</code> flags control scope: <code>-l</code> local to the block or function, <code>-g</code> global to the session, <code>-x</code> exported to child processes, <code>-U</code> universal (shared by all fish sessions and remembered across restarts). Remove a variable with <code>set -e name</code>.</p>
-<p>Fish does <strong>not</strong> split variables on whitespace, so the quoting habit <code>"$file"</code> is mostly unnecessary. A file called <code>my pic.jpg</code> stored in <code>$f</code> is passed as one argument:</p>
-<pre class="fish"><code>set f "my pic.jpg"
-mv $f renamed.jpg      # works, no quotes needed</code></pre>
-</section>
-<section id="command-substitution" class="level2">
-<h2 class="anchored" data-anchor-id="command-substitution">Command substitution</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">files</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ls</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">wc</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-l</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div></div>
-<pre class="fish"><code>set files (ls | wc -l)</code></pre>
-<p>In fish the output is split on <strong>newlines</strong> only, so a command that prints three lines gives a list of three items:</p>
-<pre class="fish"><code>set lines (printf 'x y\nz\n')
-count $lines           # 2</code></pre>
-</section>
-<section id="conditions-and-tests" class="level2">
-<h2 class="anchored" data-anchor-id="conditions-and-tests">Conditions and tests</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">[</span> <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">-f</span> file.txt <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">]</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">then</span></span>
-<span id="cb7-2">    <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"found"</span></span>
-<span id="cb7-3"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">elif</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">[</span> <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">-d</span> file.txt <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">]</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">then</span></span>
-<span id="cb7-4">    <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"a folder"</span></span>
-<span id="cb7-5"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">else</span></span>
-<span id="cb7-6">    <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"missing"</span></span>
-<span id="cb7-7"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">fi</span></span></code></pre></div></div>
-<pre class="fish"><code>if test -f file.txt
-    echo "found"
-else if test -d file.txt
-    echo "a folder"
-else
-    echo "missing"
-end</code></pre>
-<p>Fish has no <code>[ ... ]</code> or <code>[[ ... ]]</code> syntax. It uses the <code>test</code> command, which also accepts <code>-gt</code>, <code>-lt</code>, <code>-eq</code> and string comparisons with <code>=</code>.</p>
-<p>Chaining works with <code>&amp;&amp;</code> and <code>||</code> in recent fish versions, and fish also has the words <code>and</code>, <code>or</code> and <code>not</code>:</p>
-<pre class="fish"><code>mkdir build; and cd build
-make; or echo "build failed"</code></pre>
-<p>The exit code of the last command is <code>$status</code>, not <code>$?</code>:</p>
-<pre class="fish"><code>false
-echo $status           # 1</code></pre>
-<section id="switch-statements" class="level3">
-<h3 class="anchored" data-anchor-id="switch-statements">Switch statements</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">case</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$animal</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span></span>
-<span id="cb11-2">    <span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">c</span><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">)</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"starts with c"</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;;</span></span>
-<span id="cb11-3">    <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">)</span>  <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"other"</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;;</span></span>
-<span id="cb11-4"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">esac</span></span></code></pre></div></div>
-<pre class="fish"><code>switch $animal
-    case 'c*'
-        echo "starts with c"
-    case '*'
-        echo "other"
-end</code></pre>
-<p>Fish does not fall through and needs no <code>;;</code>.</p>
-</section>
-</section>
-<section id="loops" class="level2">
-<h2 class="anchored" data-anchor-id="loops">Loops</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> i <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">seq</span> 1 3<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">do</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$i</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">done</span></span>
-<span id="cb13-2"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">((</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">i</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">i</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">i</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">));</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">do</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$i</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">done</span></span></code></pre></div></div>
-<pre class="fish"><code>for i in (seq 1 3); echo $i; end</code></pre>
-<p>Fish has no C-style <code>for ((...))</code> loop, so use <code>seq</code> (or <code>while</code> with <code>math</code>). A countdown:</p>
-<pre class="fish"><code>set n 3
-while test $n -gt 0
-    echo $n
-    set n (math $n - 1)
-end</code></pre>
-</section>
-<section id="arrays" class="level2">
-<h2 class="anchored" data-anchor-id="arrays">Arrays</h2>
-<p>Every fish variable is a list. Indexing starts at <strong>1</strong>, negative indices count from the end, and ranges are supported:</p>
-<pre class="fish"><code>set arr one two three
-echo $arr[1]           # one
-echo $arr[-1]          # three
-echo $arr[2..3]        # two three
-count $arr             # 3
-set -a arr four        # append</code></pre>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">arr</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">(</span>one two three<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span id="cb17-2"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${arr</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span>         <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># one (Bash indexes from 0)</span></span>
-<span id="cb17-3"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${arr</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>-1<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span>        <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># three</span></span>
-<span id="cb17-4"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">arr</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[@]</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span>        <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># 3</span></span></code></pre></div></div>
-</section>
-<section id="strings" class="level2">
-<h2 class="anchored" data-anchor-id="strings">Strings</h2>
-<p>Bash uses parameter-expansion tricks like <code>${f%.txt}</code>. Fish has a single <code>string</code> command with sub-commands, which is easier to read and remember:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Task</th>
-<th>Bash</th>
-<th>Fish</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Remove extension</td>
-<td><code>${f%.*}</code></td>
-<td><code>string replace -r '\.[^.]*$' '' $f</code></td>
-</tr>
-<tr class="even">
-<td>Replace all</td>
-<td><code>${f//a/b}</code></td>
-<td><code>string replace -a a b $f</code></td>
-</tr>
-<tr class="odd">
-<td>Lowercase / uppercase</td>
-<td><code>${f,,}</code> / <code>${f^^}</code></td>
-<td><code>string lower $f</code> / <code>string upper $f</code></td>
-</tr>
-<tr class="even">
-<td>Length</td>
-<td><code>${#f}</code></td>
-<td><code>string length $f</code></td>
-</tr>
-<tr class="odd">
-<td>Substring</td>
-<td><code>${f:0:6}</code></td>
-<td><code>string sub -s 1 -l 6 $f</code></td>
-</tr>
-<tr class="even">
-<td>Split</td>
-<td><code>IFS=. read -ra p &lt;&lt;&lt; "$f"</code></td>
-<td><code>string split . $f</code></td>
-</tr>
-<tr class="odd">
-<td>Regex match</td>
-<td><code>[[ $s =~ [0-9]+ ]]</code></td>
-<td><code>string match -r '\d+' $s</code></td>
-</tr>
-</tbody>
-</table>
-<p>For example, <code>string split . report.final.txt</code> prints <code>report</code>, <code>final</code> and <code>txt</code> on separate lines.</p>
-</section>
-<section id="arithmetic" class="level2">
-<h2 class="anchored" data-anchor-id="arithmetic">Arithmetic</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$((</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">))</span>    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># 14</span></span></code></pre></div></div>
-<pre class="fish"><code>echo (math 2 + 3 '*' 4)   # 14
-echo (math 7 / 2)         # 3.5</code></pre>
-<p>Quote <code>*</code> in <code>math</code>, otherwise fish treats it as a wildcard. Unlike Bash’s integer-only <code>$((...))</code>, <code>math</code> returns decimals.</p>
-</section>
-<section id="functions" class="level2">
-<h2 class="anchored" data-anchor-id="functions">Functions</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">greet()</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">{</span></span>
-<span id="cb20-2">    <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Hi, </span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$1</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb20-3"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<pre class="fish"><code>function greet
-    echo "Hi, $argv[1]"
-end</code></pre>
-<p>To keep a fish function for later sessions, run <code>funcsave greet</code>. It writes <code>~/.config/fish/functions/greet.fish</code>. Use <code>functions greet</code> to view a function’s code.</p>
-</section>
-<section id="other-behaviours-that-surprise-bash-users" class="level2">
-<h2 class="anchored" data-anchor-id="other-behaviours-that-surprise-bash-users">Other behaviours that surprise Bash users</h2>
-<ul>
-<li><strong>No match is an error.</strong> In Bash, an unmatched <code>*.xyz</code> stays as the literal text. Fish stops with <code>No matches for wildcard</code>, which prevents a command from running on a name that does not exist.</li>
-<li><strong>Redirections.</strong> <code>2&gt;&amp;1</code> and <code>&amp;&gt;</code> work as in Bash. Heredocs (<code>&lt;&lt;EOF</code>) and process substitution with <code>&lt;(cmd)</code> are different or missing: fish uses <code>psub</code> (<code>diff (sort a | psub) (sort b | psub)</code>), and for multiline input we pipe <code>printf</code> or <code>echo</code>.</li>
-<li><strong>Config file.</strong> Bash reads <code>~/.bashrc</code>. Fish reads <code>~/.config/fish/config.fish</code>. Add to the path with <code>fish_add_path ~/bin</code> instead of editing <code>PATH</code> by hand.</li>
-<li><strong>Abbreviations vs aliases.</strong> <code>abbr</code> expands to the full command as we type, so history and the screen show what really ran. <code>alias</code> in fish is just a small function.</li>
-<li><strong>Interactive extras.</strong> Syntax highlighting, history-based autosuggestions (accept with →) and tab completions from man pages are on by default. <code>fish_config</code> opens a web page for choosing themes and prompts.</li>
-<li><strong>Portability.</strong> Bash scripts run nearly everywhere. Fish scripts need fish installed and break if Bash runs them.</li>
-</ul>
-</section>
-<section id="scripts-keep-bash-for-portable-ones" class="level2">
-<h2 class="anchored" data-anchor-id="scripts-keep-bash-for-portable-ones">Scripts: keep Bash for portable ones</h2>
-<p>Put the interpreter on the first line so that each script runs under the shell it was written for, whichever shell we type it in:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#!/usr/bin/env bash      # portable script</span></span></code></pre></div></div>
-<pre class="fish"><code>#!/usr/bin/env fish      # fish script</code></pre>
-<p>A common setup is to use fish interactively and write shared or server scripts in Bash. We can still run a one-off Bash command from fish with <code>bash -c 'echo $((2+3))'</code>.</p>
-</section>
-<section id="using-bash-tools-from-fish" class="level2">
-<h2 class="anchored" data-anchor-id="using-bash-tools-from-fish">Using Bash tools from fish</h2>
-<p>Some tools (for example <code>nvm</code>, <code>conda</code> or Python’s <code>venv</code> activation) ship Bash-only setup scripts. Look for a fish version first (<code>activate.fish</code> for virtual environments), a fish plugin, or a helper such as <code>bass</code>, which runs a Bash script and copies the resulting variables into fish.</p>
-</section>
-<section id="summary" class="level2">
-<h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<ul>
-<li>Use <code>set</code> instead of <code>NAME=value</code>, and <code>end</code> instead of <code>fi</code>/<code>done</code>/<code>esac</code>.</li>
-<li>Variables are lists, indexed from 1, and are not word-split.</li>
-<li>Use <code>string</code> and <code>math</code> instead of <code>${...}</code> and <code>$((...))</code>.</li>
-<li>Use <code>$status</code> and <code>$argv</code> instead of <code>$?</code> and <code>$1</code>.</li>
-<li>Keep portable scripts in Bash and use fish for daily interactive work.</li>
-</ul>
-</section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<ul>
-<li><a href="https://fishshell.com/docs/current/fish_for_bash_users.html">Fish for bash users (fish documentation)</a></li>
-<li><a href="https://www.tecmint.com/bash-vs-zsh-vs-fish/">Bash vs Zsh vs Fish (Tecmint)</a></li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>Linux</category>
-  <category>Shell</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/fish-vs-bash-syntax.html</guid>
-  <pubDate>Sat, 24 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/fish-shell.jpeg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>

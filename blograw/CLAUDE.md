@@ -40,11 +40,12 @@ A genuinely new topic may get its own tag, but only if at least a second post is
 
 Whenever an edit to a post is sought, check if the post contains an image; if not, add one (follow the following).
 
+**Do not use `img/linux-git.jpeg` (avoid it in posts and as `image:`) until the user says otherwise.** Pick another image or draw a new SVG for git posts.
+
 Don't geenrate svg if an existing image name (svg or png) matches with the post topic. Generic images like r-shell.jpeg, journal.jpeg can be used in mahy posts. 
 
 **When the user names no image, choose in this order:**
-1. Look in `img/` for an existing image that matches the topic or is a generic fit (e.g. `linux-git.jpeg`
-   for git posts, `r-shell.jpeg`, `fish-shell.jpeg`, `journal.jpeg`) and reuse it for both the body and
+1. Look in `img/` for an existing image that matches the topic or is a generic fit (e.g. `r-shell.jpeg`, `fish-shell.jpeg`, `journal.jpeg`) and reuse it for both the body and
    `image:`. JPEG/PNG photos need no SVG twin.
 2. Only if nothing is relevant, draw a new SVG: a sketch of a person using what the post covers
    (at a laptop or terminal), or a diagram when the post is about a process or structure.
@@ -95,6 +96,7 @@ Don't geenrate svg if an existing image name (svg or png) matches with the post 
   - put real pictures (a screenshot, a photo) inside a figure only as JPEG/PNG files, never embedded in
     the SVG, because the filter would invert them too.
 - Photos/screenshots stay JPEG/PNG as usual.
+- research-paper.jpeg, linux-prog.jpeg can be used as genereic images unless a drawn diagram is better idea for the post. 
 
 ## Writing conventions
 
