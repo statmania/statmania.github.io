@@ -101,6 +101,11 @@ Don't geenrate svg if an existing image name (svg or png) matches with the post 
 - Name files by topic (`c-struct.qmd`), not by number.
 - Dates: use the real current date (`date +%F`). Don't invent later dates for a batch of posts; a future date
   makes the post look unpublished or misdated.
+- Any formula, command or code line a reader might copy goes in a fenced code block, never inline (e.g. a full
+  `=SUMIF(...)` formula or a `gcc` command). Inline backticks are only for short names inside a sentence
+  (`SUMIF`, `-lm`, `printf()`).
+  Quarto only adds the click-to-copy button to fenced blocks that have a language, so a block with no real
+  language (Excel formulas, program output) must still be tagged ```` ```default ````, never a bare fence.
 - Compile/run code examples before publishing, and paste real output. State
   any needed flag (e.g. `-lm` for `<math.h>`).
 - Use `::: {.callout-note}` / `-tip` / `-warning` for asides (styled for the
@@ -194,3 +199,12 @@ variables, not hex colours, in new CSS.
 The blog pages get the site-wide starfield via `../starfield-include.html`
 (see the top-level `CLAUDE.md`). Post bodies sit on an opaque panel so stars
 never run behind text.
+
+## R Plots
+
+- Use ggplot2 whenever possible
+- Try not to use theme_void or minimal. Polish the plot otherwise (erasing extra axis ticks, for example), but keep default background. 
+
+## Updating this file
+
+Whenever I write "Note it", in upper/lower case, add the rule to this file in proper section or create a new section. 

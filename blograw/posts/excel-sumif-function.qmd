@@ -1,0 +1,117 @@
+---
+title: "Excel SUMIF Function Explained with an Example Table"
+description: "How SUMIF adds up the values that meet one condition: syntax, and four worked examples (text, greater-than, a cell reference and wildcards) all based on one small sales table."
+date: "2026-11-01"
+categories: [Excel, Tutorial]
+tags: [excel, beginners, workflow]
+author: "Abdullah Al Mahmud"
+image: ../img/excel-r-programming.jpeg
+---
+
+![A spreadsheet and code side by side.](../img/excel-r-programming.jpeg){fig-alt="Illustration combining an Excel spreadsheet with R programming."}
+
+The `SUMIF` function in Excel (and Google Sheets) adds up the values in a range that meet **one** condition.
+
+## Syntax
+
+```default
+=SUMIF(range, criteria, [sum_range])
+```
+
+- `range`: the cells to test against the condition.
+- `criteria`: the condition. It can be a number, text, a cell reference, or an expression such as `">10"` or `"Apple"`.
+- `sum_range`: (optional) the cells to add up. If we leave it out, Excel adds the cells in `range` itself.
+
+## The Example Table
+
+All the examples below use this small sales table, typed into cells `A1:D11` (headings in row 1):
+
+| | A | B | C | D |
+|---|---|---|---|---|
+| **1** | **Category** | **Product** | **Region** | **Sales** |
+| **2** | Fruit | Apple | North East | 320 |
+| **3** | Fruit | Banana | South | 180 |
+| **4** | Vegetable | Carrot | North West | 450 |
+| **5** | Fruit | Apple | East | 600 |
+| **6** | Vegetable | Onion | West | 275 |
+| **7** | Fruit | Orange | North East | 520 |
+| **8** | Vegetable | Carrot | South | 390 |
+| **9** | Fruit | Banana | North West | 240 |
+| **10** | Vegetable | Onion | East | 610 |
+| **11** | Fruit | Orange | South | 150 |
+
+## Examples
+
+### 1. Sum by a text category
+
+Total sales where the category in column A is "Fruit":
+
+```default
+=SUMIF(A2:A11, "Fruit", D2:D11)
+```
+
+Result: **2010** (320 + 180 + 600 + 520 + 240 + 150).
+
+### 2. Sum with a greater-than condition
+
+Total of the sales above 500. Here the range we test is also the range we add, so `sum_range` is left out:
+
+```default
+=SUMIF(D2:D11, ">500")
+```
+
+Result: **1730** (600 + 520 + 610).
+
+::: {.callout-note}
+When the condition uses a comparison operator (`>`, `<`, `=`, `>=`, `<=`, `<>`), wrap the operator and the number in double quotes.
+:::
+
+### 3. Use a cell reference for the criteria
+
+Put the product name in a cell, say `F2` contains `Apple`. Then the formula follows whatever is typed in `F2`:
+
+```default
+=SUMIF(B2:B11, F2, D2:D11)
+```
+
+Result: **920** (320 + 600). Change `F2` to `Carrot` and the result becomes 840 (450 + 390), with no edit to the formula.
+
+To combine an operator with a cell reference, join them with `&`. If `F2` holds a number, this sums the sales above it:
+
+```default
+=SUMIF(D2:D11, ">"&F2, D2:D11)
+```
+
+### 4. Sum with wildcards
+
+Two wildcards work in text criteria:
+
+- `*` matches any sequence of characters.
+- `?` matches exactly one character.
+
+Total sales for every region containing "North" (both North East and North West):
+
+```default
+=SUMIF(C2:C11, "*North*", D2:D11)
+```
+
+Result: **1530** (320 + 450 + 520 + 240).
+
+Total sales for a region that is exactly four characters long ending in "ast", which matches "East" but not "North East":
+
+```default
+=SUMIF(C2:C11, "?ast", D2:D11)
+```
+
+Result: **1210** (600 + 610).
+
+## When We Need More Than One Condition
+
+`SUMIF` handles a single condition. For several conditions at once, use `SUMIFS`, for example fruit sales in the North East.
+
+## References
+
+1. [SUMIF function](https://support.microsoft.com/en-us/excel/functions/sumif-function), Microsoft Support
+2. [Excel SUMIF function](https://www.w3schools.com/excel/excel_sumif.php), W3Schools
+3. [SUMIF Excel function](https://corporatefinanceinstitute.com/resources/excel/sumif-excel-function/), Corporate Finance Institute
+4. [Excel SUMIF function](https://www.geeksforgeeks.org/excel/exce-sumif-function/), GeeksforGeeks

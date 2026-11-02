@@ -10,7 +10,394 @@
 <atom:link href="https://www.statmania.info/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Posts on statistics theory, R &amp; Python, and developer tips from Stat Mania.</description>
 <generator>quarto-1.9.38</generator>
-<lastBuildDate>Sat, 31 Oct 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sun, 01 Nov 2026 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>Hex Color Codes Explained: How #FF8A3D Becomes a Colour</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/hex-color-code-explained.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/hex-color-code-explained.svg" class="img-fluid figure-img" alt="The hex code FF8A3D split into three pairs: FF is red 255, 8A is green 138 and 3D is blue 61, combining into an orange swatch."></p>
+<figcaption>The code #FF8A3D split into red, green and blue pairs, which combine into an orange.</figcaption>
+</figure>
+</div>
+<p>A <strong>hex color code</strong> is a six-character string used in web design (and in many other tools) to tell a screen how much red, green and blue (RGB) light to mix. It always starts with a hash sign, <code>#</code>.</p>
+<section id="anatomy-of-a-hex-code" class="level2">
+<h2 class="anchored" data-anchor-id="anatomy-of-a-hex-code">Anatomy of a Hex Code</h2>
+<p>The six characters split into three pairs, and each pair controls one colour channel:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Pair</th>
+<th>Channel</th>
+<th>In <code>#RRGGBB</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>First</td>
+<td>Red</td>
+<td><strong>RR</strong>GGBB</td>
+</tr>
+<tr class="even">
+<td>Second</td>
+<td>Green</td>
+<td>RR<strong>GG</strong>BB</td>
+</tr>
+<tr class="odd">
+<td>Third</td>
+<td>Blue</td>
+<td>RRGG<strong>BB</strong></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="how-the-base-16-system-works" class="level2">
+<h2 class="anchored" data-anchor-id="how-the-base-16-system-works">How the Base-16 System Works</h2>
+<p>Hexadecimal is a base-16 number system. Decimal counts 0 to 9 before rolling over; hexadecimal keeps going to 16 symbols by using the letters A to F for the values 10 to 15:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Hex digit</th>
+<th>0–9</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>D</th>
+<th>E</th>
+<th>F</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Value</td>
+<td>0–9</td>
+<td>10</td>
+<td>11</td>
+<td>12</td>
+<td>13</td>
+<td>14</td>
+<td>15</td>
+</tr>
+</tbody>
+</table>
+<p>F is the largest value a single digit can have. A pair therefore runs from <code>00</code> (channel off, decimal 0) to <code>FF</code> (full intensity, decimal 255).</p>
+<section id="converting-a-pair-to-0255" class="level3">
+<h3 class="anchored" data-anchor-id="converting-a-pair-to-0255">Converting a pair to 0–255</h3>
+<ol type="1">
+<li>Multiply the first character by 16.</li>
+<li>Multiply the second character by 1.</li>
+<li>Add the two results.</li>
+</ol>
+<p><strong>Example: <code>FF</code>.</strong> F is 15, so (15 × 16) + 15 = 240 + 15 = <strong>255</strong>.</p>
+<p><strong>Example: <code>A3</code>.</strong> A is 10, so (10 × 16) + 3 = 160 + 3 = <strong>163</strong>.</p>
+<p>Now we can read the code from the figure, <code>#FF8A3D</code>:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Channel</th>
+<th>Pair</th>
+<th>Calculation</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Red</td>
+<td><code>FF</code></td>
+<td>15 × 16 + 15</td>
+<td>255</td>
+</tr>
+<tr class="even">
+<td>Green</td>
+<td><code>8A</code></td>
+<td>8 × 16 + 10</td>
+<td>138</td>
+</tr>
+<tr class="odd">
+<td>Blue</td>
+<td><code>3D</code></td>
+<td>3 × 16 + 13</td>
+<td>61</td>
+</tr>
+</tbody>
+</table>
+<p>That is a strong red, a medium green and a little blue, which gives the orange in the figure.</p>
+</section>
+</section>
+<section id="checking-it-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="checking-it-in-r">Checking It in R</h2>
+<p><a href="../tags.html#tag=r">R programming language</a> understands hex colours, so we can confirm the conversion with <code>col2rgb()</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">col2rgb</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#FF8A3D"</span>)</span></code></pre></div></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1">      [,1]</span>
+<span id="cb2-2">red    255</span>
+<span id="cb2-3">green  138</span>
+<span id="cb2-4">blue    61</span></code></pre></div></div>
+<p>And <code>rgb()</code> goes the other way, from numbers to a hex code:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rgb</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">255</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">138</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">61</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">maxColorValue =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">255</span>)</span></code></pre></div></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb4-1">[1] "#FF8A3D"</span></code></pre></div></div>
+<p>Hex is only one way to write the same numbers. <a href="../posts/rgb-color-code-explained.html">RGB Color Codes Explained</a> covers the decimal form, <code>rgb(255, 138, 61)</code>, and <code>rgba()</code> for transparency.</p>
+</section>
+<section id="common-examples" class="level2">
+<h2 class="anchored" data-anchor-id="common-examples">Common Examples</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Colour</th>
+<th>Code</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Pure red</td>
+<td><code>#FF0000</code></td>
+<td>Max red, no green, no blue</td>
+</tr>
+<tr class="even">
+<td>Pure green</td>
+<td><code>#00FF00</code></td>
+<td>No red, max green, no blue</td>
+</tr>
+<tr class="odd">
+<td>Pure blue</td>
+<td><code>#0000FF</code></td>
+<td>No red, no green, max blue</td>
+</tr>
+<tr class="even">
+<td>White</td>
+<td><code>#FFFFFF</code></td>
+<td>All channels at maximum</td>
+</tr>
+<tr class="odd">
+<td>Black</td>
+<td><code>#000000</code></td>
+<td>All channels off</td>
+</tr>
+<tr class="even">
+<td>Grey</td>
+<td><code>#787878</code></td>
+<td>Equal values in all three pairs</td>
+</tr>
+</tbody>
+</table>
+<p>Any code whose three pairs are identical is a shade of grey. For <code>#787878</code>, each pair is 7 × 16 + 8 = 120.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Hex codes follow an <strong>additive light</strong> model: higher values make a colour brighter and closer to white, not darker as with paint.</p>
+</div>
+</div>
+</section>
+<section id="handy-variations" class="level2">
+<h2 class="anchored" data-anchor-id="handy-variations">Handy Variations</h2>
+<ul>
+<li><strong>Short form:</strong> when each pair has two identical digits, it can be shortened to three, so <code>#FF0000</code> becomes <code>#F00</code>.</li>
+<li><strong>With transparency:</strong> an eight-character code adds a fourth pair for opacity, as in <code>#FF8A3D80</code> (about 50%).</li>
+</ul>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ol type="1">
+<li><a href="https://www.geeksforgeeks.org/computer-graphics/hex-color-codes/">Hex color codes</a>, GeeksforGeeks</li>
+<li><a href="https://www.freecodecamp.org/news/how-hex-code-colors-work-how-to-choose-colors-without-a-color-picker/">How hex code colors work</a>, freeCodeCamp</li>
+<li><a href="https://www.pluralsight.com/resources/blog/upskilling/understanding-hexadecimal-colors-simple">Understanding hexadecimal colors</a>, Pluralsight</li>
+<li><a href="https://coreyginnivan.medium.com/%EF%B8%8F-hex-colour-codes-explained-with-a-hint-of-colour-theory-a968d3670a85">Hex colour codes explained</a>, Corey Ginnivan</li>
+<li><a href="https://www.reddit.com/r/explainlikeimfive/comments/p68gj/eli5_how_hex_code_works_and_how_you_can_tell_what/">ELI5: how hex code works</a>, r/explainlikeimfive</li>
+</ol>
+
+
+</section>
+
+ ]]></description>
+  <category>Programming</category>
+  <category>Explainer</category>
+  <guid>https://www.statmania.info/blog/posts/hex-color-code-explained.html</guid>
+  <pubDate>Sun, 01 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/hex-color-code-explained.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>RGB Color Codes Explained: rgb(), rgba() and Their Hex Equivalents</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/rgb-color-code-explained.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/rgb-color-code-explained.svg" class="img-fluid figure-img" alt="Three sliders set red to 64, green to 196 and blue to 170, mixing into a teal swatch labelled rgb(64, 196, 170)."></p>
+<figcaption>Three sliders from 0 to 255 mix into one colour: rgb(64, 196, 170).</figcaption>
+</figure>
+</div>
+<p>An <strong>RGB color code</strong> tells a digital screen exactly how much red, green and blue light to mix to make a colour. A <a href="../posts/hex-color-code-explained.html">hex code</a> writes the same three amounts in base 16. An RGB code writes them as ordinary decimal numbers from 0 to 255.</p>
+<section id="the-anatomy-of-an-rgb-code" class="level2">
+<h2 class="anchored" data-anchor-id="the-anatomy-of-an-rgb-code">The Anatomy of an RGB Code</h2>
+<p>An RGB code is written like a function with three numbers in parentheses:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1">rgb(Red, Green, Blue)</span></code></pre></div></div>
+<ul>
+<li><code>0</code> means the channel is completely off (no light).</li>
+<li><code>255</code> means the channel is at full intensity.</li>
+</ul>
+<p>Screens create colour by <strong>adding light</strong> (the additive colour model), and three channels with 256 levels each give 256 × 256 × 256 = 16,777,216 possible colours.</p>
+</section>
+<section id="rgb-vs-hex" class="level2">
+<h2 class="anchored" data-anchor-id="rgb-vs-hex">RGB vs Hex</h2>
+<p>An RGB code uses the same numbers we get when converting each pair of a hex code. Here are the basic colours in both forms:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Colour</th>
+<th>Hex</th>
+<th>RGB</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Pure red</td>
+<td><code>#FF0000</code></td>
+<td><code>rgb(255, 0, 0)</code></td>
+<td>Full red, no green, no blue</td>
+</tr>
+<tr class="even">
+<td>Pure green</td>
+<td><code>#00FF00</code></td>
+<td><code>rgb(0, 255, 0)</code></td>
+<td>No red, full green, no blue</td>
+</tr>
+<tr class="odd">
+<td>Pure blue</td>
+<td><code>#0000FF</code></td>
+<td><code>rgb(0, 0, 255)</code></td>
+<td>No red, no green, full blue</td>
+</tr>
+<tr class="even">
+<td>Black</td>
+<td><code>#000000</code></td>
+<td><code>rgb(0, 0, 0)</code></td>
+<td>All lights off</td>
+</tr>
+<tr class="odd">
+<td>White</td>
+<td><code>#FFFFFF</code></td>
+<td><code>rgb(255, 255, 255)</code></td>
+<td>All lights at full intensity</td>
+</tr>
+</tbody>
+</table>
+<p>In the hex post we worked out that the pair <code>A3</code> equals 10 × 16 + 3 = 163. So the hex code <code>#A30000</code> is the same colour as <code>rgb(163, 0, 0)</code>.</p>
+<section id="converting-in-r" class="level3">
+<h3 class="anchored" data-anchor-id="converting-in-r">Converting in R</h3>
+<p>R can move between the two forms. <code>col2rgb()</code> turns a hex code into RGB numbers:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">col2rgb</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#40C4AA"</span>)</span></code></pre></div></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1">      [,1]</span>
+<span id="cb3-2">red     64</span>
+<span id="cb3-3">green  196</span>
+<span id="cb3-4">blue   170</span></code></pre></div></div>
+<p>and <code>rgb()</code> turns RGB numbers into a hex code:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rgb</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">64</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">196</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">170</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">maxColorValue =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">255</span>)</span></code></pre></div></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb5-1">[1] "#40C4AA"</span></code></pre></div></div>
+</section>
+</section>
+<section id="what-is-rgba" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-rgba">What Is RGBA?</h2>
+<p>Sometimes a fourth number is added: <code>rgba(Red, Green, Blue, Alpha)</code>. The <strong>alpha</strong> channel sets transparency, on a scale from 0.0 to 1.0:</p>
+<ul>
+<li><code>0.0</code>: completely invisible</li>
+<li><code>0.5</code>: half see-through</li>
+<li><code>1.0</code>: completely solid</li>
+</ul>
+<p>For example, this gives a vibrant blue that lets whatever is behind it show through:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb6-1">rgba(0, 0, 255, 0.5)</span></code></pre></div></div>
+<p>In hex, alpha becomes an extra pair at the end. In R, <code>rgb()</code> takes an <code>alpha</code> argument on a 0 to 1 scale and reproduces it:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rgb</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alpha =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>)</span></code></pre></div></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb8-1">[1] "#0000FF80"</span></code></pre></div></div>
+<p>The <code>80</code> is 0.5 × 255 rounded to 128, which is <code>80</code> in hex.</p>
+</section>
+<section id="see-also" class="level2">
+<h2 class="anchored" data-anchor-id="see-also">See Also</h2>
+<ul>
+<li><a href="../posts/hex-color-code-explained.html">Hex Color Codes Explained</a>: the base-16 form and how to convert a pair by hand.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>Programming</category>
+  <category>Explainer</category>
+  <guid>https://www.statmania.info/blog/posts/rgb-color-code-explained.html</guid>
+  <pubDate>Sun, 01 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/rgb-color-code-explained.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
 <item>
   <title>POSIX Explained: The Rulebook Behind Linux, macOS and BSD</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
@@ -262,15 +649,15 @@ font-style: inherit;">;</span></span>
 background-color: null;
 font-style: inherit;">}</span></span></code></pre></div></div>
 <p>If we compile without the library, the link step fails:</p>
-<pre><code>$ gcc m.c -o m
-/usr/bin/ld: /tmp/ccb1hHRk.o: in function `main':
-m.c:(.text+0x60): undefined reference to `pow'
-collect2: error: ld returned 1 exit status</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1">$ gcc m.c -o m</span>
+<span id="cb2-2">/usr/bin/ld: /tmp/ccb1hHRk.o: in function `main':</span>
+<span id="cb2-3">m.c:(.text+0x60): undefined reference to `pow'</span>
+<span id="cb2-4">collect2: error: ld returned 1 exit status</span></code></pre></div></div>
 <p>Adding <code>-lm</code> (library <em>m</em>) fixes it:</p>
-<pre><code>$ gcc m.c -o m -lm
-$ ./m
-Enter a number: 16
-pow(16.0, 0.5) = 4.0000</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1">$ gcc m.c -o m -lm</span>
+<span id="cb3-2">$ ./m</span>
+<span id="cb3-3">Enter a number: 16</span>
+<span id="cb3-4">pow(16.0, 0.5) = 4.0000</span></code></pre></div></div>
 <p>Third-party libraries follow the same pattern, usually with <code>-I&lt;dir&gt;</code> for headers and <code>-L&lt;dir&gt; -l&lt;name&gt;</code> for the library. Many also support <code>pkg-config</code>, which prints the right flags for us, for example <code>gcc main.c $(pkg-config --cflags --libs sqlite3)</code>.</p>
 </section>
 <section id="the-irony-c-powers-python-and-r" class="level2">
@@ -341,38 +728,16 @@ Note
 <section id="the-sequence-function-fastest-and-dynamic" class="level2">
 <h2 class="anchored" data-anchor-id="the-sequence-function-fastest-and-dynamic">1. The SEQUENCE Function (Fastest and Dynamic)</h2>
 <p><code>SEQUENCE</code> is available in modern Excel (Microsoft 365 and Excel 2021) and in Google Sheets. One formula fills a whole block of cells, spilling the numbers across rows and columns.</p>
-<pre><code>=SEQUENCE(rows, [columns], [start], [step])</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1">=SEQUENCE(rows, [columns], [start], [step])</span></code></pre></div></div>
 <p>Only <code>rows</code> is required. The defaults are one column, a start of 1 and a step of 1.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Formula</th>
-<th>Result</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>=SEQUENCE(10)</code></td>
-<td>1 to 10 in a single column</td>
-</tr>
-<tr class="even">
-<td><code>=SEQUENCE(5, 2)</code></td>
-<td>5 rows and 2 columns, filled row by row with 1 to 10</td>
-</tr>
-<tr class="odd">
-<td><code>=SEQUENCE(10, 1, 5, 3)</code></td>
-<td>10 numbers starting at 5, rising by 3: 5, 8, 11, …</td>
-</tr>
-<tr class="even">
-<td><code>=SEQUENCE(10, 1, 10, -5)</code></td>
-<td>A descending series: 10, 5, 0, -5, …</td>
-</tr>
-</tbody>
-</table>
+<p>1 to 10 in a single column:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1">=SEQUENCE(10)</span></code></pre></div></div>
+<p>5 rows and 2 columns, filled row by row with 1 to 10:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1">=SEQUENCE(5, 2)</span></code></pre></div></div>
+<p>10 numbers starting at 5, rising by 3 (5, 8, 11, …):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb4-1">=SEQUENCE(10, 1, 5, 3)</span></code></pre></div></div>
+<p>A descending series (10, 5, 0, -5, …):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb5-1">=SEQUENCE(10, 1, 10, -5)</span></code></pre></div></div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -399,10 +764,10 @@ Note
 <section id="the-row-function-numbering-that-adjusts-itself" class="level2">
 <h2 class="anchored" data-anchor-id="the-row-function-numbering-that-adjusts-itself">3. The ROW Function (Numbering That Adjusts Itself)</h2>
 <p>If we want a column of numbers that updates when rows are added or deleted, <code>ROW</code> is a good choice. Placed in cell <code>A1</code>:</p>
-<pre><code>=ROW(A1)</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb6-1">=ROW(A1)</span></code></pre></div></div>
 <p>returns 1. Copying or dragging it down gives 2, 3, 4, and so on.</p>
 <p>To make padded purchase-order or ID numbers, combine <code>ROW</code> with <code>TEXT</code>:</p>
-<pre><code>=TEXT(ROW(A1), "000-000")</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb7-1">=TEXT(ROW(A1), "000-000")</span></code></pre></div></div>
 <p>This turns row 1 into <code>000-001</code>.</p>
 </section>
 <section id="which-method-should-we-use" class="level2">
@@ -430,6 +795,1525 @@ Note
   <guid>https://www.statmania.info/blog/posts/excel-sequence-of-numbers.html</guid>
   <pubDate>Sat, 31 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/excel-r-programming.jpeg" medium="image" type="image/jpeg"/>
+</item>
+<item>
+  <title>Excel SUMIF Function Explained with an Example Table</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/excel-sumif-function.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/excel-r-programming.jpeg" class="img-fluid figure-img" alt="Illustration combining an Excel spreadsheet with R programming."></p>
+<figcaption>A spreadsheet and code side by side.</figcaption>
+</figure>
+</div>
+<p>The <code>SUMIF</code> function in Excel (and Google Sheets) adds up the values in a range that meet <strong>one</strong> condition.</p>
+<section id="syntax" class="level2">
+<h2 class="anchored" data-anchor-id="syntax">Syntax</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1">=SUMIF(range, criteria, [sum_range])</span></code></pre></div></div>
+<ul>
+<li><code>range</code>: the cells to test against the condition.</li>
+<li><code>criteria</code>: the condition. It can be a number, text, a cell reference, or an expression such as <code>"&gt;10"</code> or <code>"Apple"</code>.</li>
+<li><code>sum_range</code>: (optional) the cells to add up. If we leave it out, Excel adds the cells in <code>range</code> itself.</li>
+</ul>
+</section>
+<section id="the-example-table" class="level2">
+<h2 class="anchored" data-anchor-id="the-example-table">The Example Table</h2>
+<p>All the examples below use this small sales table, typed into cells <code>A1:D11</code> (headings in row 1):</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>D</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>1</strong></td>
+<td><strong>Category</strong></td>
+<td><strong>Product</strong></td>
+<td><strong>Region</strong></td>
+<td><strong>Sales</strong></td>
+</tr>
+<tr class="even">
+<td><strong>2</strong></td>
+<td>Fruit</td>
+<td>Apple</td>
+<td>North East</td>
+<td>320</td>
+</tr>
+<tr class="odd">
+<td><strong>3</strong></td>
+<td>Fruit</td>
+<td>Banana</td>
+<td>South</td>
+<td>180</td>
+</tr>
+<tr class="even">
+<td><strong>4</strong></td>
+<td>Vegetable</td>
+<td>Carrot</td>
+<td>North West</td>
+<td>450</td>
+</tr>
+<tr class="odd">
+<td><strong>5</strong></td>
+<td>Fruit</td>
+<td>Apple</td>
+<td>East</td>
+<td>600</td>
+</tr>
+<tr class="even">
+<td><strong>6</strong></td>
+<td>Vegetable</td>
+<td>Onion</td>
+<td>West</td>
+<td>275</td>
+</tr>
+<tr class="odd">
+<td><strong>7</strong></td>
+<td>Fruit</td>
+<td>Orange</td>
+<td>North East</td>
+<td>520</td>
+</tr>
+<tr class="even">
+<td><strong>8</strong></td>
+<td>Vegetable</td>
+<td>Carrot</td>
+<td>South</td>
+<td>390</td>
+</tr>
+<tr class="odd">
+<td><strong>9</strong></td>
+<td>Fruit</td>
+<td>Banana</td>
+<td>North West</td>
+<td>240</td>
+</tr>
+<tr class="even">
+<td><strong>10</strong></td>
+<td>Vegetable</td>
+<td>Onion</td>
+<td>East</td>
+<td>610</td>
+</tr>
+<tr class="odd">
+<td><strong>11</strong></td>
+<td>Fruit</td>
+<td>Orange</td>
+<td>South</td>
+<td>150</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<section id="sum-by-a-text-category" class="level3">
+<h3 class="anchored" data-anchor-id="sum-by-a-text-category">1. Sum by a text category</h3>
+<p>Total sales where the category in column A is “Fruit”:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1">=SUMIF(A2:A11, "Fruit", D2:D11)</span></code></pre></div></div>
+<p>Result: <strong>2010</strong> (320 + 180 + 600 + 520 + 240 + 150).</p>
+</section>
+<section id="sum-with-a-greater-than-condition" class="level3">
+<h3 class="anchored" data-anchor-id="sum-with-a-greater-than-condition">2. Sum with a greater-than condition</h3>
+<p>Total of the sales above 500. Here the range we test is also the range we add, so <code>sum_range</code> is left out:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1">=SUMIF(D2:D11, "&gt;500")</span></code></pre></div></div>
+<p>Result: <strong>1730</strong> (600 + 520 + 610).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When the condition uses a comparison operator (<code>&gt;</code>, <code>&lt;</code>, <code>=</code>, <code>&gt;=</code>, <code>&lt;=</code>, <code>&lt;&gt;</code>), wrap the operator and the number in double quotes.</p>
+</div>
+</div>
+</section>
+<section id="use-a-cell-reference-for-the-criteria" class="level3">
+<h3 class="anchored" data-anchor-id="use-a-cell-reference-for-the-criteria">3. Use a cell reference for the criteria</h3>
+<p>Put the product name in a cell, say <code>F2</code> contains <code>Apple</code>. Then the formula follows whatever is typed in <code>F2</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb4-1">=SUMIF(B2:B11, F2, D2:D11)</span></code></pre></div></div>
+<p>Result: <strong>920</strong> (320 + 600). Change <code>F2</code> to <code>Carrot</code> and the result becomes 840 (450 + 390), with no edit to the formula.</p>
+<p>To combine an operator with a cell reference, join them with <code>&amp;</code>. If <code>F2</code> holds a number, this sums the sales above it:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb5-1">=SUMIF(D2:D11, "&gt;"&amp;F2, D2:D11)</span></code></pre></div></div>
+</section>
+<section id="sum-with-wildcards" class="level3">
+<h3 class="anchored" data-anchor-id="sum-with-wildcards">4. Sum with wildcards</h3>
+<p>Two wildcards work in text criteria:</p>
+<ul>
+<li><code>*</code> matches any sequence of characters.</li>
+<li><code>?</code> matches exactly one character.</li>
+</ul>
+<p>Total sales for every region containing “North” (both North East and North West):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb6-1">=SUMIF(C2:C11, "*North*", D2:D11)</span></code></pre></div></div>
+<p>Result: <strong>1530</strong> (320 + 450 + 520 + 240).</p>
+<p>Total sales for a region that is exactly four characters long ending in “ast”, which matches “East” but not “North East”:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb7-1">=SUMIF(C2:C11, "?ast", D2:D11)</span></code></pre></div></div>
+<p>Result: <strong>1210</strong> (600 + 610).</p>
+</section>
+</section>
+<section id="when-we-need-more-than-one-condition" class="level2">
+<h2 class="anchored" data-anchor-id="when-we-need-more-than-one-condition">When We Need More Than One Condition</h2>
+<p><code>SUMIF</code> handles a single condition. For several conditions at once, use <code>SUMIFS</code>, for example fruit sales in the North East.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ol type="1">
+<li><a href="https://support.microsoft.com/en-us/excel/functions/sumif-function">SUMIF function</a>, Microsoft Support</li>
+<li><a href="https://www.w3schools.com/excel/excel_sumif.php">Excel SUMIF function</a>, W3Schools</li>
+<li><a href="https://corporatefinanceinstitute.com/resources/excel/sumif-excel-function/">SUMIF Excel function</a>, Corporate Finance Institute</li>
+<li><a href="https://www.geeksforgeeks.org/excel/exce-sumif-function/">Excel SUMIF function</a>, GeeksforGeeks</li>
+</ol>
+
+
+</section>
+
+ ]]></description>
+  <category>Excel</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/excel-sumif-function.html</guid>
+  <pubDate>Sat, 31 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/excel-r-programming.jpeg" medium="image" type="image/jpeg"/>
+</item>
+<item>
+  <title>Frequency Polygons and Frequency Curves: How They Compare with Histograms and Ogives</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/frequency-polygon-and-curve.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/frequency-polygon-and-curve.png" class="img-fluid figure-img" alt="A histogram of scores with a blue frequency polygon and a smooth orange frequency curve drawn over it."></p>
+<figcaption>The same scores as a histogram, a frequency polygon (blue line) and a frequency curve (orange line).</figcaption>
+</figure>
+</div>
+<p>Frequency polygons and frequency curves are tools for seeing the <strong>shape</strong> of a frequency distribution: where the data peak, how they spread, and how they taper off. Bar and pie charts focus on separate categories, and ogives on running totals. Polygons and curves show the continuous flow of numeric data.</p>
+<section id="how-the-charts-compare" class="level2">
+<h2 class="anchored" data-anchor-id="how-the-charts-compare">How the Charts Compare</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Chart</th>
+<th>What it shows</th>
+<th>Best used for</th>
+<th>Main strength</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Frequency polygon</td>
+<td>The shape of the data as straight lines joining class midpoints</td>
+<td>Comparing several datasets on the same axes</td>
+<td>Cleaner than overlapping histograms when plotting two or three groups</td>
+</tr>
+<tr class="even">
+<td>Frequency curve</td>
+<td>A smoothed polygon, close to the underlying distribution</td>
+<td>Large samples or ideal shapes such as the normal distribution</td>
+<td>No jagged edges, so the continuous trend is clear</td>
+</tr>
+<tr class="odd">
+<td>Histogram</td>
+<td>Counts in adjacent blocks (class intervals)</td>
+<td>A single dataset with clear class boundaries</td>
+<td>Easy for beginners: count per interval is visible at once</td>
+</tr>
+<tr class="even">
+<td>Ogive (cumulative frequency)</td>
+<td>A running total of frequencies</td>
+<td>Medians, quartiles and percentiles, such as a top-10% cutoff</td>
+<td>Answers “how many are below this value?” rather than showing the shape</td>
+</tr>
+<tr class="odd">
+<td>Bar / pie chart</td>
+<td>Counts or shares of categories</td>
+<td>Qualitative data such as survey answers or product types</td>
+<td>Designed for categories; polygons and curves need continuous numbers</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="setting-up-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="setting-up-in-r">Setting Up in R</h2>
+<p>We use simulated test scores for three classes. The code needs only <code>ggplot2</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(ggplot2)</span>
+<span id="cb1-2"></span>
+<span id="cb1-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># default grey theme (as in the commute-times post), no axis ticks, legend on top</span></span>
+<span id="cb1-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_set</span>(</span>
+<span id="cb1-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_grey</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">base_size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-6">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">axis.ticks =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_blank</span>(), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">legend.position =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"top"</span>)</span>
+<span id="cb1-7">)</span>
+<span id="cb1-8"></span>
+<span id="cb1-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">42</span>)</span>
+<span id="cb1-10">scores <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb1-11">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">class =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"B"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C"</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">each =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>),</span>
+<span id="cb1-12">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">score =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mean =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">65</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sd =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>),</span>
+<span id="cb1-13">            <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mean =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">72</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sd =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>),</span>
+<span id="cb1-14">            <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mean =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">58</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sd =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>))</span>
+<span id="cb1-15">)</span>
+<span id="cb1-16">scores<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>score <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pmin</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pmax</span>(scores<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>score, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>), <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>)   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># keep scores in 0-100</span></span>
+<span id="cb1-17"></span>
+<span id="cb1-18">classA <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">subset</span>(scores, class <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A"</span>)</span></code></pre></div></div>
+</div>
+</section>
+<section id="the-histogram" class="level2">
+<h2 class="anchored" data-anchor-id="the-histogram">The Histogram</h2>
+<p>A histogram counts how many values fall in each class interval, here 10 marks wide.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(classA, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(score)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb2-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_histogram</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">binwidth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">boundary =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb2-3">                 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb2-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_y_continuous</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">expand =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">expansion</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mult =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>))) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb2-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Histogram of Class A scores"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Score"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Frequency"</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/frequency-polygon-and-curve_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="624"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="the-frequency-polygon" class="level2">
+<h2 class="anchored" data-anchor-id="the-frequency-polygon">The Frequency Polygon</h2>
+<p>A frequency polygon plots one point at the <strong>midpoint</strong> of each class interval, at the height of its frequency, and joins the points with straight lines. It is closed at both ends with an empty class (frequency 0). <code>geom_freqpoly()</code> does all of this for us:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(classA, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(score)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_freqpoly</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">binwidth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">boundary =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb3-3">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_y_continuous</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">expand =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">expansion</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mult =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>))) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Frequency polygon of Class A scores"</span>,</span>
+<span id="cb3-6">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Score"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Frequency"</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/frequency-polygon-and-curve_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="624"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>To see what <code>geom_freqpoly()</code> is doing, we can build the polygon by hand from a frequency table:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">breaks <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>)</span>
+<span id="cb4-2">classes <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cut</span>(classA<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>score, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">breaks =</span> breaks, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">include.lowest =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span>
+<span id="cb4-3"></span>
+<span id="cb4-4">freq <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb4-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">interval =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">levels</span>(classes),</span>
+<span id="cb4-6">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midpoint =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>(breaks, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,</span>
+<span id="cb4-7">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">frequency =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.vector</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">table</span>(classes))</span>
+<span id="cb4-8">)</span>
+<span id="cb4-9">freq</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   interval midpoint frequency
+1    [0,10]        5         0
+2   (10,20]       15         0
+3   (20,30]       25         0
+4   (30,40]       35         2
+5   (40,50]       45         5
+6   (50,60]       55        21
+7   (60,70]       65        36
+8   (70,80]       75        30
+9   (80,90]       85         6
+10 (90,100]       95         0</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(freq, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(midpoint, frequency)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_col</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"grey70"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_line</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2.5</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_y_continuous</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">expand =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">expansion</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mult =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>))) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-6">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Polygon joins the class midpoints"</span>,</span>
+<span id="cb6-7">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Score (class midpoint)"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Frequency"</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/frequency-polygon-and-curve_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="624"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The points sit at the middle of each bar top. This is also why a polygon makes exact counts harder to read than a histogram: we read a height from a point rather than from a flat bar top.</p>
+</section>
+<section id="why-polygons-are-good-for-comparing-groups" class="level2">
+<h2 class="anchored" data-anchor-id="why-polygons-are-good-for-comparing-groups">Why Polygons Are Good for Comparing Groups</h2>
+<p>Overlaying three histograms produces a messy block of overlapping bars. Three polygons stay readable as three distinct lines.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(scores, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(score, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> class)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_histogram</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">binwidth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">boundary =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alpha =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>,</span>
+<span id="cb7-3">                 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">position =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"identity"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_y_continuous</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">expand =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">expansion</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mult =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>))) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Overlaid histograms: hard to read"</span>,</span>
+<span id="cb7-6">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Score"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Frequency"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Class"</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/frequency-polygon-and-curve_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(scores, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(score, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> class)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb8-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_freqpoly</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">binwidth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">boundary =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb8-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_y_continuous</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">expand =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">expansion</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mult =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>))) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb8-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Overlaid frequency polygons: easy to compare"</span>,</span>
+<span id="cb8-5">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Score"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Frequency"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Class"</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/frequency-polygon-and-curve_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Class B peaks highest and furthest right, and Class C is the lowest and most spread out. We can see that straight away.</p>
+</section>
+<section id="the-frequency-curve" class="level2">
+<h2 class="anchored" data-anchor-id="the-frequency-curve">The Frequency Curve</h2>
+<p>A frequency curve is a smoothed version of the polygon. In R the usual way to get one is a kernel density estimate, <code>geom_density()</code>. By default it is scaled so the area under the curve is 1. Multiplying by the sample size and class width puts it on the same scale as the frequency polygon:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(classA, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(score)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb9-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_freqpoly</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">binwidth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">boundary =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb9-3">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb9-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_density</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">after_stat</span>(count) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>),</span>
+<span id="cb9-5">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"darkorange"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb9-6">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_y_continuous</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">expand =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">expansion</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mult =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>))) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb9-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Frequency polygon (blue) and frequency curve (orange)"</span>,</span>
+<span id="cb9-8">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Score"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Frequency"</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/frequency-polygon-and-curve_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The curve removes the jagged corners and shows the underlying continuous trend. Smooth curves like this lead directly to normal distributions, skewness and probability density functions.</p>
+</section>
+<section id="the-ogive-cumulative-frequency" class="level2">
+<h2 class="anchored" data-anchor-id="the-ogive-cumulative-frequency">The Ogive (Cumulative Frequency)</h2>
+<p>An ogive tracks the running total, so it answers questions like “what score has 90% of the class below it?” rather than showing the shape.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(classA, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(score)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb10-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">stat_ecdf</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">geom =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"step"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb10-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_hline</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yintercept =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.9</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linetype =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dashed"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"grey50"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb10-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_y_continuous</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">labels =</span> scales<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span>percent,</span>
+<span id="cb10-5">                     <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">expand =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">expansion</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mult =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>))) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb10-6">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Cumulative distribution of Class A scores"</span>,</span>
+<span id="cb10-7">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Score"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Share of students at or below"</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/frequency-polygon-and-curve_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="624"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The dashed line marks the 90th percentile. Where the curve crosses it, we read off the score.</p>
+</section>
+<section id="where-polygons-and-curves-fall-short" class="level2">
+<h2 class="anchored" data-anchor-id="where-polygons-and-curves-fall-short">Where Polygons and Curves Fall Short</h2>
+<ul>
+<li><strong>Exact counts are harder to read.</strong> Points joined by lines are less direct than the flat top of a histogram bar.</li>
+<li><strong>Continuous data only.</strong> A frequency polygon of favourite colours or car brands would imply an order and spacing that do not exist. Use a <a href="../posts/pie-vs-bar-chart.html">bar chart</a> for categories.</li>
+</ul>
+</section>
+<section id="which-one-should-we-use" class="level2">
+<h2 class="anchored" data-anchor-id="which-one-should-we-use">Which One Should We Use?</h2>
+<ul>
+<li>One dataset, class intervals clearly defined: <strong>histogram</strong>.</li>
+<li>Two or three groups to compare: <strong>frequency polygons</strong>.</li>
+<li>The overall shape or an ideal distribution: <strong>frequency curve</strong>.</li>
+<li>Percentiles, medians or cutoffs: <strong>ogive</strong>.</li>
+<li>Categories rather than numbers: <strong>bar chart</strong>.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>R</category>
+  <category>Statistics</category>
+  <category>Visualization</category>
+  <guid>https://www.statmania.info/blog/posts/frequency-polygon-and-curve.html</guid>
+  <pubDate>Sat, 31 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/frequency-polygon-and-curve.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>Reading a Frequency Distribution: Insights from a Histogram and Polygon</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/insights-from-frequency-distribution-and-histogram.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/frequency-distribution-histogram-insights.png" class="img-fluid figure-img" alt="Histogram bars for commute-time classes from 10 to 60 minutes with a blue frequency polygon peaking in the 30 to 40 minute class."></p>
+<figcaption>A histogram of commute times with a frequency polygon joining the class midpoints.</figcaption>
+</figure>
+</div>
+<p>To see how a frequency distribution and a histogram work in practice, let’s use a continuous dataset: the daily one-way commute times of employees at a large office.</p>
+<section id="the-dataset-daily-commute-times" class="level2">
+<h2 class="anchored" data-anchor-id="the-dataset-daily-commute-times">The Dataset: Daily Commute Times</h2>
+<p>Suppose we surveyed 200 employees. Their commute times (in minutes) give this frequency distribution:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Commute time (min)</th>
+<th style="text-align: right;">Employees</th>
+<th style="text-align: left;">Typical commute</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">10–20</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: left;">Short, local</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">20–30</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: left;">Standard city transit or driving</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">30–40</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: left;">Most common; typical suburban commute</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">40–50</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: left;">Longer, some traffic</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">50–60</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: left;">Heavy traffic or distant suburbs</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="visualizing-the-distribution" class="level2">
+<h2 class="anchored" data-anchor-id="visualizing-the-distribution">Visualizing the Distribution</h2>
+<p>We plot the table as a <strong>histogram</strong> (bars) with a <strong>frequency polygon</strong> (a line joining the class midpoints). The polygon is closed at both ends with an empty class of frequency 0.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(ggplot2)</span>
+<span id="cb1-2"></span>
+<span id="cb1-3">commute <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb1-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">interval  =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"10–20"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"20–30"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"30–40"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"40–50"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"50–60"</span>),</span>
+<span id="cb1-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midpoint  =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">35</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">45</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">55</span>),</span>
+<span id="cb1-6">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">employees =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">60</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">70</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span>)</span>
+<span id="cb1-7">)</span>
+<span id="cb1-8"></span>
+<span id="cb1-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># polygon points: add an empty class at each end</span></span>
+<span id="cb1-10">polygon_pts <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbind</span>(</span>
+<span id="cb1-11">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midpoint =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">employees =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>),</span>
+<span id="cb1-12">  commute[, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"midpoint"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"employees"</span>)],</span>
+<span id="cb1-13">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midpoint =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">65</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">employees =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb1-14">)</span></code></pre></div></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(commute, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(midpoint, employees)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb2-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_col</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#375faf"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#5b7cbd"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb2-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_line</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> polygon_pts, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#002266"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb2-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#002266"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2.5</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb2-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_text</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> employees), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">vjust =</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.8</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb2-6">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_x_continuous</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">breaks =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">60</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb2-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_y_continuous</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">limits =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">80</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">expand =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb2-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Daily commute times of 200 employees"</span>,</span>
+<span id="cb2-9">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Commute time (minutes)"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Number of employees"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb2-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">axis.ticks =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_blank</span>())</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/insights-from-frequency-distribution-and-histogram_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="key-insights" class="level2">
+<h2 class="anchored" data-anchor-id="key-insights">Key Insights</h2>
+<ul>
+<li><strong>Mode:</strong> the 30–40 minute class is the largest (70 employees). The polygon peaks at its midpoint, 35 minutes, so a commute of about 35 minutes is the most common.</li>
+<li><strong>Shape:</strong> the distribution is roughly symmetric around that peak. The mean and median, computed below, are close to each other.</li>
+<li><strong>Concentration:</strong> 130 of the 200 employees (65%) travel 20–40 minutes. That range is a sensible baseline for thinking about core hours or hybrid-work policy.</li>
+</ul>
+<p>We can check these numbers from the frequency table:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">n <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(commute<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>employees)</span>
+<span id="cb3-2"></span>
+<span id="cb3-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># mean from class midpoints</span></span>
+<span id="cb3-4">mean_est <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(commute<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>midpoint <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> commute<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>employees) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> n</span>
+<span id="cb3-5"></span>
+<span id="cb3-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># median by interpolation inside the median class (30-40)</span></span>
+<span id="cb3-7">cum_before <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(commute<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>employees[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>])      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># employees below 30</span></span>
+<span id="cb3-8">median_est <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> (n <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> cum_before) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">70</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span></span>
+<span id="cb3-9"></span>
+<span id="cb3-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># share in the 20-40 minute range</span></span>
+<span id="cb3-11">share <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(commute<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>employees[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>]) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> n</span>
+<span id="cb3-12"></span>
+<span id="cb3-13"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> n, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mean =</span> mean_est, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">median =</span> median_est, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">share_20_40 =</span> share)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          n        mean      median share_20_40 
+  200.00000    32.50000    32.14286     0.65000 </code></pre>
+</div>
+</div>
+</section>
+<section id="histogram-vs-polygon-what-each-shows" class="level2">
+<h2 class="anchored" data-anchor-id="histogram-vs-polygon-what-each-shows">Histogram vs Polygon: What Each Shows</h2>
+<ul>
+<li><strong>Histogram bars</strong> show how much data sits in each class. The 20–30 and 30–40 bars clearly hold most employees.</li>
+<li><strong>Frequency polygon</strong> smooths the hard class edges and shows the shape of the rise and fall. It would also let us overlay a second office on the same axes and compare the two commute profiles easily.</li>
+</ul>
+<p>See <a href="../posts/frequency-polygon-and-curve.html">Frequency Polygons and Frequency Curves</a> for more on when to use each chart.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>R</category>
+  <category>Statistics</category>
+  <category>Visualization</category>
+  <guid>https://www.statmania.info/blog/posts/insights-from-frequency-distribution-and-histogram.html</guid>
+  <pubDate>Sat, 31 Oct 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/frequency-distribution-histogram-insights.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 <item>
   <title>Pie Chart vs Bar Chart: When to Use Each (with ggplot2 Examples)</title>
@@ -6365,1569 +8249,6 @@ Note
   <guid>https://www.statmania.info/blog/posts/what-is-git-explained-simply.html</guid>
   <pubDate>Sat, 24 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/what-is-git.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Are C Pointers Unreliable When Array Addresses Change Between Runs?</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/c-pointer-address.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/c-pointer-address.svg" class="img-fluid figure-img" alt="Two runs of the same program place an int array of four elements at different base addresses, but neighbouring elements are 4 bytes apart in both."></p>
-<figcaption>The base address moves from run to run; the 4-byte gaps and the values do not.</figcaption>
-</figure>
-</div>
-<p>Take this loop, which prints the address of every element of an array:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> myNumbers<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">25</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">50</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">75</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">};</span></span>
-<span id="cb1-2"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb1-3"></span>
-<span id="cb1-4"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb1-5">  printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%p\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span>myNumbers<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]);</span></span>
-<span id="cb1-6"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>Will it always print the same output? Can the addresses change with the operating system or the device? And if they do change, how can pointers be reliable at all? Let’s answer both questions.</p>
-<section id="short-answer" class="level2">
-<h2 class="anchored" data-anchor-id="short-answer">Short answer</h2>
-<p><strong>The spacing between the addresses is always the same. The actual numbers almost always change.</strong></p>
-<p>Within one run, we see something like:</p>
-<pre><code>0x7ffd4a3c2b40
-0x7ffd4a3c2b44
-0x7ffd4a3c2b48
-0x7ffd4a3c2b4c</code></pre>
-<p>Each address is exactly <strong>4 bytes</strong> after the previous one, because <code>sizeof(int)</code> is 4 here. C guarantees that array elements are contiguous. The <em>starting</em> address, however, will differ almost every time we run the program.</p>
-</section>
-<section id="what-is-guaranteed-and-what-changes" class="level2">
-<h2 class="anchored" data-anchor-id="what-is-guaranteed-and-what-changes">What is guaranteed and what changes</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Property</th>
-<th>Guaranteed?</th>
-<th>Why</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>&amp;myNumbers[i+1] - &amp;myNumbers[i] == 1</code></td>
-<td>✅ Always</td>
-<td>Pointer arithmetic on <code>int *</code> counts elements</td>
-</tr>
-<tr class="even">
-<td>Neighbours are <code>sizeof(int)</code> bytes apart</td>
-<td>✅ Always</td>
-<td>Arrays are contiguous in memory</td>
-</tr>
-<tr class="odd">
-<td>The <strong>absolute</strong> value such as <code>0x7ffd...</code></td>
-<td>❌ Almost never</td>
-<td>Depends on the OS, ASLR and the stack state</td>
-</tr>
-<tr class="even">
-<td>Same address across runs</td>
-<td>❌ No</td>
-<td>ASLR randomizes the stack each run</td>
-</tr>
-<tr class="odd">
-<td>Same address on a different device</td>
-<td>❌ No</td>
-<td>Different OS, architecture and stack layout</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="why-the-starting-address-changes" class="level2">
-<h2 class="anchored" data-anchor-id="why-the-starting-address-changes">Why the starting address changes</h2>
-<p><strong>ASLR (Address Space Layout Randomization)</strong> is a security feature of modern operating systems. Each time a program starts, the OS places the stack at a random base address, so a local array such as <code>myNumbers</code> lands in a different spot. Running the same binary three times can give:</p>
-<pre><code>Run 1: 0x7ffd4a3c2b40
-Run 2: 0x7ffc81e9d5a0
-Run 3: 0x7ffd9f27c3e0</code></pre>
-<p>This makes it harder for attackers to predict where things live. The offset pattern (<code>+0, +4, +8, +12</code>) never changes; only the base moves.</p>
-<p>Other things can shift the address too:</p>
-<ul>
-<li><strong>OS and compiler:</strong> stack alignment, the <code>main</code> prologue and variable ordering differ.</li>
-<li><strong>Architecture:</strong> a 32-bit build prints 8 hex digits, a 64-bit build prints up to 12 or more.</li>
-<li><strong>Compiler flags:</strong> <code>-O0</code> and <code>-O2</code> may reorder local variables.</li>
-<li><strong>Other variables:</strong> adding another local variable shifts the neighbours.</li>
-</ul>
-</section>
-<section id="see-it-yourself" class="level2">
-<h2 class="anchored" data-anchor-id="see-it-yourself">See it yourself</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb4-2"></span>
-<span id="cb4-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb4-4">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">25</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">50</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">75</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">};</span></span>
-<span id="cb4-5">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>p <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>                              <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// p holds the CURRENT address</span></span>
-<span id="cb4-6"></span>
-<span id="cb4-7">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span></span>
-<span id="cb4-8">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%p\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*)&amp;</span>a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]);</span></span>
-<span id="cb4-9"></span>
-<span id="cb4-10">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"gap    : </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%td</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> bytes</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">char</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*)&amp;</span>a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">char</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*)&amp;</span>a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]);</span></span>
-<span id="cb4-11">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"value  : </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>p<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb4-12">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"value  : </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*(</span>p <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">));</span></span>
-<span id="cb4-13"></span>
-<span id="cb4-14">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>q <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span>a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">];</span></span>
-<span id="cb4-15">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"offset : </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%td\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> q <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> p<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb4-16">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb4-17"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>One run on Linux gave:</p>
-<pre><code>0x7ffd710965e0
-0x7ffd710965e4
-0x7ffd710965e8
-0x7ffd710965ec
-gap    : 4 bytes
-value  : 25
-value  : 75
-offset : 3</code></pre>
-<p>Run it a few times: the four addresses change, while <code>gap</code>, <code>value</code> and <code>offset</code> stay identical.</p>
-<p>To switch ASLR off for one run on Linux:</p>
-<pre><code>setarch $(uname -m) -R ./a.out</code></pre>
-<p>Now the same address prints every time, which shows the shifting was ASLR and not our code.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><code>%p</code> expects a <code>void *</code>, so the strictly correct call is <code>printf("%p\n", (void *)&amp;a[i]);</code>. Most compilers accept the version without the cast, but the cast is proper C. Likewise, print <code>sizeof</code> values with <code>%zu</code>.</p>
-</div>
-</div>
-</section>
-<section id="so-how-can-pointers-be-reliable" class="level2">
-<h2 class="anchored" data-anchor-id="so-how-can-pointers-be-reliable">So how can pointers be reliable?</h2>
-<p>A pointer stores the address <strong>as it is right now</strong>, not a fixed number. The address of an object is decided when the program runs, and then it does not change for the lifetime of that object:</p>
-<ul>
-<li>ASLR picks the base address at startup.</li>
-<li><code>&amp;a[0]</code> evaluates to whatever that base turned out to be.</li>
-<li>The pointer stores that value.</li>
-<li><code>*p</code> reads from that exact address, which is where the array really is.</li>
-</ul>
-<p>The pointer and the object always agree, because the pointer was computed from the object at runtime. Reliability comes not from the number being constant, but from the pointer and the object sharing the same current address.</p>
-<blockquote class="blockquote">
-<p><strong>Analogy:</strong> we don’t need to know a friend’s address in advance. We ask “where do you live?” and get the current one. Hardcoding an old address and hoping nobody moved is what fails.</p>
-</blockquote>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Question</th>
-<th>Answer</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Does <code>&amp;a[0]</code> change while the program runs?</td>
-<td>❌ No, an object’s address is fixed for its lifetime</td>
-</tr>
-<tr class="even">
-<td>Does <code>p = &amp;a[0]; *p</code> read the right value?</td>
-<td>✅ Always, within that run</td>
-</tr>
-<tr class="odd">
-<td>Is <code>&amp;a[3] - &amp;a[0]</code> always 3?</td>
-<td>✅ Always, offsets are stable even if the base moves</td>
-</tr>
-<tr class="even">
-<td>Does the number <code>0x7ffd...</code> survive to the next run?</td>
-<td>❌ No, ASLR changes it</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="what-really-makes-pointers-unreliable" class="level2">
-<h2 class="anchored" data-anchor-id="what-really-makes-pointers-unreliable">What really makes pointers unreliable</h2>
-<p>ASLR is not the danger. These are:</p>
-<ol type="1">
-<li><strong>Hardcoding addresses:</strong> <code>int *p = (int *)0x7ffd4a3c2b40;</code> breaks on the next run.</li>
-<li><strong>Dangling pointers:</strong> using a pointer after the object is freed, or after the function that owned a local variable returned.</li>
-<li><strong>Saving pointers to disk or sending them to another process:</strong> the address means nothing there.</li>
-<li><strong>Out-of-bounds arithmetic:</strong> <code>a[10]</code> on a four-element array points somewhere valid-looking but wrong.</li>
-<li><strong>Comparing addresses across runs:</strong> the numbers differ, so <code>==</code> fails.</li>
-</ol>
-<p>None of these involves ASLR itself. They all use a pointer outside the object’s valid lifetime, or treat an address as portable when it is not.</p>
-</section>
-<section id="why-pointers-are-still-the-right-tool" class="level2">
-<h2 class="anchored" data-anchor-id="why-pointers-are-still-the-right-tool">Why pointers are still the right tool</h2>
-<ul>
-<li><strong>Computed, not memorized.</strong> <code>&amp;x</code> asks the system where <code>x</code> is, and the answer is always current.</li>
-<li><strong>Type-aware.</strong> <code>int *p</code> tells the compiler to read 4 bytes as an <code>int</code>, whatever the numeric address.</li>
-<li><strong>Relative math is stable.</strong> <code>p + 1</code> means the next <code>int</code>, that is <code>address + sizeof(int)</code>, independent of the base.</li>
-</ul>
-</section>
-<section id="conclusion" class="level2">
-<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>Array addresses change between runs, devices and builds, because ASLR and the platform choose where the stack goes. What never changes is the <em>layout</em>: elements are contiguous and <code>sizeof(T)</code> apart, and a pointer always holds the actual current address of its object. So:</p>
-<blockquote class="blockquote">
-<p><strong>Never rely on a specific address value; rely on the relationships.</strong> Take the address with <code>&amp;</code>, use it while the object is alive, and it is always correct. The address only looks unpredictable <em>between</em> runs, which is exactly when we should not be reusing the old number.</p>
-</blockquote>
-
-
-</section>
-
- ]]></description>
-  <category>C</category>
-  <category>Programming</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/c-pointer-address.html</guid>
-  <pubDate>Fri, 23 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/c-pointer-address.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>What void Means in C: Return Type vs. Parameter List</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/c-void-return-and-parameter.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/c-void-return-and-parameter.svg" class="img-fluid figure-img" alt="Two function boxes. void show(int n) takes an int but has a dashed empty output. int fortyTwo(void) has a dashed empty input and returns 42."></p>
-<figcaption>void on the way out means no result; void on the way in means no arguments.</figcaption>
-</figure>
-</div>
-<p>Consider this function:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> myFunction<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb1-2">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb1-3"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>It <strong>takes an argument</strong> and <strong>returns a value</strong>, so replacing either part with <code>void</code> would break it. <code>void</code> is for the other kinds of functions, and it means something different depending on where we write it.</p>
-<section id="the-four-combinations" class="level2">
-<h2 class="anchored" data-anchor-id="the-four-combinations">The four combinations</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span>  myFunction<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// takes an int, returns an int</span></span>
-<span id="cb2-2"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span>  myFunction<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// takes nothing, returns an int</span></span>
-<span id="cb2-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span> myFunction<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// takes an int, returns nothing</span></span>
-<span id="cb2-4"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span> myFunction<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// takes nothing, returns nothing</span></span></code></pre></div></div>
-</section>
-<section id="case-1-void-as-the-return-type" class="level2">
-<h2 class="anchored" data-anchor-id="case-1-void-as-the-return-type">Case 1: <code>void</code> as the return type</h2>
-<p>The function has no result. Its whole job is a side effect, such as printing, writing to a file, or changing an array in place.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span> greet<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> times<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb3-2">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> times<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span></span>
-<span id="cb3-3">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Hello</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb3-4"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>We call it as a statement. Nothing comes back, so there is nothing to pass to <code>printf</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1">greet<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>                 <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// correct</span></span>
-<span id="cb4-2">printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> greet<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">));</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// error: invalid use of void expression</span></span></code></pre></div></div>
-<p>A sorting function is a typical example:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span> bubbleSort<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[],</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> n<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// sorts a[] in place, returns nothing</span></span></code></pre></div></div>
-<p>The array is changed through the pointer, so no return value is needed. Writing <code>void</code> documents that, and the compiler stops us from using a result that does not exist.</p>
-</section>
-<section id="case-2-void-as-the-parameter-list" class="level2">
-<h2 class="anchored" data-anchor-id="case-2-void-as-the-parameter-list">Case 2: <code>void</code> as the parameter list</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> fortyTwo<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb6-2">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">42</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb6-3"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>Why not simply write <code>int fortyTwo()</code>? In C (before C23), empty parentheses mean <em>unspecified arguments</em>, which is the old pre-prototype style. The compiler does not check calls against it. The test below compiles without a single error:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> f<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">();</span>                       <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// unspecified parameters</span></span>
-<span id="cb7-2"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> f<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// accepted</span></span></code></pre></div></div>
-<p>With <code>(void)</code> the compiler enforces zero arguments:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb8-1"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> f<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">7</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb8-2"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> f<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<pre><code>error: too many arguments to function ‘f’</code></pre>
-<p>So <code>int f(void)</code> gives us type checking, which is the main reason to write it in C. In C++, and from C23 onward, <code>f()</code> and <code>f(void)</code> mean the same thing, but writing <code>(void)</code> is still correct and works with older compilers.</p>
-</section>
-<section id="what-void-does-to-myfunction" class="level2">
-<h2 class="anchored" data-anchor-id="what-void-does-to-myfunction">What <code>void</code> does to <code>myFunction</code></h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Change</th>
-<th>Effect</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>void myFunction(int x)</code></td>
-<td><code>printf("%d", myFunction(3))</code> no longer compiles. Call it as <code>myFunction(3);</code> instead.</td>
-</tr>
-<tr class="even">
-<td><code>int myFunction(void)</code></td>
-<td><code>myFunction(3)</code> is an error, since it now takes no arguments.</td>
-</tr>
-<tr class="odd">
-<td><code>void myFunction(void)</code></td>
-<td>Both the call and the <code>printf</code> break.</td>
-</tr>
-</tbody>
-</table>
-<p>Our function needs an input and produces an output, so <code>void</code> is the wrong tool for it.</p>
-</section>
-<section id="all-together" class="level2">
-<h2 class="anchored" data-anchor-id="all-together">All together</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb10-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb10-2"></span>
-<span id="cb10-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span>  add<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> b<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>  <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> a <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> b<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span>          <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// returns a value</span></span>
-<span id="cb10-4"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span> show<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> n<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>        <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span> printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> n<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span>     <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// side effect only</span></span>
-<span id="cb10-5"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span>  fortyTwo<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>     <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">42</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span>             <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// takes nothing</span></span>
-<span id="cb10-6"></span>
-<span id="cb10-7"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb10-8">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> add<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">));</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// value used</span></span>
-<span id="cb10-9">    show<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>add<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">));</span>             <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// value passed to a void function</span></span>
-<span id="cb10-10">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> fortyTwo<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">());</span>  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// called with no arguments</span></span>
-<span id="cb10-11">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb10-12"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<pre><code>5
-5
-42</code></pre>
-<p><code>show</code> “just prints”, <code>fortyTwo</code> “takes nothing”, and <code>main(void)</code> “takes no command-line arguments”.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>The rule.</strong> A <code>void</code> return means “call me for what I do, not for a value”. A <code>void</code> parameter list means “I take no arguments, and the compiler should enforce that”. If a function needs to take or give a value, use neither.</p>
-</div>
-</div>
-
-
-</section>
-
- ]]></description>
-  <category>C</category>
-  <category>Programming</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/c-void-return-and-parameter.html</guid>
-  <pubDate>Fri, 23 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/c-void-return-and-parameter.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>git add -A, git add . or git add *: Which One?</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/git-add-variants.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/linux-git.jpeg" class="img-fluid figure-img" alt="A person typing at a desk in front of a monitor showing a terminal with git status, git add and git commit output."></p>
-<figcaption>Stage what we mean to commit, and look before we do.</figcaption>
-</figure>
-</div>
-<p>Three commands look similar, but they do not stage the same things:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> add <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-A</span></span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> add .</span>
-<span id="cb1-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> add <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span></span></code></pre></div></div>
-<p>The short answer: use <code>git add -A</code> or <code>git add .</code>, and avoid <code>git add *</code>. Let’s see why.</p>
-<section id="a-test-repository" class="level2">
-<h2 class="anchored" data-anchor-id="a-test-repository">A test repository</h2>
-<p>We made a small repository with a <code>.gitignore</code> that lists <code>node_modules/</code>, committed it, and then changed things:</p>
-<ul>
-<li>modified <code>a.txt</code>,</li>
-<li>deleted <code>b.txt</code>,</li>
-<li>created <code>new.txt</code>, <code>sub/new2.txt</code> and the hidden file <code>.hidden</code>,</li>
-<li>created an ignored file <code>node_modules/m2.js</code>.</li>
-</ul>
-<p>The results below are from <code>git</code> 2.34.</p>
-</section>
-<section id="git-add--a-everything-in-the-repository" class="level2">
-<h2 class="anchored" data-anchor-id="git-add--a-everything-in-the-repository"><code>git add -A</code>: everything in the repository</h2>
-<p>It stages new, modified and deleted files across the <strong>whole repository</strong>, whatever directory we run it from, and it respects <code>.gitignore</code>.</p>
-<pre><code>$ cd sub &amp;&amp; git add -A &amp;&amp; git status --short
-A  .hidden
-M  a.txt
-D  b.txt
-A  new.txt
-A  sub/new2.txt</code></pre>
-</section>
-<section id="git-add-.-everything-from-here-down" class="level2">
-<h2 class="anchored" data-anchor-id="git-add-.-everything-from-here-down"><code>git add .</code>: everything from here down</h2>
-<p>Since Git 2.0 it also stages deletions, but only in the <strong>current directory and below</strong>. From the repository root it does the same as <code>git add -A</code>. From a subfolder it does not:</p>
-<pre><code>$ cd sub &amp;&amp; git add . &amp;&amp; git status --short
- M a.txt
- D b.txt
-A  sub/new2.txt
-?? .hidden
-?? new.txt</code></pre>
-<p>Only <code>sub/new2.txt</code> was staged. The changes outside <code>sub/</code> were left alone.</p>
-</section>
-<section id="git-add-a-shell-wildcard-not-a-git-feature" class="level2">
-<h2 class="anchored" data-anchor-id="git-add-a-shell-wildcard-not-a-git-feature"><code>git add *</code>: a shell wildcard, not a Git feature</h2>
-<p>The shell expands <code>*</code> into a list of file names <strong>before</strong> Git runs, so Git never sees the pattern. That causes three problems:</p>
-<ol type="1">
-<li><strong>Hidden files are skipped.</strong> <code>*</code> does not match names that start with a dot, such as <code>.hidden</code>, <code>.env</code> or <code>.github</code>.</li>
-<li><strong>Deletions are missed.</strong> A deleted file no longer exists, so <code>*</code> cannot expand to it.</li>
-<li><strong>Ignored folders cause an error.</strong> If <code>node_modules</code> is in the current directory, <code>*</code> hands it to Git, which refuses:</li>
-</ol>
-<pre><code>$ git add *
-The following paths are ignored by one of your .gitignore files:
-node_modules
-hint: Use -f if you really want to add them.</code></pre>
-<p>Git exits with an error, yet it still staged the other files:</p>
-<pre><code>M  a.txt
- D b.txt
-A  new.txt
-A  sub/new2.txt
-?? .hidden</code></pre>
-<p><code>a.txt</code>, <code>new.txt</code> and <code>sub/new2.txt</code> are staged, but <code>b.txt</code> (deleted) and <code>.hidden</code> are not. That mix of staged and missed changes is easy to commit by accident.</p>
-</section>
-<section id="which-one-should-we-use" class="level2">
-<h2 class="anchored" data-anchor-id="which-one-should-we-use">Which one should we use?</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Command</th>
-<th>Scope</th>
-<th>New</th>
-<th>Modified</th>
-<th>Deleted</th>
-<th>Hidden</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>git add -A</code></td>
-<td>whole repository</td>
-<td>yes</td>
-<td>yes</td>
-<td>yes</td>
-<td>yes</td>
-</tr>
-<tr class="even">
-<td><code>git add .</code></td>
-<td>current folder and below</td>
-<td>yes</td>
-<td>yes</td>
-<td>yes</td>
-<td>yes</td>
-</tr>
-<tr class="odd">
-<td><code>git add *</code></td>
-<td>non-hidden names in the current folder</td>
-<td>yes</td>
-<td>yes</td>
-<td>no</td>
-<td>no</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li>At the repository root, <code>git add .</code> and <code>git add -A</code> are the same, so either is fine.</li>
-<li>In a subfolder, choose by intent: <code>git add .</code> for this folder only, <code>git add -A</code> for everything.</li>
-<li>Skip <code>git add *</code>.</li>
-</ul>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Before staging, run <code>git status</code>, and check the result with <code>git status</code> or <code>git diff --staged</code> afterwards. Files such as <code>.env</code> secrets, build folders and temporary files should be in <code>.gitignore</code> first, because <code>git add -A</code> and <code>git add .</code> will stage anything that is not ignored.</p>
-</div>
-</div>
-
-
-</section>
-
- ]]></description>
-  <category>Linux</category>
-  <category>Tools</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/git-add-variants.html</guid>
-  <pubDate>Fri, 23 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/linux-git.jpeg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Line Breaks in LaTeX: Which Command to Use</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/latex-linebreak.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/latex-linebreak.svg" class="img-fluid figure-img" alt="Two paragraphs between margins. With a double backslash the first line ends early and leaves a gap. With linebreak the words on that line are stretched to touch the right margin."></p>
-<figcaption>A double backslash leaves a gap at the right margin; <code>\linebreak</code> stretches the line to reach it.</figcaption>
-</figure>
-</div>
-<p>In LaTeX, pressing Enter once does nothing: a single newline in the source is treated as a space. To start a new line we need a command. Which one depends on what we want the text around the break to look like.</p>
-<section id="and-newline-break-now-leave-the-line-short" class="level2">
-<h2 class="anchored" data-anchor-id="and-newline-break-now-leave-the-line-short"><code>\\</code> and <code>\newline</code>: break now, leave the line short</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb1-1">First line<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">\\</span></span>
-<span id="cb1-2">Second line</span></code></pre></div></div>
-<p>Both commands end the current line at once and continue on the next line, <em>without</em> starting a new paragraph. The line is not stretched, so it ends early and leaves an empty space at the right.</p>
-<p>Two useful variants of <code>\\</code>:</p>
-<ul>
-<li><code>\\[2ex]</code> adds extra vertical space after the break.</li>
-<li><code>\\*</code> also forbids a page break right after the line.</li>
-</ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb2-1">Title<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">\\</span>[2ex]</span>
-<span id="cb2-2">Text that starts a little lower.</span></code></pre></div></div>
-</section>
-<section id="linebreak-break-now-stretch-the-line" class="level2">
-<h2 class="anchored" data-anchor-id="linebreak-break-now-stretch-the-line"><code>\linebreak</code>: break now, stretch the line</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb3-1">This text is broken here<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">\linebreak</span> and the rest continues on the next line.</span></code></pre></div></div>
-<p><code>\linebreak</code> also ends the line at that spot, but it stretches the spaces so the line reaches the right margin. With only a few words on the line, the gaps become large and ugly:</p>
-<pre><code>This       text      is     broken      here
-and the rest continues on the next line.</code></pre>
-<p>It takes an optional strength from 0 to 4, written <code>\linebreak[n]</code>. A value of 4, the default, forces the break. Smaller values only <em>request</em> one, which LaTeX may ignore.</p>
-</section>
-<section id="a-new-paragraph-blank-line-or-par" class="level2">
-<h2 class="anchored" data-anchor-id="a-new-paragraph-blank-line-or-par">A new paragraph: blank line or <code>\par</code></h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb5-1">End of the first paragraph.</span>
-<span id="cb5-2"></span>
-<span id="cb5-3">Start of the second paragraph.</span></code></pre></div></div>
-<p>A blank line in the source (or the <code>\par</code> command) ends the paragraph. Depending on the document class, the next paragraph gets an indent or extra vertical space. If we only want the next line, not a new paragraph, we should not use a blank line.</p>
-</section>
-<section id="inside-tables" class="level2">
-<h2 class="anchored" data-anchor-id="inside-tables">Inside tables</h2>
-<p>In a <code>tabular</code>, <code>\\</code> ends the <em>row</em>, not just the line:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb6-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">\begin</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">tabular</span>}{ll}</span>
-<span id="cb6-2">  a<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">\\</span>b <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span> c <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">\\</span></span>
-<span id="cb6-3">  d <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span> e</span>
-<span id="cb6-4"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">\end</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">tabular</span>}</span></code></pre></div></div>
-<p>This gives three rows: <code>a</code>, then <code>b c</code>, then <code>d e</code>. To break a line <em>inside one cell</em>, the column must be a paragraph column such as <code>p{3cm}</code>, and we use <code>\newline</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb7-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">\begin</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">tabular</span>}{p{3cm}l}</span>
-<span id="cb7-2">  first<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">\newline</span> second <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span> x <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">\\</span></span>
-<span id="cb7-3"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">\end</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">tabular</span>}</span></code></pre></div></div>
-<pre><code>first    x
-second</code></pre>
-<p>In an ordinary <code>l</code>, <code>c</code> or <code>r</code> column, <code>\newline</code> has no effect, and the cell stays on one line.</p>
-</section>
-<section id="comparison" class="level2">
-<h2 class="anchored" data-anchor-id="comparison">Comparison</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Command</th>
-<th>Effect</th>
-<th>Right margin</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>\\</code>, <code>\newline</code></td>
-<td>Ends the line at once</td>
-<td>Line stays short</td>
-</tr>
-<tr class="even">
-<td><code>\\*</code></td>
-<td>Ends the line at once, no page break after it</td>
-<td>Line stays short</td>
-</tr>
-<tr class="odd">
-<td><code>\\[2ex]</code></td>
-<td>Ends the line, adds vertical space</td>
-<td>Line stays short</td>
-</tr>
-<tr class="even">
-<td><code>\linebreak</code></td>
-<td>Ends the line at once</td>
-<td>Line is stretched</td>
-</tr>
-<tr class="odd">
-<td>blank line, <code>\par</code></td>
-<td>Ends the paragraph</td>
-<td>Last line stays short</td>
-</tr>
-</tbody>
-</table>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>For spacing between lines or paragraphs, avoid stacking <code>\\</code> commands. Use <code>\\[length]</code>, or set <code>\parskip</code> and <code>\parindent</code> once in the preamble, so the layout stays consistent.</p>
-</div>
-</div>
-
-
-</section>
-
- ]]></description>
-  <category>LaTeX</category>
-  <category>Tools</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/latex-linebreak.html</guid>
-  <pubDate>Fri, 23 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/latex-linebreak.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Create Multiple Files at Once in the Linux Terminal</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/linux-create-multiple-files.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/linux-create-multiple-files.svg" class="img-fluid figure-img" alt="A terminal running touch file{1..5}.txt with an arrow pointing down to five file icons named file1.txt to file5.txt."></p>
-<figcaption>One touch command creates five files.</figcaption>
-</figure>
-</div>
-<p>Creating files one by one in a file manager is slow. In the terminal, a single <code>touch</code> command can create as many as we like. It works the same way in Linux and macOS shells such as bash and zsh.</p>
-<p><code>touch</code> creates an empty file if it does not exist. If the file already exists, it only updates the modification time and leaves the contents alone.</p>
-<section id="files-with-different-names" class="level2">
-<h2 class="anchored" data-anchor-id="files-with-different-names">1. Files with different names</h2>
-<p>When the names have nothing in common, we list them separated by spaces:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">touch</span> index.html styles.css script.js</span></code></pre></div></div>
-</section>
-<section id="numbered-or-lettered-files-brace-expansion" class="level2">
-<h2 class="anchored" data-anchor-id="numbered-or-lettered-files-brace-expansion">2. Numbered or lettered files (brace expansion)</h2>
-<p>A range inside curly braces, <code>{start..end}</code>, is expanded by the shell before <code>touch</code> runs, so one pattern becomes many names:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># file1.txt, file2.txt, ..., file5.txt</span></span>
-<span id="cb2-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">touch</span> file<span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">..</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">}</span>.txt</span>
-<span id="cb2-3"></span>
-<span id="cb2-4"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># log_A.txt, log_B.txt, ..., log_E.txt</span></span>
-<span id="cb2-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">touch</span> log_<span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">{</span>A<span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">..</span>E<span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">}</span>.txt</span></code></pre></div></div>
-<p>To pad the numbers with zeros, write the first number with the zeros:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># bspl0001.c, bspl0002.c, bspl0003.c</span></span>
-<span id="cb3-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">touch</span> bspl<span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0001</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">..</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0003</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">}</span>.c</span></code></pre></div></div>
-<p>To preview what a pattern expands to without creating anything, use <code>echo</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> file<span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">..</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">}</span>.txt</span></code></pre></div></div>
-<pre><code>file1.txt file2.txt file3.txt file4.txt file5.txt</code></pre>
-</section>
-<section id="a-chosen-set-of-names" class="level2">
-<h2 class="anchored" data-anchor-id="a-chosen-set-of-names">3. A chosen set of names</h2>
-<p>For specific names that share a prefix or extension, list the variations separated by commas. There must be no spaces inside the braces:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># test.js, demo.js, final.js</span></span>
-<span id="cb6-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">touch</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">{test</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">demo</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">final}</span>.js</span></code></pre></div></div>
-</section>
-<section id="files-inside-a-folder" class="level2">
-<h2 class="anchored" data-anchor-id="files-inside-a-folder">4. Files inside a folder</h2>
-<p>Brace expansion also works after a path, so we can create files somewhere else without changing the current directory. The folder must already exist:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mkdir</span> my_folder</span>
-<span id="cb7-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">touch</span> my_folder/<span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">{file1.txt</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">file2.txt</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">file3.txt}</span></span></code></pre></div></div>
-<p>To create the folders at the same time, <code>mkdir -p</code> accepts braces too:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mkdir</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-p</span> proj/<span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">{src</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">docs}</span></span>
-<span id="cb8-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">touch</span> proj/src/<span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">{main</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">util}</span>.c proj/docs/readme.md</span></code></pre></div></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ls</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-R</span> proj</span></code></pre></div></div>
-<pre><code>proj:
-docs  src
-
-proj/docs:
-readme.md
-
-proj/src:
-main.c  util.c</code></pre>
-</section>
-<section id="files-with-some-starting-text" class="level2">
-<h2 class="anchored" data-anchor-id="files-with-some-starting-text">5. Files with some starting text</h2>
-<p><code>touch</code> always makes empty files. If each file needs a line of text, a short loop does it:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> i <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> 1 2 3<span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">do</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"This is note </span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$i</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> note<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$i</span>.txt<span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">done</span></span></code></pre></div></div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Brace expansion is a feature of the shell, not of <code>touch</code>, so it works with any command (<code>mkdir</code>, <code>cp</code>, <code>rm</code>). The <code>{1..5}</code> range form needs bash or zsh: fish and a plain <code>sh</code> leave <code>file{1..3}.txt</code> unexpanded. All the examples above were run in bash.</p>
-</div>
-</div>
-
-
-</section>
-
- ]]></description>
-  <category>Linux</category>
-  <category>Tools</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/linux-create-multiple-files.html</guid>
-  <pubDate>Fri, 23 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/linux-create-multiple-files.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>

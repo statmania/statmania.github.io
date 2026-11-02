@@ -509,15 +509,15 @@ gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>If we compile without the library, the link step fails:</p>
-<pre><code>$ gcc m.c -o m
-/usr/bin/ld: /tmp/ccb1hHRk.o: in function `main':
-m.c:(.text+0x60): undefined reference to `pow'
-collect2: error: ld returned 1 exit status</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>$ gcc m.c -o m</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>/usr/bin/ld: /tmp/ccb1hHRk.o: in function `main':</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>m.c:(.text+0x60): undefined reference to `pow'</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>collect2: error: ld returned 1 exit status</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Adding <code>-lm</code> (library <em>m</em>) fixes it:</p>
-<pre><code>$ gcc m.c -o m -lm
-$ ./m
-Enter a number: 16
-pow(16.0, 0.5) = 4.0000</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>$ gcc m.c -o m -lm</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>$ ./m</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>Enter a number: 16</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>pow(16.0, 0.5) = 4.0000</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Third-party libraries follow the same pattern, usually with <code>-I&lt;dir&gt;</code> for headers and <code>-L&lt;dir&gt; -l&lt;name&gt;</code> for the library. Many also support <code>pkg-config</code>, which prints the right flags for us, for example <code>gcc main.c $(pkg-config --cflags --libs sqlite3)</code>.</p>
 </section>
 <section id="the-irony-c-powers-python-and-r" class="level2">
