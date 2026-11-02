@@ -247,6 +247,176 @@ Note
   <media:content url="https://www.statmania.info/blog/img/hex-color-code-explained.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 <item>
+  <title>Hybrid Stem-and-Leaf Plot: Stems of 5 for Finer Bins</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/hybrid-stem-and-leaf-plot.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/hybrid-stem-and-leaf-plot.svg" class="img-fluid figure-img" alt="Two stem-and-leaf plots of the same data: one with three rows using stems of 10, and one with five rows using stems of 5."></p>
+<figcaption>The same 24 values with stems of 10 (3 rows) and stems of 5 (5 rows).</figcaption>
+</figure>
+</div>
+<p>A stem-and-leaf plot shows the shape of a dataset while keeping every original value. The usual version uses the tens digit as the stem, which can leave very few rows. Here is a simple fix: use stems that step by 5.</p>
+<section id="the-data" class="level2">
+<h2 class="anchored" data-anchor-id="the-data">The Data</h2>
+<p>Here are 24 values:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1">13, 12, 6, 8, 15, 18, 17, 24, 28, 23, 27, 23,</span>
+<span id="cb1-2">21, 20, 15, 18, 23, 25, 23, 13, 17, 18, 19, 18</span></code></pre></div></div>
+</section>
+<section id="the-standard-plot-only-3-rows" class="level2">
+<h2 class="anchored" data-anchor-id="the-standard-plot-only-3-rows">The Standard Plot: Only 3 Rows</h2>
+<p>With the tens digit as the stem and the units digit as the leaf, we get:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1">Stem | Leaf</span>
+<span id="cb2-2">  0  | 6 8</span>
+<span id="cb2-3">  1  | 2 3 3 5 5 7 7 8 8 8 8 9</span>
+<span id="cb2-4">  2  | 0 1 3 3 3 3 4 5 7 8</span>
+<span id="cb2-5"></span>
+<span id="cb2-6">Key: 1 | 3 means 13</span></code></pre></div></div>
+<p>This gives only three classes, and most of the data sits in two of them. The shape is hard to see.</p>
+</section>
+<section id="the-hybrid-plot-stems-of-5" class="level2">
+<h2 class="anchored" data-anchor-id="the-hybrid-plot-stems-of-5">The Hybrid Plot: Stems of 5</h2>
+<p>If the stems are 5, 10, 15, 20 and 25, the data fall into <strong>bins of width 5</strong>. Each leaf is the value minus its stem:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1">Stem | Leaf</span>
+<span id="cb3-2">  5  | 1 3</span>
+<span id="cb3-3"> 10  | 2 3 3</span>
+<span id="cb3-4"> 15  | 0 0 2 2 3 3 3 3 4</span>
+<span id="cb3-5"> 20  | 0 1 3 3 3 3 4</span>
+<span id="cb3-6"> 25  | 0 2 3</span>
+<span id="cb3-7"></span>
+<span id="cb3-8">Key: 15 | 3 means 15 + 3 = 18</span></code></pre></div></div>
+<p>For example, the stem 15 covers 15 to 19, so its leaves stand for 15, 15, 17, 17, 18, 18, 18, 18 and 19. We now see five bins instead of three, and the peak in the 15 to 19 range stands out.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This is a hybrid between a stem-and-leaf plot and a histogram with bins of width 5. Unlike a histogram, it keeps the exact data values.</p>
+</div>
+</div>
+</section>
+<section id="why-it-works" class="level2">
+<h2 class="anchored" data-anchor-id="why-it-works">Why It Works</h2>
+<ol type="1">
+<li><strong>More bins.</strong> Five rows show the shape of the distribution more clearly than three.</li>
+<li><strong>Same as a split-stem plot.</strong> It is equivalent to the usual split-stem plot, which writes each stem twice (low half, high half). Here the stems are written as numbers (<code>10</code>, <code>15</code>) instead of symbols (<code>1*</code>, <code>1.</code>).</li>
+<li><strong>A bridge to histograms.</strong> The rows are the bars of a histogram turned sideways, but every value is still readable.</li>
+</ol>
+</section>
+<section id="the-catch" class="level2">
+<h2 class="anchored" data-anchor-id="the-catch">The Catch</h2>
+<p>A standard plot needs no arithmetic: <code>1 | 4</code> is simply 14. With stems of 5 the reader has to add (<code>15 + 3 = 18</code>). A clear <strong>Key</strong> fixes this, so always include one.</p>
+</section>
+<section id="doing-it-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="doing-it-in-r">Doing It in R</h2>
+<p>R’s <code>stem()</code> function draws this kind of plot. The <code>scale</code> argument controls how many rows we get. With <code>scale = 0.5</code> we get the three-row plot:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">x <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">18</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">17</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">24</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">28</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">23</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">27</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">23</span>,</span>
+<span id="cb4-2">       <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">21</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">18</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">23</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">23</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">17</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">18</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">19</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">18</span>)</span>
+<span id="cb4-3"></span>
+<span id="cb4-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">stem</span>(x, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">scale =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>)</span></code></pre></div></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb5-1">  The decimal point is 1 digit(s) to the right of the |</span>
+<span id="cb5-2"></span>
+<span id="cb5-3">  0 | 68</span>
+<span id="cb5-4">  1 | 233557788889</span>
+<span id="cb5-5">  2 | 0133334578</span></code></pre></div></div>
+<p>By default (<code>scale = 1</code>) R splits each stem in two, which is exactly the width-5 bins:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">stem</span>(x)</span></code></pre></div></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb7-1">  The decimal point is 1 digit(s) to the right of the |</span>
+<span id="cb7-2"></span>
+<span id="cb7-3">  0 | 68</span>
+<span id="cb7-4">  1 | 233</span>
+<span id="cb7-5">  1 | 557788889</span>
+<span id="cb7-6">  2 | 0133334</span>
+<span id="cb7-7">  2 | 578</span></code></pre></div></div>
+<p>Here the lower <code>1</code> row holds 12 to 14 and the upper <code>1</code> row holds 15 to 19. This layout avoids the arithmetic problem, because each leaf is simply the units digit.</p>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>If the data are tightly clustered and a standard stem-and-leaf plot gives too few rows, use stems of 5 (or R’s default split stems). We get more bins without losing the raw values. Just include a clear key.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>Statistics</category>
+  <category>Visualization</category>
+  <guid>https://www.statmania.info/blog/posts/hybrid-stem-and-leaf-plot.html</guid>
+  <pubDate>Sun, 01 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/hybrid-stem-and-leaf-plot.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
   <title>RGB Color Codes Explained: rgb(), rgba() and Their Hex Equivalents</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://www.statmania.info/blog/posts/rgb-color-code-explained.html</link>
@@ -397,6 +567,715 @@ font-style: inherit;">0.5</span>)</span></code></pre></div></div>
   <guid>https://www.statmania.info/blog/posts/rgb-color-code-explained.html</guid>
   <pubDate>Sun, 01 Nov 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/rgb-color-code-explained.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>Stem-and-Leaf Plot Keys: Seven Variants and When to Use Each</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/stem-and-leaf-plot-variants.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/stem-and-leaf-plot-variants.svg" class="img-fluid figure-img" alt="Cards showing key styles: integer 3 | 4 = 34, decimal 2 | 3 = 2.3, leaf unit 12 | 4 = 12.04, large 4 | 5 = 450, negative -2 | 5 = -25, split stem 1. | 5 = 15 and hybrid 15 | 3 = 18."></p>
+<figcaption>Seven ways to write the key of a stem-and-leaf plot.</figcaption>
+</figure>
+</div>
+<p>The <strong>key</strong> is what makes a stem-and-leaf plot readable. Without it the plot is just a column of digits. The key tells the reader how to combine the stem (left column) and the leaf (right column) to recover the original value.</p>
+<p>Data come as decimals, huge numbers and negative values, so the key has to adapt. Here are the common variants and when to use each.</p>
+<section id="the-standard-integer-key" class="level2">
+<h2 class="anchored" data-anchor-id="the-standard-integer-key">1. The Standard Integer Key</h2>
+<p>The classic version, for ordinary whole numbers.</p>
+<ul>
+<li><strong>When to use:</strong> counts, ages, or test scores out of 100.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1">Stem | Leaf</span>
+<span id="cb1-2">  2  | 1 5 8</span>
+<span id="cb1-3">  3  | 0 4 4 9</span>
+<span id="cb1-4">  4  | 2</span>
+<span id="cb1-5"></span>
+<span id="cb1-6">Key: 3 | 4 means 34</span></code></pre></div></div>
+</section>
+<section id="the-decimal-key" class="level2">
+<h2 class="anchored" data-anchor-id="the-decimal-key">2. The Decimal Key</h2>
+<p>When the data have decimals, the stem is the whole-number part and the leaf is the decimal digit.</p>
+<ul>
+<li><strong>When to use:</strong> GPAs, measurements such as height in metres, financial figures.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1">Stem | Leaf</span>
+<span id="cb2-2">  1  | 2 5</span>
+<span id="cb2-3">  2  | 1 3 8</span>
+<span id="cb2-4">  3  | 0</span>
+<span id="cb2-5"></span>
+<span id="cb2-6">Key: 2 | 3 means 2.3</span></code></pre></div></div>
+</section>
+<section id="the-formal-leaf-unit-key" class="level2">
+<h2 class="anchored" data-anchor-id="the-formal-leaf-unit-key">3. The Formal “Leaf Unit” Key</h2>
+<p>Statistical software and scientific papers often state a <strong>leaf unit</strong>: the value of one step in the leaf.</p>
+<ul>
+<li><strong>When to use:</strong> formal reports, or data with two or more decimal places.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1">Stem | Leaf</span>
+<span id="cb3-2"> 12  | 4 7</span>
+<span id="cb3-3"> 13  | 1 9</span>
+<span id="cb3-4"></span>
+<span id="cb3-5">Leaf unit = 0.01</span></code></pre></div></div>
+<p>To read it: <code>12 | 4</code> is 12 + (4 × 0.01) = 12.04.</p>
+</section>
+<section id="the-large-number-key" class="level2">
+<h2 class="anchored" data-anchor-id="the-large-number-key">4. The Large-Number Key</h2>
+<p>Populations, sales or distances are too large to write in full, so we drop the trailing digits and say so in the key.</p>
+<ul>
+<li><strong>When to use:</strong> values in the hundreds, thousands or millions.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb4-1">Stem | Leaf</span>
+<span id="cb4-2">  4  | 5 8</span>
+<span id="cb4-3">  5  | 2 3</span>
+<span id="cb4-4"></span>
+<span id="cb4-5">Key: 4 | 5 means 450</span></code></pre></div></div>
+<p>Here the leaves are tens, so the plot shows 450, 480, 520 and 530.</p>
+</section>
+<section id="the-negative-number-key" class="level2">
+<h2 class="anchored" data-anchor-id="the-negative-number-key">5. The Negative-Number Key</h2>
+<p>Stem-and-leaf plots can handle negative values. The minus sign belongs to the whole number, and the stems run from the most negative to the most positive.</p>
+<ul>
+<li><strong>When to use:</strong> temperatures, financial losses, altitudes below sea level.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb5-1">Stem | Leaf</span>
+<span id="cb5-2"> -2  | 5 8</span>
+<span id="cb5-3"> -1  | 2 4</span>
+<span id="cb5-4">  0  | 1</span>
+<span id="cb5-5">  1  | 5</span>
+<span id="cb5-6"></span>
+<span id="cb5-7">Key: -2 | 5 means -25</span></code></pre></div></div>
+</section>
+<section id="the-split-stem-key" class="level2">
+<h2 class="anchored" data-anchor-id="the-split-stem-key">6. The Split-Stem Key</h2>
+<p>When too many leaves pile up on one stem, we split the stem in two: <code>1*</code> for the low half (10–14) and <code>1.</code> for the high half (15–19). Leaves are still just the units digit.</p>
+<ul>
+<li><strong>When to use:</strong> a standard plot hides the shape because one stem has too many leaves.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb6-1">Stem | Leaf</span>
+<span id="cb6-2">  1* | 2 4</span>
+<span id="cb6-3">  1. | 5 7 9</span>
+<span id="cb6-4">  2* | 1 3</span>
+<span id="cb6-5"></span>
+<span id="cb6-6">Key: 1. | 5 means 15</span></code></pre></div></div>
+</section>
+<section id="the-hybrid-key-stems-of-5" class="level2">
+<h2 class="anchored" data-anchor-id="the-hybrid-key-stems-of-5">7. The Hybrid Key (Stems of 5)</h2>
+<p>The hybrid plot gets the same finer bins as the split stem, but writes the stems as numbers (<code>10</code>, <code>15</code>, <code>20</code>) and each leaf is the <strong>offset</strong> from its stem.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb7-1">Stem | Leaf</span>
+<span id="cb7-2"> 10  | 2 3 3</span>
+<span id="cb7-3"> 15  | 0 0 2 2 3 3 3 3 4</span>
+<span id="cb7-4"> 20  | 0 1 3 3 3 3 4</span>
+<span id="cb7-5"></span>
+<span id="cb7-6">Key: 15 | 3 means 15 + 3 = 18</span></code></pre></div></div>
+<p>The reader has to add the stem and the leaf, so the key must be clear. See <a href="../posts/hybrid-stem-and-leaf-plot.html">Hybrid Stem-and-Leaf Plot</a> for the full example.</p>
+</section>
+<section id="r-prints-its-own-key" class="level2">
+<h2 class="anchored" data-anchor-id="r-prints-its-own-key">R Prints Its Own Key</h2>
+<p>R’s <code>stem()</code> function writes the key as a sentence above the plot. For large numbers:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">stem</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">450</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">480</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">520</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">530</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">560</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">610</span>))</span></code></pre></div></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb9-1">  The decimal point is 2 digit(s) to the right of the |</span>
+<span id="cb9-2"></span>
+<span id="cb9-3">  4 | 58</span>
+<span id="cb9-4">  5 | 23</span>
+<span id="cb9-5">  5 | 6</span>
+<span id="cb9-6">  6 | 1</span></code></pre></div></div>
+<p>“2 digits to the right” means each stem is in hundreds, so <code>4 | 5</code> is 450 and <code>4 | 8</code> is 480. Notice that R also split the stem 5 into two rows, as in the split-stem variant.</p>
+</section>
+<section id="cheat-sheet-which-key-to-use" class="level2">
+<h2 class="anchored" data-anchor-id="cheat-sheet-which-key-to-use">Cheat Sheet: Which Key to Use</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Data type</th>
+<th>Key variant</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Whole numbers</td>
+<td>Standard integer</td>
+<td>Key: 3 | 4 = 34</td>
+</tr>
+<tr class="even">
+<td>Decimals (1 place)</td>
+<td>Decimal</td>
+<td>Key: 3 | 4 = 3.4</td>
+</tr>
+<tr class="odd">
+<td>Decimals (2+ places)</td>
+<td>Leaf unit</td>
+<td>Leaf unit = 0.01</td>
+</tr>
+<tr class="even">
+<td>Large numbers</td>
+<td>Scaled</td>
+<td>Key: 4 | 5 = 450</td>
+</tr>
+<tr class="odd">
+<td>Negative values</td>
+<td>Negative</td>
+<td>Key: -2 | 5 = -25</td>
+</tr>
+<tr class="even">
+<td>Crowded stems</td>
+<td>Split stem</td>
+<td>Key: 1. | 5 = 15</td>
+</tr>
+<tr class="odd">
+<td>Crowded stems, numeric stems</td>
+<td>Hybrid</td>
+<td>Key: 15 | 3 = 15 + 3 = 18</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>The golden rule:</strong> a key must be unambiguous. If there is any way a reader could misread the digits, make the key more specific.</p>
+</div>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>Statistics</category>
+  <category>Visualization</category>
+  <guid>https://www.statmania.info/blog/posts/stem-and-leaf-plot-variants.html</guid>
+  <pubDate>Sun, 01 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/stem-and-leaf-plot-variants.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>Stem-and-Leaf Plot vs Histogram: Differences, with R Examples</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/stem-and-leaf-plot-vs-histogram.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/stem-and-leaf-plot-vs-histogram.svg" class="img-fluid figure-img" alt="A stem-and-leaf plot of ten scores beside a histogram of the same scores with bars of height 3, 4 and 3."></p>
+<figcaption>The same ten scores as a stem-and-leaf plot and as a histogram.</figcaption>
+</figure>
+</div>
+<p>Stem-and-leaf plots and histograms both show the distribution of quantitative data. A stem-and-leaf plot is often described as a <strong>text-based histogram turned on its side</strong>. They serve slightly different purposes, depending on the size of the dataset and what we want to emphasise.</p>
+<section id="how-they-are-similar" class="level2">
+<h2 class="anchored" data-anchor-id="how-they-are-similar">How They Are Similar</h2>
+<ol type="1">
+<li><strong>They show the shape of the data.</strong> We can see whether the data are symmetric, skewed to the left or right, or have several peaks.</li>
+<li><strong>They group data into intervals.</strong> A histogram calls them <em>bins</em> (such as 70–79). A stem-and-leaf plot uses the <em>stems</em> (such as the tens digit).</li>
+<li><strong>They display frequency.</strong> In a histogram it is the <strong>height</strong> of a bar; in a stem-and-leaf plot it is the <strong>length</strong> of a row of leaves.</li>
+<li><strong>They are for quantitative data.</strong> Neither suits categories such as eye colour or car brand.</li>
+</ol>
+</section>
+<section id="how-they-differ" class="level2">
+<h2 class="anchored" data-anchor-id="how-they-differ">How They Differ</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Stem-and-leaf plot</th>
+<th>Histogram</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Data retention</td>
+<td><strong>Keeps the exact values</strong> in the leaves</td>
+<td><strong>Loses the exact values</strong>: a bar only gives a count</td>
+</tr>
+<tr class="even">
+<td>Visual format</td>
+<td>Digits form the “bars”</td>
+<td>Solid rectangular bars</td>
+</tr>
+<tr class="odd">
+<td>Class intervals</td>
+<td>Set by place value (tens, hundreds, …)</td>
+<td>Bin width chosen freely</td>
+</tr>
+<tr class="even">
+<td>Dataset size</td>
+<td>Small to medium (about 15–50 values)</td>
+<td>Large (hundreds or thousands)</td>
+</tr>
+<tr class="odd">
+<td>Finding the median</td>
+<td>Easy: count to the middle leaf</td>
+<td>Harder: estimate inside a bar</td>
+</tr>
+<tr class="even">
+<td>Ordering</td>
+<td>Sorted leaves give the exact rank of every value</td>
+<td>Individual points are lost, so no exact rank</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="an-example-with-ten-scores" class="level2">
+<h2 class="anchored" data-anchor-id="an-example-with-ten-scores">An Example with Ten Scores</h2>
+<p>Here are ten test scores:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">scores <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">72</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">74</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">75</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">81</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">83</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">83</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">85</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">91</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">94</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">98</span>)</span></code></pre></div></div>
+<section id="as-a-stem-and-leaf-plot" class="level3">
+<h3 class="anchored" data-anchor-id="as-a-stem-and-leaf-plot">As a stem-and-leaf plot</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">stem</span>(scores)</span></code></pre></div></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1">  The decimal point is 1 digit(s) to the right of the |</span>
+<span id="cb3-2"></span>
+<span id="cb3-3">  7 | 245</span>
+<span id="cb3-4">  8 | 1335</span>
+<span id="cb3-5">  9 | 148</span></code></pre></div></div>
+<p>Key: <code>7 | 2</code> means 72. We can read every score, see that the most common one is 83, and find the median by counting to the middle:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">median</span>(scores)</span></code></pre></div></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb5-1">[1] 83</span></code></pre></div></div>
+</section>
+<section id="as-a-histogram" class="level3">
+<h3 class="anchored" data-anchor-id="as-a-histogram">As a histogram</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(ggplot2)</span>
+<span id="cb6-2"></span>
+<span id="cb6-3">scores <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">72</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">74</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">75</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">81</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">83</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">83</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">85</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">91</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">94</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">98</span>)</span>
+<span id="cb6-4"></span>
+<span id="cb6-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(scores), <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(scores)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-6">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_histogram</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">binwidth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">boundary =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">70</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">closed =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"left"</span>,</span>
+<span id="cb6-7">                 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">stat_bin</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">binwidth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">boundary =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">70</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">closed =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"left"</span>,</span>
+<span id="cb6-9">           <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">geom =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"text"</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">after_stat</span>(count)), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">vjust =</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_x_continuous</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">breaks =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">70</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-11">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_y_continuous</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">limits =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">expand =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-12">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Histogram of ten test scores"</span>,</span>
+<span id="cb6-13">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Score"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Frequency"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-14">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_classic</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">base_size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-15">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">axis.ticks =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_blank</span>(),</span>
+<span id="cb6-16">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">axis.line =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_line</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"grey60"</span>),</span>
+<span id="cb6-17">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">panel.grid.major.y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_line</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"grey90"</span>))</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/stem-and-leaf-plot-vs-histogram_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The histogram gives the general shape and the counts (3, 4 and 3). But if we ask “did anyone score 85?”, the bars cannot tell us. The stem-and-leaf plot can: there is an <code>8 | 5</code>.</p>
+</section>
+</section>
+<section id="when-the-dataset-gets-large" class="level2">
+<h2 class="anchored" data-anchor-id="when-the-dataset-gets-large">When the Dataset Gets Large</h2>
+<p>With a few dozen values the stem-and-leaf plot is compact. With hundreds, the rows of leaves become very long. Here are 200 simulated scores:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span>)</span>
+<span id="cb7-2">big <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">200</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mean =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">70</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sd =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>))</span>
+<span id="cb7-3"></span>
+<span id="cb7-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">stem</span>(big)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  The decimal point is 1 digit(s) to the right of the |
+
+   4 | 2
+   4 | 7789
+   5 | 011112223444
+   5 | 56677788999999999
+   6 | 000001222233333333
+   6 | 55555556666667777888889999999
+   7 | 0000000111112222222333444444444444444
+   7 | 555666666666777777778888888899999999
+   8 | 0000011222222233333344444
+   8 | 55555666899
+   9 | 003
+   9 | 667789
+  10 | 3</code></pre>
+</div>
+</div>
+<p>It still works, but the rows are crowded and hard to scan. The histogram handles the same data cleanly:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(big), <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(big)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb9-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_histogram</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">binwidth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">boundary =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb9-3">                 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb9-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_y_continuous</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">expand =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">expansion</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mult =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>))) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb9-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Histogram of 200 scores"</span>,</span>
+<span id="cb9-6">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Score"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Frequency"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb9-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_classic</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">base_size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb9-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">axis.ticks =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_blank</span>(),</span>
+<span id="cb9-9">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">axis.line =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_line</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"grey60"</span>),</span>
+<span id="cb9-10">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">panel.grid.major.y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_line</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"grey90"</span>))</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/stem-and-leaf-plot-vs-histogram_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="624"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<ul>
+<li>Use a <strong>stem-and-leaf plot</strong> for a small dataset when we want to see the shape <em>without losing the original numbers</em>.</li>
+<li>Use a <strong>histogram</strong> for a large dataset when only the overall distribution pattern matters.</li>
+</ul>
+<p>If a stem-and-leaf plot gives too few rows, see <a href="../posts/hybrid-stem-and-leaf-plot.html">Hybrid Stem-and-Leaf Plot</a>, which uses stems of 5.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>R</category>
+  <category>Statistics</category>
+  <category>Visualization</category>
+  <guid>https://www.statmania.info/blog/posts/stem-and-leaf-plot-vs-histogram.html</guid>
+  <pubDate>Sun, 01 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/stem-and-leaf-plot-vs-histogram.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 <item>
   <title>POSIX Explained: The Rulebook Behind Linux, macOS and BSD</title>
@@ -7594,661 +8473,6 @@ font-style: inherit;">--oneline</span> new_name.js</span></code></pre></div></di
   <guid>https://www.statmania.info/blog/posts/how-statistics-powers-ai-and-robotics.html</guid>
   <pubDate>Sat, 24 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/statistics-ai-robotics.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>How to Charge a Laptop Battery Properly: The 20–80% Rule</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/laptop-battery-charging-20-80-rule.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/laptop-battery-20-80.svg" class="img-fluid figure-img" alt="A battery bar split into three zones: 0 to 20 percent deep discharge, 20 to 80 percent healthy range, and 80 to 100 percent high voltage."></p>
-<figcaption>Plug in around 20%, unplug or cap the charge near 80%.</figcaption>
-</figure>
-</div>
-<p>Modern laptops and phones use lithium-ion batteries, and they age according to how we charge them. The short version: keep the charge between roughly <strong>20% and 80%</strong>, and avoid heat.</p>
-<section id="should-we-charge-at-20" class="level2">
-<h2 class="anchored" data-anchor-id="should-we-charge-at-20">Should we charge at 20%?</h2>
-<p>Yes. Plugging in around 20% is a good habit. Letting the battery drain to 0% puts stress on the cells and wears them faster, so we should not wait until the laptop dies.</p>
-</section>
-<section id="why-the-2080-range-works" class="level2">
-<h2 class="anchored" data-anchor-id="why-the-2080-range-works">Why the 20–80% range works</h2>
-<ul>
-<li><strong>Avoid deep discharges.</strong> Running to empty is hard on the battery chemistry.</li>
-<li><strong>Avoid sitting at 100%.</strong> A full battery is held at high voltage, which also speeds up wear, especially when it is warm.</li>
-<li><strong>Longer life.</strong> Staying in the middle of the range is commonly reported to give many more charge cycles than going 0–100% every time. The exact numbers vary by battery, so treat any specific figure with caution.</li>
-</ul>
-</section>
-<section id="is-it-fine-to-charge-at-40-or-60" class="level2">
-<h2 class="anchored" data-anchor-id="is-it-fine-to-charge-at-40-or-60">Is it fine to charge at 40% or 60%?</h2>
-<p>Absolutely. Lithium-ion batteries are under the least stress near the middle of their range, and a top-up from 40% to 80% is only a partial cycle, which is gentler than a deep discharge.</p>
-<p>There is no “memory effect” in lithium-ion cells (that was an old nickel-cadmium problem), so we never need to drain the battery before charging, and we do not need to calibrate it every month. We can top up whenever it is convenient.</p>
-</section>
-<section id="best-practices" class="level2">
-<h2 class="anchored" data-anchor-id="best-practices">Best practices</h2>
-<ol type="1">
-<li><strong>Recharge around 20%</strong>, before the laptop drops into single digits.</li>
-<li><strong>Use a charge limiter</strong> if the laptop mostly stays plugged in at a desk. Most makers provide one that caps the charge at about 80%:
-<ul>
-<li>ASUS: Battery Health Charging</li>
-<li>Lenovo: Conservation Mode</li>
-<li>Dell: Dell Power Manager</li>
-<li>macOS: Optimized Battery Charging</li>
-</ul></li>
-<li><strong>Watch the heat.</strong> Gaming or video editing makes the laptop hot, and a hot, fully charged battery ages fastest. Keep the vents clear and avoid charging on a bed or sofa.</li>
-</ol>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Staying plugged in is fine as long as a limit is set. Without one, the battery sits at 100% all day, which is the habit we want to avoid.</p>
-</div>
-</div>
-</section>
-<section id="the-same-rules-apply-to-phones" class="level2">
-<h2 class="anchored" data-anchor-id="the-same-rules-apply-to-phones">The same rules apply to phones</h2>
-<p>Phones use the same lithium-ion technology, so everything above carries over: short, frequent top-ups are easier on the battery than long sessions, we should avoid dropping below 20%, and we should avoid leaving the phone at 100% for hours overnight.</p>
-<p>Both major platforms can manage this automatically:</p>
-<ul>
-<li><strong>iPhone:</strong> Settings → Battery → Battery Health &amp; Charging. Turn on <em>Optimized Battery Charging</em>, or on iPhone 15 and newer set an <em>80% Limit</em>.</li>
-<li><strong>Android:</strong> Look for <em>Protect Battery</em> or <em>Adaptive Charging</em> in the battery settings (Samsung, Pixel, OnePlus and others). It caps the charge at about 80% or slows charging overnight.</li>
-</ul>
-</section>
-<section id="summary" class="level2">
-<h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Do</th>
-<th>Avoid</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Charge between 20% and 80%</td>
-<td>Draining to 0%</td>
-</tr>
-<tr class="even">
-<td>Top up whenever convenient</td>
-<td>Sitting at 100% for hours</td>
-</tr>
-<tr class="odd">
-<td>Enable the built-in charge limit</td>
-<td>Charging a hot laptop under heavy load</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<ul>
-<li><a href="https://chargie.org/student-laptop-battery-health/">Student laptop battery health (Chargie)</a></li>
-<li><a href="https://www.howtogeek.com/124715/should-i-leave-my-laptop-plugged-in-all-the-time/">Should I leave my laptop plugged in all the time? (How-To Geek)</a></li>
-<li><a href="https://www.smartaction.tech/en/blog/batterei-20-80">Battery 20-80 rule (SmartAction)</a></li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>Tech</category>
-  <category>Tips</category>
-  <guid>https://www.statmania.info/blog/posts/laptop-battery-charging-20-80-rule.html</guid>
-  <pubDate>Sat, 24 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/laptop-battery-20-80.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Adding giscus Comments to a Quarto Blog</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/quarto-blog-adding-giscus-comments.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/quarto-giscus-comments.svg" class="img-fluid figure-img" alt="A blog post page contains a giscus comment box. The giscus app passes comments to and from a list of discussions in a GitHub repository."></p>
-<figcaption>Each blog post embeds a giscus box, which reads and writes a discussion in the GitHub repository</figcaption>
-</figure>
-</div>
-<p><a href="https://giscus.app">giscus</a> is an open-source, ad-free comment system that stores every comment as a <strong>GitHub Discussion</strong>. Readers sign in with GitHub, and we get moderation, notifications and email replies without running a server. Quarto supports giscus natively, so the whole setup is a few GitHub settings plus one block of YAML.</p>
-<section id="step-1-prepare-the-github-repository" class="level2">
-<h2 class="anchored" data-anchor-id="step-1-prepare-the-github-repository">Step 1: Prepare the GitHub repository</h2>
-<p>The comments live in a repository, so we prepare it first.</p>
-<ol type="1">
-<li><strong>Make the repository public.</strong> giscus does not work with a private repository.</li>
-<li><strong>Enable Discussions.</strong> On the repository page, open <em>Settings</em>, scroll to <em>Features</em> and tick <strong>Discussions</strong>.</li>
-<li><strong>Install the giscus app.</strong> Open the <a href="https://github.com/apps/giscus">giscus app page</a>, click <em>Install</em>, and give it access to the chosen repository.</li>
-<li><strong>Get the IDs.</strong> On <a href="https://giscus.app">giscus.app</a>, type <code>username/repo-name</code> in the <em>Repository</em> box and choose a discussion <em>Category</em> (for example <code>General</code>). Keep the page open: further down it prints a <code>&lt;script&gt;</code> block with the values <code>data-repo-id</code> and <code>data-category-id</code>. We need both in the next step.</li>
-</ol>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Choose the category <strong>General</strong> (or a dedicated one) rather than <em>Announcements</em>. Announcements is meant for posts from maintainers, so it can limit who may start a discussion.</p>
-</div>
-</div>
-</section>
-<section id="step-2-add-the-configuration" class="level2">
-<h2 class="anchored" data-anchor-id="step-2-add-the-configuration">Step 2: Add the configuration</h2>
-<p>giscus gives us HTML, but Quarto writes the script tag for us. We only translate each <code>data-*</code> attribute into a YAML key: <code>data-repo-id</code> becomes <code>repo-id</code>, <code>data-category-id</code> becomes <code>category-id</code>, and so on.</p>
-<p>The block goes under the <code>website:</code> key in <code>_quarto.yml</code> when we want comments on <strong>every</strong> page:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">website</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span></span>
-<span id="cb1-2"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">comments</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span></span>
-<span id="cb1-3"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">giscus</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span></span>
-<span id="cb1-4"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">      </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">repo</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> username/repo-name</span></span>
-<span id="cb1-5"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">      </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">repo-id</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> </span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"R_kgDOxxxxxxx"</span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">          # from giscus.app</span></span>
-<span id="cb1-6"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">      </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">category</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> </span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"General"</span></span>
-<span id="cb1-7"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">      </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">category-id</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> </span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"DIC_kwDOxxxxxxx"</span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">    # from giscus.app</span></span>
-<span id="cb1-8"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">      </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mapping</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> pathname</span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">                 # how a page is matched to a discussion</span></span>
-<span id="cb1-9"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">      </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">reactions-enabled</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> </span><span class="ch" style="color: #20794D;
-background-color: null;
-font-style: inherit;">true</span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">           # emoji reactions</span></span>
-<span id="cb1-10"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">      </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">input-position</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> bottom</span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">            # comment box below the comments</span></span>
-<span id="cb1-11"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">      </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">loading</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> lazy</span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">                     # load only when scrolled into view</span></span></code></pre></div></div>
-<p>The <code>mapping</code> option decides how a page finds its discussion. <code>pathname</code> and <code>url</code> are the common choices: each page gets one discussion, created the first time someone comments.</p>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Changing <code>mapping</code> later, or moving a post to a new address, starts a new, empty discussion for it. Choose once and keep the URLs stable.</p>
-</div>
-</div>
-</section>
-<section id="step-3-comments-on-posts-only" class="level2">
-<h2 class="anchored" data-anchor-id="step-3-comments-on-posts-only">Step 3: Comments on posts only</h2>
-<p>A blog usually wants comments under the posts, but not on the <em>About</em> page or the homepage. For that, keep the block <strong>out</strong> of <code>_quarto.yml</code> and put it in <code>posts/_metadata.yml</code> instead. Every file in that folder inherits it.</p>
-<p>In a <code>_metadata.yml</code> file the options are top-level keys, so there is no <code>website:</code> line:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># posts/_metadata.yml</span></span>
-<span id="cb2-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">comments</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span></span>
-<span id="cb2-3"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">giscus</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span></span>
-<span id="cb2-4"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">repo</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> username/repo-name</span></span>
-<span id="cb2-5"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">repo-id</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> </span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"R_kgDOxxxxxxx"</span></span>
-<span id="cb2-6"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">category</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> </span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"General"</span></span>
-<span id="cb2-7"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">category-id</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> </span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"DIC_kwDOxxxxxxx"</span></span>
-<span id="cb2-8"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mapping</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> url</span></span>
-<span id="cb2-9"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">reactions-enabled</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> </span><span class="ch" style="color: #20794D;
-background-color: null;
-font-style: inherit;">true</span></span>
-<span id="cb2-10"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">input-position</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> bottom</span></span>
-<span id="cb2-11"><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">language</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> en</span></span></code></pre></div></div>
-<p>Then render. A single post is enough to test it:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">quarto</span> render posts/my-post.qmd</span></code></pre></div></div>
-<p>Posts that were rendered earlier only get the comment box when they are rendered again, so after the first setup it is worth running a full <code>quarto render</code>.</p>
-</section>
-<section id="hiding-comments-on-one-page" class="level2">
-<h2 class="anchored" data-anchor-id="hiding-comments-on-one-page">Hiding comments on one page</h2>
-<p>Even inside the folder, a single page can opt out through its front matter:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">---</span></span>
-<span id="cb4-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">title</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> </span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"A post without comments"</span></span>
-<span id="cb4-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">comments</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">:</span><span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;"> </span><span class="ch" style="color: #20794D;
-background-color: null;
-font-style: inherit;">false</span></span>
-<span id="cb4-4"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">---</span></span></code></pre></div></div>
-</section>
-<section id="theme" class="level2">
-<h2 class="anchored" data-anchor-id="theme">Theme</h2>
-<p>If the site has a light and a dark theme, we can leave <code>theme</code> out. Quarto then follows the reader’s choice from the theme toggle. To force one look instead, set <code>theme: light</code>, <code>theme: dark</code> or <code>theme: preferred_color_scheme</code> (follow the operating system) under <code>giscus:</code>.</p>
-</section>
-<section id="troubleshooting" class="level2">
-<h2 class="anchored" data-anchor-id="troubleshooting">Troubleshooting</h2>
-<ul>
-<li><strong>The box says “giscus is not installed on this repository”:</strong> install the app (step 1.3) for that exact repository.</li>
-<li><strong>No box appears at all:</strong> check that the block sits in the right file (<code>website:</code> for <code>_quarto.yml</code>, top level for <code>_metadata.yml</code>) and that the page was re-rendered.</li>
-<li><strong>“Discussion not found” appears and never changes:</strong> the discussion is only created when the first comment is posted, so this is normal for a new page.</li>
-</ul>
-</section>
-<section id="reference" class="level2">
-<h2 class="anchored" data-anchor-id="reference">Reference</h2>
-<ul>
-<li><a href="https://quarto.org/docs/reference/projects/websites.html#comments">Quarto: website comments</a>, for every option of the <code>comments</code> key.</li>
-<li><a href="https://giscus.app">giscus.app</a>, for the configuration page that generates the IDs.</li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>Quarto</category>
-  <category>Blogging</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/quarto-blog-adding-giscus-comments.html</guid>
-  <pubDate>Sat, 24 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/quarto-giscus-comments.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>What Is Git? A Plain-English Explanation</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/what-is-git-explained-simply.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/what-is-git.svg" class="img-fluid figure-img" alt="A timeline of four commits on the main line. A second branch splits off after the second commit, holds two commits of its own and merges back. A dotted arrow below points back along the timeline to show undo."></p>
-<figcaption>Commits are save points; a branch is a parallel draft that is merged back into the main line.</figcaption>
-</figure>
-</div>
-<p>Think of Git as an <strong>“Undo” button and a time machine for a folder of files</strong>, combined with a way for several people to work on the same project without stepping on each other’s toes.</p>
-<p>We do not need to know how to code to understand it. Let’s imagine we are writing a book with a few friends.</p>
-<section id="the-old-way-without-git" class="level2">
-<h2 class="anchored" data-anchor-id="the-old-way-without-git">The old way, without Git</h2>
-<p>We write Chapter 1. A friend wants to add a paragraph, so we email them the file. They edit it and send it back. Soon the folder holds:</p>
-<ul>
-<li><code>Book_v1.docx</code></li>
-<li><code>Book_v2_final.docx</code></li>
-<li><code>Book_final_ACTUAL_final.docx</code></li>
-</ul>
-<p>If someone makes a mistake, we dig through old copies to find the good version. If two people edit the same page at once, merging their work by hand is a nightmare.</p>
-</section>
-<section id="the-git-way" class="level2">
-<h2 class="anchored" data-anchor-id="the-git-way">The Git way</h2>
-<p>Instead of passing copies of the whole book around, Git acts as a <strong>record keeper</strong> for the project. Four ideas cover most of it.</p>
-<section id="commit-a-save-point" class="level3">
-<h3 class="anchored" data-anchor-id="commit-a-save-point">1. Commit: a save point</h3>
-<p>A <em>commit</em> is a snapshot of the project at one moment, saved together with a short note.</p>
-<ul>
-<li>We write a paragraph and commit it with the note <em>“Added a paragraph about dragons.”</em></li>
-<li>We fix a typo and commit again: <em>“Fixed a typo in Chapter 1.”</em></li>
-</ul>
-<p>The result is a timeline of every change, who made it, when, and why. If we break something, we can go back to any earlier point.</p>
-</section>
-<section id="branch-a-parallel-universe" class="level3">
-<h3 class="anchored" data-anchor-id="branch-a-parallel-universe">2. Branch: a parallel universe</h3>
-<p>Suppose we want to kill off a character in Chapter 5, but a co-author wants to keep them alive. Instead of arguing, each of us creates a <em>branch</em>. We make our changes in our own universe, and the original book stays untouched until we decide otherwise.</p>
-</section>
-<section id="merge-bringing-the-work-together" class="level3">
-<h3 class="anchored" data-anchor-id="merge-bringing-the-work-together">3. Merge: bringing the work together</h3>
-<p>When both of us are done, we <em>merge</em> the branches back into the main timeline. Git compares the versions and combines the changes automatically. If we both edited the same sentence in different ways, Git does not guess. It flags a <em>conflict</em> and asks us to choose which version to keep, so nobody’s work is silently deleted.</p>
-</section>
-<section id="repository-the-project-and-its-memory" class="level3">
-<h3 class="anchored" data-anchor-id="repository-the-project-and-its-memory">4. Repository: the project and its memory</h3>
-<p>A <em>repository</em> (or <em>repo</em>) is the project folder together with its whole history. It can live on our computer, and a copy can live on a hosting site such as GitHub, which is how friends share and sync their work.</p>
-</section>
-</section>
-<section id="what-it-looks-like-in-practice" class="level2">
-<h2 class="anchored" data-anchor-id="what-it-looks-like-in-practice">What it looks like in practice</h2>
-<p>We said no code was needed, but here is the same story as real commands, in a new folder. We ran them to produce the output shown.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> init                                  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># start a repository</span></span>
-<span id="cb1-2"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Chapter 1"</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> book.txt</span>
-<span id="cb1-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> add book.txt                          <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># choose what goes into the snapshot</span></span>
-<span id="cb1-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-m</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Add chapter 1"</span>             <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># save it</span></span>
-<span id="cb1-5"></span>
-<span id="cb1-6"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"A dragon appears."</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;&gt;</span> book.txt</span>
-<span id="cb1-7"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-am</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Add a paragraph about dragons"</span></span>
-<span id="cb1-8"></span>
-<span id="cb1-9"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> switch <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-c</span> kill-character              <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># a new branch</span></span>
-<span id="cb1-10"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"The knight dies."</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;&gt;</span> book.txt</span>
-<span id="cb1-11"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> commit <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-am</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Kill the knight in chapter 5"</span></span>
-<span id="cb1-12"></span>
-<span id="cb1-13"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> switch main                           <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># back to the main timeline</span></span>
-<span id="cb1-14"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> merge kill-character                  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># bring the branch in</span></span>
-<span id="cb1-15"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> log <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--oneline</span></span></code></pre></div></div>
-<pre><code>87cfb6f Kill the knight in chapter 5
-7d36f0c Add a paragraph about dragons
-d230ff8 Add chapter 1</code></pre>
-<p>Each line is one save point with its note. The branch name <code>main</code> may be <code>master</code> in older repositories.</p>
-</section>
-<section id="what-is-it-used-for" class="level2">
-<h2 class="anchored" data-anchor-id="what-is-it-used-for">What is it used for?</h2>
-<p>Developers use Git for code, but it works for <strong>anything made of text files</strong>:</p>
-<ul>
-<li>writing a novel, a thesis or a report (including LaTeX and Quarto documents)</li>
-<li>a collection of notes, such as an Obsidian vault</li>
-<li>configuration files</li>
-<li>a website like this blog</li>
-</ul>
-<p>Git is less helpful for large binary files such as videos or Word documents, because it cannot show or merge their changes line by line.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Git and GitHub are different things. Git is the tool that tracks history on our computer. GitHub is a website that stores repositories online and adds collaboration features.</p>
-</div>
-</div>
-</section>
-<section id="summary" class="level2">
-<h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<p>Git takes a folder and gives it a searchable memory. Commits are save points, branches let us experiment safely, and merges bring the results together. Because we can always go back, we can try things without fear, and teams can work on one project at the same time without chaos.</p>
-
-
-</section>
-
- ]]></description>
-  <category>Git</category>
-  <category>Tutorial</category>
-  <category>Beginners</category>
-  <guid>https://www.statmania.info/blog/posts/what-is-git-explained-simply.html</guid>
-  <pubDate>Sat, 24 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/what-is-git.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>
