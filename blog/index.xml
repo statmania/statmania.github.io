@@ -417,6 +417,1124 @@ font-style: inherit;">stem</span>(x)</span></code></pre></div></div>
   <media:content url="https://www.statmania.info/blog/img/hybrid-stem-and-leaf-plot.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 <item>
+  <title>The Monte Carlo Method Explained: Estimating π with Random Points</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/monte-carlo-method-explained.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/monte-carlo-method-explained.svg" class="img-fluid figure-img" alt="A square with a circle drawn inside it and hundreds of random points scattered over it; points inside the circle are green and points outside are red."></p>
+<figcaption>Random points in a square: green ones fall inside the circle, red ones outside.</figcaption>
+</figure>
+</div>
+<p>Some problems are too messy for a neat formula: the chance that a portfolio crashes, the path of a particle through a material, the best move in a board game. The <strong>Monte Carlo method</strong> solves them by brute-force randomness. We simulate the situation many times with random inputs, and read the answer off the results. Let’s see the idea on the simplest example, and then build it in R.</p>
+<section id="what-is-the-monte-carlo-method" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-the-monte-carlo-method">What Is the Monte Carlo Method?</h2>
+<p>A Monte Carlo method estimates a quantity by repeating a random experiment many times and averaging what happens. The name comes from the Monte Carlo casino in Monaco, a nod to the role of chance. The recipe has the same four steps every time:</p>
+<ol type="1">
+<li>Define the range of possible inputs.</li>
+<li>Generate random inputs from it.</li>
+<li>Compute the result for each input (here, a simple yes/no).</li>
+<li>Combine the results, usually by averaging, into the estimate.</li>
+</ol>
+<p>It works because of the <strong>law of large numbers</strong>: the more random samples we use, the closer their average gets to the true value. The error shrinks roughly like <img src="https://latex.codecogs.com/png.latex?1/%5Csqrt%7Bn%7D">, so ten times the accuracy costs a hundred times the samples. This is slow, but it works for almost any problem, however complicated.</p>
+</section>
+<section id="the-dirt-throwing-analogy" class="level2">
+<h2 class="anchored" data-anchor-id="the-dirt-throwing-analogy">The Dirt-Throwing Analogy</h2>
+<p>Imagine a perfectly round circle drawn inside a square on a wall. We want the area of the circle, but we pretend we do not know its formula. So we play a game:</p>
+<ol type="1">
+<li><strong>Throw blindfolded.</strong> We throw 1,000 handfuls of dirt at the wall.</li>
+<li><strong>One rule.</strong> Every throw must land somewhere inside the square.</li>
+<li><strong>Count.</strong> We count how many splatters landed inside the circle, and how many landed outside.</li>
+</ol>
+<p>If 785 of 1,000 splatters land inside the circle, the circle covers about 78.5% of the square. Since the square’s area is easy (width × height), the circle’s area is that area times 0.785.</p>
+<ul>
+<li>With <strong>10 throws</strong> the estimate is poor, because of pure luck.</li>
+<li>With <strong>a million throws</strong> the splatters fill the shape evenly and the estimate is very accurate.</li>
+</ul>
+</section>
+<section id="estimating-π" class="level2">
+<h2 class="anchored" data-anchor-id="estimating-π">Estimating π</h2>
+<p>Take a square from <img src="https://latex.codecogs.com/png.latex?-1"> to <img src="https://latex.codecogs.com/png.latex?1"> on both axes, with a circle of radius 1 inside it. The square has area <img src="https://latex.codecogs.com/png.latex?2%20%5Ctimes%202%20=%204"> and the circle has area <img src="https://latex.codecogs.com/png.latex?%5Cpi%20r%5E2%20=%20%5Cpi">. So the share of points inside the circle should be <img src="https://latex.codecogs.com/png.latex?%5Cpi%20/%204">, which gives</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Cpi%20%5Capprox%204%20%5Ctimes%20%5Cfrac%7B%5Ctext%7Bpoints%20inside%20the%20circle%7D%7D%7B%5Ctext%7Btotal%20points%7D%7D."></p>
+<p>A point <img src="https://latex.codecogs.com/png.latex?(x,%20y)"> is inside the circle when <img src="https://latex.codecogs.com/png.latex?x%5E2%20+%20y%5E2%20%5Cle%201">.</p>
+<section id="throwing-the-points-in-r" class="level3">
+<h3 class="anchored" data-anchor-id="throwing-the-points-in-r">Throwing the points in R</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)</span>
+<span id="cb1-2"></span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2026</span>)</span>
+<span id="cb1-4">n <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2000</span></span>
+<span id="cb1-5"></span>
+<span id="cb1-6">points <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(</span>
+<span id="cb1-7">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">runif</span>(n, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>),</span>
+<span id="cb1-8">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">runif</span>(n, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb1-9">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb1-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">inside =</span> x<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> y<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb1-11"></span>
+<span id="cb1-12"><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(points<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>inside)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.172</code></pre>
+</div>
+</div>
+<p><code>runif()</code> draws uniform random numbers, and <code>mean()</code> of a logical column is the share of <code>TRUE</code> values, so <code>4 * mean(inside)</code> is exactly the formula above. The true value is 3.1416.</p>
+</section>
+<section id="seeing-the-points" class="level3">
+<h3 class="anchored" data-anchor-id="seeing-the-points">Seeing the points</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">circle <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">t =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> pi, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length.out =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">300</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cos</span>(t), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sin</span>(t))</span>
+<span id="cb3-3"></span>
+<span id="cb3-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(points, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(x, y, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> inside)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-6">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_path</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> circle, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(x, y), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"black"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">inherit.aes =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">coord_fixed</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_colour_manual</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">values =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"TRUE"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"seagreen"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"FALSE"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tomato"</span>),</span>
+<span id="cb3-9">                      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">labels =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"TRUE"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Inside"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"FALSE"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Outside"</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2000 random points in the square"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/monte-carlo-method-explained_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="528"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The green points inside the circle make up about <img src="https://latex.codecogs.com/png.latex?%5Cpi/4%20%5Capprox%2078.5%5C%25"> of all points.</p>
+</section>
+</section>
+<section id="more-throws-better-estimate" class="level2">
+<h2 class="anchored" data-anchor-id="more-throws-better-estimate">More Throws, Better Estimate</h2>
+<p>How many points do we need? Let’s keep a running estimate as the points arrive and plot it.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2026</span>)</span>
+<span id="cb4-2">N <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100000</span></span>
+<span id="cb4-3"></span>
+<span id="cb4-4">running <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(</span>
+<span id="cb4-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>N,</span>
+<span id="cb4-6">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">inside =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">runif</span>(N, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">runif</span>(N, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb4-7">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">estimate =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cumsum</span>(inside) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> n)</span>
+<span id="cb4-9"></span>
+<span id="cb4-10"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(running, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(n, estimate)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-11">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_line</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-12">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_hline</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yintercept =</span> pi, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tomato"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linetype =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dashed"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-13">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_x_log10</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">labels =</span> scales<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span>comma) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-14">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"The estimate settles down as n grows"</span>,</span>
+<span id="cb4-15">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Number of points (log scale)"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Estimate of π"</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/monte-carlo-method-explained_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>At the start the line jumps around, which is the “pure luck” of few throws. After a few thousand points it hugs the dashed line at <img src="https://latex.codecogs.com/png.latex?%5Cpi">. A table shows the same story:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">running <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb5-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(n <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1000</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10000</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100000</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb5-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">transmute</span>(n, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">estimate =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(estimate, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">error =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(estimate <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> pi), <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>))</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 3
+       n estimate  error
+   &lt;int&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+1     10     3.2  0.0584
+2    100     3.12 0.0216
+3   1000     3.16 0.0224
+4  10000     3.16 0.02  
+5 100000     3.15 0.0036</code></pre>
+</div>
+</div>
+<p>The error shrinks as <img src="https://latex.codecogs.com/png.latex?n"> grows, though not steadily: a lucky small sample can beat an unlucky larger one.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Run the code again with a different <code>set.seed()</code>. The numbers change, but the pattern (wild at first, then steady) does not. That is the Monte Carlo method at work.</p>
+</div>
+</div>
+</section>
+<section id="why-this-matters-in-real-life" class="level2">
+<h2 class="anchored" data-anchor-id="why-this-matters-in-real-life">Why This Matters in Real Life</h2>
+<p>Computers use this “dirt-throwing” logic to simulate millions of random scenarios in seconds. It is used when the problem is too complex for a straight formula:</p>
+<ul>
+<li><strong>Finance:</strong> throwing random market events at a portfolio to see how often it crashes.</li>
+<li><strong>Physics:</strong> simulating billions of random paths a particle might take.</li>
+<li><strong>Games:</strong> letting an AI play thousands of random futures in chess or Go to choose a move.</li>
+<li><strong>Statistics:</strong> approximating integrals, p-values and posterior distributions that have no closed form.</li>
+</ul>
+<p>Estimating π is not a good use of Monte Carlo, since much better methods exist. We use it because we know the answer, which lets us watch the method work.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>R</category>
+  <category>Statistics</category>
+  <category>Probability</category>
+  <guid>https://www.statmania.info/blog/posts/monte-carlo-method-explained.html</guid>
+  <pubDate>Sun, 01 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/monte-carlo-method-explained.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>Pie Chart in R with Many Categories (ggplot2)</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/pie-chart-in-r-with-many-categories.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/pie-chart-in-r-with-many-categories.svg" class="img-fluid figure-img" alt="A pie chart with fifteen slices, each labelled outside the circle with a leader line."></p>
+<figcaption>A pie chart with fifteen slices labelled outside the circle.</figcaption>
+</figure>
+</div>
+<p>With many categories a pie chart becomes unreadable: the slices are narrow, the labels overlap and the colours are hard to tell apart. Experts usually advise either lumping the small categories into an “Other” group or switching to a bar chart. Let’s see how to do both, and how to keep every category visible when we must, using <code>ggplot2</code>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>All the plots here keep the default <code>ggplot2</code> grey panel. For a pie we only hide the axis text, ticks and titles, which carry no meaning in polar coordinates. The same recipe works for the pie charts in <a href="pie-vs-bar-chart.html">Pie Chart vs Bar Chart</a>.</p>
+</div>
+</div>
+<section id="the-data-fifteen-categories" class="level2">
+<h2 class="anchored" data-anchor-id="the-data-fifteen-categories">The Data: Fifteen Categories</h2>
+<p>Here are fifteen categories with very uneven values. We reuse this data throughout.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)</span>
+<span id="cb1-2"></span>
+<span id="cb1-3">data <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb1-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">category =</span> letters[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span>],</span>
+<span id="cb1-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">value    =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">50</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb1-6">)</span></code></pre></div></div>
+</div>
+<p>A small helper theme hides the useless polar axes while keeping the default grey background.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">pie_theme <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span>(</span>
+<span id="cb2-2">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">axis.title  =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_blank</span>(),</span>
+<span id="cb2-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">axis.text   =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_blank</span>(),</span>
+<span id="cb2-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">axis.ticks  =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_blank</span>(),</span>
+<span id="cb2-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">panel.grid  =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_blank</span>()</span>
+<span id="cb2-6">)</span></code></pre></div></div>
+</div>
+</section>
+<section id="the-problem-all-fifteen-slices" class="level2">
+<h2 class="anchored" data-anchor-id="the-problem-all-fifteen-slices">The Problem: All Fifteen Slices</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(data, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> value, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> category)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_col</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">coord_polar</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">theta =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"y"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-4">  pie_theme <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Fifteen slices"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/pie-chart-in-r-with-many-categories_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The last six slices are slivers, and fifteen colours are too many to match against the legend.</p>
+</section>
+<section id="lump-small-categories-into-other" class="level2">
+<h2 class="anchored" data-anchor-id="lump-small-categories-into-other">Lump Small Categories into “Other”</h2>
+<p>The best fix is to keep the largest categories and merge the rest. <code>fct_lump_n()</code> from <code>forcats</code> (part of the tidyverse) keeps the top <code>n</code> and groups everything else as “Other”. The argument <code>w</code> tells it to rank by <code>value</code>, not by row count.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">clean_data <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> data <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">category =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fct_lump_n</span>(category, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">w =</span> value)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">group_by</span>(category) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summarise</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">value =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(value)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">percentage =</span> value <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(value) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>)</span>
+<span id="cb4-6"></span>
+<span id="cb4-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(clean_data, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> value, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> category)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_col</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">coord_polar</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">theta =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"y"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_text</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(percentage), <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"%"</span>)),</span>
+<span id="cb4-11">            <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">position =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">position_stack</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">vjust =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-12">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_fill_brewer</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">palette =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Dark2"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-13">  pie_theme <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-14">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Top five categories plus Other"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/pie-chart-in-r-with-many-categories_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Now six slices remain and each can carry a percentage label. The price is that the detail of the small categories is hidden inside “Other”.</p>
+</section>
+<section id="showing-every-category-labels-with-leader-lines" class="level2">
+<h2 class="anchored" data-anchor-id="showing-every-category-labels-with-leader-lines">Showing Every Category: Labels with Leader Lines</h2>
+<p>If every category must appear, put the labels outside the circle and join them to their slices with lines. The <code>ggrepel</code> package (<code>install.packages("ggrepel")</code>) pushes labels apart automatically, so they do not overlap.</p>
+<p>First we compute the middle of each slice. Because <code>geom_col()</code> stacks the first level on top, we reverse the order before taking the cumulative sum.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(ggrepel)</span>
+<span id="cb5-2"></span>
+<span id="cb5-3">labelled <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> data <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb5-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">category =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">factor</span>(category, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">levels =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rev</span>(category)),</span>
+<span id="cb5-5">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">prop =</span> value <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(value) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>,</span>
+<span id="cb5-6">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ypos =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cumsum</span>(prop) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> prop)</span>
+<span id="cb5-7"></span>
+<span id="cb5-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(labelled, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> prop, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> category)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_col</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">coord_polar</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">theta =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"y"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-11">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_label_repel</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> ypos, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(category, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">": "</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(prop, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>), <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"%"</span>)),</span>
+<span id="cb5-12">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">nudge_x =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.8</span>,</span>
+<span id="cb5-13">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">segment.colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"grey30"</span>,</span>
+<span id="cb5-14">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3.5</span>,</span>
+<span id="cb5-15">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">show.legend =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-16">  pie_theme <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-17">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">legend.position =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"none"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-18">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"All fifteen categories, labelled outside"</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/pie-chart-in-r-with-many-categories_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><code>nudge_x</code> moves the labels outward, and the segments are drawn automatically. This stays readable up to roughly ten to fifteen categories.</p>
+</section>
+<section id="a-bar-chart-handles-dozens-of-categories" class="level2">
+<h2 class="anchored" data-anchor-id="a-bar-chart-handles-dozens-of-categories">A Bar Chart Handles Dozens of Categories</h2>
+<p>When there are many categories, a sorted horizontal bar chart is the standard replacement. It needs no legend and leaves room for long labels.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(data, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> value, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">reorder</span>(category, value))) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_col</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"The same fifteen categories"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Value"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/pie-chart-in-r-with-many-categories_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="an-interactive-option" class="level2">
+<h2 class="anchored" data-anchor-id="an-interactive-option">An Interactive Option</h2>
+<p>For dashboards and web pages, an interactive pie lets readers hover to see values and click the legend to hide categories. The <code>plotly</code> package does this (<code>install.packages("plotly")</code>).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(plotly)</span>
+<span id="cb7-2"></span>
+<span id="cb7-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot_ly</span>(data, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">labels =</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>category, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">values =</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>value, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"pie"</span>)</span></code></pre></div></div>
+</section>
+<section id="which-should-we-choose" class="level2">
+<h2 class="anchored" data-anchor-id="which-should-we-choose">Which Should We Choose?</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Strategy</th>
+<th>When to use</th>
+<th>Pros</th>
+<th>Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>fct_lump_n()</code> + pie</td>
+<td>Reports, papers, slides</td>
+<td>Clean and instantly readable</td>
+<td>Hides the small categories</td>
+</tr>
+<tr class="even">
+<td><code>ggrepel</code> labels</td>
+<td>All categories must show, up to about 15</td>
+<td>Keeps every category</td>
+<td>Still busy</td>
+</tr>
+<tr class="odd">
+<td>Interactive <code>plotly</code></td>
+<td>Dashboards, websites</td>
+<td>Keeps all information</td>
+<td>Not for print</td>
+</tr>
+<tr class="even">
+<td>Bar chart</td>
+<td>General best practice</td>
+<td>Handles dozens of categories</td>
+<td>Loses the part-to-whole look</td>
+</tr>
+</tbody>
+</table>
+<p>In short, lump first, label outside if every category is needed, and prefer a bar chart when the categories are many.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>R</category>
+  <category>Statistics</category>
+  <category>Visualization</category>
+  <guid>https://www.statmania.info/blog/posts/pie-chart-in-r-with-many-categories.html</guid>
+  <pubDate>Sun, 01 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/pie-chart-in-r-with-many-categories.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
   <title>RGB Color Codes Explained: rgb(), rgba() and Their Hex Equivalents</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://www.statmania.info/blog/posts/rgb-color-code-explained.html</link>
@@ -8097,382 +9215,6 @@ font-style: inherit;">#!/usr/bin/env bash      # portable script</span></span></
   <guid>https://www.statmania.info/blog/posts/fish-vs-bash-syntax.html</guid>
   <pubDate>Sat, 24 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/fish-shell.jpeg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>git mv vs. mv: Renaming and Deleting Files in a Git Repository</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/git-mv-vs-mv.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/linux-git.jpeg" class="img-fluid figure-img" alt="A person typing at a desk in front of a monitor showing a terminal with git commands."></p>
-<figcaption>Rename with Git, or rename by hand and tell Git afterwards.</figcaption>
-</figure>
-</div>
-<p>The difference between <code>git mv</code> and plain <code>mv</code> is small but worth knowing. <code>git mv</code> moves the file <strong>and</strong> stages the change in one step. <code>mv</code> only changes the disk, so we have to tell Git what happened. The same goes for <code>git rm</code> and <code>rm</code>.</p>
-<p>Git does not store renames as a special action. It stores snapshots, and when we run <code>git status</code> or <code>git log</code> it <em>detects</em> that a deleted file and a new file have the same content, and labels the pair a rename. That is why both routes below end in the same place.</p>
-<section id="moving-or-renaming" class="level2">
-<h2 class="anchored" data-anchor-id="moving-or-renaming">Moving or renaming</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th>Plain commands</th>
-<th>Git commands</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Move or rename</td>
-<td><code>mv old.js new.js</code></td>
-<td><code>git mv old.js new.js</code></td>
-</tr>
-<tr class="even">
-<td>What Git sees</td>
-<td><code>old.js</code> deleted, <code>new.js</code> untracked</td>
-<td>rename, already staged</td>
-</tr>
-<tr class="odd">
-<td>Extra steps</td>
-<td><code>git rm old.js</code> and <code>git add new.js</code></td>
-<td>none</td>
-</tr>
-</tbody>
-</table>
-<section id="with-git-mv" class="level3">
-<h3 class="anchored" data-anchor-id="with-git-mv">With <code>git mv</code></h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> mv old_name.js new_name.js</span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> status <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--short</span></span></code></pre></div></div>
-<pre><code>R  old_name.js -&gt; new_name.js</code></pre>
-<p>The rename is staged and ready to commit.</p>
-</section>
-<section id="with-plain-mv" class="level3">
-<h3 class="anchored" data-anchor-id="with-plain-mv">With plain <code>mv</code></h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mv</span> old_name.js new_name.js</span>
-<span id="cb3-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> status <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--short</span></span></code></pre></div></div>
-<pre><code> D old_name.js
-?? new_name.js</code></pre>
-<p>Git sees a deleted file and an untracked file. Staging only the new one is a common mistake:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> add new_name.js</span>
-<span id="cb5-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> status <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--short</span></span></code></pre></div></div>
-<pre><code>A  new_name.js
- D old_name.js</code></pre>
-<p>The deletion is still unstaged, so a commit now would contain the new file but leave the old one in the repository. We need to stage both:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> rm old_name.js     <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># stages the deletion (the file is already gone from disk)</span></span>
-<span id="cb7-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> add new_name.js</span></code></pre></div></div>
-<p>or, in one step:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> add <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-A</span></span></code></pre></div></div>
-<pre><code>R  old_name.js -&gt; new_name.js</code></pre>
-<p><code>git add -A</code> is also the easy way to stage a whole batch of manual moves, or renames done in a file manager or editor such as VS Code.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><code>git mv</code> only works on files Git already tracks. For an untracked file it stops with <code>fatal: not under version control</code>, so use plain <code>mv</code> there.</p>
-</div>
-</div>
-</section>
-</section>
-<section id="deleting" class="level2">
-<h2 class="anchored" data-anchor-id="deleting">Deleting</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th></th>
-<th>Plain command</th>
-<th>Git command</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Delete a file</td>
-<td><code>rm file.txt</code></td>
-<td><code>git rm file.txt</code></td>
-</tr>
-<tr class="even">
-<td>What Git sees</td>
-<td>deleted, not staged</td>
-<td>deleted, staged</td>
-</tr>
-</tbody>
-</table>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rm</span> file.txt</span>
-<span id="cb10-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> status <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--short</span>       <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#  D file.txt   (not staged)</span></span>
-<span id="cb10-3"></span>
-<span id="cb10-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> rm file.txt</span>
-<span id="cb10-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> status <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--short</span>       <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># D  file.txt   (staged)</span></span></code></pre></div></div>
-<p><code>git rm</code> also works after the file has already been removed by hand, as above: it just stages the deletion.</p>
-</section>
-<section id="stop-tracking-a-file-but-keep-it-on-disk" class="level2">
-<h2 class="anchored" data-anchor-id="stop-tracking-a-file-but-keep-it-on-disk">Stop tracking a file but keep it on disk</h2>
-<p>If we committed a file by mistake, such as a <code>.env</code> with secrets, we want Git to forget it without deleting our copy:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> rm <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--cached</span> .env</span>
-<span id="cb11-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> status <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--short</span></span></code></pre></div></div>
-<pre><code>D  .env
-?? .env</code></pre>
-<p>The file stays on disk, but Git now lists it as untracked. To keep it from being added again, put it in <code>.gitignore</code>.</p>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><code>git rm --cached</code> removes the file from future commits only. It stays in the repository’s history, so a secret that was committed should be treated as exposed and changed.</p>
-</div>
-</div>
-</section>
-<section id="rename-history" class="level2">
-<h2 class="anchored" data-anchor-id="rename-history">Rename history</h2>
-<p>After a rename, <code>git log --follow</code> lists the commits from before the rename too:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">git</span> log <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--follow</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--oneline</span> new_name.js</span></code></pre></div></div>
-<p>Without <code>--follow</code>, the log of the new name starts at the rename.</p>
-</section>
-<section id="summary" class="level2">
-<h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<ul>
-<li><code>git mv</code> = <code>mv</code> + staging. Plain <code>mv</code> plus <code>git add -A</code> gives the same result.</li>
-<li><code>git rm</code> = <code>rm</code> + staging.</li>
-<li><code>git rm --cached</code> stops tracking and keeps the file.</li>
-<li>Git detects renames from the content, so both routes give the same commit.</li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>Linux</category>
-  <category>Tools</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/git-mv-vs-mv.html</guid>
-  <pubDate>Sat, 24 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/linux-git.jpeg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>How Statistics Powers Machine Learning, AI and Robotics</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/how-statistics-powers-ai-and-robotics.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/statistics-ai-robotics.svg" class="img-fluid figure-img" alt="A bell curve labelled Statistics feeds three cards: machine learning (a line fitted to scattered points), AI (a small network of nodes) and robotics (a smooth estimate through a noisy path)."></p>
-<figcaption>Statistics turns noisy data into models, decisions and estimates.</figcaption>
-</figure>
-</div>
-<p>Statistics is the quiet engine of machine learning, artificial intelligence and robotics. It hides beneath layers of code and hardware, yet it sits behind every prediction, decision and action: from a simple linear regression to a deep neural network, from a robot crossing a cluttered room to a language model writing a paragraph. Statistics gives these systems a way to learn from data, measure uncertainty and choose well.</p>
-<p>In this post we look at where statistics sits in each field, and why skipping it means building on sand.</p>
-<section id="statistics-the-language-of-learning-from-data" class="level2">
-<h2 class="anchored" data-anchor-id="statistics-the-language-of-learning-from-data">Statistics: The Language of Learning from Data</h2>
-<p>Machine learning is about finding patterns in data. But data are noisy, incomplete and variable, and statistics supplies the tools to describe that noise, model the signal underneath and predict with a stated level of confidence.</p>
-<ul>
-<li><strong>Probability distributions</strong> model how likely each outcome is.</li>
-<li><strong>Estimation theory</strong> infers parameters from samples.</li>
-<li><strong>Hypothesis testing</strong> decides whether a pattern is real or just chance.</li>
-<li><strong>Bayesian inference</strong> updates our beliefs as new data arrive.</li>
-</ul>
-<p>Without these, a model is little more than a guess.</p>
-</section>
-<section id="machine-learning-statistics-in-modern-clothing" class="level2">
-<h2 class="anchored" data-anchor-id="machine-learning-statistics-in-modern-clothing">Machine Learning: Statistics in Modern Clothing</h2>
-<p>Many ML algorithms are classical statistical methods under a new name.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">ML method</th>
-<th style="text-align: left;">Statistical view</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Linear regression</td>
-<td style="text-align: left;">A model for a continuous outcome</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Logistic regression</td>
-<td style="text-align: left;">A classifier built on the logistic function</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Decision trees</td>
-<td style="text-align: left;">Recursive partitioning, a non-parametric technique</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Support vector machines</td>
-<td style="text-align: left;">Maximum-margin classifiers from statistical learning theory</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Neural networks</td>
-<td style="text-align: left;">Nonlinear regression, usually trained by maximum likelihood</td>
-</tr>
-</tbody>
-</table>
-<p>The same holds for the core ideas. The <strong>bias-variance tradeoff</strong>, the <strong>curse of dimensionality</strong> and <strong>cross-validation</strong> are statistical concepts. Measuring generalisation error is statistics. L1 and L2 regularisation act as statistical priors on the parameters, and dropout can be read as an approximation to Bayesian model averaging.</p>
-<p>Deep learning is no exception. Stochastic gradient descent is a statistical optimisation method, batch normalisation is a statistical stabilisation trick, and <em>probabilistic deep learning</em> combines neural networks with Bayesian inference.</p>
-</section>
-<section id="artificial-intelligence-reasoning-under-uncertainty" class="level2">
-<h2 class="anchored" data-anchor-id="artificial-intelligence-reasoning-under-uncertainty">Artificial Intelligence: Reasoning Under Uncertainty</h2>
-<p>AI is broader than ML: it is about agents that reason, plan and act. The real world is uncertain, and statistics is the calculus of that uncertainty.</p>
-<ul>
-<li><strong>Bayesian networks</strong> represent probabilistic relationships between variables.</li>
-<li><strong>Hidden Markov models</strong> drive speech recognition and part-of-speech tagging.</li>
-<li><strong>Markov decision processes (MDPs)</strong> and their partially observable version (<strong>POMDPs</strong>) are the foundation of reinforcement learning, where an agent maximises reward in a stochastic environment.</li>
-<li><strong>Natural language processing</strong> relies on statistical language models, from n-grams to Transformers. Even the largest LLMs are trained by maximum likelihood on huge text corpora.</li>
-</ul>
-<p>AI without statistics is a philosopher without logic: full of ideas, with no rigorous way to test them.</p>
-</section>
-<section id="robotics-where-statistics-meets-the-physical-world" class="level2">
-<h2 class="anchored" data-anchor-id="robotics-where-statistics-meets-the-physical-world">Robotics: Where Statistics Meets the Physical World</h2>
-<p>Robots face sensor noise, imperfect actuators and changing surroundings. For them statistics is not optional; it decides whether a task succeeds or fails.</p>
-<ul>
-<li><strong>State estimation:</strong> Kalman filters, extended Kalman filters and particle filters estimate a robot’s position, velocity and orientation from noisy sensor readings.</li>
-<li><strong>Sensor fusion:</strong> combining cameras, LiDAR, IMUs and GPS needs probabilistic models that weigh how reliable each source is.</li>
-<li><strong>SLAM</strong> (simultaneous localisation and mapping): a textbook statistical problem, since both the map and the robot’s own position are uncertain.</li>
-<li><strong>Control under uncertainty:</strong> stochastic control, such as linear-quadratic-Gaussian (LQG) control, models the noise explicitly and minimises expected cost.</li>
-<li><strong>Planning under uncertainty:</strong> POMDPs handle navigation and manipulation when the state is not fully observable.</li>
-</ul>
-<p>The book <em>Probabilistic Robotics</em> by Thrun, Burgard and Fox is, in effect, a statistics text for roboticists.</p>
-</section>
-<section id="the-common-thread-from-data-to-decisions" class="level2">
-<h2 class="anchored" data-anchor-id="the-common-thread-from-data-to-decisions">The Common Thread: From Data to Decisions</h2>
-<p>ML, AI and robotics all involve <strong>decisions under uncertainty</strong>, and statistics supplies each piece:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Need</th>
-<th style="text-align: left;">Statistical tool</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Represent uncertainty</td>
-<td style="text-align: left;">Probability distributions</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Learn from data</td>
-<td style="text-align: left;">Estimation and inference</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Judge performance</td>
-<td style="text-align: left;">Likelihood, risk, expected loss</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Choose the best action</td>
-<td style="text-align: left;">Bayesian decision theory, utility maximisation</td>
-</tr>
-</tbody>
-</table>
-<p>Whether we classify an email as spam, predict the next word or steer a self-driving car, we are solving a statistical problem.</p>
-</section>
-<section id="the-future-statistics-keeps-driving-progress" class="level2">
-<h2 class="anchored" data-anchor-id="the-future-statistics-keeps-driving-progress">The Future: Statistics Keeps Driving Progress</h2>
-<p>As AI systems grow more complex, the need for statistical rigour grows with them. <strong>Causal inference</strong> moves AI beyond correlation towards causation. <strong>Uncertainty quantification</strong> is critical for safe autonomous systems. <strong>Probabilistic programming</strong> makes statistical models easier to build and deploy at scale.</p>
-<p>The next breakthroughs in ML, AI and robotics will come from embracing statistics more deeply, not from ignoring it.</p>
-</section>
-<section id="summary" class="level2">
-<h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<p>Statistics is how these fields learn from data, reason under uncertainty and act in a noisy world. To build truly intelligent systems we must do more than respect it; we must master it, because at the heart of every smart algorithm is a statistical heartbeat.</p>
-
-
-</section>
-
- ]]></description>
-  <category>Statistics</category>
-  <category>Machine Learning</category>
-  <category>Robotics</category>
-  <guid>https://www.statmania.info/blog/posts/how-statistics-powers-ai-and-robotics.html</guid>
-  <pubDate>Sat, 24 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/statistics-ai-robotics.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>

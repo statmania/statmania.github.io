@@ -588,8 +588,58 @@
     read(); render();
   }
 
+  // ---------- hero constellation ----------
+  // Animates <canvas class="bk-hero-canvas"> inside a .bk-hero-wrap (drifting dots joined by faint lines).
+  function heroCanvas() {
+    var canvases = document.querySelectorAll('canvas.bk-hero-canvas');
+    Array.prototype.forEach.call(canvases, function (canvas) {
+      if (!canvas.getContext) return;
+      var ctx = canvas.getContext('2d'), wrap = canvas.parentElement, W, H, particles = [];
+      var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var count = Math.min(70, Math.floor((window.innerWidth || 1200) / 18));
+      function resize() {
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        W = wrap.clientWidth; H = wrap.clientHeight;
+        canvas.width = W * dpr; canvas.height = H * dpr;
+        canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        particles = [];
+        for (var i = 0; i < count; i++) {
+          particles.push({ x: Math.random() * W, y: Math.random() * H,
+            vx: (Math.random() - 0.5) * 0.25, vy: (Math.random() - 0.5) * 0.25, r: Math.random() * 1.6 + 0.6 });
+        }
+      }
+      function step() {
+        ctx.clearRect(0, 0, W, H);
+        var maxDist = 130, i, j, p, q, d;
+        for (i = 0; i < particles.length; i++) {
+          p = particles[i];
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < 0 || p.x > W) p.vx *= -1;
+          if (p.y < 0 || p.y > H) p.vy *= -1;
+          for (j = i + 1; j < particles.length; j++) {
+            q = particles[j];
+            d = Math.sqrt((p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y));
+            if (d < maxDist) {
+              ctx.strokeStyle = 'rgba(0,229,255,' + (0.16 * (1 - d / maxDist)) + ')';
+              ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+            }
+          }
+        }
+        ctx.fillStyle = 'rgba(180,225,255,0.85)';
+        for (i = 0; i < particles.length; i++) {
+          p = particles[i]; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+        }
+        if (!still) requestAnimationFrame(step);
+      }
+      resize(); step();
+      window.addEventListener('resize', resize);
+    });
+  }
+
   // ---------- go ----------
   mobileToc();
+  ready(heroCanvas);
   function start(raw) {
     var D = prepare(raw);
     tagsPage(D);

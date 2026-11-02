@@ -13,7 +13,7 @@ description: "One or two sentences; used for the listing card, <meta>, and searc
 date: "YYYY-MM-DD"                          # today: run `date +%F`; never a future date
 categories: [C, Programming, Tutorial]   # shown in the listing; used for filtering
 tags: [c, struct, memory-layout]          # keep filling these in — see below
-author: "Abdullah Al Mahmud"
+author: "Abdullah Al Mahmud" ## unless otherwise stated
 image: ../img/<name>.png                  # PNG, see "Images"
 ---
 ```
@@ -204,6 +204,17 @@ never run behind text.
 
 - Use ggplot2 whenever possible
 - Try not to use theme_void or minimal. Polish the plot otherwise (erasing extra axis ticks, for example), but keep default background. 
+- Keep the default grey panel (theme_grey) in all the charts, as in `pie-vs-bar-chart.qmd`. Don't use `theme_void()`; hide only the meaningless polar axes with `theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), panel.grid = element_blank())`. Drop the legend when slices are labelled directly.
+
+## R Output: messages, warnings, errors
+
+- Readers see only the output, if any. R messages (e.g. the tidyverse attach/conflicts banner) and warnings are hidden project-wide by `knitr: opts_chunk: message: false, warning: false` in `_quarto.yml`. (`execute: message: false` has no effect in this project; use `knitr: opts_chunk`.)
+- Errors must never reach a post: a chunk that errors stops the render, so fix the code. Don't use `error: true`.
+- Posts are frozen (`freeze: true`): existing posts keep old output until their source changes, or delete `_freeze/posts/<name>` and re-render.
+
+## Callouts
+
+- `.callout-*` boxes (note, tip, warning, ...) must not have the grid-line background. They use a flat panel with a faint tint of the callout colour (or at most a simple gradient), matching the site design. The fix lives in quarto-blogkit's `styles.css` (see the blogkit rule above); never re-add grid lines in `site.css`.
 
 ## Updating this file
 
