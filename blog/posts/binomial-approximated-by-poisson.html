@@ -545,21 +545,43 @@ window.Quarto = {
 <section id="example-1-product-defects" class="level2">
 <h2 class="anchored" data-anchor-id="example-1-product-defects">Example 1: Product Defects</h2>
 <p>A factory produces lightbulbs with a defect rate of 2% (<span class="math inline">\(p = 0.02\)</span>). We inspect a random sample of <span class="math inline">\(n = 100\)</span> bulbs. What is the probability that exactly 3 are defective?</p>
-<ul>
-<li><strong>Setup:</strong> <span class="math inline">\(\lambda = np = 100 \times 0.02 = 2\)</span>.</li>
-<li><strong>Binomial:</strong> <span class="math inline">\(P(X = 3) = \binom{100}{3} (0.02)^3 (0.98)^{97} \approx 0.18228\)</span>.</li>
-<li><strong>Poisson:</strong> <span class="math inline">\(P(X = 3) = \dfrac{e^{-2} \, 2^3}{3!} \approx 0.18045\)</span>.</li>
-</ul>
+<p><strong>Setup:</strong> <span class="math inline">\(\lambda = np = 100 \times 0.02 = 2\)</span>.</p>
+<p><strong>Binomial:</strong></p>
+<p><span class="math display">\[
+\begin{aligned}
+P(X = 3) &amp;= \binom{100}{3} (0.02)^3 (0.98)^{97} \\
+&amp;\approx 0.18228
+\end{aligned}
+\]</span></p>
+<p><strong>Poisson:</strong></p>
+<p><span class="math display">\[
+\begin{aligned}
+P(X = 3) &amp;= \frac{e^{-2} \, 2^3}{3!} \\
+&amp;\approx 0.18045
+\end{aligned}
+\]</span></p>
 <p>The approximation is off by less than <span class="math inline">\(0.002\)</span>.</p>
 </section>
 <section id="example-2-printing-errors" class="level2">
 <h2 class="anchored" data-anchor-id="example-2-printing-errors">Example 2: Printing Errors</h2>
 <p>The probability that a page has a major printing error is 0.5% (<span class="math inline">\(p = 0.005\)</span>). In a book of <span class="math inline">\(n = 500\)</span> pages, what is the probability that at most 1 page has an error?</p>
-<ul>
-<li><strong>Setup:</strong> <span class="math inline">\(\lambda = np = 500 \times 0.005 = 2.5\)</span>.</li>
-<li><strong>Binomial:</strong> <span class="math inline">\(P(X \le 1) = P(X = 0) + P(X = 1) \approx 0.08157 + 0.20495 = 0.28653\)</span>.</li>
-<li><strong>Poisson:</strong> <span class="math inline">\(P(X \le 1) = e^{-2.5} + 2.5\,e^{-2.5} \approx 0.08208 + 0.20521 = 0.28730\)</span>.</li>
-</ul>
+<p><strong>Setup:</strong> <span class="math inline">\(\lambda = np = 500 \times 0.005 = 2.5\)</span>.</p>
+<p><strong>Binomial:</strong></p>
+<p><span class="math display">\[
+\begin{aligned}
+P(X \le 1) &amp;= P(X = 0) + P(X = 1) \\
+&amp;\approx 0.08157 + 0.20495 \\
+&amp;\approx 0.28653
+\end{aligned}
+\]</span></p>
+<p><strong>Poisson:</strong></p>
+<p><span class="math display">\[
+\begin{aligned}
+P(X \le 1) &amp;= e^{-2.5} + 2.5\,e^{-2.5} \\
+&amp;\approx 0.08208 + 0.20521 \\
+&amp;\approx 0.28730
+\end{aligned}
+\]</span></p>
 <p>The difference is only about <span class="math inline">\(0.0008\)</span>.</p>
 </section>
 <section id="checking-both-examples-in-r" class="level2">
@@ -643,7 +665,15 @@ window.Quarto = {
 </section>
 <section id="fixed-n-changing-p" class="level2">
 <h2 class="anchored" data-anchor-id="fixed-n-changing-p">Fixed n, Changing p</h2>
-<p>Two summaries measure the difference over all values of <span class="math inline">\(x\)</span>: the <strong>largest gap</strong> between the two probabilities, and the <strong>total variation distance</strong>, <span class="math inline">\(\tfrac12 \sum_x |P_{\text{bin}}(x) - P_{\text{pois}}(x)|\)</span>. The latter is the largest error we can make in the probability of any event, so it is the more honest summary. (The Poisson mass beyond <span class="math inline">\(x = n\)</span> is included.)</p>
+<p>Two summaries measure the difference over all values of <span class="math inline">\(x\)</span>:</p>
+<ul>
+<li>the <strong>largest gap</strong> between the two probabilities, and</li>
+<li>the <strong>total variation distance</strong>,</li>
+</ul>
+<p><span class="math display">\[
+\tfrac12 \sum_x \left| P_{\text{bin}}(x) - P_{\text{pois}}(x) \right|.
+\]</span></p>
+<p>The total variation distance is the largest error we can make in the probability of any event, so it is the more honest summary. (The Poisson mass beyond <span class="math inline">\(x = n\)</span> is included.)</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>gap_table <span class="ot">&lt;-</span> <span class="cf">function</span>(n, p) {</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">n =</span> n, <span class="at">p =</span> p) <span class="sc">%&gt;%</span></span>

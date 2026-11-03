@@ -86,21 +86,21 @@
 <section id="example-1-product-defects" class="level2">
 <h2 class="anchored" data-anchor-id="example-1-product-defects">Example 1: Product Defects</h2>
 <p>A factory produces lightbulbs with a defect rate of 2% (<img src="https://latex.codecogs.com/png.latex?p%20=%200.02">). We inspect a random sample of <img src="https://latex.codecogs.com/png.latex?n%20=%20100"> bulbs. What is the probability that exactly 3 are defective?</p>
-<ul>
-<li><strong>Setup:</strong> <img src="https://latex.codecogs.com/png.latex?%5Clambda%20=%20np%20=%20100%20%5Ctimes%200.02%20=%202">.</li>
-<li><strong>Binomial:</strong> <img src="https://latex.codecogs.com/png.latex?P(X%20=%203)%20=%20%5Cbinom%7B100%7D%7B3%7D%20(0.02)%5E3%20(0.98)%5E%7B97%7D%20%5Capprox%200.18228">.</li>
-<li><strong>Poisson:</strong> <img src="https://latex.codecogs.com/png.latex?P(X%20=%203)%20=%20%5Cdfrac%7Be%5E%7B-2%7D%20%5C,%202%5E3%7D%7B3!%7D%20%5Capprox%200.18045">.</li>
-</ul>
+<p><strong>Setup:</strong> <img src="https://latex.codecogs.com/png.latex?%5Clambda%20=%20np%20=%20100%20%5Ctimes%200.02%20=%202">.</p>
+<p><strong>Binomial:</strong></p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Baligned%7D%0AP(X%20=%203)%20&amp;=%20%5Cbinom%7B100%7D%7B3%7D%20(0.02)%5E3%20(0.98)%5E%7B97%7D%20%5C%5C%0A&amp;%5Capprox%200.18228%0A%5Cend%7Baligned%7D%0A"></p>
+<p><strong>Poisson:</strong></p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Baligned%7D%0AP(X%20=%203)%20&amp;=%20%5Cfrac%7Be%5E%7B-2%7D%20%5C,%202%5E3%7D%7B3!%7D%20%5C%5C%0A&amp;%5Capprox%200.18045%0A%5Cend%7Baligned%7D%0A"></p>
 <p>The approximation is off by less than <img src="https://latex.codecogs.com/png.latex?0.002">.</p>
 </section>
 <section id="example-2-printing-errors" class="level2">
 <h2 class="anchored" data-anchor-id="example-2-printing-errors">Example 2: Printing Errors</h2>
 <p>The probability that a page has a major printing error is 0.5% (<img src="https://latex.codecogs.com/png.latex?p%20=%200.005">). In a book of <img src="https://latex.codecogs.com/png.latex?n%20=%20500"> pages, what is the probability that at most 1 page has an error?</p>
-<ul>
-<li><strong>Setup:</strong> <img src="https://latex.codecogs.com/png.latex?%5Clambda%20=%20np%20=%20500%20%5Ctimes%200.005%20=%202.5">.</li>
-<li><strong>Binomial:</strong> <img src="https://latex.codecogs.com/png.latex?P(X%20%5Cle%201)%20=%20P(X%20=%200)%20+%20P(X%20=%201)%20%5Capprox%200.08157%20+%200.20495%20=%200.28653">.</li>
-<li><strong>Poisson:</strong> <img src="https://latex.codecogs.com/png.latex?P(X%20%5Cle%201)%20=%20e%5E%7B-2.5%7D%20+%202.5%5C,e%5E%7B-2.5%7D%20%5Capprox%200.08208%20+%200.20521%20=%200.28730">.</li>
-</ul>
+<p><strong>Setup:</strong> <img src="https://latex.codecogs.com/png.latex?%5Clambda%20=%20np%20=%20500%20%5Ctimes%200.005%20=%202.5">.</p>
+<p><strong>Binomial:</strong></p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Baligned%7D%0AP(X%20%5Cle%201)%20&amp;=%20P(X%20=%200)%20+%20P(X%20=%201)%20%5C%5C%0A&amp;%5Capprox%200.08157%20+%200.20495%20%5C%5C%0A&amp;%5Capprox%200.28653%0A%5Cend%7Baligned%7D%0A"></p>
+<p><strong>Poisson:</strong></p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Baligned%7D%0AP(X%20%5Cle%201)%20&amp;=%20e%5E%7B-2.5%7D%20+%202.5%5C,e%5E%7B-2.5%7D%20%5C%5C%0A&amp;%5Capprox%200.08208%20+%200.20521%20%5C%5C%0A&amp;%5Capprox%200.28730%0A%5Cend%7Baligned%7D%0A"></p>
 <p>The difference is only about <img src="https://latex.codecogs.com/png.latex?0.0008">.</p>
 </section>
 <section id="checking-both-examples-in-r" class="level2">
@@ -456,7 +456,13 @@ font-style: inherit;">5</span>))</span></code></pre></div></div>
 </section>
 <section id="fixed-n-changing-p" class="level2">
 <h2 class="anchored" data-anchor-id="fixed-n-changing-p">Fixed n, Changing p</h2>
-<p>Two summaries measure the difference over all values of <img src="https://latex.codecogs.com/png.latex?x">: the <strong>largest gap</strong> between the two probabilities, and the <strong>total variation distance</strong>, <img src="https://latex.codecogs.com/png.latex?%5Ctfrac12%20%5Csum_x%20%7CP_%7B%5Ctext%7Bbin%7D%7D(x)%20-%20P_%7B%5Ctext%7Bpois%7D%7D(x)%7C">. The latter is the largest error we can make in the probability of any event, so it is the more honest summary. (The Poisson mass beyond <img src="https://latex.codecogs.com/png.latex?x%20=%20n"> is included.)</p>
+<p>Two summaries measure the difference over all values of <img src="https://latex.codecogs.com/png.latex?x">:</p>
+<ul>
+<li>the <strong>largest gap</strong> between the two probabilities, and</li>
+<li>the <strong>total variation distance</strong>,</li>
+</ul>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Ctfrac12%20%5Csum_x%20%5Cleft%7C%20P_%7B%5Ctext%7Bbin%7D%7D(x)%20-%20P_%7B%5Ctext%7Bpois%7D%7D(x)%20%5Cright%7C.%0A"></p>
+<p>The total variation distance is the largest error we can make in the probability of any event, so it is the more honest summary. (The Poisson mass beyond <img src="https://latex.codecogs.com/png.latex?x%20=%20n"> is included.)</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">gap_table <span class="ot" style="color: #003B4F;
 background-color: null;
@@ -756,6 +762,540 @@ Tip
   <guid>https://www.statmania.info/blog/posts/binomial-approximated-by-poisson.html</guid>
   <pubDate>Mon, 02 Nov 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/binom.jpeg" medium="image" type="image/jpeg"/>
+</item>
+<item>
+  <title>The U-Shaped Probability Distribution: Meaning, Examples and R Code</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/u-shaped-probability-distribution.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/u-shaped-probability-distribution.svg" class="img-fluid figure-img" alt="A U-shaped Beta(0.5, 0.5) density that is high at both ends and low in the middle, with a dashed bell curve peaking in the middle for contrast."></p>
+<figcaption>A U-shaped density (solid) compared with a bell curve (dashed).</figcaption>
+</figure>
+</div>
+<p>A <strong>U-shaped distribution</strong> exists, and it is the opposite of a bell curve. Most of the observations lie near the two extremes of the scale, and very few fall in the middle. On a histogram or density plot it forms a literal “U”.</p>
+<section id="key-features" class="level2">
+<h2 class="anchored" data-anchor-id="key-features">Key Features</h2>
+<ul>
+<li><strong>Two peaks at the extremes.</strong> The highest density is at the minimum and the maximum, and the lowest is in the middle. (Strictly, the ends are the modes, and the middle is the least likely region.)</li>
+<li><strong>Large spread.</strong> Values are pushed away from the centre, so the variance is large for the range of the data.</li>
+<li><strong>A misleading average.</strong> The mean usually sits in the middle, exactly where few observations are. It describes almost nobody.</li>
+<li><strong>Polarisation.</strong> The shape signals scenarios with little or no middle ground.</li>
+</ul>
+</section>
+<section id="real-world-examples" class="level2">
+<h2 class="anchored" data-anchor-id="real-world-examples">Real-World Examples</h2>
+<section id="customer-reviews" class="level3">
+<h3 class="anchored" data-anchor-id="customer-reviews">Customer reviews</h3>
+<p>Online product ratings often look U-shaped. Customers with an average experience rarely write a review, while those with an extreme experience feel motivated to.</p>
+<ul>
+<li><strong>Left peak:</strong> broken items or terrible service (1-star reviews).</li>
+<li><strong>Right peak:</strong> customers who loved the product (5-star reviews).</li>
+<li><strong>The dip:</strong> very few 2, 3 or 4-star reviews.</li>
+</ul>
+</section>
+<section id="political-opinion" class="level3">
+<h3 class="anchored" data-anchor-id="political-opinion">Political opinion</h3>
+<p>On a controversial law, opinion in a polarised climate can split into two camps.</p>
+<ul>
+<li><strong>Left peak:</strong> voters who strongly oppose it.</li>
+<li><strong>Right peak:</strong> voters who strongly support it.</li>
+<li><strong>The dip:</strong> few moderate or undecided voters.</li>
+</ul>
+</section>
+<section id="cloud-cover" class="level3">
+<h3 class="anchored" data-anchor-id="cloud-cover">Cloud cover</h3>
+<p>Cloud cover is measured in oktas, from 0 (clear sky) to 8 (fully overcast). In many places the sky tends to be either clear or overcast.</p>
+<ul>
+<li><strong>Left peak:</strong> clear days (0 oktas).</li>
+<li><strong>Right peak:</strong> fully overcast days (8 oktas).</li>
+<li><strong>The dip:</strong> days with intermediate cover are comparatively rare.</li>
+</ul>
+</section>
+</section>
+<section id="the-mathematical-model-beta-distribution" class="level2">
+<h2 class="anchored" data-anchor-id="the-mathematical-model-beta-distribution">The Mathematical Model: Beta Distribution</h2>
+<p>A U shape on the interval from 0 to 1 is most commonly modelled with the <strong>Beta distribution</strong>, <img src="https://latex.codecogs.com/png.latex?%5Ctext%7BBeta%7D(%5Calpha,%20%5Cbeta)">, whose density is</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0Af(x)%20=%20%5Cfrac%7Bx%5E%7B%5Calpha%20-%201%7D%20(1%20-%20x)%5E%7B%5Cbeta%20-%201%7D%7D%7BB(%5Calpha,%20%5Cbeta)%7D,%20%5Cqquad%200%20%3C%20x%20%3C%201.%0A"></p>
+<p>When both shape parameters are below one (<img src="https://latex.codecogs.com/png.latex?%5Calpha%20%3C%201"> and <img src="https://latex.codecogs.com/png.latex?%5Cbeta%20%3C%201">), the exponents <img src="https://latex.codecogs.com/png.latex?%5Calpha%20-%201"> and <img src="https://latex.codecogs.com/png.latex?%5Cbeta%20-%201"> are negative. The density then shoots up towards infinity at <img src="https://latex.codecogs.com/png.latex?x%20=%200"> and <img src="https://latex.codecogs.com/png.latex?x%20=%201"> and dips in the middle. The case <img src="https://latex.codecogs.com/png.latex?%5Ctext%7BBeta%7D(0.5,%200.5)"> is also called the <strong>arcsine distribution</strong>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Shape parameters</th>
+<th>Shape of the density</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><img src="https://latex.codecogs.com/png.latex?%5Calpha%20%3C%201">, <img src="https://latex.codecogs.com/png.latex?%5Cbeta%20%3C%201"></td>
+<td>U-shaped</td>
+</tr>
+<tr class="even">
+<td><img src="https://latex.codecogs.com/png.latex?%5Calpha%20=%20%5Cbeta%20=%201"></td>
+<td>Flat (uniform)</td>
+</tr>
+<tr class="odd">
+<td><img src="https://latex.codecogs.com/png.latex?%5Calpha%20%3E%201">, <img src="https://latex.codecogs.com/png.latex?%5Cbeta%20%3E%201"></td>
+<td>Bell-shaped (one peak inside)</td>
+</tr>
+<tr class="even">
+<td><img src="https://latex.codecogs.com/png.latex?%5Calpha%20%3C%201">, <img src="https://latex.codecogs.com/png.latex?%5Cbeta%20%5Cge%201"> (or the reverse)</td>
+<td>J-shaped (one peak at one end)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="plotting-the-u-shape-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="plotting-the-u-shape-in-r">Plotting the U Shape in R</h2>
+<p>First we draw the density of <img src="https://latex.codecogs.com/png.latex?%5Ctext%7BBeta%7D(0.5,%200.5)"> with <code>dbeta()</code>. The density is infinite at exactly 0 and 1, so we plot just inside the interval and cut the vertical axis.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)</span>
+<span id="cb1-2"></span>
+<span id="cb1-3">x <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.003</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.997</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length.out =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1000</span>)</span>
+<span id="cb1-4">u <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> x, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">density =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dbeta</span>(x, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>))</span>
+<span id="cb1-5"></span>
+<span id="cb1-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(u, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(x, density)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_line</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"royalblue"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.2</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">coord_cartesian</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ylim =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"U-shaped Beta(0.5, 0.5) density"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Value"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Density"</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/u-shaped-probability-distribution_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="624"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="comparing-four-beta-shapes" class="level3">
+<h3 class="anchored" data-anchor-id="comparing-four-beta-shapes">Comparing Four Beta Shapes</h3>
+<p>Changing the parameters moves us between the shapes in the table above.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">shapes <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">a =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">b =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb2-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">factor</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sprintf</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Beta(%g, %g)"</span>, a, b), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">levels =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sprintf</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Beta(%g, %g)"</span>, a, b))) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb2-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">crossing</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.01</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.99</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length.out =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">400</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb2-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">density =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dbeta</span>(x, a, b))</span>
+<span id="cb2-5"></span>
+<span id="cb2-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(shapes, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(x, density)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb2-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_line</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"royalblue"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb2-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">facet_wrap</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> label) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb2-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">coord_cartesian</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ylim =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb2-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"From U-shaped to J-shaped to bell-shaped"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Value"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Density"</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/u-shaped-probability-distribution_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="simulating-u-shaped-data" class="level2">
+<h2 class="anchored" data-anchor-id="simulating-u-shaped-data">Simulating U-Shaped Data</h2>
+<p>We draw random values with <code>rbeta()</code> and compare the histogram with the true density.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb3-2">sim <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">value =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbeta</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10000</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>))</span>
+<span id="cb3-3"></span>
+<span id="cb3-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(sim, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(value)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_histogram</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">after_stat</span>(density)), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bins =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span>,</span>
+<span id="cb3-6">                 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"lightblue"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_line</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> u, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(x, density), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"royalblue"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">coord_cartesian</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ylim =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Simulated U-shaped data"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Value"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Density"</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/u-shaped-probability-distribution_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="624"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="the-mean-hides-the-story" class="level2">
+<h2 class="anchored" data-anchor-id="the-mean-hides-the-story">The Mean Hides the Story</h2>
+<p>For this data the mean is about 0.5, the centre of the scale. Let’s see how many observations are actually near it.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(sim<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>value)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.5060249</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># share of values in the middle fifth, 0.4 to 0.6</span></span>
+<span id="cb6-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(sim<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>value <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.4</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span> sim<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>value <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.6</span>)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1278</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># share of values in the outer fifths (below 0.1 or above 0.9)</span></span>
+<span id="cb8-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(sim<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>value <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> sim<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>value <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.9</span>)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.4135</code></pre>
+</div>
+</div>
+<p>A flat (uniform) distribution would put 20% of values in the middle fifth, and a bell curve far more. Here only about 13% are there, while about 41% lie in the outer tenths at the two ends. The average describes a value that few observations are close to.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When a histogram looks U-shaped, report the two groups separately, or the share in each tail, instead of a single mean and standard deviation.</p>
+</div>
+</div>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<ul>
+<li>A U-shaped distribution has its highest density at both extremes and its lowest in the middle.</li>
+<li>It appears when a population splits into two camps, as in polarised opinions or extreme ratings.</li>
+<li>The Beta distribution with both shape parameters below one is the standard model.</li>
+<li>The mean is a poor summary, so describe the two ends instead.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>R</category>
+  <category>Statistics</category>
+  <category>Probability</category>
+  <guid>https://www.statmania.info/blog/posts/u-shaped-probability-distribution.html</guid>
+  <pubDate>Mon, 02 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/u-shaped-probability-distribution.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 <item>
   <title>Committing with Git While an AI Coding Agent Is Working</title>
@@ -8104,1029 +8644,6 @@ Tip
   <guid>https://www.statmania.info/blog/posts/recursion-with-c-examples.html</guid>
   <pubDate>Wed, 28 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/c-recursion-examples.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Stack Overflow Explained, with Examples from C, R and Python</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/stack-overflow-explained-withexamples-from-c-r-python.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/stack-overflow-explained.svg" class="img-fluid figure-img" alt="A column of stack frames growing downward past a dashed stack-limit line, with notes for C, R and Python."></p>
-<figcaption>Frames pile up on the call stack until they pass its limit.</figcaption>
-</figure>
-</div>
-<p>This post follows <a href="../posts/recursion-with-c-examples.html">Recursion in C</a> and <a href="../posts/r-recursion.html">Recursion in R</a>: what happens when recursion goes too deep, and what to do about it.</p>
-<section id="what-a-stack-overflow-actually-is" class="level2">
-<h2 class="anchored" data-anchor-id="what-a-stack-overflow-actually-is">What a stack overflow actually is</h2>
-<p>Every function call pushes a <strong>stack frame</strong> onto the <strong>call stack</strong>, a block of memory holding that call’s parameters, local variables, and return address. The stack is a <strong>fixed-size region</strong> decided when the program starts (typically <strong>8 MB</strong> for the main thread on Linux and <strong>1 MB</strong> on Windows).</p>
-<pre><code>   high address
-   ┌──────────────┐
-   │  frame main  │
-   ├──────────────┤
-   │  frame f(3)  │  ← each recursive call pushes another frame
-   ├──────────────┤
-   │  frame f(2)  │
-   ├──────────────┤
-   │  frame f(1)  │
-   ├──────────────┤
-   │     ...      │  ← keep pushing → grow downward
-   └──────────────┘
-   low address         ← the stack limit is here</code></pre>
-<p>When frames keep piling up past that limit, the program <strong>writes off the end of the stack</strong>: a <strong>stack overflow</strong>. What happens next depends on the language’s runtime:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Language</th>
-<th>On overflow</th>
-<th>Catchable?</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>C</strong></td>
-<td>Segfault (SIGSEGV) — process dies</td>
-<td>❌ No</td>
-</tr>
-<tr class="even">
-<td><strong>R</strong></td>
-<td><code>Error: evaluation nested too deeply</code> (or <code>node stack overflow</code> when <code>expressions</code> is raised)</td>
-<td>✅ Yes (an R error)</td>
-</tr>
-<tr class="odd">
-<td><strong>R</strong> (C stack exhausted)</td>
-<td><code>Error: C stack usage … is too close to the limit</code>, can crash</td>
-<td>⚠️ Sometimes</td>
-</tr>
-<tr class="even">
-<td><strong>Python</strong></td>
-<td><code>RecursionError</code></td>
-<td>✅ Yes (a Python exception)</td>
-</tr>
-</tbody>
-</table>
-<p>The <strong>cause is always one of two things</strong>: 1. <strong>No base case</strong>, or a base case never reached → infinite recursion. 2. <strong>A correct but very deep recursion</strong> (depth ~10⁵–10⁶) → legitimate algorithm, too many frames.</p>
-<hr>
-</section>
-<section id="c-dies-with-a-segfault" class="level2">
-<h2 class="anchored" data-anchor-id="c-dies-with-a-segfault">C: dies with a segfault</h2>
-<section id="infinite-recursion-no-base-case" class="level3">
-<h3 class="anchored" data-anchor-id="infinite-recursion-no-base-case">Infinite recursion (no base case)</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb2-2"></span>
-<span id="cb2-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> sum<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> n<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb2-4">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> sum<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// ❌ never stops</span></span>
-<span id="cb2-5"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb2-6"></span>
-<span id="cb2-7"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb2-8">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> sum<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">));</span></span>
-<span id="cb2-9">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb2-10"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<pre><code>$ gcc so1.c -o so1 &amp;&amp; ./so1
-Segmentation fault (core dumped)</code></pre>
-<p>Each call pushes a frame; after a few hundred thousand frames (depending on frame size and stack limit), the stack runs out and the CPU faults on the write. There is <strong>no error message and no recovery</strong>; the process is just gone.</p>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>With optimisation the result can differ. Compiled with <code>gcc -O2</code>, this same program did <strong>not</strong> crash on our machine: it ran forever, because the compiler turned the tail call into a loop. A runaway recursion is a bug either way, but do not count on a segfault to reveal it.</p>
-</div>
-</div>
-</section>
-<section id="a-correct-recursion-thats-still-too-deep" class="level3">
-<h3 class="anchored" data-anchor-id="a-correct-recursion-thats-still-too-deep">A “correct” recursion that’s still too deep</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> sum_to<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> n<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb4-2">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>          <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// ✅ proper base case</span></span>
-<span id="cb4-3">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> sum_to<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb4-4"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb4-5"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// sum_to(10000000);  → segfault at -O0</span></span></code></pre></div></div>
-<p>The base case is fine, but <strong>depth = n</strong> frames. At 10⁷ calls × a few dozen bytes per frame, that is hundreds of MB of stack, far past the 8 MB limit. We compiled it with plain <code>gcc</code> and it segfaulted.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>With <code>gcc -O2</code> the same program ran without crashing, because GCC rewrote the recursion as a loop. (It printed <code>-2004260032</code>, since the true sum overflows <code>int</code>; use <code>long</code> for real work.) The C standard does not promise this optimisation, so the code is still unsafe.</p>
-</div>
-</div>
-</section>
-<section id="the-sneakier-version-huge-local-arrays" class="level3">
-<h3 class="anchored" data-anchor-id="the-sneakier-version-huge-local-arrays">The sneakier version: huge local arrays</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span> recurse<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> n<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb5-2">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> buffer<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100000</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">];</span>            <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// ~400 KB per frame!</span></span>
-<span id="cb5-3">    recurse<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb5-4"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>About <strong>20 calls</strong> are enough to fill an 8 MB stack, because each frame carries a 400 KB local array. This is why frame size matters as much as depth. (We ran a version that recurses 1000 levels; it segfaulted.)</p>
-<p><strong>Inspect your limits:</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">ulimit</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-s</span>              <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># stack size in KB (e.g. 8192 = 8 MB)</span></span>
-<span id="cb6-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">gcc</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-fstack-usage</span> ...  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># per-function frame sizes in a .su file</span></span></code></pre></div></div>
-<hr>
-</section>
-</section>
-<section id="r-usually-an-r-error-sometimes-a-c-stack-crash" class="level2">
-<h2 class="anchored" data-anchor-id="r-usually-an-r-error-sometimes-a-c-stack-crash">R: usually an R error, sometimes a C-stack crash</h2>
-<section id="infinite-recursion-rs-expressions-limit" class="level3">
-<h3 class="anchored" data-anchor-id="infinite-recursion-rs-expressions-limit">Infinite recursion → R’s <code>expressions</code> limit</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">f <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(n) n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">f</span>(n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb7-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">f</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span></code></pre></div></div>
-<pre><code>Error: evaluation nested too deeply: infinite recursion / options(expressions=)?</code></pre>
-<p>R doesn’t let nesting run away silently: it counts nested expressions and stops at <code>options(expressions)</code>, which defaults to <strong>5000</strong>. This is a <strong>catchable R error</strong> (you can wrap it in <code>tryCatch</code>), not a process crash.</p>
-</section>
-<section id="a-legitimate-deep-recursion-that-still-fails" class="level3">
-<h3 class="anchored" data-anchor-id="a-legitimate-deep-recursion-that-still-fails">A legitimate deep recursion that still fails</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">sum_to <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(n) <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> (n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>) <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">else</span> n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum_to</span>(n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb9-2"></span>
-<span id="cb9-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum_to</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>)     <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># fine</span></span>
-<span id="cb9-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum_to</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10000</span>)   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Error: evaluation nested too deeply</span></span></code></pre></div></div>
-<p>You can raise the limit:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">options</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">expressions =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100000</span>)</span>
-<span id="cb10-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum_to</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10000</span>)    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># works</span></span>
-<span id="cb10-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum_to</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100000</span>)   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Error: node stack overflow</span></span></code></pre></div></div>
-<p>R 4.6 stopped the second call with <code>node stack overflow</code>, R’s own evaluation stack. Other builds, or functions with larger frames, can instead hit the <strong>C stack</strong> and report:</p>
-<pre><code>Error: C stack usage  7970000 is too close to the limit</code></pre>
-<p>That is the <em>actual</em> OS stack filling, closer to C’s situation. Raising <code>expressions</code> does not grow the stack; it only moves the point where R complains.</p>
-<p><strong>Inspect it:</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">getOption</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"expressions"</span>)   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># 5000 by default</span></span>
-<span id="cb12-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">options</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">expressions =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20000</span>)</span></code></pre></div></div>
-<hr>
-</section>
-</section>
-<section id="python-a-clean-catchable-recursionerror" class="level2">
-<h2 class="anchored" data-anchor-id="python-a-clean-catchable-recursionerror">Python: a clean, catchable <code>RecursionError</code></h2>
-<section id="infinite-recursion" class="level3">
-<h3 class="anchored" data-anchor-id="infinite-recursion">Infinite recursion</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">def</span> sum_to(n):</span>
-<span id="cb13-2">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> sum_to(n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)     <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># no base case</span></span>
-<span id="cb13-3"></span>
-<span id="cb13-4">sum_to(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>)</span></code></pre></div></div>
-<pre><code>RecursionError: maximum recursion depth exceeded</code></pre>
-<p>Python counts <strong>Python frames</strong> and stops at <code>sys.getrecursionlimit()</code> — default <strong>1000</strong>. Unlike C, this is a normal exception you can catch:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">try</span>:</span>
-<span id="cb15-2">    sum_to(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>)</span>
-<span id="cb15-3"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">except</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">RecursionError</span>:</span>
-<span id="cb15-4">    <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"too deep!"</span>)</span></code></pre></div></div>
-</section>
-<section id="the-trap-raising-the-limit-can-segfault" class="level3">
-<h3 class="anchored" data-anchor-id="the-trap-raising-the-limit-can-segfault">The trap: raising the limit can segfault</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> sys</span>
-<span id="cb16-2">sys.setrecursionlimit(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000000</span>)   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># ⚠️ dangerous</span></span>
-<span id="cb16-3">sum_to(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000000</span>)                  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># segfault, not RecursionError</span></span></code></pre></div></div>
-<p><code>setrecursionlimit</code> only raises <strong>Python’s counter</strong>. The <strong>C stack</strong> behind it is still ~8 MB. If CPython’s own C-level recursion runs out before the Python counter trips, you get a <strong>hard segfault</strong>, with no exception and no message. On Python 3.10 this exact example dumped core on our machine. (Recent CPython versions add C-stack guards that convert some of these to <code>RecursionError</code>, but it is not safe to rely on.)</p>
-</section>
-<section id="a-correct-deep-recursion-that-still-fails" class="level3">
-<h3 class="anchored" data-anchor-id="a-correct-deep-recursion-that-still-fails">A correct deep recursion that still fails</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">def</span> sum_to(n):</span>
-<span id="cb17-2">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>:</span>
-<span id="cb17-3">        <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span></span>
-<span id="cb17-4">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> sum_to(n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb17-5"></span>
-<span id="cb17-6">sum_to(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>)     <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># ✅ 5050</span></span>
-<span id="cb17-7">sum_to(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10000</span>)   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># ❌ RecursionError: maximum recursion depth exceeded in comparison</span></span></code></pre></div></div>
-<hr>
-</section>
-</section>
-<section id="how-to-avoid-it-in-any-language" class="level2">
-<h2 class="anchored" data-anchor-id="how-to-avoid-it-in-any-language">How to avoid it, in any language</h2>
-<section id="always-have-a-reachable-base-case-that-shrinks-the-problem" class="level3">
-<h3 class="anchored" data-anchor-id="always-have-a-reachable-base-case-that-shrinks-the-problem">1. Always have a reachable base case that shrinks the problem</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb18-1"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> sum<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> n<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb18-2">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// base case</span></span>
-<span id="cb18-3">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> sum<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// shrinks toward base</span></span>
-<span id="cb18-4"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>If the argument doesn’t move toward the base on every call, it’s infinite.</p>
-</section>
-<section id="convert-linear-recursion-to-a-loop-the-best-fix-when-you-can" class="level3">
-<h3 class="anchored" data-anchor-id="convert-linear-recursion-to-a-loop-the-best-fix-when-you-can">2. Convert linear recursion to a loop (the best fix when you can)</h3>
-<p>This is the real solution for <code>sum</code>, <code>factorial</code>, and any “n → n−1” chain. Depth O(n) becomes depth O(1):</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb19-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// C</span></span>
-<span id="cb19-2"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">long</span> sum_to<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> n<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb19-3">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">long</span> s <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb19-4">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> n<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span> s <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+=</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb19-5">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> s<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb19-6"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Python</span></span>
-<span id="cb20-2"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">def</span> sum_to(n):</span>
-<span id="cb20-3">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">sum</span>(<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">range</span>(n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>))     <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># or a loop</span></span></code></pre></div></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># R</span></span>
-<span id="cb21-2">sum_to <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(n) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">seq_len</span>(n))</span></code></pre></div></div>
-<p>No stack growth at all — the loop lives in <strong>one frame</strong>.</p>
-</section>
-<section id="use-an-explicit-stack-manual-recursion" class="level3">
-<h3 class="anchored" data-anchor-id="use-an-explicit-stack-manual-recursion">3. Use an explicit stack (manual recursion)</h3>
-<p>For trees/graphs where recursion is natural, keep your own stack on the heap, which is much larger than the call stack:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">def</span> dfs(root):</span>
-<span id="cb22-2">    stack <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> [root]</span>
-<span id="cb22-3">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">while</span> stack:</span>
-<span id="cb22-4">        node <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> stack.pop()</span>
-<span id="cb22-5">        visit(node)</span>
-<span id="cb22-6">        stack.extend(node.children)   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># no call frames, no depth limit</span></span></code></pre></div></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb23-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// C — same idea</span></span>
-<span id="cb23-2"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span> dfs<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>Node <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>root<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb23-3">    Node <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>stack<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">];</span></span>
-<span id="cb23-4">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> top <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb23-5">    stack<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>top<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++]</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> root<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb23-6">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">while</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>top <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb23-7">        Node <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> stack<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[--</span>top<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">];</span></span>
-<span id="cb23-8">        visit<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>n<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb23-9">        <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> n<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-&gt;</span>nchild<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span></span>
-<span id="cb23-10">            stack<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>top<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++]</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> n<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-&gt;</span>child<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">];</span></span>
-<span id="cb23-11">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb23-12"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-</section>
-<section id="halve-the-problem-instead-of-decrementing-it" class="level3">
-<h3 class="anchored" data-anchor-id="halve-the-problem-instead-of-decrementing-it">4. Halve the problem instead of decrementing it</h3>
-<p>The <code>power</code> example from the <a href="../posts/recursion-with-c-examples.html">C recursion post</a> is the template. <code>n → n−1</code> gives depth <strong>n</strong>; <code>n → n/2</code> gives depth <strong>log₂ n</strong> — a million-step problem becomes ~20 frames:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">def</span> power(x, n):</span>
-<span id="cb24-2">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>:</span>
-<span id="cb24-3">        <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span></span>
-<span id="cb24-4">    half <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> power(x, n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">//</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>)     <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># depth = log2(n), not n</span></span>
-<span id="cb24-5">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> half <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> half <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">else</span> x <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> half <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> half</span></code></pre></div></div>
-<p><code>power(2, 1000000)</code> recurses about 20 levels (we ran it in Python without trouble). <code>sum_to(1000000)</code> with <code>n-1</code> would need a million.</p>
-</section>
-<section id="memoisation-fixes-redundant-recursion-not-deep-recursion" class="level3">
-<h3 class="anchored" data-anchor-id="memoisation-fixes-redundant-recursion-not-deep-recursion">5. Memoisation: fixes <em>redundant</em> recursion, not deep recursion</h3>
-<p>Naive Fibonacci is O(2ⁿ) calls but only depth n.&nbsp;Memoizing cuts the <em>number</em> of calls dramatically, but <strong>does not reduce depth</strong> — <code>fib(10000)</code> still recurses 10,000 levels. Use it for speed, not for stack safety.</p>
-</section>
-<section id="trampoline-portable-fake-tail-recursion" class="level3">
-<h3 class="anchored" data-anchor-id="trampoline-portable-fake-tail-recursion">6. Trampoline: portable “fake tail recursion”</h3>
-<p>C, R, and Python <strong>do not guarantee tail-call optimization (TCO)</strong>. So <code>return f(x)</code> still pushes a frame. A <strong>trampoline</strong> turns recursion into a loop:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">def</span> trampoline(f, <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>args):</span>
-<span id="cb25-2">    result <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> f(<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>args)</span>
-<span id="cb25-3">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">while</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">callable</span>(result):</span>
-<span id="cb25-4">        result <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> result()</span>
-<span id="cb25-5">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> result</span>
-<span id="cb25-6"></span>
-<span id="cb25-7"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">def</span> sum_to(n, acc<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>):</span>
-<span id="cb25-8">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>:</span>
-<span id="cb25-9">        <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> acc</span>
-<span id="cb25-10">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">lambda</span>: sum_to(n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, acc <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> n)   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># return a thunk, don't call</span></span>
-<span id="cb25-11"></span>
-<span id="cb25-12"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(trampoline(sum_to, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000000</span>))          <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># 500000500000, no RecursionError</span></span></code></pre></div></div>
-<p>Each “recursive” step returns a thunk and the loop calls it, so only <strong>one frame</strong> is ever live. This is how you do deep recursion in Python without touching the limit.</p>
-</section>
-<section id="last-resort-increase-the-stack-a-band-aid-not-a-fix" class="level3">
-<h3 class="anchored" data-anchor-id="last-resort-increase-the-stack-a-band-aid-not-a-fix">7. Last resort: increase the stack (a band-aid, not a fix)</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">ulimit</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-s</span> 65536        <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Linux: 64 MB stack for this shell/process</span></span></code></pre></div></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> threading</span>
-<span id="cb27-2">threading.stack_size(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">64</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1024</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1024</span>)   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Python: run in a big-stack thread</span></span></code></pre></div></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># no clean per-script control of the C stack: rewrite the function instead</span></span></code></pre></div></div>
-<p>This buys headroom but <strong>doesn’t remove the bug</strong> — a truly infinite recursion still overflows, just later. Treat it as a stopgap while you rewrite.</p>
-<hr>
-</section>
-</section>
-<section id="summary-what-to-do" class="level2">
-<h2 class="anchored" data-anchor-id="summary-what-to-do">Summary: what to do</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Situation</th>
-<th>Fix</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>No base case / never reached</td>
-<td>Add one; ensure the argument moves toward it</td>
-</tr>
-<tr class="even">
-<td>Simple linear recursion (<code>n-1</code> chain)</td>
-<td><strong>Rewrite as a loop</strong> — depth O(1)</td>
-</tr>
-<tr class="odd">
-<td>Tree/graph traversal</td>
-<td><strong>Explicit stack</strong> on the heap</td>
-</tr>
-<tr class="even">
-<td>Divide-and-conquer</td>
-<td>Ensure it <strong>halves</strong> (depth log n)</td>
-</tr>
-<tr class="odd">
-<td>Deep recursion, can’t rewrite easily</td>
-<td><strong>Trampoline</strong> (portable; no TCO in C/R/Python)</td>
-</tr>
-<tr class="even">
-<td>Need more headroom temporarily</td>
-<td>Raise stack (<code>ulimit -s</code>, thread stack size) — stopgap</td>
-</tr>
-<tr class="odd">
-<td>Just need speed</td>
-<td>Memoise, but it will not fix depth</td>
-</tr>
-</tbody>
-</table>
-<blockquote class="blockquote">
-<p><strong>The one-line rule:</strong> recursion depth is a resource like memory, and O(n) depth is a bomb for large <code>n</code>. Prefer <strong>iteration</strong> (O(1) depth), <strong>halving</strong> (O(log n) depth), or an <strong>explicit heap stack</strong> whenever the input can be large. Languages differ in <em>how loudly</em> they fail (C segfaults, Python and R raise catchable errors), but none of them will save us from a bad recursion design.</p>
-</blockquote>
-
-
-</section>
-
- ]]></description>
-  <category>C</category>
-  <category>R</category>
-  <category>Python</category>
-  <category>Programming</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/stack-overflow-explained-withexamples-from-c-r-python.html</guid>
-  <pubDate>Wed, 28 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/stack-overflow-explained.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>

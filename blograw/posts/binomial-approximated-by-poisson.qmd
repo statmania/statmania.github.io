@@ -46,9 +46,25 @@ The two variances are nearly equal exactly when $1 - p \approx 1$, that is, when
 
 A factory produces lightbulbs with a defect rate of 2% ($p = 0.02$). We inspect a random sample of $n = 100$ bulbs. What is the probability that exactly 3 are defective?
 
-- **Setup:** $\lambda = np = 100 \times 0.02 = 2$.
-- **Binomial:** $P(X = 3) = \binom{100}{3} (0.02)^3 (0.98)^{97} \approx 0.18228$.
-- **Poisson:** $P(X = 3) = \dfrac{e^{-2} \, 2^3}{3!} \approx 0.18045$.
+**Setup:** $\lambda = np = 100 \times 0.02 = 2$.
+
+**Binomial:**
+
+$$
+\begin{aligned}
+P(X = 3) &= \binom{100}{3} (0.02)^3 (0.98)^{97} \\
+&\approx 0.18228
+\end{aligned}
+$$
+
+**Poisson:**
+
+$$
+\begin{aligned}
+P(X = 3) &= \frac{e^{-2} \, 2^3}{3!} \\
+&\approx 0.18045
+\end{aligned}
+$$
 
 The approximation is off by less than $0.002$.
 
@@ -56,9 +72,27 @@ The approximation is off by less than $0.002$.
 
 The probability that a page has a major printing error is 0.5% ($p = 0.005$). In a book of $n = 500$ pages, what is the probability that at most 1 page has an error?
 
-- **Setup:** $\lambda = np = 500 \times 0.005 = 2.5$.
-- **Binomial:** $P(X \le 1) = P(X = 0) + P(X = 1) \approx 0.08157 + 0.20495 = 0.28653$.
-- **Poisson:** $P(X \le 1) = e^{-2.5} + 2.5\,e^{-2.5} \approx 0.08208 + 0.20521 = 0.28730$.
+**Setup:** $\lambda = np = 500 \times 0.005 = 2.5$.
+
+**Binomial:**
+
+$$
+\begin{aligned}
+P(X \le 1) &= P(X = 0) + P(X = 1) \\
+&\approx 0.08157 + 0.20495 \\
+&\approx 0.28653
+\end{aligned}
+$$
+
+**Poisson:**
+
+$$
+\begin{aligned}
+P(X \le 1) &= e^{-2.5} + 2.5\,e^{-2.5} \\
+&\approx 0.08208 + 0.20521 \\
+&\approx 0.28730
+\end{aligned}
+$$
 
 The difference is only about $0.0008$.
 
@@ -130,7 +164,16 @@ For the rare-event cases the largest gap is tiny, and it shrinks further as $n$ 
 
 ## Fixed n, Changing p
 
-Two summaries measure the difference over all values of $x$: the **largest gap** between the two probabilities, and the **total variation distance**, $\tfrac12 \sum_x |P_{\text{bin}}(x) - P_{\text{pois}}(x)|$. The latter is the largest error we can make in the probability of any event, so it is the more honest summary. (The Poisson mass beyond $x = n$ is included.)
+Two summaries measure the difference over all values of $x$:
+
+- the **largest gap** between the two probabilities, and
+- the **total variation distance**,
+
+$$
+\tfrac12 \sum_x \left| P_{\text{bin}}(x) - P_{\text{pois}}(x) \right|.
+$$
+
+The total variation distance is the largest error we can make in the probability of any event, so it is the more honest summary. (The Poisson mass beyond $x = n$ is included.)
 
 ```{r}
 gap_table <- function(n, p) {
