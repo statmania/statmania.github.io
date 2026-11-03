@@ -10,7 +10,753 @@
 <atom:link href="https://www.statmania.info/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Posts on statistics theory, R &amp; Python, and developer tips from Stat Mania.</description>
 <generator>quarto-1.9.38</generator>
-<lastBuildDate>Sun, 01 Nov 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Mon, 02 Nov 2026 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>When Can the Binomial Distribution Be Approximated by the Poisson?</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/binomial-approximated-by-poisson.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/binom.jpeg" class="img-fluid figure-img" alt="A statistician at a desk with a laptop, printed binomial distribution charts and a blackboard with the binomial formula behind."></p>
+<figcaption>Working with binomial probabilities.</figcaption>
+</figure>
+</div>
+<p>A binomial distribution <img src="https://latex.codecogs.com/png.latex?B(n,%20p)"> can be approximated reliably by a Poisson distribution <img src="https://latex.codecogs.com/png.latex?P(%5Clambda)"> when the number of trials <img src="https://latex.codecogs.com/png.latex?n"> is large and the probability of success <img src="https://latex.codecogs.com/png.latex?p"> is small. In other words, the approximation suits <strong>rare events</strong> counted over many trials. Let’s see the rule, two worked examples, and a picture of how good the fit is.</p>
+<section id="why-it-works" class="level2">
+<h2 class="anchored" data-anchor-id="why-it-works">Why It Works</h2>
+<p>The binomial probability of <img src="https://latex.codecogs.com/png.latex?x"> successes is</p>
+<p><img src="https://latex.codecogs.com/png.latex?P(X%20=%20x)%20=%20%5Cbinom%7Bn%7D%7Bx%7D%20p%5Ex%20(1-p)%5E%7Bn-x%7D."></p>
+<p>Suppose <img src="https://latex.codecogs.com/png.latex?n"> grows and <img src="https://latex.codecogs.com/png.latex?p"> shrinks so that the mean <img src="https://latex.codecogs.com/png.latex?np%20=%20%5Clambda"> stays fixed. Then this expression tends to</p>
+<p><img src="https://latex.codecogs.com/png.latex?P(X%20=%20x)%20=%20%5Cfrac%7Be%5E%7B-%5Clambda%7D%20%5Clambda%5Ex%7D%7Bx!%7D,"></p>
+<p>which is the Poisson probability. So the Poisson distribution is the limit of the binomial for many trials, each with a tiny chance of success.</p>
+</section>
+<section id="the-rule-of-thumb" class="level2">
+<h2 class="anchored" data-anchor-id="the-rule-of-thumb">The Rule of Thumb</h2>
+<p>The approximation is accurate when:</p>
+<ul>
+<li><img src="https://latex.codecogs.com/png.latex?n%20%5Cge%2020"> (ideally <img src="https://latex.codecogs.com/png.latex?n%20%5Cge%20100">), and</li>
+<li><img src="https://latex.codecogs.com/png.latex?p%20%5Cle%200.05"> (ideally <img src="https://latex.codecogs.com/png.latex?p%20%5Cle%200.01">).</li>
+</ul>
+<p>When these hold, we take the Poisson mean as <img src="https://latex.codecogs.com/png.latex?%5Clambda%20=%20np">.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Binomial</th>
+<th>Poisson approximation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Parameters</td>
+<td><img src="https://latex.codecogs.com/png.latex?n"> (trials), <img src="https://latex.codecogs.com/png.latex?p"> (probability)</td>
+<td><img src="https://latex.codecogs.com/png.latex?%5Clambda%20=%20np"> (average rate)</td>
+</tr>
+<tr class="even">
+<td>Mean</td>
+<td><img src="https://latex.codecogs.com/png.latex?np"></td>
+<td><img src="https://latex.codecogs.com/png.latex?%5Clambda%20=%20np"></td>
+</tr>
+<tr class="odd">
+<td>Variance</td>
+<td><img src="https://latex.codecogs.com/png.latex?np(1-p)"></td>
+<td><img src="https://latex.codecogs.com/png.latex?%5Clambda%20=%20np"></td>
+</tr>
+<tr class="even">
+<td><img src="https://latex.codecogs.com/png.latex?P(X%20=%20x)"></td>
+<td><img src="https://latex.codecogs.com/png.latex?%5Cbinom%7Bn%7D%7Bx%7D%20p%5Ex%20(1-p)%5E%7Bn-x%7D"></td>
+<td><img src="https://latex.codecogs.com/png.latex?%5Cdfrac%7Be%5E%7B-%5Clambda%7D%20%5Clambda%5Ex%7D%7Bx!%7D"></td>
+</tr>
+</tbody>
+</table>
+<p>The two variances are nearly equal exactly when <img src="https://latex.codecogs.com/png.latex?1%20-%20p%20%5Capprox%201">, that is, when <img src="https://latex.codecogs.com/png.latex?p"> is small. This is another way to see why a small <img src="https://latex.codecogs.com/png.latex?p"> is needed.</p>
+</section>
+<section id="example-1-product-defects" class="level2">
+<h2 class="anchored" data-anchor-id="example-1-product-defects">Example 1: Product Defects</h2>
+<p>A factory produces lightbulbs with a defect rate of 2% (<img src="https://latex.codecogs.com/png.latex?p%20=%200.02">). We inspect a random sample of <img src="https://latex.codecogs.com/png.latex?n%20=%20100"> bulbs. What is the probability that exactly 3 are defective?</p>
+<ul>
+<li><strong>Setup:</strong> <img src="https://latex.codecogs.com/png.latex?%5Clambda%20=%20np%20=%20100%20%5Ctimes%200.02%20=%202">.</li>
+<li><strong>Binomial:</strong> <img src="https://latex.codecogs.com/png.latex?P(X%20=%203)%20=%20%5Cbinom%7B100%7D%7B3%7D%20(0.02)%5E3%20(0.98)%5E%7B97%7D%20%5Capprox%200.18228">.</li>
+<li><strong>Poisson:</strong> <img src="https://latex.codecogs.com/png.latex?P(X%20=%203)%20=%20%5Cdfrac%7Be%5E%7B-2%7D%20%5C,%202%5E3%7D%7B3!%7D%20%5Capprox%200.18045">.</li>
+</ul>
+<p>The approximation is off by less than <img src="https://latex.codecogs.com/png.latex?0.002">.</p>
+</section>
+<section id="example-2-printing-errors" class="level2">
+<h2 class="anchored" data-anchor-id="example-2-printing-errors">Example 2: Printing Errors</h2>
+<p>The probability that a page has a major printing error is 0.5% (<img src="https://latex.codecogs.com/png.latex?p%20=%200.005">). In a book of <img src="https://latex.codecogs.com/png.latex?n%20=%20500"> pages, what is the probability that at most 1 page has an error?</p>
+<ul>
+<li><strong>Setup:</strong> <img src="https://latex.codecogs.com/png.latex?%5Clambda%20=%20np%20=%20500%20%5Ctimes%200.005%20=%202.5">.</li>
+<li><strong>Binomial:</strong> <img src="https://latex.codecogs.com/png.latex?P(X%20%5Cle%201)%20=%20P(X%20=%200)%20+%20P(X%20=%201)%20%5Capprox%200.08157%20+%200.20495%20=%200.28653">.</li>
+<li><strong>Poisson:</strong> <img src="https://latex.codecogs.com/png.latex?P(X%20%5Cle%201)%20=%20e%5E%7B-2.5%7D%20+%202.5%5C,e%5E%7B-2.5%7D%20%5Capprox%200.08208%20+%200.20521%20=%200.28730">.</li>
+</ul>
+<p>The difference is only about <img src="https://latex.codecogs.com/png.latex?0.0008">.</p>
+</section>
+<section id="checking-both-examples-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="checking-both-examples-in-r">Checking Both Examples in R</h2>
+<p><code>dbinom()</code> and <code>dpois()</code> give the exact probabilities, and <code>pbinom()</code> and <code>ppois()</code> the cumulative ones.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Example 1: P(X = 3), n = 100, p = 0.02</span></span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">binomial =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dbinom</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.02</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">poisson =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dpois</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>))</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> binomial   poisson 
+0.1822759 0.1804470 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Example 2: P(X &lt;= 1), n = 500, p = 0.005</span></span>
+<span id="cb3-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">binomial =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pbinom</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">500</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.005</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">poisson =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ppois</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2.5</span>))</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> binomial   poisson 
+0.2865263 0.2872975 </code></pre>
+</div>
+</div>
+<p>The same check in Python with <code>scipy</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> scipy.stats <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> stats</span>
+<span id="cb5-2"></span>
+<span id="cb5-3"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(stats.binom.pmf(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.02</span>), stats.poisson.pmf(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>))</span>
+<span id="cb5-4"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(stats.binom.cdf(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">500</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.005</span>), stats.poisson.cdf(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2.5</span>))</span></code></pre></div></div>
+</section>
+<section id="seeing-the-fit" class="level2">
+<h2 class="anchored" data-anchor-id="seeing-the-fit">Seeing the Fit</h2>
+<p>Let’s compare the two distributions for a good case and a bad case. In each panel the bars are the binomial probabilities and the points are the Poisson approximation with <img src="https://latex.codecogs.com/png.latex?%5Clambda%20=%20np">.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)</span>
+<span id="cb6-2"></span>
+<span id="cb6-3">compare <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(n, p, xmax) {</span>
+<span id="cb6-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>xmax,</span>
+<span id="cb6-5">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Binomial =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dbinom</span>(x, n, p),</span>
+<span id="cb6-6">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Poisson  =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dpois</span>(x, n <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> p),</span>
+<span id="cb6-7">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">case =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sprintf</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"n = %d, p = %s"</span>, n, p))</span>
+<span id="cb6-8">}</span>
+<span id="cb6-9"></span>
+<span id="cb6-10">both <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">bind_rows</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">compare</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.02</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>), <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">compare</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb6-11">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">case =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fct_inorder</span>(case))</span>
+<span id="cb6-12"></span>
+<span id="cb6-13"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(both, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(x)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-14">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_col</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> Binomial), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alpha =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.8</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-15">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> Poisson), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tomato"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-16">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">facet_wrap</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> case) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-17">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_x_continuous</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">breaks =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-18">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Binomial (bars) and its Poisson approximation (points)"</span>,</span>
+<span id="cb6-19">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"x"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Probability"</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/binomial-approximated-by-poisson_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>On the left (<img src="https://latex.codecogs.com/png.latex?n%20=%20100">, <img src="https://latex.codecogs.com/png.latex?p%20=%200.02">) the points sit on top of the bars. On the right (<img src="https://latex.codecogs.com/png.latex?n%20=%2010">, <img src="https://latex.codecogs.com/png.latex?p%20=%200.5">) the Poisson with <img src="https://latex.codecogs.com/png.latex?%5Clambda%20=%205"> is too spread out and has the wrong shape, because <img src="https://latex.codecogs.com/png.latex?p"> is far from small.</p>
+</section>
+<section id="how-close-is-it-the-largest-error" class="level2">
+<h2 class="anchored" data-anchor-id="how-close-is-it-the-largest-error">How Close Is It? The Largest Error</h2>
+<p>One number summarises the fit: the largest gap between the two probabilities over all <img src="https://latex.codecogs.com/png.latex?x">.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">max_gap <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(n, p) <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dbinom</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>n, n, p) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dpois</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>n, n <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> p)))</span>
+<span id="cb7-2"></span>
+<span id="cb7-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1000</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>),</span>
+<span id="cb7-4">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">p =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.02</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.01</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.002</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb7-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">lambda =</span> n <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> p,</span>
+<span id="cb7-6">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">max_gap =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">map2_dbl</span>(n, p, max_gap), <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>))</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 4
+      n     p lambda max_gap
+  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+1    20 0.05       1 0.00947
+2   100 0.02       2 0.00274
+3   100 0.01       1 0.00185
+4  1000 0.002      2 0.00027
+5    10 0.5        5 0.0706 </code></pre>
+</div>
+</div>
+<p>For the rare-event cases the largest gap is tiny, and it shrinks further as <img src="https://latex.codecogs.com/png.latex?n"> grows with <img src="https://latex.codecogs.com/png.latex?%5Clambda"> fixed. For <img src="https://latex.codecogs.com/png.latex?n%20=%2010">, <img src="https://latex.codecogs.com/png.latex?p%20=%200.5"> the gap is large, so we should not use the approximation there.</p>
+</section>
+<section id="fixed-n-changing-p" class="level2">
+<h2 class="anchored" data-anchor-id="fixed-n-changing-p">Fixed n, Changing p</h2>
+<p>Two summaries measure the difference over all values of <img src="https://latex.codecogs.com/png.latex?x">: the <strong>largest gap</strong> between the two probabilities, and the <strong>total variation distance</strong>, <img src="https://latex.codecogs.com/png.latex?%5Ctfrac12%20%5Csum_x%20%7CP_%7B%5Ctext%7Bbin%7D%7D(x)%20-%20P_%7B%5Ctext%7Bpois%7D%7D(x)%7C">. The latter is the largest error we can make in the probability of any event, so it is the more honest summary. (The Poisson mass beyond <img src="https://latex.codecogs.com/png.latex?x%20=%20n"> is included.)</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">gap_table <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(n, p) {</span>
+<span id="cb9-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> n, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">p =</span> p) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb9-3">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">lambda  =</span> n <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> p,</span>
+<span id="cb9-4">           <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">max_gap =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">map2_dbl</span>(n, p, max_gap),</span>
+<span id="cb9-5">           <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">tv_dist =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">map2_dbl</span>(n, p, <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(n, p)</span>
+<span id="cb9-6">             <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> (<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dbinom</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>n, n, p) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dpois</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>n, n <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> p))) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb9-7">                    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ppois</span>(n, n <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> p, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">lower.tail =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>)))) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb9-8">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">across</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(max_gap, tv_dist), <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(.x, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>)))</span>
+<span id="cb9-9">}</span>
+<span id="cb9-10"></span>
+<span id="cb9-11">knitr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">kable</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gap_table</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">p =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.01</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.02</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.2</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>)))</span></code></pre></div></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">n</th>
+<th style="text-align: right;">p</th>
+<th style="text-align: right;">lambda</th>
+<th style="text-align: right;">max_gap</th>
+<th style="text-align: right;">tv_dist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.00185</td>
+<td style="text-align: right;">0.00278</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0.00274</td>
+<td style="text-align: right;">0.00457</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0.00455</td>
+<td style="text-align: right;">0.01260</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">0.10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.00676</td>
+<td style="text-align: right;">0.02583</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">0.20</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0.01046</td>
+<td style="text-align: right;">0.05416</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">0.50</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">0.02326</td>
+<td style="text-align: right;">0.16662</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>With <img src="https://latex.codecogs.com/png.latex?n%20=%20100"> fixed, both measures grow as <img src="https://latex.codecogs.com/png.latex?p"> grows. At <img src="https://latex.codecogs.com/png.latex?p%20=%200.01"> the approximation is excellent. By <img src="https://latex.codecogs.com/png.latex?p%20=%200.5"> it is poor, even though <img src="https://latex.codecogs.com/png.latex?n"> is large, which shows that a small <img src="https://latex.codecogs.com/png.latex?p">, not just a large <img src="https://latex.codecogs.com/png.latex?n">, is what matters.</p>
+</section>
+<section id="fixed-p-changing-n" class="level2">
+<h2 class="anchored" data-anchor-id="fixed-p-changing-n">Fixed p, Changing n</h2>
+<p>Now we fix <img src="https://latex.codecogs.com/png.latex?p%20=%200.02"> and let <img src="https://latex.codecogs.com/png.latex?n"> grow.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1">knitr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">kable</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gap_table</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">50</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">500</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1000</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">p =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.02</span>))</span></code></pre></div></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">n</th>
+<th style="text-align: right;">p</th>
+<th style="text-align: right;">lambda</th>
+<th style="text-align: right;">max_gap</th>
+<th style="text-align: right;">tv_dist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.2</td>
+<td style="text-align: right;">0.00300</td>
+<td style="text-align: right;">0.00300</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.4</td>
+<td style="text-align: right;">0.00437</td>
+<td style="text-align: right;">0.00437</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">1.0</td>
+<td style="text-align: right;">0.00372</td>
+<td style="text-align: right;">0.00558</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">2.0</td>
+<td style="text-align: right;">0.00274</td>
+<td style="text-align: right;">0.00457</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">0.00127</td>
+<td style="text-align: right;">0.00494</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1000</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">20.0</td>
+<td style="text-align: right;">0.00090</td>
+<td style="text-align: right;">0.00487</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Now the two measures behave differently. The largest gap shrinks as <img src="https://latex.codecogs.com/png.latex?n"> increases, because the probability is spread over more values of <img src="https://latex.codecogs.com/png.latex?x">. The total variation distance does not shrink: it levels off at a small value close to <img src="https://latex.codecogs.com/png.latex?0.005">. It cannot exceed <img src="https://latex.codecogs.com/png.latex?p"> (a known bound), so the error of the approximation is controlled mainly by <img src="https://latex.codecogs.com/png.latex?p">, however large <img src="https://latex.codecogs.com/png.latex?n"> is.</p>
+<p>So a larger <img src="https://latex.codecogs.com/png.latex?n"> alone does not make the approximation better. A <strong>small <img src="https://latex.codecogs.com/png.latex?p"></strong> is what makes it good, and a large <img src="https://latex.codecogs.com/png.latex?n"> then lets us use it for a wide range of counts.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Why bother, when software computes exact binomial probabilities? Historically the Poisson formula was far easier to calculate by hand, and it still gives a clear interpretation: a count of rare events with an average rate <img src="https://latex.codecogs.com/png.latex?%5Clambda">.</p>
+</div>
+</div>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<ul>
+<li>Use <img src="https://latex.codecogs.com/png.latex?B(n,%20p)%20%5Capprox%20P(np)"> when <img src="https://latex.codecogs.com/png.latex?n"> is large and <img src="https://latex.codecogs.com/png.latex?p"> is small.</li>
+<li>Rule of thumb: <img src="https://latex.codecogs.com/png.latex?n%20%5Cge%2020"> and <img src="https://latex.codecogs.com/png.latex?p%20%5Cle%200.05">, and better with <img src="https://latex.codecogs.com/png.latex?n%20%5Cge%20100"> and <img src="https://latex.codecogs.com/png.latex?p%20%5Cle%200.01">.</li>
+<li>Check the fit by comparing the probabilities, as in the examples above.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>R</category>
+  <category>Statistics</category>
+  <category>Probability</category>
+  <guid>https://www.statmania.info/blog/posts/binomial-approximated-by-poisson.html</guid>
+  <pubDate>Mon, 02 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/binom.jpeg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>Committing with Git While an AI Coding Agent Is Working</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
@@ -8381,420 +9127,6 @@ font-style: inherit;"># no clean per-script control of the C stack: rewrite the 
   <guid>https://www.statmania.info/blog/posts/stack-overflow-explained-withexamples-from-c-r-python.html</guid>
   <pubDate>Wed, 28 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/stack-overflow-explained.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>The Dots Argument (…) in R Functions</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/r-dots-in-functions.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/r-shell.jpeg" class="img-fluid figure-img" alt="An R session running in a terminal window."></p>
-<figcaption>Trying out <code>...</code> in the R console.</figcaption>
-</figure>
-</div>
-<p>In R, <code>...</code> (dot-dot-dot, also called the <em>ellipsis</em> or <em>dots</em> argument) is a special parameter that lets a function accept any number of extra arguments. It has two main uses:</p>
-<ol type="1">
-<li>passing arguments on to another function, and</li>
-<li>collecting a variable-length set of inputs, as <code>c()</code>, <code>paste()</code> and <code>list()</code> do.</li>
-</ol>
-<section id="use-1-passing-arguments-to-an-inner-function" class="level2">
-<h2 class="anchored" data-anchor-id="use-1-passing-arguments-to-an-inner-function">Use 1: Passing arguments to an inner function</h2>
-<p>A wrapper can fix some settings and let the caller customise everything else, without listing every possible argument.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Force the colour and symbol, but let the user set titles, labels, axes, ...</span></span>
-<span id="cb1-2">my_plot <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(x, y, ...) {</span>
-<span id="cb1-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot</span>(x, y, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"royalblue"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">pch =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">16</span>, ...)</span>
-<span id="cb1-4">}</span>
-<span id="cb1-5"></span>
-<span id="cb1-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># main and xlab are not named in my_plot(), yet they reach plot()</span></span>
-<span id="cb1-7"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">my_plot</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">main =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"My Custom Chart"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">xlab =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"X Axis Index"</span>)</span></code></pre></div></div>
-</section>
-<section id="use-2-collecting-inputs-with-list..." class="level2">
-<h2 class="anchored" data-anchor-id="use-2-collecting-inputs-with-list...">Use 2: Collecting inputs with <code>list(...)</code></h2>
-<p>To use the extra arguments inside the function, convert <code>...</code> into an ordinary list.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">summarize_inputs <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(...) {</span>
-<span id="cb2-2">  input_list <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(...)</span>
-<span id="cb2-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"We received"</span>, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">length</span>(input_list), <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"arguments.</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>)</span>
-<span id="cb2-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">print</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">names</span>(input_list))</span>
-<span id="cb2-5">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">invisible</span>(input_list)</span>
-<span id="cb2-6">}</span>
-<span id="cb2-7"></span>
-<span id="cb2-8">res <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">summarize_inputs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">a =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">b =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"hello"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">c =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>)</span></code></pre></div></div>
-<pre><code>We received 3 arguments.
-[1] "a" "b" "c"</code></pre>
-<p>Two related helpers are worth knowing: <code>...length()</code> gives the number of arguments, and <code>..1</code>, <code>..2</code>, … pick them by position.</p>
-</section>
-<section id="where-does-...-go" class="level2">
-<h2 class="anchored" data-anchor-id="where-does-...-go">Where does <code>...</code> go?</h2>
-<section id="at-the-end-fixed-inputs-first-extras-last" class="level3">
-<h3 class="anchored" data-anchor-id="at-the-end-fixed-inputs-first-extras-last">At the end: fixed inputs first, extras last</h3>
-<p>Put <code>...</code> last when the function has required inputs and <code>...</code> only catches optional settings for a downstream call.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">my_plot <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(x, y, ...) {</span>
-<span id="cb4-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot</span>(x, y, ...)</span>
-<span id="cb4-3">}</span>
-<span id="cb4-4"></span>
-<span id="cb4-5"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># 1:10 goes to x, 1:10 to y, and col travels down through ...</span></span>
-<span id="cb4-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">my_plot</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"red"</span>)</span></code></pre></div></div>
-</section>
-<section id="at-the-beginning-collect-data-first" class="level3">
-<h3 class="anchored" data-anchor-id="at-the-beginning-collect-data-first">At the beginning: collect data first</h3>
-<p>Put <code>...</code> first when the function’s job is to gather an unknown number of objects (like <code>c()</code> or <code>paste()</code>). Every argument <em>after</em> <code>...</code> must then be named in the call, because R never matches them by position.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">f <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(..., <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">named_arg =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"default"</span>) {</span>
-<span id="cb5-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">n =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">length</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(...)), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">named_arg =</span> named_arg)</span>
-<span id="cb5-3">}</span>
-<span id="cb5-4"></span>
-<span id="cb5-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">str</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">f</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"custom_value"</span>))                       <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># swallowed by ...</span></span>
-<span id="cb5-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">str</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">f</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">named_arg =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"custom_value"</span>))           <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># as intended</span></span></code></pre></div></div>
-<pre><code>List of 2
- $ n        : int 4
- $ named_arg: chr "default"
-List of 2
- $ n        : int 3
- $ named_arg: chr "custom_value"</code></pre>
-<p>In the first call <code>"custom_value"</code> is counted as a fourth data input and <code>named_arg</code> keeps its default.</p>
-</section>
-</section>
-<section id="combining-both-uses" class="level2">
-<h2 class="anchored" data-anchor-id="combining-both-uses">Combining both uses</h2>
-<p>A single <code>...</code> can only do one job. If it collects the data, the styling arguments end up in the data too. In the example below, passing <code>col</code> and <code>border</code> through <code>list(...)</code> makes <code>mean()</code> fail on them. So we take the data as an explicit argument and keep <code>...</code> for the plot settings.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">analyze_and_plot <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(data_list, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">plot_title =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Data Analysis"</span>, ...) {</span>
-<span id="cb7-2">  means <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sapply</span>(data_list, mean, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>)</span>
-<span id="cb7-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Calculated means for"</span>, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">length</span>(data_list), <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"groups:</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>)</span>
-<span id="cb7-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">print</span>(means)</span>
-<span id="cb7-5"></span>
-<span id="cb7-6">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># col, border, las, ... go straight to boxplot()</span></span>
-<span id="cb7-7">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">boxplot</span>(data_list, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">main =</span> plot_title, ...)</span>
-<span id="cb7-8">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">invisible</span>(means)</span>
-<span id="cb7-9">}</span>
-<span id="cb7-10"></span>
-<span id="cb7-11">groups <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(</span>
-<span id="cb7-12">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">A =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">12</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">15</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">14</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">18</span>),</span>
-<span id="cb7-13">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">B =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">22</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">25</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">28</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">21</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">24</span>),</span>
-<span id="cb7-14">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">C =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">7</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">8</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">6</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">9</span>)</span>
-<span id="cb7-15">)</span>
-<span id="cb7-16"></span>
-<span id="cb7-17"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">analyze_and_plot</span>(</span>
-<span id="cb7-18">  groups,</span>
-<span id="cb7-19">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">plot_title =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Experimental Results"</span>,</span>
-<span id="cb7-20">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">col =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"tomato"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"gold"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"deepskyblue"</span>),</span>
-<span id="cb7-21">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">border =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"darkgray"</span></span>
-<span id="cb7-22">)</span></code></pre></div></div>
-<pre><code>Calculated means for 3 groups:
-   A    B    C
-13.8 24.0  7.0</code></pre>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Warning</span>Pitfalls
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ul>
-<li><strong>Misspelt arguments pass silently through <code>...</code>.</strong> <code>plot(1:3, 1:3, colr = "red")</code> raises no error. R only warns that <code>"colr" is not a graphical parameter</code>, and the colour is ignored, so check the warnings.</li>
-<li><strong>One <code>...</code> cannot serve two purposes.</strong> Decide whether it holds data or settings. Use <code>list(...)</code> for the first, and an explicit argument plus <code>...</code> for the second.</li>
-<li><strong>Arguments after <code>...</code> need their full name.</strong> Partial matching does not apply to them.</li>
-</ul>
-</div>
-</div>
-</section>
-<section id="key-takeaways" class="level2">
-<h2 class="anchored" data-anchor-id="key-takeaways">Key takeaways</h2>
-<ul>
-<li><code>list(...)</code> turns the extra arguments into a list you can count, name-check or loop over.</li>
-<li>Passing <code>...</code> to another function forwards settings without the wrapper knowing they exist.</li>
-<li>Put <code>...</code> last for optional pass-through settings, and first for collecting data, remembering that anything after it must be named.</li>
-</ul>
-</section>
-<section id="reference" class="level2">
-<h2 class="anchored" data-anchor-id="reference">Reference</h2>
-<ul>
-<li>DataFlair, <a href="https://data-flair.training/blogs/r-arguments-introduction/">R Arguments Introduction</a></li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>R</category>
-  <category>Programming</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/r-dots-in-functions.html</guid>
-  <pubDate>Mon, 26 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/r-shell.jpeg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
