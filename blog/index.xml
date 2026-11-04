@@ -10,7 +10,237 @@
 <atom:link href="https://www.statmania.info/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Posts on statistics theory, R &amp; Python, and developer tips from Stat Mania.</description>
 <generator>quarto-1.9.38</generator>
-<lastBuildDate>Mon, 02 Nov 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 03 Nov 2026 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>Multi-Line Comments in LaTeX: Three Ways to Comment Out a Block</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/latex-multiline-comments.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/latex-multiline-comments.svg" class="img-fluid figure-img" alt="A short LaTeX source file where the lines between begin comment and end comment are dimmed and marked with percent signs, showing that they are not printed."></p>
+<figcaption>The lines between begin{comment} and end{comment} are ignored when the document is compiled.</figcaption>
+</figure>
+</div>
+<p>Plain LaTeX has only one kind of comment: everything after a <code>%</code> to the end of the line is ignored. To hide a whole paragraph, table or block of code, we have three options. Let’s look at each, and at when it can go wrong.</p>
+<section id="the-fastest-way-an-editor-shortcut" class="level2">
+<h2 class="anchored" data-anchor-id="the-fastest-way-an-editor-shortcut">1. The Fastest Way: an Editor Shortcut</h2>
+<p>Select the block and press the editor’s comment shortcut. The editor puts a <code>%</code> in front of every selected line for us.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Editor</th>
+<th>Windows / Linux</th>
+<th>macOS</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Overleaf, TeXstudio, VS Code, Texmaker</td>
+<td><code>Ctrl</code> + <code>/</code></td>
+<td><code>Cmd</code> + <code>/</code></td>
+</tr>
+</tbody>
+</table>
+<p>The same shortcut removes the percent signs again. (Some editors use other keys: older TeXstudio versions use <code>Ctrl</code> + <code>T</code> to comment and <code>Ctrl</code> + <code>U</code> to uncomment. Check the editor’s menu if the shortcut does not work.)</p>
+<p>This is the safest method, because the hidden lines are real comments. The cost is that the source now has a <code>%</code> on every line.</p>
+</section>
+<section id="the-cleanest-way-the-comment-package" class="level2">
+<h2 class="anchored" data-anchor-id="the-cleanest-way-the-comment-package">2. The Cleanest Way: the comment Package</h2>
+<p>The <code>comment</code> package gives us an environment that ignores everything inside it.</p>
+<ol type="1">
+<li>Load the package in the preamble: <code>\usepackage{comment}</code>.</li>
+<li>Wrap the block in <code>\begin{comment}</code> and <code>\end{comment}</code>.</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb1-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">\documentclass</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">article</span>}</span>
+<span id="cb1-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">\usepackage</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">comment</span>} <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">% required in the preamble</span></span>
+<span id="cb1-3"></span>
+<span id="cb1-4"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">\begin</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">document</span>}</span>
+<span id="cb1-5"></span>
+<span id="cb1-6">This text will be visible in the compiled PDF.</span>
+<span id="cb1-7"></span>
+<span id="cb1-8"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">\begin</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">comment</span>}</span>
+<span id="cb1-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">Everything written in this environment is completely ignored.</span></span>
+<span id="cb1-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">You can write several paragraphs, tables or code</span></span>
+<span id="cb1-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">without adding percent signs.</span></span>
+<span id="cb1-12"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">\end</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">comment</span>}</span>
+<span id="cb1-13"></span>
+<span id="cb1-14">This text will also be visible.</span>
+<span id="cb1-15"></span>
+<span id="cb1-16"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">\end</span>{<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">document</span>}</span></code></pre></div></div>
+<p>The PDF contains the first and the last paragraph only.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <code>verbatim</code> package also defines a <code>comment</code> environment, so <code>\usepackage{verbatim}</code> works in the same way. Some LaTeX installations load it already.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>\end{comment}</code> must be on a line of its own, with nothing else before or after it on that line.</p>
+</div>
+</div>
+</section>
+<section id="the-package-free-trick-iffalse-and-fi" class="level2">
+<h2 class="anchored" data-anchor-id="the-package-free-trick-iffalse-and-fi">3. The Package-Free Trick: \iffalse and \fi</h2>
+<p>Without any package, we can use a TeX conditional that is always false. TeX skips everything between <code>\iffalse</code> and <code>\fi</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb2-1">This text will print normally.</span>
+<span id="cb2-2"></span>
+<span id="cb2-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\iffalse</span></span>
+<span id="cb2-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">This is a multi-line comment.</span></span>
+<span id="cb2-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">LaTeX skips this whole section because the condition is false.</span></span>
+<span id="cb2-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">Change \iffalse to \iftrue to switch the block back on.</span></span>
+<span id="cb2-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\fi</span></span>
+<span id="cb2-8"></span>
+<span id="cb2-9">This text will also print normally.</span></code></pre></div></div>
+<p>This is handy for blocks we may want to bring back, since changing one word turns the block on again.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>TeX still reads the skipped text to find the matching <code>\fi</code>. If the hidden block contains its own conditional, such as <code>\ifnum</code> or <code>\ifx</code>, then it must also contain the matching <code>\fi</code>. Otherwise LaTeX stops with “Incomplete \iffalse; all text was ignored”. Unknown commands and unmatched braces inside the block are fine.</p>
+</div>
+</div>
+<section id="a-switch-for-draft-notes" class="level3">
+<h3 class="anchored" data-anchor-id="a-switch-for-draft-notes">A Switch for Draft Notes</h3>
+<p>The same idea gives a named switch, which is useful for notes that should appear only in a draft:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">\newif\ifdraft</span></span>
+<span id="cb3-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">\draftfalse</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">% change to \drafttrue to show the draft notes</span></span>
+<span id="cb3-3"></span>
+<span id="cb3-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">\ifdraft</span></span>
+<span id="cb3-5">Note to self: check this section before submitting.</span>
+<span id="cb3-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">\fi</span></span></code></pre></div></div>
+</section>
+</section>
+<section id="which-method-should-we-use" class="level2">
+<h2 class="anchored" data-anchor-id="which-method-should-we-use">Which Method Should We Use?</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Needs a package?</th>
+<th>Best for</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Editor shortcut</td>
+<td>No</td>
+<td>Quick debugging and ad-hoc hiding of lines</td>
+</tr>
+<tr class="even">
+<td><code>comment</code> environment</td>
+<td>Yes (<code>comment</code> or <code>verbatim</code>)</td>
+<td>Clean, readable blocks and large sections</td>
+</tr>
+<tr class="odd">
+<td><code>\iffalse</code> … <code>\fi</code></td>
+<td>No</td>
+<td>Package-free fixes and blocks we may switch back on</td>
+</tr>
+</tbody>
+</table>
+<p>In short: use the shortcut for quick edits, the <code>comment</code> environment for large blocks we want to keep tidy, and <code>\iffalse</code> when we cannot add a package.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>LaTeX</category>
+  <category>Tools</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/latex-multiline-comments.html</guid>
+  <pubDate>Tue, 03 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/latex-multiline-comments.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
 <item>
   <title>When Can the Binomial Distribution Be Approximated by the Poisson?</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
@@ -8034,629 +8264,6 @@ font-style: inherit;">}</span></span></code></pre></div></div>
   <guid>https://www.statmania.info/blog/posts/c-inline-functions.html</guid>
   <pubDate>Wed, 28 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/c-inline-functions.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Recursion in C: sum, factorial and fast power, Step by Step</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/recursion-with-c-examples.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/c-recursion-examples.svg" class="img-fluid figure-img" alt="Stack of boxes from factorial(4) down to factorial(0), with an arrow down for calls and an arrow up for returned values 1, 1, 2, 6, 24."></p>
-<figcaption>Each call waits for the one below it; the answers flow back up once the base case returns.</figcaption>
-</figure>
-</div>
-<p>Recursion means a function solves a problem by calling itself on a smaller version of that problem. Let’s look at a simple example, <code>sum(n)</code>, the sum of the first <code>n</code> integers, and trace <code>sum(3)</code> step by step:</p>
-<pre><code>GOING DOWN                              RETURNING UP
-sum(3) = 3 + sum(2)              ──┐
-sum(2) = 2 + sum(1)              ──┤    sum(0) = 0                (base hit)
-sum(1) = 1 + sum(0)              ──┤    sum(1) = 1 + 0 = 1
-sum(0) = 0   ← base              ──┘    sum(2) = 2 + 1 = 3
-                                        sum(3) = 3 + 3 = 6</code></pre>
-<p>Each call waits for the one below it, and the additions can only happen on the way <strong>back up</strong>, once <code>sum(0)</code> has returned.</p>
-<p>This is a textbook recursion example. It has the three things every recursive function needs:</p>
-<ol type="1">
-<li><strong>A base case that stops the recursion</strong> — <code>sum(0) = 0</code>. Without this, it would call <code>sum(-1)</code>, <code>sum(-2)</code>, … forever (stack overflow).</li>
-<li><strong>A recursive case that shrinks the problem</strong> — <code>sum(3)</code> calls <code>sum(2)</code>, which calls <code>sum(1)</code>… each call gets <em>closer</em> to the base case.</li>
-<li><strong>The “unwinding”</strong> — once <code>sum(0)</code> returns <code>0</code>, the answers flow back up: <code>1+0=1</code>, <code>2+1=3</code>, <code>3+3=6</code>.</li>
-</ol>
-<p>That “go down, hit bottom, come back up” shape is the heart of all simple recursion. In C, <code>sum</code> looks like this:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb2-2"></span>
-<span id="cb2-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> sum<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> n<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb2-4">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>     <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// BASE CASE</span></span>
-<span id="cb2-5">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> sum<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// RECURSIVE CASE</span></span>
-<span id="cb2-6"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb2-7"></span>
-<span id="cb2-8"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb2-9">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> sum<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">));</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// 6</span></span>
-<span id="cb2-10">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb2-11"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<hr>
-<section id="another-example-factorial-with-full-step-trace" class="level2">
-<h2 class="anchored" data-anchor-id="another-example-factorial-with-full-step-trace">Another example: factorial, with full step trace</h2>
-<p><code>factorial(n) = n × (n-1) × … × 1</code>, and <code>factorial(0) = 1</code> by definition (the base case).</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb3-2"></span>
-<span id="cb3-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">long</span> factorial<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> n<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb3-4">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span>          <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// BASE CASE: stop here</span></span>
-<span id="cb3-5">        <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb3-6">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb3-7">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> factorial<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// RECURSIVE CASE: shrink n</span></span>
-<span id="cb3-8"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb3-9"></span>
-<span id="cb3-10"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb3-11">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span></span>
-<span id="cb3-12">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">! = </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%ld\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> factorial<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">));</span></span>
-<span id="cb3-13">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb3-14"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>Compile and run (<code>gcc factorial.c -o factorial &amp;&amp; ./factorial</code>; see <a href="../posts/running-c-programs-on-linux.html">Compiling and Running C Programs on Linux</a> for faster workflows):</p>
-<pre><code>0! = 1
-1! = 1
-2! = 2
-3! = 6
-4! = 24
-5! = 120</code></pre>
-<section id="step-by-step-trace-of-factorial4" class="level3">
-<h3 class="anchored" data-anchor-id="step-by-step-trace-of-factorial4">Step-by-step trace of <code>factorial(4)</code></h3>
-<pre><code>GOING DOWN                              RETURNING UP
-factorial(4) = 4 * factorial(3)  ──┐
-factorial(3) = 3 * factorial(2)  ──┤    factorial(0) = 1          (base hit)
-factorial(2) = 2 * factorial(1)  ──┤    factorial(1) = 1 * 1 = 1
-factorial(1) = 1 * factorial(0)  ──┤    factorial(2) = 2 * 1 = 2
-factorial(0) = 1   ← base        ──┘    factorial(3) = 3 * 2 = 6
-                                        factorial(4) = 4 * 6 = 24</code></pre>
-<p>Notice the multiplication can’t happen until the call <em>below</em> returns ; that’s why the result is computed on the way <strong>back up</strong>, not on the way down. This is the same shape as the <code>sum</code> example.</p>
-</section>
-<section id="same-skeleton-side-by-side" class="level3">
-<h3 class="anchored" data-anchor-id="same-skeleton-side-by-side">Same skeleton, side by side</h3>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th></th>
-<th><code>sum(n)</code></th>
-<th><code>factorial(n)</code></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Base case</td>
-<td><code>n == 0 → 0</code></td>
-<td><code>n == 0 → 1</code></td>
-</tr>
-<tr class="even">
-<td>Recursive case</td>
-<td><code>n + sum(n-1)</code></td>
-<td><code>n * factorial(n-1)</code></td>
-</tr>
-<tr class="odd">
-<td>How it shrinks</td>
-<td><code>n → n-1</code></td>
-<td><code>n → n-1</code></td>
-</tr>
-<tr class="even">
-<td>Combines results by</td>
-<td><code>+</code></td>
-<td><code>*</code></td>
-</tr>
-</tbody>
-</table>
-<p>The only real difference is <strong>what operator you apply when coming back up</strong>. Recursion’s structure is remarkably reusable — change the base value and the operator, and you get a whole family of functions.</p>
-<hr>
-</section>
-</section>
-<section id="a-second-example-where-recursion-branches-power" class="level2">
-<h2 class="anchored" data-anchor-id="a-second-example-where-recursion-branches-power">A second example where recursion <em>branches</em>: power</h2>
-<p>Simple linear recursion calls itself <strong>once</strong> per step (like <code>sum</code> and <code>factorial</code>). A more interesting form calls itself and combines — here, <code>power</code> computes <code>x^n</code> fast by halving <code>n</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb6-2"></span>
-<span id="cb6-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">double</span> power<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">double</span> x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> n<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb6-4">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span>                 <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// BASE: x^0 = 1</span></span>
-<span id="cb6-5">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.0</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> power<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span>n<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// handle negatives</span></span>
-<span id="cb6-6">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span>                       <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// even n: x^n = (x^(n/2))^2</span></span>
-<span id="cb6-7">        <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">double</span> half <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> power<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span></span>
-<span id="cb6-8">        <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> half <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> half<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb6-9">    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb6-10">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> x <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> power<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">);</span>             <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// odd n: peel one off</span></span>
-<span id="cb6-11"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
-<span id="cb6-12"></span>
-<span id="cb6-13"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb6-14">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%.0f\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> power<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">));</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// 1024</span></span>
-<span id="cb6-15">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%.0f\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> power<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">));</span>    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">// 81</span></span>
-<span id="cb6-16">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb6-17"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<p>Trace of <code>power(2, 10)</code>:</p>
-<pre><code>power(2,10) → half = power(2,5); return half*half
-  power(2,5) → return 2 * power(2,4)
-    power(2,4) → half = power(2,2); return half*half
-      power(2,2) → half = power(2,1); return half*half
-        power(2,1) → return 2 * power(2,0)
-          power(2,0) → 1                       (base)
-        power(2,1) → 2 * 1 = 2
-      power(2,2) → 2 * 2 = 4
-    power(2,4) → 4 * 4 = 16
-  power(2,5) → 2 * 16 = 32
-power(2,10) → 32 * 32 = 1024</code></pre>
-<p>This does only ~5 multiplications instead of 10 — the halving is why fast exponentiation is O(log n). Recursion isn’t just elegant; it can be <em>algorithmically</em> better.</p>
-<hr>
-</section>
-<section id="how-to-tell-a-good-recursion-example" class="level2">
-<h2 class="anchored" data-anchor-id="how-to-tell-a-good-recursion-example">How to tell a good recursion example</h2>
-<p>A good teaching example should:</p>
-<ul>
-<li>Have an <strong>obvious base case</strong> you can state in one line (<code>sum(0)=0</code>, <code>0!=1</code>, <code>x^0=1</code>).</li>
-<li><strong>Shrink</strong> toward the base on every call (<code>n → n-1</code>, <code>n → n/2</code>).</li>
-<li>Be <strong>naturally self-similar</strong> — the problem really is “a smaller copy of itself.”</li>
-<li>Show the <strong>returning-up</strong> phase clearly (the <code>sum</code> trace does this well).</li>
-</ul>
-<p>The <code>sum</code> example hits all four, so it is a good one to teach first.</p>
-</section>
-<section id="the-pitfalls-to-mention-alongside-it" class="level2">
-<h2 class="anchored" data-anchor-id="the-pitfalls-to-mention-alongside-it">The pitfalls to mention alongside it</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Pitfall</th>
-<th>Symptom</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>No base case</strong>, or one never reached</td>
-<td>Infinite recursion → stack overflow / segfault</td>
-</tr>
-<tr class="even">
-<td><strong>Wrong base value</strong></td>
-<td>Off-by-one results (e.g.&nbsp;<code>sum</code> base <code>1</code> instead of <code>0</code>)</td>
-</tr>
-<tr class="odd">
-<td><strong>Not shrinking</strong> (e.g.&nbsp;calls <code>sum(n)</code> again)</td>
-<td>Infinite recursion</td>
-</tr>
-<tr class="even">
-<td><strong>Deep recursion</strong> (n = 1,000,000)</td>
-<td>Stack overflow even when logically correct</td>
-</tr>
-<tr class="odd">
-<td><strong>Redundant recomputation</strong> (naive Fibonacci)</td>
-<td>Exponential blowup — <code>fib(40)</code> takes seconds</td>
-</tr>
-</tbody>
-</table>
-<section id="the-one-line-rule" class="level3">
-<h3 class="anchored" data-anchor-id="the-one-line-rule">The one-line rule</h3>
-<blockquote class="blockquote">
-<p><strong>Recursion = base case + smaller subproblem + combine on the way back up.</strong> If you can write those three lines, you’ve written the function.</p>
-</blockquote>
-<p>The <code>sum</code> example has all three parts, which makes it a good first example. <code>factorial</code> is the natural next one because it’s the same skeleton with a different operator, and <code>power</code> shows that recursion can also <em>branch</em> and be faster than a loop.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The same ideas carry over to other languages. See <a href="../posts/r-recursion.html">Recursion in R: Functions That Call Themselves</a> for base and recursive cases, <code>Recall()</code>, recursion on nested lists and R’s depth limits.</p>
-</div>
-</div>
-
-
-</section>
-</section>
-
- ]]></description>
-  <category>C</category>
-  <category>Programming</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/recursion-with-c-examples.html</guid>
-  <pubDate>Wed, 28 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/c-recursion-examples.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>

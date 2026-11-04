@@ -635,6 +635,35 @@ Note
   document.body.appendChild(s);
 })();
 </script>
+<!-- Stat Mania only: "Also on R-bloggers" link. The link is plain HTML in every page (so crawlers
+     and R-bloggers' check see it). The script moves the box in the sidebar, above the Archive
+     widget, once blogkit has built it; without JS the box stays at the end of the page. -->
+<aside id="sm-rbloggers" class="bk-widget sm-rbloggers">
+  <h3 class="bk-widget-title">R-bloggers</h3>
+  <p>R posts from Stat Mania are also shared on <a href="https://www.r-bloggers.com/" rel="noopener">R-bloggers</a>, a hub of R blogs.</p>
+</aside>
+<style>
+  .sm-rbloggers{ max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
+  .sm-rbloggers p{ margin: 0; line-height: 1.4; }
+  .sm-rbloggers a{ text-decoration: underline; }
+  #bk-widgets .sm-rbloggers{ max-width: none; margin: 0 0 1.5rem 0; padding: 0; }
+</style>
+<script>
+(function () {
+  var box = document.getElementById('sm-rbloggers');
+  if (!box) return;
+  function move() {
+    var archive = document.querySelector('#bk-widgets .bk-archive');
+    if (!archive) return false;
+    archive.parentNode.insertBefore(box, archive);
+    return true;
+  }
+  if (move()) return;
+  var obs = new MutationObserver(function () { if (move()) obs.disconnect(); });
+  obs.observe(document.body, { childList: true, subtree: true });
+  setTimeout(function () { obs.disconnect(); }, 15000);
+})();
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right
