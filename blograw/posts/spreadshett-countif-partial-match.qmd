@@ -1,0 +1,81 @@
+---
+title: "Count Cells with Partial Text Matches in Excel Using COUNTIF"
+description: "Learn how to use wildcards with COUNTIF to count cells that contain, start with, or end with specific text — plus how to reference a cell for the search term and handle empty criteria safely."
+date: "2026-11-07"
+categories: [Excel, Tutorial]
+tags: [excel, beginners, workflow]
+author: "Abdullah Al Mahmud"
+image: ../img/countif-partial-match.png
+---
+
+![Sample Excel product list with partial matches highlighted](../img/countif-partial-match.svg){fig-alt="Excel worksheet with Product, Category, and Stock columns. Rows containing the substring apple, including Green Apple, Apple Pie, Pineapple, Red Apple, Apple Juice, and Custard Apple, are highlighted, and COUNTIF in D2 returns 6 matching cells."}
+
+To count cells that contain a specific substring **anywhere** inside them, use `COUNTIF` with the asterisk (`*`) wildcard on both sides of the search text:
+
+```excel
+=COUNTIF(range, "*substring*")
+```
+
+**Example:** `=COUNTIF(A2:A10, "*Apple*")` counts every cell in `A2:A10` that has the word "Apple" anywhere in the text — case-insensitive.
+
+---
+
+## Using a Cell Reference as the Search Term
+
+If your search text lives in another cell (say `B2`), you can't just type `*B2*`. You need to **concatenate** the wildcards around the cell reference with the `&` operator:
+
+```excel
+=COUNTIF(range, "*" & B2 & "*")
+```
+
+This builds the pattern `"*Apple*"` at runtime from whatever is in `B2`.
+
+---
+
+## Other Wildcard Patterns
+
+| Goal | Formula | Example |
+|------|---------|---------|
+| **Starts with** text | `=COUNTIF(range, "text*")` | `=COUNTIF(A2:A10, "Apple*")` |
+| **Ends with** text | `=COUNTIF(range, "*text")` | `=COUNTIF(A2:A10, "*Apple")` |
+| **Single unknown character** | Use `?` | `=COUNTIF(A2:A10, "J?n")` matches "Jan", "Jun" |
+
+---
+
+## Three Ready-to-Use Formulas Based on a Reference Cell
+
+Assume the search term is in `A3` and you're searching column `F` from row 9 down:
+
+| Match Type | Formula |
+|------------|---------|
+| **Contains** (anywhere) | `=COUNTIF(F$9:F, "*" & A3 & "*")` |
+| **Starts with** | `=COUNTIF(F$9:F, A3 & "*")` |
+| **Ends with** | `=COUNTIF(F$9:F, "*" & A3)` |
+
+---
+
+::: {.callout-tip}
+### Handle Empty Search Cells Safely
+
+If `A3` is blank, `"*" & A3 & "*"` becomes `"**"`, which matches **every** text cell in the range. Wrap the formula in an `IF` to return `0` when the criteria cell is empty:
+
+```excel
+=IF(ISBLANK(A3), 0, COUNTIF(F$9:F, "*" & A3 & "*"))
+```
+:::
+
+---
+
+## Quick Reference
+
+- Wildcards: `*` = any number of characters, `?` = exactly one character
+- `COUNTIF` is **case-insensitive**
+- Use `$` to lock the start of the range (`F$9:F`) when dragging the formula down
+- For multiple criteria, use `COUNTIFS` with the same wildcard logic
+
+---
+
+## Further Reading
+
+- [Microsoft: COUNTIF function](https://support.microsoft.com/en-us/office/countif-function-e0de10c6-f885-4e71-abb4-1f464816df34)
+- [Ablebits: COUNTIF with partial match](https://www.ablebits.com/office-addins-blog/excel-count-cells-with-specific-text/)
