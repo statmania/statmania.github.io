@@ -10,7 +10,125 @@
 <atom:link href="https://www.statmania.info/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Posts on statistics theory, R &amp; Python, and developer tips from Stat Mania.</description>
 <generator>quarto-1.9.38</generator>
-<lastBuildDate>Tue, 03 Nov 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Fri, 06 Nov 2026 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>Count Cells with Partial Text Matches in Excel Using COUNTIF</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/spreadshett-countif-partial-match.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/countif-partial-match.svg" class="img-fluid figure-img" alt="Excel worksheet with Product, Category, and Stock columns. Rows containing the substring apple, including Green Apple, Apple Pie, Pineapple, Red Apple, Apple Juice, and Custard Apple, are highlighted, and COUNTIF in D2 returns 6 matching cells."></p>
+<figcaption>Sample Excel product list with partial matches highlighted</figcaption>
+</figure>
+</div>
+<p>Sometimes we need to count cells that contain only <em>part</em> of a text, such as every product with “Apple” in its name. An exact <code>COUNTIF</code> can’t do that, but wildcards can. To count cells that contain a substring <strong>anywhere</strong> inside them, we put the asterisk (<code>*</code>) on both sides of the search text:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1">=COUNTIF(range, "*substring*")</span></code></pre></div></div>
+<p>For example, this formula counts every cell in <code>A2:A10</code> that has “Apple” anywhere in its text (case-insensitive), so “Green Apple”, “Pineapple” and “Apple Pie” all count:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1">=COUNTIF(A2:A10, "*Apple*")</span></code></pre></div></div>
+<hr>
+<section id="using-a-cell-reference-as-the-search-term" class="level2">
+<h2 class="anchored" data-anchor-id="using-a-cell-reference-as-the-search-term">Using a Cell Reference as the Search Term</h2>
+<p>If the search text lives in another cell (say <code>B2</code>), we can’t just type <code>*B2*</code>, because Excel would treat that as literal characters. Instead, we <strong>concatenate</strong> the wildcards around the cell reference with the <code>&amp;</code> operator:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1">=COUNTIF(A2:A10, "*" &amp; B2 &amp; "*")</span></code></pre></div></div>
+<p>This builds the pattern <code>"*Apple*"</code> at runtime from whatever is in <code>B2</code>, so changing <code>B2</code> updates the count instantly.</p>
+<hr>
+</section>
+<section id="other-wildcard-patterns" class="level2">
+<h2 class="anchored" data-anchor-id="other-wildcard-patterns">Other Wildcard Patterns</h2>
+<p>Two wildcards do all the work:</p>
+<ul>
+<li><code>*</code> matches any number of characters (including none)</li>
+<li><code>?</code> matches exactly one character</li>
+</ul>
+<p>Here is how we combine them:</p>
+<p><strong>Starts with</strong> a text:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb4-1">=COUNTIF(A2:A10, "Apple*")</span></code></pre></div></div>
+<p><strong>Ends with</strong> a text:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb5-1">=COUNTIF(A2:A10, "*Apple")</span></code></pre></div></div>
+<p><strong>One unknown character</strong>, e.g.&nbsp;matches “Jan” and “Jun”:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb6-1">=COUNTIF(A2:A10, "J?n")</span></code></pre></div></div>
+<hr>
+</section>
+<section id="the-same-three-patterns-with-a-reference-cell" class="level2">
+<h2 class="anchored" data-anchor-id="the-same-three-patterns-with-a-reference-cell">The Same Three Patterns with a Reference Cell</h2>
+<p>Suppose the search term is in <code>A3</code> and the data sits in <code>F9:F100</code>. The row is locked with <code>$</code> so the range stays put when we drag the formula down.</p>
+<p><strong>Contains</strong> (anywhere):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb7-1">=COUNTIF(F$9:F$100, "*" &amp; A3 &amp; "*")</span></code></pre></div></div>
+<p><strong>Starts with:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb8-1">=COUNTIF(F$9:F$100, A3 &amp; "*")</span></code></pre></div></div>
+<p><strong>Ends with:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb9-1">=COUNTIF(F$9:F$100, "*" &amp; A3)</span></code></pre></div></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In Google Sheets an open-ended range such as <code>F$9:F</code> also works. Excel needs an explicit end row (or a whole column like <code>F:F</code>).</p>
+</div>
+</div>
+<hr>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Handle Empty Search Cells Safely
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If <code>A3</code> is blank, <code>"*" &amp; A3 &amp; "*"</code> becomes <code>"**"</code>, which matches <strong>every</strong> text cell in the range. We can wrap the formula in an <code>IF</code> so it returns <code>0</code> when the criteria cell is empty:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb10-1">=IF(A3="", 0, COUNTIF(F$9:F$100, "*" &amp; A3 &amp; "*"))</span></code></pre></div></div>
+<p>Testing <code>A3=""</code> is safer than <code>ISBLANK(A3)</code>, because it also catches cells that hold an empty string returned by another formula.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="searching-for-a-literal-or" class="level2">
+<h2 class="anchored" data-anchor-id="searching-for-a-literal-or">Searching for a Literal <code>*</code> or <code>?</code></h2>
+<p>Since <code>*</code> and <code>?</code> are wildcards, searching for them as ordinary characters needs a tilde (<code>~</code>) in front. This counts cells containing a real question mark:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb11-1">=COUNTIF(A2:A10, "*~?*")</span></code></pre></div></div>
+<hr>
+</section>
+<section id="quick-reference" class="level2">
+<h2 class="anchored" data-anchor-id="quick-reference">Quick Reference</h2>
+<ul>
+<li><code>COUNTIF</code> is <strong>case-insensitive</strong></li>
+<li>Wildcards only match <strong>text</strong>; numbers stored as numbers are not counted by <code>"*5*"</code></li>
+<li>Use <code>$</code> to lock the range (<code>F$9:F$100</code>) when dragging the formula down</li>
+<li>For several conditions at once, use <code>COUNTIFS</code> with the same wildcard logic</li>
+</ul>
+<hr>
+</section>
+<section id="further-reading" class="level2">
+<h2 class="anchored" data-anchor-id="further-reading">Further Reading</h2>
+<ul>
+<li><a href="https://support.microsoft.com/en-us/office/countif-function-e0de10c6-f885-4e71-abb4-1f464816df34">Microsoft: COUNTIF function</a></li>
+<li><a href="https://www.ablebits.com/office-addins-blog/excel-count-cells-with-specific-text/">Ablebits: COUNTIF with partial match</a></li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>Excel</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/spreadshett-countif-partial-match.html</guid>
+  <pubDate>Fri, 06 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/countif-partial-match.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
 <item>
   <title>Area Charts in Statistics: Probability, Proportions and Cumulative Totals</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
@@ -8484,506 +8602,6 @@ Tip
   <guid>https://www.statmania.info/blog/posts/stem-and-leaf-plot-variants.html</guid>
   <pubDate>Sun, 01 Nov 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/stem-and-leaf-plot-variants.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Stem-and-Leaf Plot vs Histogram: Differences, with R Examples</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/stem-and-leaf-plot-vs-histogram.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/stem-and-leaf-plot-vs-histogram-fig.png" class="bk-adapt img-fluid figure-img" alt="A stem-and-leaf plot of ten scores beside a histogram of the same scores with bars of height 3, 4 and 3."></p>
-<figcaption>The same ten scores as a stem-and-leaf plot and as a histogram.</figcaption>
-</figure>
-</div>
-<p>Stem-and-leaf plots and histograms both show the distribution of quantitative data. A stem-and-leaf plot is often described as a <strong>text-based histogram turned on its side</strong>. They serve slightly different purposes, depending on the size of the dataset and what we want to emphasise.</p>
-<section id="how-they-are-similar" class="level2">
-<h2 class="anchored" data-anchor-id="how-they-are-similar">How They Are Similar</h2>
-<ol type="1">
-<li><strong>They show the shape of the data.</strong> We can see whether the data are symmetric, skewed to the left or right, or have several peaks.</li>
-<li><strong>They group data into intervals.</strong> A histogram calls them <em>bins</em> (such as 70–79). A stem-and-leaf plot uses the <em>stems</em> (such as the tens digit).</li>
-<li><strong>They display frequency.</strong> In a histogram it is the <strong>height</strong> of a bar; in a stem-and-leaf plot it is the <strong>length</strong> of a row of leaves.</li>
-<li><strong>They are for quantitative data.</strong> Neither suits categories such as eye colour or car brand.</li>
-</ol>
-</section>
-<section id="how-they-differ" class="level2">
-<h2 class="anchored" data-anchor-id="how-they-differ">How They Differ</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Feature</th>
-<th>Stem-and-leaf plot</th>
-<th>Histogram</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Data retention</td>
-<td><strong>Keeps the exact values</strong> in the leaves</td>
-<td><strong>Loses the exact values</strong>: a bar only gives a count</td>
-</tr>
-<tr class="even">
-<td>Visual format</td>
-<td>Digits form the “bars”</td>
-<td>Solid rectangular bars</td>
-</tr>
-<tr class="odd">
-<td>Class intervals</td>
-<td>Set by place value (tens, hundreds, …)</td>
-<td>Bin width chosen freely</td>
-</tr>
-<tr class="even">
-<td>Dataset size</td>
-<td>Small to medium (about 15–50 values)</td>
-<td>Large (hundreds or thousands)</td>
-</tr>
-<tr class="odd">
-<td>Finding the median</td>
-<td>Easy: count to the middle leaf</td>
-<td>Harder: estimate inside a bar</td>
-</tr>
-<tr class="even">
-<td>Ordering</td>
-<td>Sorted leaves give the exact rank of every value</td>
-<td>Individual points are lost, so no exact rank</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="an-example-with-ten-scores" class="level2">
-<h2 class="anchored" data-anchor-id="an-example-with-ten-scores">An Example with Ten Scores</h2>
-<p>Here are ten test scores:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">scores <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">72</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">74</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">75</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">81</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">83</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">83</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">85</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">91</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">94</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">98</span>)</span></code></pre></div></div>
-<section id="as-a-stem-and-leaf-plot" class="level3">
-<h3 class="anchored" data-anchor-id="as-a-stem-and-leaf-plot">As a stem-and-leaf plot</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">stem</span>(scores)</span></code></pre></div></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1">  The decimal point is 1 digit(s) to the right of the |</span>
-<span id="cb3-2"></span>
-<span id="cb3-3">  7 | 245</span>
-<span id="cb3-4">  8 | 1335</span>
-<span id="cb3-5">  9 | 148</span></code></pre></div></div>
-<p>Key: <code>7 | 2</code> means 72. We can read every score, see that the most common one is 83, and find the median by counting to the middle:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">median</span>(scores)</span></code></pre></div></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb5-1">[1] 83</span></code></pre></div></div>
-</section>
-<section id="as-a-histogram" class="level3">
-<h3 class="anchored" data-anchor-id="as-a-histogram">As a histogram</h3>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(ggplot2)</span>
-<span id="cb6-2"></span>
-<span id="cb6-3">scores <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">72</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">74</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">75</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">81</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">83</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">83</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">85</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">91</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">94</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">98</span>)</span>
-<span id="cb6-4"></span>
-<span id="cb6-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data.frame</span>(scores), <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(scores)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb6-6">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_histogram</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">binwidth =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">boundary =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">70</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">closed =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"left"</span>,</span>
-<span id="cb6-7">                 <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"steelblue"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb6-8">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">stat_bin</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">binwidth =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">boundary =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">70</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">closed =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"left"</span>,</span>
-<span id="cb6-9">           <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">geom =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"text"</span>, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">label =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">after_stat</span>(count)), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">vjust =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.5</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb6-10">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">scale_x_continuous</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">breaks =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">70</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb6-11">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">scale_y_continuous</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">limits =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">expand =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb6-12">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Histogram of ten test scores"</span>,</span>
-<span id="cb6-13">       <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Score"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Frequency"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb6-14">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">theme_classic</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">base_size =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">13</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb6-15">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">axis.ticks =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">element_blank</span>(),</span>
-<span id="cb6-16">        <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">axis.line =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">element_line</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"grey60"</span>),</span>
-<span id="cb6-17">        <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">panel.grid.major.y =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">element_line</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"grey90"</span>))</span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/posts/stem-and-leaf-plot-vs-histogram_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="576"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>The histogram gives the general shape and the counts (3, 4 and 3). But if we ask “did anyone score 85?”, the bars cannot tell us. The stem-and-leaf plot can: there is an <code>8 | 5</code>.</p>
-</section>
-</section>
-<section id="when-the-dataset-gets-large" class="level2">
-<h2 class="anchored" data-anchor-id="when-the-dataset-gets-large">When the Dataset Gets Large</h2>
-<p>With a few dozen values the stem-and-leaf plot is compact. With hundreds, the rows of leaves become very long. Here are 200 simulated scores:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">7</span>)</span>
-<span id="cb7-2">big <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">200</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mean =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">70</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">sd =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">12</span>))</span>
-<span id="cb7-3"></span>
-<span id="cb7-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">stem</span>(big)</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-  The decimal point is 1 digit(s) to the right of the |
-
-   4 | 2
-   4 | 7789
-   5 | 011112223444
-   5 | 56677788999999999
-   6 | 000001222233333333
-   6 | 55555556666667777888889999999
-   7 | 0000000111112222222333444444444444444
-   7 | 555666666666777777778888888899999999
-   8 | 0000011222222233333344444
-   8 | 55555666899
-   9 | 003
-   9 | 667789
-  10 | 3</code></pre>
-</div>
-</div>
-<p>It still works, but the rows are crowded and hard to scan. The histogram handles the same data cleanly:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data.frame</span>(big), <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(big)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb9-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_histogram</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">binwidth =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">boundary =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,</span>
-<span id="cb9-3">                 <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"steelblue"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb9-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">scale_y_continuous</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">expand =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">expansion</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mult =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.05</span>))) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb9-5">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Histogram of 200 scores"</span>,</span>
-<span id="cb9-6">       <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Score"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Frequency"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb9-7">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">theme_classic</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">base_size =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">13</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb9-8">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">axis.ticks =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">element_blank</span>(),</span>
-<span id="cb9-9">        <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">axis.line =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">element_line</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"grey60"</span>),</span>
-<span id="cb9-10">        <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">panel.grid.major.y =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">element_line</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"grey90"</span>))</span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/posts/stem-and-leaf-plot-vs-histogram_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="624"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="summary" class="level2">
-<h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<ul>
-<li>Use a <strong>stem-and-leaf plot</strong> for a small dataset when we want to see the shape <em>without losing the original numbers</em>.</li>
-<li>Use a <strong>histogram</strong> for a large dataset when only the overall distribution pattern matters.</li>
-</ul>
-<p>If a stem-and-leaf plot gives too few rows, see <a href="../posts/hybrid-stem-and-leaf-plot.html">Hybrid Stem-and-Leaf Plot</a>, which uses stems of 5.</p>
-
-
-</section>
-
- ]]></description>
-  <category>R</category>
-  <category>Statistics</category>
-  <category>Visualization</category>
-  <guid>https://www.statmania.info/blog/posts/stem-and-leaf-plot-vs-histogram.html</guid>
-  <pubDate>Sun, 01 Nov 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/stem-and-leaf-plot-vs-histogram.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>
