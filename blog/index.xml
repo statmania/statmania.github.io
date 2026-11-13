@@ -10,7 +10,701 @@
 <atom:link href="https://www.statmania.info/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Posts on statistics theory, R &amp; Python, and developer tips from Stat Mania.</description>
 <generator>quarto-1.9.38</generator>
-<lastBuildDate>Fri, 06 Nov 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 12 Nov 2026 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>7 Amazing Results in Statistics</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/statistics-top-7-amazing-results.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/statistics-top-7-amazing-results.svg" class="img-fluid figure-img" alt="Seven numbered cards naming Chebyshev's inequality, the Central Limit Theorem, the Law of Large Numbers, Bayes' theorem, Jensen's inequality, Markov's inequality and the Coupon Collector's problem, each with its key formula or idea."></p>
+<figcaption>Seven cards naming the results: Chebyshev, Central Limit, Large Numbers, Bayes, Jensen, Markov and Coupon Collector.</figcaption>
+</figure>
+</div>
+<p>Some results in statistics are beautiful because a short statement has surprisingly wide consequences. Here are seven of our favourites. For each, we give the idea, then the reason it is amazing.</p>
+<section id="chebyshevs-inequality" class="level2">
+<h2 class="anchored" data-anchor-id="chebyshevs-inequality">1. Chebyshev’s Inequality</h2>
+<p>For <em>any</em> distribution with a finite mean and standard deviation, at least <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D1%20-%201/k%5E2"> of the data lie within <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dk"> standard deviations of the mean. So at least 75% lie within 2 standard deviations, and at least 88.9% within 3.</p>
+<p><strong>Why it is amazing:</strong> it needs no assumption about the shape. It is a safety net for skewed, heavy-tailed and U-shaped data alike. We look at it in detail in <a href="../posts/why-chebyshev-inequality-is-great.html">Why Chebyshev’s Inequality Is Great</a>.</p>
+</section>
+<section id="the-central-limit-theorem-clt" class="level2">
+<h2 class="anchored" data-anchor-id="the-central-limit-theorem-clt">2. The Central Limit Theorem (CLT)</h2>
+<p>Take many random samples of the same size and compute each sample mean. As the sample size grows, the distribution of those means approaches a Normal (bell) curve, centred at the population mean, with spread <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csigma/%5Csqrt%7Bn%7D">.</p>
+<p><strong>Why it is amazing:</strong> it does not matter whether the original data are skewed, lumpy or discrete. Averages tend to be bell-shaped, which is why the Normal distribution, confidence intervals and many hypothesis tests work so well in practice.</p>
+</section>
+<section id="the-law-of-large-numbers-lln" class="level2">
+<h2 class="anchored" data-anchor-id="the-law-of-large-numbers-lln">3. The Law of Large Numbers (LLN)</h2>
+<p>While the CLT describes the <em>shape</em> of sample averages, the Law of Large Numbers describes their <em>destination</em>. As we repeat a random experiment again and again, the sample average converges to the true expected value.</p>
+<p><strong>Why it is amazing:</strong> it turns chaos into predictability. A single roulette spin is unpredictable, yet a casino can forecast its profit margin over millions of bets with very little uncertainty.</p>
+</section>
+<section id="bayes-theorem" class="level2">
+<h2 class="anchored" data-anchor-id="bayes-theorem">4. Bayes’ Theorem</h2>
+<p>Bayes’ Theorem is the exact rule for updating a belief when new evidence arrives. It flips a conditional probability around, giving the probability of a hidden cause from an observed effect:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0AP(A%20%5Cmid%20B)%20=%20%5Cfrac%7BP(B%20%5Cmid%20A)%5C,P(A)%7D%7BP(B)%7D%0A"></p>
+<p><strong>Why it is amazing:</strong> it mimics rational learning and powers spam filters, medical diagnosis and many AI methods. It also shows that extraordinary claims need extraordinary evidence. Suppose a disease affects 1 person in 1,000, and a test has 99% sensitivity and 99% specificity. If someone tests positive, how likely is it that they have the disease?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">prevalence  <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.001</span></span>
+<span id="cb1-2">sensitivity <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.99</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># P(positive | disease)</span></span>
+<span id="cb1-3">specificity <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.99</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># P(negative | no disease)</span></span>
+<span id="cb1-4"></span>
+<span id="cb1-5">p_positive <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> sensitivity <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> prevalence <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> specificity) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> prevalence)</span>
+<span id="cb1-6">p_disease_given_positive <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> sensitivity <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> prevalence <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> p_positive</span>
+<span id="cb1-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(p_disease_given_positive, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.09</code></pre>
+</div>
+</div>
+<p>Only about 9% of positive results are true. Most positives are false, because the healthy people vastly outnumber the sick.</p>
+</section>
+<section id="jensens-inequality" class="level2">
+<h2 class="anchored" data-anchor-id="jensens-inequality">5. Jensen’s Inequality</h2>
+<p>For a convex function <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Df">, the average of the outputs is at least the output of the average:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0AE%5Bf(X)%5D%20%5Cge%20f(E%5BX%5D)%0A"></p>
+<p>For a concave function, the inequality reverses.</p>
+<p><strong>Why it is amazing:</strong> it explains why volatility hurts long-term growth. If an investment gains 50% one year and loses 50% the next, the average return is 0%, yet the money is multiplied by <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D1.5%20%5Ctimes%200.5%20=%200.75">, a <strong>25% loss</strong>. Growth is multiplicative, and the logarithm is concave, so the average of the log-growth falls below the log of the average growth.</p>
+</section>
+<section id="markovs-inequality" class="level2">
+<h2 class="anchored" data-anchor-id="markovs-inequality">6. Markov’s Inequality</h2>
+<p>Markov’s Inequality is the simpler parent of Chebyshev’s. For a non-negative random variable <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DX"> and any <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Da%20%3E%200">, it bounds the chance of a large value using only the mean:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0AP(X%20%5Cge%20a)%20%5Cle%20%5Cfrac%7BE%5BX%5D%7D%7Ba%7D%0A"></p>
+<p><strong>Why it is amazing:</strong> averages cannot hide a large crowd of extreme values. Knowing nothing else about a country’s incomes, Markov’s inequality guarantees that no more than <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D1/5%20=%2020%5C%25"> of the population can earn 5 or more times the national average.</p>
+</section>
+<section id="the-coupon-collectors-problem-and-linearity-of-expectation" class="level2">
+<h2 class="anchored" data-anchor-id="the-coupon-collectors-problem-and-linearity-of-expectation">7. The Coupon Collector’s Problem (and Linearity of Expectation)</h2>
+<p>Linearity of Expectation says that</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0AE%5BX%20+%20Y%5D%20=%20E%5BX%5D%20+%20E%5BY%5D%0A"></p>
+<p>and it holds even when <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DX"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DY"> are dependent. Using it, we can find how many random draws are needed to collect all <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> distinct items: about <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20%5Cln%20n%20+%200.577%5C,n">.</p>
+<p><strong>Why it is amazing:</strong> it replaces tangled dependency arguments with simple addition. It also shows why the last missing item takes so long. The first item is certain, but when only one item is missing, each draw finds it with chance <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D1/n">, so we expect <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> draws for that item alone.</p>
+<p>We can check the formula by simulation. Take <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20=%2050"> distinct items and repeat the collection 10,000 times:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">123</span>)</span>
+<span id="cb3-2">n <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">50</span></span>
+<span id="cb3-3"></span>
+<span id="cb3-4">draws_to_complete <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(n) {</span>
+<span id="cb3-5">  seen <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(<span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>, n)</span>
+<span id="cb3-6">  draws <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb3-7">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> (<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">all</span>(seen)) {</span>
+<span id="cb3-8">    seen[<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sample.int</span>(n, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span></span>
+<span id="cb3-9">    draws <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> draws <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb3-10">  }</span>
+<span id="cb3-11">  draws</span>
+<span id="cb3-12">}</span>
+<span id="cb3-13"></span>
+<span id="cb3-14">sim <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">replicate</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10000</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">draws_to_complete</span>(n))</span>
+<span id="cb3-15"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">simulated =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(sim), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">formula =</span> n <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">log</span>(n) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5772</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> n)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>simulated   formula 
+ 224.9978  224.4612 </code></pre>
+</div>
+</div>
+</section>
+<section id="summary-comparison" class="level2">
+<h2 class="anchored" data-anchor-id="summary-comparison">Summary Comparison</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Result</th>
+<th style="text-align: left;">What we need to know</th>
+<th style="text-align: left;">What it guarantees</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Chebyshev’s Inequality</td>
+<td style="text-align: left;">Finite mean and standard deviation</td>
+<td style="text-align: left;">At least <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D1%20-%201/k%5E2"> of the data lie within <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dk"> standard deviations of the mean.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Central Limit Theorem</td>
+<td style="text-align: left;">Independent samples with finite variance</td>
+<td style="text-align: left;">Sample means become approximately Normal as the sample grows.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Law of Large Numbers</td>
+<td style="text-align: left;">Finite mean</td>
+<td style="text-align: left;">Sample averages converge to the true average.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bayes’ Theorem</td>
+<td style="text-align: left;">Prior probability and test accuracy</td>
+<td style="text-align: left;">The exact updated probability after seeing new evidence.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Jensen’s Inequality</td>
+<td style="text-align: left;">Mean and curve direction (convex or concave)</td>
+<td style="text-align: left;">Applying a curve to a random variable shifts the average away from the curve of the average.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Markov’s Inequality</td>
+<td style="text-align: left;">Only a non-negative mean</td>
+<td style="text-align: left;">A hard ceiling on the share of extreme high values.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Linearity of Expectation</td>
+<td style="text-align: left;">Individual averages only</td>
+<td style="text-align: left;">Averages add up cleanly, even when events are tangled together.</td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+
+ ]]></description>
+  <category>Statistics</category>
+  <category>Probability</category>
+  <guid>https://www.statmania.info/blog/posts/statistics-top-7-amazing-results.html</guid>
+  <pubDate>Thu, 12 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/statistics-top-7-amazing-results.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>Why Chebyshev’s Inequality Is Great: A Guarantee for Any Distribution</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/why-chebyshev-inequality-is-great.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/chebyshev-inequality-why-great.svg" class="img-fluid figure-img" alt="Three distributions side by side: bell-shaped, right-skewed and U-shaped. A shaded band covers the mean plus and minus two standard deviations in each, and at least 75% of the data lie inside it."></p>
+<figcaption>Bell-shaped, right-skewed and U-shaped data: in each, at least 75% lie within two standard deviations of the mean.</figcaption>
+</figure>
+</div>
+<p>Chebyshev’s inequality is great because it guarantees a minimum percentage of data within a certain number of standard deviations from the mean, <strong>regardless of the distribution’s shape</strong>. We do not need to assume the data follow a Normal bell curve, which makes it a universal safety net for unknown, skewed, or U-shaped datasets.</p>
+<section id="the-core-formula" class="level2">
+<h2 class="anchored" data-anchor-id="the-core-formula">The Core Formula</h2>
+<p>For any distribution with a finite mean (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cmu">) and finite standard deviation (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csigma">), the proportion of data within <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dk"> standard deviations of the mean (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dk%20%3E%201">) is at least</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A1-%5Cfrac%7B1%7D%7Bk%5E%7B2%7D%7D%0A"></p>
+<ul>
+<li>Within 2 standard deviations (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dk%20=%202">): at least <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D1%20-%20%5Cfrac%7B1%7D%7B2%5E2%7D%20=%2075%5C%25"> of the data.</li>
+<li>Within 3 standard deviations (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dk%20=%203">): at least <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D1%20-%20%5Cfrac%7B1%7D%7B3%5E2%7D%20%5Capprox%2088.9%5C%25"> of the data.</li>
+</ul>
+</section>
+<section id="example-1-heavy-tailed-data-household-income" class="level2">
+<h2 class="anchored" data-anchor-id="example-1-heavy-tailed-data-household-income">Example 1: Heavy-Tailed Data (Household Income)</h2>
+<p>Income data are skewed to the right because a few very high earners pull the tail far out, so a Normal distribution fits poorly.</p>
+<p>Suppose a city reports a mean household income of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cmu%20=%20%5C$60%7B,%7D000"> with a standard deviation of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csigma%20=%20%5C$15%7B,%7D000">. What is the minimum percentage of households earning between $30,000 and $90,000?</p>
+<ol type="1">
+<li><strong>Find <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dk">.</strong> Both boundaries are $30,000 from the mean. Dividing by the standard deviation gives <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dk%20=%2030%7B,%7D000%20/%2015%7B,%7D000%20=%202">.</li>
+<li><strong>Apply Chebyshev.</strong> <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D1%20-%20%5Cfrac%7B1%7D%7B2%5E2%7D%20=%201%20-%200.25%20=%200.75">.</li>
+</ol>
+<p>Without seeing a single tax return, or knowing the shape of the income gap, we can guarantee that <strong>at least 75%</strong> of households earn between $30,000 and $90,000.</p>
+</section>
+<section id="example-2-server-latency-and-sla-guarantees" class="level2">
+<h2 class="anchored" data-anchor-id="example-2-server-latency-and-sla-guarantees">Example 2: Server Latency and SLA Guarantees</h2>
+<p>Software response times often follow irregular patterns with random spikes, yet companies must still sign strict Service Level Agreements (SLAs).</p>
+<p>Suppose an API has a mean response time of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cmu%20=%20100"> ms and a standard deviation of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csigma%20=%2020"> ms. A client asks for the worst-case share of requests that take 160 ms or longer (or 40 ms or less).</p>
+<ol type="1">
+<li><strong>Find <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dk">.</strong> 160 ms is 60 ms from the mean, and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D60%20/%2020"> gives <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dk%20=%203">.</li>
+<li><strong>Apply Chebyshev.</strong> At least <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D1%20-%20%5Cfrac%7B1%7D%7B3%5E2%7D%20%5Capprox%2088.9%5C%25"> of requests fall between 40 ms and 160 ms. Conversely, <strong>at most 11.1%</strong> fall outside this range.</li>
+</ol>
+<p>Even if network traffic is erratic, the engineers can promise that no more than 11.1% of requests will breach the 160 ms limit (the bound counts both tails, so it is conservative for the slow side alone).</p>
+</section>
+<section id="chebyshev-vs.-the-normal-distribution" class="level2">
+<h2 class="anchored" data-anchor-id="chebyshev-vs.-the-normal-distribution">Chebyshev vs.&nbsp;the Normal Distribution</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 36%">
+<col style="width: 27%">
+<col style="width: 36%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Distance from mean (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dk">)</th>
+<th style="text-align: right;">Normal distribution (bell curve only)</th>
+<th style="text-align: center;">Chebyshev (any distribution)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1.5</td>
+<td style="text-align: right;">86.6%</td>
+<td style="text-align: center;">at least 55.6%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: right;">95.4%</td>
+<td style="text-align: center;">at least 75.0%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: right;">99.7%</td>
+<td style="text-align: center;">at least 88.9%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: right;">99.99%</td>
+<td style="text-align: center;">at least 93.8%</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Chebyshev gives a very conservative lower bound. If we know the data are Normal, the Normal distribution gives much tighter estimates.</p>
+</div>
+</div>
+</section>
+<section id="testing-it-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="testing-it-in-r">Testing It in R</h2>
+<p>Let’s test the inequality on three very different shapes: a Normal bell curve, a heavily right-skewed Exponential, and a polarised U-shaped Beta (see the <a href="../posts/u-shaped-probability-distribution.html">U-shaped distribution</a> post). For each, we compute the exact share of data within <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dk%20=%202"> standard deviations of the mean. All three should stay above Chebyshev’s 75% minimum.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">123</span>)</span>
+<span id="cb1-2">n <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100000</span></span>
+<span id="cb1-3"></span>
+<span id="cb1-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Three completely different distribution shapes</span></span>
+<span id="cb1-5">data_normal <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(n, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mean =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">50</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sd =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>)          <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># bell-shaped</span></span>
+<span id="cb1-6">data_skewed <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rexp</span>(n, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">rate =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span>)                   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># heavily right-skewed</span></span>
+<span id="cb1-7">data_ushape <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbeta</span>(n, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">shape1 =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">shape2 =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>)  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># U-shaped</span></span>
+<span id="cb1-8"></span>
+<span id="cb1-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Actual % of data within k standard deviations of the mean</span></span>
+<span id="cb1-10">check_chebyshev <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(data, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">k =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>) {</span>
+<span id="cb1-11">  mu <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(data)</span>
+<span id="cb1-12">  sigma <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sd</span>(data)</span>
+<span id="cb1-13">  actual_prop <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(data <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;=</span> mu <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> k <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> sigma <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span> data <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;=</span> mu <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> k <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> sigma)</span>
+<span id="cb1-14">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(actual_prop <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)</span>
+<span id="cb1-15">}</span>
+<span id="cb1-16"></span>
+<span id="cb1-17"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Chebyshev minimum guarantee (k = 2): 75.00%</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Chebyshev minimum guarantee (k = 2): 75.00%</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Normal distribution actual:        "</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">check_chebyshev</span>(data_normal), <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"%</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Normal distribution actual:         95.46 %</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Right-skewed (Exponential) actual: "</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">check_chebyshev</span>(data_skewed), <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"%</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Right-skewed (Exponential) actual:  95.08 %</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"U-shaped (Beta) actual:            "</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">check_chebyshev</span>(data_ushape), <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"%</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>U-shaped (Beta) actual:             100 %</code></pre>
+</div>
+</div>
+<p>All three comfortably exceed 75%. The bound is a floor valid for every distribution, not a typical value, so real data usually sit well above it.</p>
+</section>
+<section id="visualizing-the-bounds" class="level2">
+<h2 class="anchored" data-anchor-id="visualizing-the-bounds">Visualizing the Bounds</h2>
+<p>Here are the <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dk%20=%202"> boundaries drawn over the skewed data.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(ggplot2)</span>
+<span id="cb9-2"></span>
+<span id="cb9-3">mu_skew <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(data_skewed)</span>
+<span id="cb9-4">sd_skew <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sd</span>(data_skewed)</span>
+<span id="cb9-5"></span>
+<span id="cb9-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> data_skewed), <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(x)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb9-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_histogram</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bins =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">60</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb9-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_vline</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xintercept =</span> mu_skew, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"blue"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb9-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_vline</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xintercept =</span> mu_skew <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> sd_skew,</span>
+<span id="cb9-10">             <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linetype =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dashed"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb9-11">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">coord_cartesian</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xlim =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">60</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb9-12">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Chebyshev Bounds (k = 2) on Skewed Data"</span>,</span>
+<span id="cb9-13">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">subtitle =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Blue: mean. Red dashed: mean ± 2 SD (about 95% of the data lie inside here)"</span>,</span>
+<span id="cb9-14">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Value"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Count"</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/why-chebyshev-inequality-is-great_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" alt="Histogram of right-skewed data with a blue line at the mean and red dashed lines two standard deviations either side." width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The lower boundary falls below zero, so only the upper line is visible, yet the guarantee still holds.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>Statistics</category>
+  <category>Probability</category>
+  <category>R</category>
+  <guid>https://www.statmania.info/blog/posts/why-chebyshev-inequality-is-great.html</guid>
+  <pubDate>Thu, 12 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/chebyshev-inequality-why-great.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
 <item>
   <title>Count Cells with Partial Text Matches in Excel Using COUNTIF</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
@@ -128,6 +822,117 @@ Note
   <guid>https://www.statmania.info/blog/posts/spreadshett-countif-partial-match.html</guid>
   <pubDate>Fri, 06 Nov 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/countif-partial-match.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>The Statistical Father: How a Bell Curve Settled Paternity Disputes</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/statistical-father-gestation.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/statistical-father-gestation.svg" class="img-fluid figure-img" alt="Bell curve of pregnancy length centred on 280 days. The 349-day Hadlum case and the 360-day mark (mean plus three standard deviations) lie far out in the right tail."></p>
+<figcaption>A bell curve of pregnancy length with the 349-day case and the 360-day mark</figcaption>
+</figure>
+</div>
+<p><em>This post is an English retelling, with additions, of the Bengali article <a href="https://bnstatmania.blogspot.com/2017/09/statistical-father.html">“পরিসংখ্যানিক পিতা!”</a> by Dr.&nbsp;Rahmatullah Imon, shared on the earlier Stat Mania blog with his permission. The case details and the study figures below come from Dr.&nbsp;Imon’s account unless another source is named.</em></p>
+<p>Before DNA tests existed, a court that doubted a child’s father had very little to go on. One of the most striking answers came from statistics: if a pregnancy lasted <em>too</em> long, the husband could not be the father. But how long is too long? A bell curve helped answer that.</p>
+<hr>
+<section id="a-baby-born-349-days-later" class="level2">
+<h2 class="anchored" data-anchor-id="a-baby-born-349-days-later">A Baby Born 349 Days Later</h2>
+<p>In the late 1940s a British soldier, Major Hadlum, returned from the war to find that his wife had given birth to a child. Counting from the day he left, the baby arrived <strong>349 days</strong> later. A normal pregnancy lasts about <strong>280 days</strong> (40 weeks), so Hadlum suspected his wife had been unfaithful and petitioned for divorce on that ground.</p>
+<p>The court held that such a long pregnancy was unusual but <strong>possible</strong>, so adultery was not proven. This was <em>Hadlum v Hadlum</em>, decided in 1948 and upheld on appeal in 1949.</p>
+</section>
+<section id="why-a-single-number-is-not-enough" class="level2">
+<h2 class="anchored" data-anchor-id="why-a-single-number-is-not-enough">Why a Single Number Is Not Enough</h2>
+<p>Other cases followed with gaps of around 340 and 360 days, and the judges had no agreed way to decide them. “Impossible” is a strong word for a biological process, since gestation length varies from one pregnancy to the next. What the courts needed was a <strong>cut-off</strong>, a point beyond which an outcome is so unlikely that we treat it as an <em>outlier</em>.</p>
+</section>
+<section id="the-bell-curve-draws-the-line" class="level2">
+<h2 class="anchored" data-anchor-id="the-bell-curve-draws-the-line">The Bell Curve Draws the Line</h2>
+<p>Gestation length is well described by a normal distribution centred near 280 days. The empirical rule says that about <strong>99.7%</strong> of values lie within three standard deviations of the mean. Dr.&nbsp;Imon reports a large British study of more than 13,000 pregnancies that supported this shape, and that applying “mean + 3 SD” put the upper limit at roughly <strong>360 days</strong>. (We could not independently confirm the details of that study, so treat its numbers as Dr.&nbsp;Imon’s account.)</p>
+<p>Working backwards from the 360-day limit gives a standard deviation of about 27 days. We can check the arithmetic in R:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">m <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">280</span></span>
+<span id="cb1-2">s <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">80</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>                      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># (360 - 280) / 3, about 26.7 days</span></span>
+<span id="cb1-3"></span>
+<span id="cb1-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pnorm</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">349</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">360</span>), m, s, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">lower.tail =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>)</span></code></pre></div></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1">[1] 0.00483 0.00135</span></code></pre></div></div>
+<p>So under this model, only about <strong>0.5%</strong> of pregnancies run past 349 days, and about <strong>0.14%</strong> past 360. Hadlum’s case sat at 2.6 standard deviations above the mean, rare but not impossible, while 360 days sits exactly at 3.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The model is a simplification. Modern studies find that natural gestation varies more widely than the 280-day textbook figure suggests, and the distribution is not perfectly symmetric. The curve above is illustrative, not a medical reference.</p>
+</div>
+</div>
+</section>
+<section id="the-court-draws-a-line" class="level2">
+<h2 class="anchored" data-anchor-id="the-court-draws-a-line">The Court Draws a Line</h2>
+<p>In <em>Preston-Jones v Preston-Jones</em>, a husband had been abroad for about six months, and his wife’s child was born roughly <strong>360 days</strong> after the last time they could have met. The trial judge refused the divorce, but the House of Lords, in a decision of December 1950 (reported in 1951), directed that the husband’s petition be allowed. One judge in the case had argued that a court should not accept such a pregnancy as possible without direct medical evidence.</p>
+<p>It is common to read this as a rule that any child born within 360 days must be the husband’s. That is a simplification: the Lords decided one case on its evidence, and the 360-day figure became a practical benchmark rather than a statute. Even so, the idea behind it is a lesson in statistics. A <strong>“three-sigma” limit</strong> turned a vague legal question into a measurable one, and fathers in such cases were sometimes called “statistical fathers”.</p>
+</section>
+<section id="what-we-can-take-from-this" class="level2">
+<h2 class="anchored" data-anchor-id="what-we-can-take-from-this">What We Can Take from This</h2>
+<ul>
+<li><strong>Outliers are judged against a distribution.</strong> A value of 349 days means little until we know the mean and spread of the data.</li>
+<li><strong>The three-sigma rule is a convention.</strong> Moving the cut-off to 2.5 or 4 standard deviations changes who is classed as an outlier.</li>
+<li><strong>Rare is not impossible.</strong> A statistical limit measures how surprising a value is, which is different from proving what happened in one real case.</li>
+</ul>
+<hr>
+</section>
+<section id="references-and-further-reading" class="level2">
+<h2 class="anchored" data-anchor-id="references-and-further-reading">References and Further Reading</h2>
+<ul>
+<li>Imon, R. (2017). <a href="https://bnstatmania.blogspot.com/2017/09/statistical-father.html">পরিসংখ্যানিক পিতা! (Statistical Father!)</a>. Stat Mania (Bengali), 16 September 2017. The main source for this post.</li>
+<li>McKenzie, D. (2014). <a href="https://deanmckenzieconsulting.com/2014/02/09/statistical-outliers-1-baldness-and-long-gestations/">Statistical outliers: of baldness and long gestations</a>. Discusses <em>Hadlum v Hadlum</em> and the 360-day limit.</li>
+<li><a href="https://vlex.co.uk/vid/preston-jones-v-preston-792875057"><em>Preston-Jones v Preston-Jones</em></a>, House of Lords, 14 December 1950; reported at [1951] AC 391.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>Statistics</category>
+  <category>History</category>
+  <guid>https://www.statmania.info/blog/posts/statistical-father-gestation.html</guid>
+  <pubDate>Fri, 06 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/statistical-father-gestation.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 <item>
   <title>Area Charts in Statistics: Probability, Proportions and Cumulative Totals</title>
@@ -7622,986 +8427,6 @@ Tip
   <guid>https://www.statmania.info/blog/posts/monte-carlo-method-explained.html</guid>
   <pubDate>Sun, 01 Nov 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/monte-carlo-method-explained.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Pie Chart in R with Many Categories (ggplot2)</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/pie-chart-in-r-with-many-categories.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/pie-chart-in-r-with-many-categories-fig.png" class="bk-adapt img-fluid figure-img" alt="A pie chart with fifteen slices, each labelled outside the circle with a leader line."></p>
-<figcaption>A pie chart with fifteen slices labelled outside the circle.</figcaption>
-</figure>
-</div>
-<p>With many categories a pie chart becomes unreadable: the slices are narrow, the labels overlap and the colours are hard to tell apart. Experts usually advise either lumping the small categories into an “Other” group or switching to a bar chart. Let’s see how to do both, and how to keep every category visible when we must, using <code>ggplot2</code>.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>All the plots here keep the default <code>ggplot2</code> grey panel. For a pie we only hide the axis text, ticks and titles, which carry no meaning in polar coordinates. The same recipe works for the pie charts in <a href="pie-vs-bar-chart.html">Pie Chart vs Bar Chart</a>.</p>
-</div>
-</div>
-<section id="the-data-fifteen-categories" class="level2">
-<h2 class="anchored" data-anchor-id="the-data-fifteen-categories">The Data: Fifteen Categories</h2>
-<p>Here are fifteen categories with very uneven values. We reuse this data throughout.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(tidyverse)</span>
-<span id="cb1-2"></span>
-<span id="cb1-3">data <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data.frame</span>(</span>
-<span id="cb1-4">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">category =</span> letters[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">15</span>],</span>
-<span id="cb1-5">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">value    =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">50</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">40</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">30</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">15</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">8</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">7</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">6</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb1-6">)</span></code></pre></div></div>
-</div>
-<p>A small helper theme hides the useless polar axes while keeping the default grey background.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">pie_theme <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">theme</span>(</span>
-<span id="cb2-2">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">axis.title  =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">element_blank</span>(),</span>
-<span id="cb2-3">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">axis.text   =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">element_blank</span>(),</span>
-<span id="cb2-4">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">axis.ticks  =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">element_blank</span>(),</span>
-<span id="cb2-5">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">panel.grid  =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">element_blank</span>()</span>
-<span id="cb2-6">)</span></code></pre></div></div>
-</div>
-</section>
-<section id="the-problem-all-fifteen-slices" class="level2">
-<h2 class="anchored" data-anchor-id="the-problem-all-fifteen-slices">The Problem: All Fifteen Slices</h2>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(data, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> value, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> category)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_col</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">coord_polar</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">theta =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"y"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-4">  pie_theme <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-5">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Fifteen slices"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NULL</span>)</span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/posts/pie-chart-in-r-with-many-categories_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="576"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>The last six slices are slivers, and fifteen colours are too many to match against the legend.</p>
-</section>
-<section id="lump-small-categories-into-other" class="level2">
-<h2 class="anchored" data-anchor-id="lump-small-categories-into-other">Lump Small Categories into “Other”</h2>
-<p>The best fix is to keep the largest categories and merge the rest. <code>fct_lump_n()</code> from <code>forcats</code> (part of the tidyverse) keeps the top <code>n</code> and groups everything else as “Other”. The argument <code>w</code> tells it to rank by <code>value</code>, not by row count.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">clean_data <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> data <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb4-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">category =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fct_lump_n</span>(category, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">n =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">w =</span> value)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb4-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">group_by</span>(category) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb4-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">summarise</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">value =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum</span>(value)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb4-5">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">percentage =</span> value <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum</span>(value) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>)</span>
-<span id="cb4-6"></span>
-<span id="cb4-7"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(clean_data, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> value, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> category)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb4-8">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_col</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb4-9">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">coord_polar</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">theta =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"y"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb4-10">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_text</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">label =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste0</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round</span>(percentage), <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"%"</span>)),</span>
-<span id="cb4-11">            <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">position =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">position_stack</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">vjust =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.5</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb4-12">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">scale_fill_brewer</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">palette =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Dark2"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb4-13">  pie_theme <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb4-14">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Top five categories plus Other"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NULL</span>)</span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/posts/pie-chart-in-r-with-many-categories_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="576"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Now six slices remain and each can carry a percentage label. The price is that the detail of the small categories is hidden inside “Other”.</p>
-</section>
-<section id="showing-every-category-labels-with-leader-lines" class="level2">
-<h2 class="anchored" data-anchor-id="showing-every-category-labels-with-leader-lines">Showing Every Category: Labels with Leader Lines</h2>
-<p>If every category must appear, put the labels outside the circle and join them to their slices with lines. The <code>ggrepel</code> package (<code>install.packages("ggrepel")</code>) pushes labels apart automatically, so they do not overlap.</p>
-<p>First we compute the middle of each slice. Because <code>geom_col()</code> stacks the first level on top, we reverse the order before taking the cumulative sum.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(ggrepel)</span>
-<span id="cb5-2"></span>
-<span id="cb5-3">labelled <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> data <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb5-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">category =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">factor</span>(category, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">levels =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rev</span>(category)),</span>
-<span id="cb5-5">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">prop =</span> value <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum</span>(value) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>,</span>
-<span id="cb5-6">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ypos =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cumsum</span>(prop) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.5</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> prop)</span>
-<span id="cb5-7"></span>
-<span id="cb5-8"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(labelled, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> prop, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> category)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb5-9">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_col</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb5-10">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">coord_polar</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">theta =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"y"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb5-11">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_label_repel</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> ypos, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">label =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste0</span>(category, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">": "</span>, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round</span>(prop, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>), <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"%"</span>)),</span>
-<span id="cb5-12">                   <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">nudge_x =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.8</span>,</span>
-<span id="cb5-13">                   <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">segment.colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"grey30"</span>,</span>
-<span id="cb5-14">                   <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">size =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3.5</span>,</span>
-<span id="cb5-15">                   <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">show.legend =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb5-16">  pie_theme <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb5-17">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">legend.position =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"none"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb5-18">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"All fifteen categories, labelled outside"</span>)</span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/posts/pie-chart-in-r-with-many-categories_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p><code>nudge_x</code> moves the labels outward, and the segments are drawn automatically. This stays readable up to roughly ten to fifteen categories.</p>
-</section>
-<section id="a-bar-chart-handles-dozens-of-categories" class="level2">
-<h2 class="anchored" data-anchor-id="a-bar-chart-handles-dozens-of-categories">A Bar Chart Handles Dozens of Categories</h2>
-<p>When there are many categories, a sorted horizontal bar chart is the standard replacement. It needs no legend and leaves room for long labels.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(data, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> value, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">reorder</span>(category, value))) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb6-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_col</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"steelblue"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb6-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"The same fifteen categories"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Value"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NULL</span>)</span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/posts/pie-chart-in-r-with-many-categories_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="576"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="an-interactive-option" class="level2">
-<h2 class="anchored" data-anchor-id="an-interactive-option">An Interactive Option</h2>
-<p>For dashboards and web pages, an interactive pie lets readers hover to see values and click the legend to hide categories. The <code>plotly</code> package does this (<code>install.packages("plotly")</code>).</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(plotly)</span>
-<span id="cb7-2"></span>
-<span id="cb7-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot_ly</span>(data, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">labels =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>category, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">values =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>value, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"pie"</span>)</span></code></pre></div></div>
-</section>
-<section id="which-should-we-choose" class="level2">
-<h2 class="anchored" data-anchor-id="which-should-we-choose">Which Should We Choose?</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Strategy</th>
-<th>When to use</th>
-<th>Pros</th>
-<th>Cons</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>fct_lump_n()</code> + pie</td>
-<td>Reports, papers, slides</td>
-<td>Clean and instantly readable</td>
-<td>Hides the small categories</td>
-</tr>
-<tr class="even">
-<td><code>ggrepel</code> labels</td>
-<td>All categories must show, up to about 15</td>
-<td>Keeps every category</td>
-<td>Still busy</td>
-</tr>
-<tr class="odd">
-<td>Interactive <code>plotly</code></td>
-<td>Dashboards, websites</td>
-<td>Keeps all information</td>
-<td>Not for print</td>
-</tr>
-<tr class="even">
-<td>Bar chart</td>
-<td>General best practice</td>
-<td>Handles dozens of categories</td>
-<td>Loses the part-to-whole look</td>
-</tr>
-</tbody>
-</table>
-<p>In short, lump first, label outside if every category is needed, and prefer a bar chart when the categories are many.</p>
-
-
-</section>
-
- ]]></description>
-  <category>R</category>
-  <category>Statistics</category>
-  <category>Visualization</category>
-  <guid>https://www.statmania.info/blog/posts/pie-chart-in-r-with-many-categories.html</guid>
-  <pubDate>Sun, 01 Nov 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/pie-chart-in-r-with-many-categories.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>RGB Color Codes Explained: rgb(), rgba() and Their Hex Equivalents</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/rgb-color-code-explained.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/rgb-color-code-explained.svg" class="img-fluid figure-img" alt="Three sliders set red to 64, green to 196 and blue to 170, mixing into a teal swatch labelled rgb(64, 196, 170)."></p>
-<figcaption>Three sliders from 0 to 255 mix into one colour: rgb(64, 196, 170).</figcaption>
-</figure>
-</div>
-<p>An <strong>RGB color code</strong> tells a digital screen exactly how much red, green and blue light to mix to make a colour. A <a href="../posts/hex-color-code-explained.html">hex code</a> writes the same three amounts in base 16. An RGB code writes them as ordinary decimal numbers from 0 to 255.</p>
-<section id="the-anatomy-of-an-rgb-code" class="level2">
-<h2 class="anchored" data-anchor-id="the-anatomy-of-an-rgb-code">The Anatomy of an RGB Code</h2>
-<p>An RGB code is written like a function with three numbers in parentheses:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1">rgb(Red, Green, Blue)</span></code></pre></div></div>
-<ul>
-<li><code>0</code> means the channel is completely off (no light).</li>
-<li><code>255</code> means the channel is at full intensity.</li>
-</ul>
-<p>Screens create colour by <strong>adding light</strong> (the additive colour model), and three channels with 256 levels each give 256 × 256 × 256 = 16,777,216 possible colours.</p>
-</section>
-<section id="rgb-vs-hex" class="level2">
-<h2 class="anchored" data-anchor-id="rgb-vs-hex">RGB vs Hex</h2>
-<p>An RGB code uses the same numbers we get when converting each pair of a hex code. Here are the basic colours in both forms:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Colour</th>
-<th>Hex</th>
-<th>RGB</th>
-<th>Why</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Pure red</td>
-<td><code>#FF0000</code></td>
-<td><code>rgb(255, 0, 0)</code></td>
-<td>Full red, no green, no blue</td>
-</tr>
-<tr class="even">
-<td>Pure green</td>
-<td><code>#00FF00</code></td>
-<td><code>rgb(0, 255, 0)</code></td>
-<td>No red, full green, no blue</td>
-</tr>
-<tr class="odd">
-<td>Pure blue</td>
-<td><code>#0000FF</code></td>
-<td><code>rgb(0, 0, 255)</code></td>
-<td>No red, no green, full blue</td>
-</tr>
-<tr class="even">
-<td>Black</td>
-<td><code>#000000</code></td>
-<td><code>rgb(0, 0, 0)</code></td>
-<td>All lights off</td>
-</tr>
-<tr class="odd">
-<td>White</td>
-<td><code>#FFFFFF</code></td>
-<td><code>rgb(255, 255, 255)</code></td>
-<td>All lights at full intensity</td>
-</tr>
-</tbody>
-</table>
-<p>In the hex post we worked out that the pair <code>A3</code> equals 10 × 16 + 3 = 163. So the hex code <code>#A30000</code> is the same colour as <code>rgb(163, 0, 0)</code>.</p>
-<section id="converting-in-r" class="level3">
-<h3 class="anchored" data-anchor-id="converting-in-r">Converting in R</h3>
-<p>R can move between the two forms. <code>col2rgb()</code> turns a hex code into RGB numbers:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">col2rgb</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"#40C4AA"</span>)</span></code></pre></div></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1">      [,1]</span>
-<span id="cb3-2">red     64</span>
-<span id="cb3-3">green  196</span>
-<span id="cb3-4">blue   170</span></code></pre></div></div>
-<p>and <code>rgb()</code> turns RGB numbers into a hex code:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rgb</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">64</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">196</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">170</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">maxColorValue =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">255</span>)</span></code></pre></div></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb5-1">[1] "#40C4AA"</span></code></pre></div></div>
-</section>
-</section>
-<section id="what-is-rgba" class="level2">
-<h2 class="anchored" data-anchor-id="what-is-rgba">What Is RGBA?</h2>
-<p>Sometimes a fourth number is added: <code>rgba(Red, Green, Blue, Alpha)</code>. The <strong>alpha</strong> channel sets transparency, on a scale from 0.0 to 1.0:</p>
-<ul>
-<li><code>0.0</code>: completely invisible</li>
-<li><code>0.5</code>: half see-through</li>
-<li><code>1.0</code>: completely solid</li>
-</ul>
-<p>For example, this gives a vibrant blue that lets whatever is behind it show through:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb6-1">rgba(0, 0, 255, 0.5)</span></code></pre></div></div>
-<p>In hex, alpha becomes an extra pair at the end. In R, <code>rgb()</code> takes an <code>alpha</code> argument on a 0 to 1 scale and reproduces it:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rgb</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">alpha =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.5</span>)</span></code></pre></div></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb8-1">[1] "#0000FF80"</span></code></pre></div></div>
-<p>The <code>80</code> is 0.5 × 255 rounded to 128, which is <code>80</code> in hex.</p>
-</section>
-<section id="see-also" class="level2">
-<h2 class="anchored" data-anchor-id="see-also">See Also</h2>
-<ul>
-<li><a href="../posts/hex-color-code-explained.html">Hex Color Codes Explained</a>: the base-16 form and how to convert a pair by hand.</li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>Programming</category>
-  <category>Explainer</category>
-  <guid>https://www.statmania.info/blog/posts/rgb-color-code-explained.html</guid>
-  <pubDate>Sun, 01 Nov 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/rgb-color-code-explained.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Stem-and-Leaf Plot Keys: Seven Variants and When to Use Each</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/stem-and-leaf-plot-variants.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/stem-and-leaf-plot-variants.svg" class="img-fluid figure-img" alt="Cards showing key styles: integer 3 | 4 = 34, decimal 2 | 3 = 2.3, leaf unit 12 | 4 = 12.04, large 4 | 5 = 450, negative -2 | 5 = -25, split stem 1. | 5 = 15 and hybrid 15 | 3 = 18."></p>
-<figcaption>Seven ways to write the key of a stem-and-leaf plot.</figcaption>
-</figure>
-</div>
-<p>The <strong>key</strong> is what makes a stem-and-leaf plot readable. Without it the plot is just a column of digits. The key tells the reader how to combine the stem (left column) and the leaf (right column) to recover the original value.</p>
-<p>Data come as decimals, huge numbers and negative values, so the key has to adapt. Here are the common variants and when to use each.</p>
-<section id="the-standard-integer-key" class="level2">
-<h2 class="anchored" data-anchor-id="the-standard-integer-key">1. The Standard Integer Key</h2>
-<p>The classic version, for ordinary whole numbers.</p>
-<ul>
-<li><strong>When to use:</strong> counts, ages, or test scores out of 100.</li>
-</ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1">Stem | Leaf</span>
-<span id="cb1-2">  2  | 1 5 8</span>
-<span id="cb1-3">  3  | 0 4 4 9</span>
-<span id="cb1-4">  4  | 2</span>
-<span id="cb1-5"></span>
-<span id="cb1-6">Key: 3 | 4 means 34</span></code></pre></div></div>
-</section>
-<section id="the-decimal-key" class="level2">
-<h2 class="anchored" data-anchor-id="the-decimal-key">2. The Decimal Key</h2>
-<p>When the data have decimals, the stem is the whole-number part and the leaf is the decimal digit.</p>
-<ul>
-<li><strong>When to use:</strong> GPAs, measurements such as height in metres, financial figures.</li>
-</ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1">Stem | Leaf</span>
-<span id="cb2-2">  1  | 2 5</span>
-<span id="cb2-3">  2  | 1 3 8</span>
-<span id="cb2-4">  3  | 0</span>
-<span id="cb2-5"></span>
-<span id="cb2-6">Key: 2 | 3 means 2.3</span></code></pre></div></div>
-</section>
-<section id="the-formal-leaf-unit-key" class="level2">
-<h2 class="anchored" data-anchor-id="the-formal-leaf-unit-key">3. The Formal “Leaf Unit” Key</h2>
-<p>Statistical software and scientific papers often state a <strong>leaf unit</strong>: the value of one step in the leaf.</p>
-<ul>
-<li><strong>When to use:</strong> formal reports, or data with two or more decimal places.</li>
-</ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1">Stem | Leaf</span>
-<span id="cb3-2"> 12  | 4 7</span>
-<span id="cb3-3"> 13  | 1 9</span>
-<span id="cb3-4"></span>
-<span id="cb3-5">Leaf unit = 0.01</span></code></pre></div></div>
-<p>To read it: <code>12 | 4</code> is 12 + (4 × 0.01) = 12.04.</p>
-</section>
-<section id="the-large-number-key" class="level2">
-<h2 class="anchored" data-anchor-id="the-large-number-key">4. The Large-Number Key</h2>
-<p>Populations, sales or distances are too large to write in full, so we drop the trailing digits and say so in the key.</p>
-<ul>
-<li><strong>When to use:</strong> values in the hundreds, thousands or millions.</li>
-</ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb4-1">Stem | Leaf</span>
-<span id="cb4-2">  4  | 5 8</span>
-<span id="cb4-3">  5  | 2 3</span>
-<span id="cb4-4"></span>
-<span id="cb4-5">Key: 4 | 5 means 450</span></code></pre></div></div>
-<p>Here the leaves are tens, so the plot shows 450, 480, 520 and 530.</p>
-</section>
-<section id="the-negative-number-key" class="level2">
-<h2 class="anchored" data-anchor-id="the-negative-number-key">5. The Negative-Number Key</h2>
-<p>Stem-and-leaf plots can handle negative values. The minus sign belongs to the whole number, and the stems run from the most negative to the most positive.</p>
-<ul>
-<li><strong>When to use:</strong> temperatures, financial losses, altitudes below sea level.</li>
-</ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb5-1">Stem | Leaf</span>
-<span id="cb5-2"> -2  | 5 8</span>
-<span id="cb5-3"> -1  | 2 4</span>
-<span id="cb5-4">  0  | 1</span>
-<span id="cb5-5">  1  | 5</span>
-<span id="cb5-6"></span>
-<span id="cb5-7">Key: -2 | 5 means -25</span></code></pre></div></div>
-</section>
-<section id="the-split-stem-key" class="level2">
-<h2 class="anchored" data-anchor-id="the-split-stem-key">6. The Split-Stem Key</h2>
-<p>When too many leaves pile up on one stem, we split the stem in two: <code>1*</code> for the low half (10–14) and <code>1.</code> for the high half (15–19). Leaves are still just the units digit.</p>
-<ul>
-<li><strong>When to use:</strong> a standard plot hides the shape because one stem has too many leaves.</li>
-</ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb6-1">Stem | Leaf</span>
-<span id="cb6-2">  1* | 2 4</span>
-<span id="cb6-3">  1. | 5 7 9</span>
-<span id="cb6-4">  2* | 1 3</span>
-<span id="cb6-5"></span>
-<span id="cb6-6">Key: 1. | 5 means 15</span></code></pre></div></div>
-</section>
-<section id="the-hybrid-key-stems-of-5" class="level2">
-<h2 class="anchored" data-anchor-id="the-hybrid-key-stems-of-5">7. The Hybrid Key (Stems of 5)</h2>
-<p>The hybrid plot gets the same finer bins as the split stem, but writes the stems as numbers (<code>10</code>, <code>15</code>, <code>20</code>) and each leaf is the <strong>offset</strong> from its stem.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb7-1">Stem | Leaf</span>
-<span id="cb7-2"> 10  | 2 3 3</span>
-<span id="cb7-3"> 15  | 0 0 2 2 3 3 3 3 4</span>
-<span id="cb7-4"> 20  | 0 1 3 3 3 3 4</span>
-<span id="cb7-5"></span>
-<span id="cb7-6">Key: 15 | 3 means 15 + 3 = 18</span></code></pre></div></div>
-<p>The reader has to add the stem and the leaf, so the key must be clear. See <a href="../posts/hybrid-stem-and-leaf-plot.html">Hybrid Stem-and-Leaf Plot</a> for the full example.</p>
-</section>
-<section id="r-prints-its-own-key" class="level2">
-<h2 class="anchored" data-anchor-id="r-prints-its-own-key">R Prints Its Own Key</h2>
-<p>R’s <code>stem()</code> function writes the key as a sentence above the plot. For large numbers:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">stem</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">450</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">480</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">520</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">530</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">560</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">610</span>))</span></code></pre></div></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb9-1">  The decimal point is 2 digit(s) to the right of the |</span>
-<span id="cb9-2"></span>
-<span id="cb9-3">  4 | 58</span>
-<span id="cb9-4">  5 | 23</span>
-<span id="cb9-5">  5 | 6</span>
-<span id="cb9-6">  6 | 1</span></code></pre></div></div>
-<p>“2 digits to the right” means each stem is in hundreds, so <code>4 | 5</code> is 450 and <code>4 | 8</code> is 480. Notice that R also split the stem 5 into two rows, as in the split-stem variant.</p>
-</section>
-<section id="cheat-sheet-which-key-to-use" class="level2">
-<h2 class="anchored" data-anchor-id="cheat-sheet-which-key-to-use">Cheat Sheet: Which Key to Use</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Data type</th>
-<th>Key variant</th>
-<th>Example</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Whole numbers</td>
-<td>Standard integer</td>
-<td>Key: 3 | 4 = 34</td>
-</tr>
-<tr class="even">
-<td>Decimals (1 place)</td>
-<td>Decimal</td>
-<td>Key: 3 | 4 = 3.4</td>
-</tr>
-<tr class="odd">
-<td>Decimals (2+ places)</td>
-<td>Leaf unit</td>
-<td>Leaf unit = 0.01</td>
-</tr>
-<tr class="even">
-<td>Large numbers</td>
-<td>Scaled</td>
-<td>Key: 4 | 5 = 450</td>
-</tr>
-<tr class="odd">
-<td>Negative values</td>
-<td>Negative</td>
-<td>Key: -2 | 5 = -25</td>
-</tr>
-<tr class="even">
-<td>Crowded stems</td>
-<td>Split stem</td>
-<td>Key: 1. | 5 = 15</td>
-</tr>
-<tr class="odd">
-<td>Crowded stems, numeric stems</td>
-<td>Hybrid</td>
-<td>Key: 15 | 3 = 15 + 3 = 18</td>
-</tr>
-</tbody>
-</table>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>The golden rule:</strong> a key must be unambiguous. If there is any way a reader could misread the digits, make the key more specific.</p>
-</div>
-</div>
-
-
-</section>
-
- ]]></description>
-  <category>Statistics</category>
-  <category>Visualization</category>
-  <guid>https://www.statmania.info/blog/posts/stem-and-leaf-plot-variants.html</guid>
-  <pubDate>Sun, 01 Nov 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/stem-and-leaf-plot-variants.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>
