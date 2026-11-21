@@ -291,7 +291,7 @@
     return li;
   }
   function authorCard(a) {
-    var card = el('aside', 'bk-author-card');
+    var card = el('div', 'bk-author-card');
     if (a.image) {
       var img = el('img', 'bk-author-img');
       img.src = base + a.image;
