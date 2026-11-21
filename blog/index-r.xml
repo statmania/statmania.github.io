@@ -10,7 +10,255 @@
 <atom:link href="https://www.statmania.info/blog/index-r.xml" rel="self" type="application/rss+xml"/>
 <description>Posts on statistics theory, R &amp; Python, and developer tips from Stat Mania.</description>
 <generator>quarto-1.9.38</generator>
-<lastBuildDate>Thu, 12 Nov 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Fri, 20 Nov 2026 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>The Law of Large Numbers: What It Is and What It Is Not</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/what-is-law-of-large-numbers-what-it-is-not.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/law-of-large-numbers.svg" class="img-fluid figure-img" alt="A line chart of the running proportion of heads against the number of flips: large swings at first, then settling toward the 0.5 line."></p>
+<figcaption>The running proportion of heads swings wildly at first, then settles near 0.5.</figcaption>
+</figure>
+</div>
+<section id="what-it-says" class="level2">
+<h2 class="anchored" data-anchor-id="what-it-says">What it says</h2>
+<p>The <strong>law of large numbers</strong> (LLN) says that as we collect more independent observations from the same distribution, the sample mean gets closer to the true mean:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cbar%7BX%7D_n%20=%20%5Cfrac%7BX_1%20+%20X_2%20+%20%5Ccdots%20+%20X_n%7D%7Bn%7D%20%5C;%5Clongrightarrow%5C;%20%5Cmu%20%5Cquad%20%5Ctext%7Bas%20%7D%20n%20%5Cto%20%5Cinfty%0A"></p>
+<p>For a fair coin, let <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DX%20=%201"> for heads and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D0"> for tails. Then <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cmu%20=%200.5">, and the proportion of heads should approach 0.5 as we flip more.</p>
+</section>
+<section id="seeing-it-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="seeing-it-in-r">Seeing it in R</h2>
+<p>Let’s flip a fair coin 10,000 times and look at the running proportion of heads.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(ggplot2)</span>
+<span id="cb1-2"></span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">42</span>)</span>
+<span id="cb1-4">n <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10000</span></span>
+<span id="cb1-5">flips <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbinom</span>(n, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>)</span>
+<span id="cb1-6">running <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cumsum</span>(flips) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq_len</span>(n)</span>
+<span id="cb1-7"></span>
+<span id="cb1-8">df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq_len</span>(n), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">prop =</span> running)</span>
+<span id="cb1-9"></span>
+<span id="cb1-10"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(df, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(n, prop)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-11">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_line</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-12">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_hline</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yintercept =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linetype =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dashed"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-13">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_x_log10</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-14">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Number of flips (log scale)"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Proportion of heads"</span>)</span></code></pre></div></div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/what-is-law-of-large-numbers-what-it-is-not_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" alt="Running proportion of heads against the number of flips on a log scale: it fluctuates widely for small n and settles close to 0.5 for large n." width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The values at a few sample sizes:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>      n heads proportion
+1    10     8     0.8000
+2   100    55     0.5500
+3  1000   473     0.4730
+4 10000  4999     0.4999</code></pre>
+</div>
+</div>
+<p>With 10 flips the proportion is far from 0.5; with 10,000 it is very close.</p>
+</section>
+<section id="what-it-is-not" class="level2">
+<h2 class="anchored" data-anchor-id="what-it-is-not">What it is not</h2>
+<section id="it-is-not-the-gamblers-fallacy" class="level3">
+<h3 class="anchored" data-anchor-id="it-is-not-the-gamblers-fallacy">1. It is not the gambler’s fallacy</h3>
+<p>After five heads in a row, tails is <strong>not</strong> “due”. The coin has no memory, and the next flip is still 50/50. The LLN does not say the past is corrected; it says the early streak gets <strong>diluted</strong> by the many flips that follow.</p>
+</section>
+<section id="it-does-not-say-counts-even-out" class="level3">
+<h3 class="anchored" data-anchor-id="it-does-not-say-counts-even-out">2. It does not say counts even out</h3>
+<p>The <em>proportion</em> approaches 0.5, but the <em>difference</em> between heads and tails does not shrink. It typically grows, like <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csqrt%7Bn%7D">. Let’s check by repeating the experiment 5,000 times for each <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn">:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb3-2">sizes <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10000</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1000000</span>)</span>
+<span id="cb3-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sapply</span>(sizes, <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(n) {</span>
+<span id="cb3-4">  heads <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbinom</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5000</span>, n, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>)</span>
+<span id="cb3-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> heads <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> n))</span>
+<span id="cb3-6">})</span></code></pre></div></div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>      n avg_abs_diff avg_prop_off
+1 1e+02          8.0      0.07991
+2 1e+04         78.2      0.00782
+3 1e+06        794.8      0.00079</code></pre>
+</div>
+</div>
+<p>The gap between heads and tails grows from about 8 to about 800, yet as a share of the flips it shrinks toward 0.</p>
+</section>
+<section id="it-is-not-a-promise-for-small-samples" class="level3">
+<h3 class="anchored" data-anchor-id="it-is-not-a-promise-for-small-samples">3. It is not a promise for small samples</h3>
+<p>The LLN is a statement about the long run. Ten flips can easily give 8 heads, as in our simulation. Believing that small samples must look like the population is sometimes called the “law of small numbers”, and it is a mistake.</p>
+</section>
+<section id="it-does-not-make-a-single-outcome-predictable" class="level3">
+<h3 class="anchored" data-anchor-id="it-does-not-make-a-single-outcome-predictable">4. It does not make a single outcome predictable</h3>
+<p>The LLN describes averages over many trials, not the next trial. A casino cannot predict one spin, but it can predict its profit over a million spins.</p>
+</section>
+<section id="it-does-not-always-apply" class="level3">
+<h3 class="anchored" data-anchor-id="it-does-not-always-apply">5. It does not always apply</h3>
+<p>The LLN needs conditions. The observations should be independent (or weakly dependent) draws from the same distribution, and that distribution must have a finite mean. The Cauchy distribution has no mean, so its sample average never settles, however large <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> is.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Don’t confuse the LLN with the <strong>central limit theorem</strong>. The LLN says the sample mean approaches <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cmu">. The CLT describes the <em>shape</em> of the fluctuations around <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cmu">: roughly normal, with spread <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csigma%20/%20%5Csqrt%7Bn%7D">.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="key-takeaway" class="level2">
+<h2 class="anchored" data-anchor-id="key-takeaway">Key takeaway</h2>
+<ul>
+<li>Large samples give reliable averages, which is why surveys, trials and insurers work.</li>
+<li>The coin never “evens things out”; a larger sample just dilutes early luck.</li>
+<li>The LLN is about the average of many trials, not the next one.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>Statistics</category>
+  <category>Probability</category>
+  <category>R</category>
+  <guid>https://www.statmania.info/blog/posts/what-is-law-of-large-numbers-what-it-is-not.html</guid>
+  <pubDate>Fri, 20 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/law-of-large-numbers.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
 <item>
   <title>Why Chebyshev’s Inequality Is Great: A Guarantee for Any Distribution</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
@@ -11453,549 +11701,6 @@ font-style: inherit;">"darkgray"</span></span>
   <guid>https://www.statmania.info/blog/posts/r-dots-in-functions.html</guid>
   <pubDate>Mon, 26 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/r-shell.jpeg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Why Programming Counts from Zero (and Why R Counts from One)</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/zero-based-indexing-vs-r.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/zero-based-indexing-fig.png" class="bk-adapt img-fluid figure-img" alt="Left, letters A to E stand on a ruler marked 0 to 4 beside x[0], showing the index as distance from the start. Right, five people in a queue wear badges 1 to 5 beside x[1], showing the index as position in the line."></p>
-<figcaption>Left: letters standing on a ruler that starts at 0. Right: people in a queue numbered from 1.</figcaption>
-</figure>
-</div>
-<p>Every beginner trips on it once. In C and Python the first element of a list is <code>x[0]</code>. In R it is <code>x[1]</code>. Neither side is being silly: they answer two slightly different questions. Let’s see what those questions are.</p>
-<section id="two-questions-two-numbers" class="level2">
-<h2 class="anchored" data-anchor-id="two-questions-two-numbers">Two questions, two numbers</h2>
-<p>When we say “the third item”, we can mean either of these:</p>
-<ul>
-<li><strong>Position:</strong> <em>which one in the line is it?</em> Counting from one, it is number 3.</li>
-<li><strong>Offset:</strong> <em>how far is it from the start?</em> Two steps away.</li>
-</ul>
-<p>Zero-based indexing stores the <strong>offset</strong>. One-based indexing stores the <strong>position</strong>. The first item is zero steps from the start, but it is also the first one in the line. Both statements are true, and that is the whole disagreement.</p>
-</section>
-<section id="everyday-analogies" class="level2">
-<h2 class="anchored" data-anchor-id="everyday-analogies">Everyday analogies</h2>
-<section id="zero-based-things-that-measure-distance" class="level3">
-<h3 class="anchored" data-anchor-id="zero-based-things-that-measure-distance">Zero-based: things that measure distance</h3>
-<ul>
-<li><strong>A ruler.</strong> The scale starts at 0 cm, not 1 cm. The first centimetre box lies <em>between</em> 0 and 1. A mark’s label tells us how far it is from the edge.</li>
-<li><strong>Age.</strong> A newborn is 0 years old. At “age 1” a full year has already gone by.</li>
-<li><strong>A clock.</strong> Minutes run from 00 to 59 and the hour restarts at 0. Nobody writes 60 minutes past; it rolls over to 0.</li>
-<li><strong>Floors in many countries.</strong> The ground floor is floor 0, and the first floor is one flight of stairs up. The number counts the stairs we climbed.</li>
-<li><strong>Mile markers.</strong> The marker at the start of a highway says 0. A marker reading 5 means 5 miles travelled.</li>
-</ul>
-<p>An array works the same way. The computer keeps the address where the array begins, and <code>x[i]</code> means “start there, then move <code>i</code> slots forward.”</p>
-</section>
-<section id="one-based-things-that-count-members" class="level3">
-<h3 class="anchored" data-anchor-id="one-based-things-that-count-members">One-based: things that count members</h3>
-<ul>
-<li><strong>A queue.</strong> The person at the front is the 1st person. Nobody says “person number zero.”</li>
-<li><strong>Book pages and chapters.</strong> Chapter 1 is the first chapter.</li>
-<li><strong>Spreadsheet rows.</strong> Row 1 is the top row, and column 1 is column A.</li>
-<li><strong>Seat numbers, rank in a race, house numbers.</strong> All of them start at 1 because they label <em>members of a set</em>.</li>
-</ul>
-<p>A statistician talks like this naturally: the observations are <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx_1,%20x_2,%20%5Cdots,%20x_n">, and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx_n"> is the last of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> values. That habit is the reason R looks the way it does.</p>
-</section>
-</section>
-<section id="why-programming-languages-chose-zero" class="level2">
-<h2 class="anchored" data-anchor-id="why-programming-languages-chose-zero">Why programming languages chose zero</h2>
-<section id="the-index-really-is-an-offset" class="level3">
-<h3 class="anchored" data-anchor-id="the-index-really-is-an-offset">1. The index really is an offset</h3>
-<p>In C, an array name is the address of its first element, and <code>a[i]</code> is defined as <code>*(a + i)</code>: go <code>i</code> elements past the start, then read. For the first element we move nowhere, so the index must be 0. Let’s check this with real addresses.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">#include </span><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">&lt;stdio.h&gt;</span></span>
-<span id="cb1-2"></span>
-<span id="cb1-3"><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> main<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span id="cb1-4">    <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">30</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">40</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">};</span></span>
-<span id="cb1-5">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">int</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">++)</span></span>
-<span id="cb1-6">        printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"a[</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">] = </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">   address = </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%p</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">   offset = </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%td</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> bytes</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span></span>
-<span id="cb1-7">               i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">],</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">void</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*)&amp;</span>a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">],</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">char</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*)&amp;</span>a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>i<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">char</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*)&amp;</span>a<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]);</span></span>
-<span id="cb1-8">    printf<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"*(a + 2) = </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%d\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">,</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*(</span>a <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">));</span></span>
-<span id="cb1-9">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span></span>
-<span id="cb1-10"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span></code></pre></div></div>
-<pre><code>a[0] = 10   address = 0x7fff874b6ca0   offset = 0 bytes
-a[1] = 20   address = 0x7fff874b6ca4   offset = 4 bytes
-a[2] = 30   address = 0x7fff874b6ca8   offset = 8 bytes
-a[3] = 40   address = 0x7fff874b6cac   offset = 12 bytes
-*(a + 2) = 30</code></pre>
-<p>(The addresses change from run to run; the offsets do not.) Each <code>int</code> takes 4 bytes, so element <code>i</code> sits <code>4 * i</code> bytes from the start. With zero-based indexing the address is just <code>start + i * size</code>. With one-based indexing the compiler would have to compute <code>start + (i - 1) * size</code>, an extra subtraction hidden in every access. Early machines were slow and small, so C’s ancestors (BCPL, and then C itself) kept the index equal to the offset and avoided that cost.</p>
-</section>
-<section id="half-open-ranges-are-tidy" class="level3">
-<h3 class="anchored" data-anchor-id="half-open-ranges-are-tidy">2. Half-open ranges are tidy</h3>
-<p>The computer scientist Edsger Dijkstra made a famous argument in a 1982 note, <em>Why numbering should start at zero</em>. To describe a run of elements, the neatest convention is “from <code>a</code>, up to but <strong>not including</strong> <code>b</code>”. Then:</p>
-<ul>
-<li>the number of elements is simply <code>b - a</code>;</li>
-<li>two neighbouring ranges share a boundary: <code>[0, 3)</code> and <code>[3, 5)</code> join with no gap and no overlap;</li>
-<li>the whole array of <code>n</code> elements is <code>[0, n)</code>, which needs no <code>+ 1</code> or <code>- 1</code>.</li>
-</ul>
-<p>Python slicing follows this rule:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">x <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> [<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">30</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">40</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">50</span>]</span>
-<span id="cb3-2"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(x[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>], x[<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>])         <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># first and last</span></span>
-<span id="cb3-3"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(x[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>:<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>])              <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># elements 1 and 2, stop *before* 3</span></span>
-<span id="cb3-4"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(x[:<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> x[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>:])       <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># split anywhere, glue back together</span></span>
-<span id="cb3-5"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">len</span>(x[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>:<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>]))         <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># 4 - 1</span></span></code></pre></div></div>
-<pre><code>10 50
-[20, 30]
-[10, 20, 30, 40, 50]
-3</code></pre>
-<p>Think of fence posts. A slice <code>x[1:3]</code> is described by the <em>posts</em> (the boundaries at 1 and 3), and the length is the gap between them, 3 - 1 = 2 panels. Zero-based indices label the posts, which is why the arithmetic is clean.</p>
-</section>
-<section id="loops-and-wrap-around-are-neat" class="level3">
-<h3 class="anchored" data-anchor-id="loops-and-wrap-around-are-neat">3. Loops and wrap-around are neat</h3>
-<p>Looping over <code>n</code> items is <code>for (i = 0; i &lt; n; i++)</code>. Cycling through them is <code>i % n</code>, which gives exactly <code>0, 1, ..., n-1</code> and then restarts. A clock face, a circular buffer, a hash table bucket and a pixel in a row of an image are all handled by <code>%</code> with no adjustment. With one-based numbering, wrap-around needs <code>(i - 1) % n + 1</code>.</p>
-</section>
-</section>
-<section id="why-r-starts-at-one" class="level2">
-<h2 class="anchored" data-anchor-id="why-r-starts-at-one">Why R starts at one</h2>
-<p>R did not appear from nowhere. It is a free implementation of the <strong>S</strong> language, designed at Bell Labs for data analysis. Its design was driven by what statisticians and mathematicians already write on paper, and not by how memory is laid out.</p>
-<ul>
-<li><strong>Mathematical notation.</strong> Vectors are <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx_1,%20%5Cdots,%20x_n"> and matrices have entries <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Da_%7Bij%7D"> with <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Di"> from 1 to the number of rows. R code can look the same as the formula in a textbook.</li>
-<li><strong>Heritage.</strong> S borrowed from Fortran-style numerical computing, which counts from one. MATLAB, Julia, Lua and Fortran are one-based too.</li>
-<li><strong>Vectors, not addresses.</strong> R users rarely think about memory. A vector is “a list of values”, and the first value is the first value.</li>
-<li><strong>Length equals last index.</strong> In R, <code>x[length(x)]</code> is the last element, and <code>x[n]</code> is the <em>n</em>th element. The words and the numbers agree.</li>
-</ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">x <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">30</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">40</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">50</span>)</span>
-<span id="cb5-2">x[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>]               <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># first element</span></span>
-<span id="cb5-3">x[<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">length</span>(x)]       <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># last element</span></span>
-<span id="cb5-4">x[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>]             <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># elements 2, 3 and 4: both ends included</span></span>
-<span id="cb5-5">m <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">matrix</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">6</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">nrow =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>)</span>
-<span id="cb5-6">m[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>]            <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># row 2, column 3</span></span></code></pre></div></div>
-<pre><code>[1] 10
-[1] 50
-[1] 20 30 40
-[1] 6</code></pre>
-<p>Notice that R ranges are <strong>closed</strong>: <code>2:4</code> includes both 2 and 4, so “elements 2 to 4” means what it says. That is natural for human counting, even though it loses Dijkstra’s tidy arithmetic.</p>
-</section>
-<section id="careful-where-each-convention-bites" class="level2">
-<h2 class="anchored" data-anchor-id="careful-where-each-convention-bites">Careful: where each convention bites</h2>
-<p>Both conventions have a famous trap.</p>
-<p><strong>R: index 0 is not an error, it is silently empty.</strong> And a negative index means <em>drop</em>, not “count from the end”:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">x <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">30</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">40</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">50</span>)</span>
-<span id="cb7-2">x[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>]      <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># numeric(0): an empty result, no warning</span></span>
-<span id="cb7-3">x[<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>]     <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># everything except the first element</span></span>
-<span id="cb7-4">x[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">6</span>]      <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># NA: out of range, still no error</span></span></code></pre></div></div>
-<pre><code>numeric(0)
-[1] 20 30 40 50
-[1] NA</code></pre>
-<p>In Python <code>x[-1]</code> is the <em>last</em> element, and <code>x[5]</code> on a five-element list raises an <code>IndexError</code>. The same-looking code means different things.</p>
-<p><strong>R: <code>1:length(y)</code> is dangerous for empty vectors.</strong> If <code>y</code> is empty, <code>1:0</code> is the sequence <code>1, 0</code>, so a loop runs twice, with nonsense indices:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">y <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">integer</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>)</span>
-<span id="cb9-2"><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">length</span>(y)       <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># counts down!</span></span>
-<span id="cb9-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">seq_along</span>(y)      <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># safe: gives nothing</span></span></code></pre></div></div>
-<pre><code>[1] 1 0
-integer(0)</code></pre>
-<p>Use <code>seq_along(y)</code> in loops. It is also the idiomatic R way to say “for each index”.</p>
-<p><strong>C and Python: the off-by-one error.</strong> Because the last valid index is <code>n - 1</code>, writing <code>i &lt;= n</code> instead of <code>i &lt; n</code> reads one element past the end. In C that is undefined behaviour and no error is raised: the program may crash, print garbage, or seem to work. This family of bugs is so common it has a name, the <em>off-by-one error</em> or fencepost error.</p>
-</section>
-<section id="advantages-and-disadvantages" class="level2">
-<h2 class="anchored" data-anchor-id="advantages-and-disadvantages">Advantages and disadvantages</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Zero-based</strong> (C, Python, Java, JavaScript)</th>
-<th><strong>One-based</strong> (R, Fortran, MATLAB, Julia)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Meaning of the index</strong></td>
-<td>Offset from the start</td>
-<td>Position in the line</td>
-</tr>
-<tr class="even">
-<td><strong>Machine cost</strong></td>
-<td>Address is <code>start + i * size</code>, no adjustment</td>
-<td>Needs <code>i - 1</code> (compilers hide it, but it is there)</td>
-</tr>
-<tr class="odd">
-<td><strong>Ranges</strong></td>
-<td>Half-open <code>[a, b)</code>: length is <code>b - a</code>, neighbours join cleanly</td>
-<td>Closed <code>a:b</code>: matches how we speak, length is <code>b - a + 1</code></td>
-</tr>
-<tr class="even">
-<td><strong>Wrap-around (<code>%</code>)</strong></td>
-<td>Direct: <code>i % n</code></td>
-<td>Needs <code>(i - 1) %% n + 1</code></td>
-</tr>
-<tr class="odd">
-<td><strong>Last element</strong></td>
-<td><code>x[n - 1]</code> (or <code>x[-1]</code> in Python)</td>
-<td><code>x[n]</code>, matches “the <em>n</em>th item”</td>
-</tr>
-<tr class="even">
-<td><strong>Maths and statistics</strong></td>
-<td>Formulas need translating (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx_1"> becomes <code>x[0]</code>)</td>
-<td>Code mirrors the formula</td>
-</tr>
-<tr class="odd">
-<td><strong>Beginner friendliness</strong></td>
-<td>“Why is the first one 0?” is a hurdle</td>
-<td>Matches everyday counting</td>
-</tr>
-<tr class="even">
-<td><strong>Typical bug</strong></td>
-<td>Off-by-one at the end of loops</td>
-<td>Off-by-one when porting zero-based code; <code>1:0</code> loops</td>
-</tr>
-<tr class="odd">
-<td><strong>Typical strength</strong></td>
-<td>Low-level control, array arithmetic, slicing</td>
-<td>Readable data analysis</td>
-</tr>
-</tbody>
-</table>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Moving between languages
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>When translating code from Python to R, add 1 to every index. Going from R to Python, subtract 1. Also remember that Python’s <code>x[a:b]</code> has <code>b - a</code> elements, while R’s <code>x[a:b]</code> has <code>b - a + 1</code>. Write a tiny test with a 5-element vector before trusting a conversion.</p>
-</div>
-</div>
-</section>
-<section id="so-who-is-right" class="level2">
-<h2 class="anchored" data-anchor-id="so-who-is-right">So who is right?</h2>
-<p>Neither. Zero-based indexing is the right choice for a language that sits close to memory, because the index is literally a distance. One-based indexing is the right choice for a language that sits close to mathematics, because the index is literally a label. C was built to write operating systems and R was built to analyse data, so each picked the convention that suited its users.</p>
-<p>What matters in practice is to <strong>know which question the index answers</strong> in the language we are using: <em>how far from the start?</em> or <em>which one in the line?</em> Once that is clear, the off-by-one mistakes become much easier to spot.</p>
-</section>
-<section id="reference" class="level2">
-<h2 class="anchored" data-anchor-id="reference">Reference</h2>
-<ul>
-<li>E. W. Dijkstra, <em>Why numbering should start at zero</em>, EWD831 (1982).</li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>Programming</category>
-  <category>C</category>
-  <category>Python</category>
-  <category>R</category>
-  <category>Explainer</category>
-  <guid>https://www.statmania.info/blog/posts/zero-based-indexing-vs-r.html</guid>
-  <pubDate>Wed, 14 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/zero-based-indexing.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>

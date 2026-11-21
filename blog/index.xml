@@ -186,6 +186,254 @@ Note
   <media:content url="https://www.statmania.info/blog/img/weighted-average-explained.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 <item>
+  <title>The Law of Large Numbers: What It Is and What It Is Not</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/what-is-law-of-large-numbers-what-it-is-not.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/law-of-large-numbers.svg" class="img-fluid figure-img" alt="A line chart of the running proportion of heads against the number of flips: large swings at first, then settling toward the 0.5 line."></p>
+<figcaption>The running proportion of heads swings wildly at first, then settles near 0.5.</figcaption>
+</figure>
+</div>
+<section id="what-it-says" class="level2">
+<h2 class="anchored" data-anchor-id="what-it-says">What it says</h2>
+<p>The <strong>law of large numbers</strong> (LLN) says that as we collect more independent observations from the same distribution, the sample mean gets closer to the true mean:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cbar%7BX%7D_n%20=%20%5Cfrac%7BX_1%20+%20X_2%20+%20%5Ccdots%20+%20X_n%7D%7Bn%7D%20%5C;%5Clongrightarrow%5C;%20%5Cmu%20%5Cquad%20%5Ctext%7Bas%20%7D%20n%20%5Cto%20%5Cinfty%0A"></p>
+<p>For a fair coin, let <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DX%20=%201"> for heads and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D0"> for tails. Then <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cmu%20=%200.5">, and the proportion of heads should approach 0.5 as we flip more.</p>
+</section>
+<section id="seeing-it-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="seeing-it-in-r">Seeing it in R</h2>
+<p>Let’s flip a fair coin 10,000 times and look at the running proportion of heads.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(ggplot2)</span>
+<span id="cb1-2"></span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">42</span>)</span>
+<span id="cb1-4">n <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10000</span></span>
+<span id="cb1-5">flips <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbinom</span>(n, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>)</span>
+<span id="cb1-6">running <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cumsum</span>(flips) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq_len</span>(n)</span>
+<span id="cb1-7"></span>
+<span id="cb1-8">df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq_len</span>(n), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">prop =</span> running)</span>
+<span id="cb1-9"></span>
+<span id="cb1-10"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(df, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(n, prop)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-11">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_line</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-12">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_hline</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yintercept =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linetype =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dashed"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-13">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_x_log10</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-14">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Number of flips (log scale)"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Proportion of heads"</span>)</span></code></pre></div></div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/what-is-law-of-large-numbers-what-it-is-not_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" alt="Running proportion of heads against the number of flips on a log scale: it fluctuates widely for small n and settles close to 0.5 for large n." width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The values at a few sample sizes:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>      n heads proportion
+1    10     8     0.8000
+2   100    55     0.5500
+3  1000   473     0.4730
+4 10000  4999     0.4999</code></pre>
+</div>
+</div>
+<p>With 10 flips the proportion is far from 0.5; with 10,000 it is very close.</p>
+</section>
+<section id="what-it-is-not" class="level2">
+<h2 class="anchored" data-anchor-id="what-it-is-not">What it is not</h2>
+<section id="it-is-not-the-gamblers-fallacy" class="level3">
+<h3 class="anchored" data-anchor-id="it-is-not-the-gamblers-fallacy">1. It is not the gambler’s fallacy</h3>
+<p>After five heads in a row, tails is <strong>not</strong> “due”. The coin has no memory, and the next flip is still 50/50. The LLN does not say the past is corrected; it says the early streak gets <strong>diluted</strong> by the many flips that follow.</p>
+</section>
+<section id="it-does-not-say-counts-even-out" class="level3">
+<h3 class="anchored" data-anchor-id="it-does-not-say-counts-even-out">2. It does not say counts even out</h3>
+<p>The <em>proportion</em> approaches 0.5, but the <em>difference</em> between heads and tails does not shrink. It typically grows, like <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csqrt%7Bn%7D">. Let’s check by repeating the experiment 5,000 times for each <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn">:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb3-2">sizes <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10000</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1000000</span>)</span>
+<span id="cb3-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sapply</span>(sizes, <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(n) {</span>
+<span id="cb3-4">  heads <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbinom</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5000</span>, n, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>)</span>
+<span id="cb3-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> heads <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> n))</span>
+<span id="cb3-6">})</span></code></pre></div></div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>      n avg_abs_diff avg_prop_off
+1 1e+02          8.0      0.07991
+2 1e+04         78.2      0.00782
+3 1e+06        794.8      0.00079</code></pre>
+</div>
+</div>
+<p>The gap between heads and tails grows from about 8 to about 800, yet as a share of the flips it shrinks toward 0.</p>
+</section>
+<section id="it-is-not-a-promise-for-small-samples" class="level3">
+<h3 class="anchored" data-anchor-id="it-is-not-a-promise-for-small-samples">3. It is not a promise for small samples</h3>
+<p>The LLN is a statement about the long run. Ten flips can easily give 8 heads, as in our simulation. Believing that small samples must look like the population is sometimes called the “law of small numbers”, and it is a mistake.</p>
+</section>
+<section id="it-does-not-make-a-single-outcome-predictable" class="level3">
+<h3 class="anchored" data-anchor-id="it-does-not-make-a-single-outcome-predictable">4. It does not make a single outcome predictable</h3>
+<p>The LLN describes averages over many trials, not the next trial. A casino cannot predict one spin, but it can predict its profit over a million spins.</p>
+</section>
+<section id="it-does-not-always-apply" class="level3">
+<h3 class="anchored" data-anchor-id="it-does-not-always-apply">5. It does not always apply</h3>
+<p>The LLN needs conditions. The observations should be independent (or weakly dependent) draws from the same distribution, and that distribution must have a finite mean. The Cauchy distribution has no mean, so its sample average never settles, however large <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> is.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Don’t confuse the LLN with the <strong>central limit theorem</strong>. The LLN says the sample mean approaches <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cmu">. The CLT describes the <em>shape</em> of the fluctuations around <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cmu">: roughly normal, with spread <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csigma%20/%20%5Csqrt%7Bn%7D">.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="key-takeaway" class="level2">
+<h2 class="anchored" data-anchor-id="key-takeaway">Key takeaway</h2>
+<ul>
+<li>Large samples give reliable averages, which is why surveys, trials and insurers work.</li>
+<li>The coin never “evens things out”; a larger sample just dilutes early luck.</li>
+<li>The LLN is about the average of many trials, not the next one.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>Statistics</category>
+  <category>Probability</category>
+  <category>R</category>
+  <guid>https://www.statmania.info/blog/posts/what-is-law-of-large-numbers-what-it-is-not.html</guid>
+  <pubDate>Fri, 20 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/law-of-large-numbers.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
   <title>When Is the Median a Good Measure of Center?</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://www.statmania.info/blog/posts/when-is-median-a-good-measure.html</link>
@@ -7814,241 +8062,6 @@ font-style: inherit;">git</span> worktree remove ../myproject-agent</span></code
   <guid>https://www.statmania.info/blog/posts/git-commiting-while-ai-agent-is-working.html</guid>
   <pubDate>Sun, 01 Nov 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/git-commiting-while-ai-agent-is-working.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Hex Color Codes Explained: How #FF8A3D Becomes a Colour</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/hex-color-code-explained.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/hex-color-code-explained.svg" class="img-fluid figure-img" alt="The hex code FF8A3D split into three pairs: FF is red 255, 8A is green 138 and 3D is blue 61, combining into an orange swatch."></p>
-<figcaption>The code #FF8A3D split into red, green and blue pairs, which combine into an orange.</figcaption>
-</figure>
-</div>
-<p>A <strong>hex color code</strong> is a six-character string used in web design (and in many other tools) to tell a screen how much red, green and blue (RGB) light to mix. It always starts with a hash sign, <code>#</code>.</p>
-<section id="anatomy-of-a-hex-code" class="level2">
-<h2 class="anchored" data-anchor-id="anatomy-of-a-hex-code">Anatomy of a Hex Code</h2>
-<p>The six characters split into three pairs, and each pair controls one colour channel:</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Pair</th>
-<th>Channel</th>
-<th>In <code>#RRGGBB</code></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>First</td>
-<td>Red</td>
-<td><strong>RR</strong>GGBB</td>
-</tr>
-<tr class="even">
-<td>Second</td>
-<td>Green</td>
-<td>RR<strong>GG</strong>BB</td>
-</tr>
-<tr class="odd">
-<td>Third</td>
-<td>Blue</td>
-<td>RRGG<strong>BB</strong></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="how-the-base-16-system-works" class="level2">
-<h2 class="anchored" data-anchor-id="how-the-base-16-system-works">How the Base-16 System Works</h2>
-<p>Hexadecimal is a base-16 number system. Decimal counts 0 to 9 before rolling over; hexadecimal keeps going to 16 symbols by using the letters A to F for the values 10 to 15:</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Hex digit</th>
-<th>0–9</th>
-<th>A</th>
-<th>B</th>
-<th>C</th>
-<th>D</th>
-<th>E</th>
-<th>F</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Value</td>
-<td>0–9</td>
-<td>10</td>
-<td>11</td>
-<td>12</td>
-<td>13</td>
-<td>14</td>
-<td>15</td>
-</tr>
-</tbody>
-</table>
-<p>F is the largest value a single digit can have. A pair therefore runs from <code>00</code> (channel off, decimal 0) to <code>FF</code> (full intensity, decimal 255).</p>
-<section id="converting-a-pair-to-0255" class="level3">
-<h3 class="anchored" data-anchor-id="converting-a-pair-to-0255">Converting a pair to 0–255</h3>
-<ol type="1">
-<li>Multiply the first character by 16.</li>
-<li>Multiply the second character by 1.</li>
-<li>Add the two results.</li>
-</ol>
-<p><strong>Example: <code>FF</code>.</strong> F is 15, so (15 × 16) + 15 = 240 + 15 = <strong>255</strong>.</p>
-<p><strong>Example: <code>A3</code>.</strong> A is 10, so (10 × 16) + 3 = 160 + 3 = <strong>163</strong>.</p>
-<p>Now we can read the code from the figure, <code>#FF8A3D</code>:</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Channel</th>
-<th>Pair</th>
-<th>Calculation</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Red</td>
-<td><code>FF</code></td>
-<td>15 × 16 + 15</td>
-<td>255</td>
-</tr>
-<tr class="even">
-<td>Green</td>
-<td><code>8A</code></td>
-<td>8 × 16 + 10</td>
-<td>138</td>
-</tr>
-<tr class="odd">
-<td>Blue</td>
-<td><code>3D</code></td>
-<td>3 × 16 + 13</td>
-<td>61</td>
-</tr>
-</tbody>
-</table>
-<p>That is a strong red, a medium green and a little blue, which gives the orange in the figure.</p>
-</section>
-</section>
-<section id="checking-it-in-r" class="level2">
-<h2 class="anchored" data-anchor-id="checking-it-in-r">Checking It in R</h2>
-<p><a href="../tags.html#tag=r">R programming language</a> understands hex colours, so we can confirm the conversion with <code>col2rgb()</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">col2rgb</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"#FF8A3D"</span>)</span></code></pre></div></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1">      [,1]</span>
-<span id="cb2-2">red    255</span>
-<span id="cb2-3">green  138</span>
-<span id="cb2-4">blue    61</span></code></pre></div></div>
-<p>And <code>rgb()</code> goes the other way, from numbers to a hex code:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rgb</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">255</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">138</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">61</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">maxColorValue =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">255</span>)</span></code></pre></div></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb4-1">[1] "#FF8A3D"</span></code></pre></div></div>
-<p>Hex is only one way to write the same numbers. <a href="../posts/rgb-color-code-explained.html">RGB Color Codes Explained</a> covers the decimal form, <code>rgb(255, 138, 61)</code>, and <code>rgba()</code> for transparency.</p>
-</section>
-<section id="common-examples" class="level2">
-<h2 class="anchored" data-anchor-id="common-examples">Common Examples</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Colour</th>
-<th>Code</th>
-<th>Meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Pure red</td>
-<td><code>#FF0000</code></td>
-<td>Max red, no green, no blue</td>
-</tr>
-<tr class="even">
-<td>Pure green</td>
-<td><code>#00FF00</code></td>
-<td>No red, max green, no blue</td>
-</tr>
-<tr class="odd">
-<td>Pure blue</td>
-<td><code>#0000FF</code></td>
-<td>No red, no green, max blue</td>
-</tr>
-<tr class="even">
-<td>White</td>
-<td><code>#FFFFFF</code></td>
-<td>All channels at maximum</td>
-</tr>
-<tr class="odd">
-<td>Black</td>
-<td><code>#000000</code></td>
-<td>All channels off</td>
-</tr>
-<tr class="even">
-<td>Grey</td>
-<td><code>#787878</code></td>
-<td>Equal values in all three pairs</td>
-</tr>
-</tbody>
-</table>
-<p>Any code whose three pairs are identical is a shade of grey. For <code>#787878</code>, each pair is 7 × 16 + 8 = 120.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Hex codes follow an <strong>additive light</strong> model: higher values make a colour brighter and closer to white, not darker as with paint.</p>
-</div>
-</div>
-</section>
-<section id="handy-variations" class="level2">
-<h2 class="anchored" data-anchor-id="handy-variations">Handy Variations</h2>
-<ul>
-<li><strong>Short form:</strong> when each pair has two identical digits, it can be shortened to three, so <code>#FF0000</code> becomes <code>#F00</code>.</li>
-<li><strong>With transparency:</strong> an eight-character code adds a fourth pair for opacity, as in <code>#FF8A3D80</code> (about 50%).</li>
-</ul>
-</section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<ol type="1">
-<li><a href="https://www.geeksforgeeks.org/computer-graphics/hex-color-codes/">Hex color codes</a>, GeeksforGeeks</li>
-<li><a href="https://www.freecodecamp.org/news/how-hex-code-colors-work-how-to-choose-colors-without-a-color-picker/">How hex code colors work</a>, freeCodeCamp</li>
-<li><a href="https://www.pluralsight.com/resources/blog/upskilling/understanding-hexadecimal-colors-simple">Understanding hexadecimal colors</a>, Pluralsight</li>
-<li><a href="https://coreyginnivan.medium.com/%EF%B8%8F-hex-colour-codes-explained-with-a-hint-of-colour-theory-a968d3670a85">Hex colour codes explained</a>, Corey Ginnivan</li>
-<li><a href="https://www.reddit.com/r/explainlikeimfive/comments/p68gj/eli5_how_hex_code_works_and_how_you_can_tell_what/">ELI5: how hex code works</a>, r/explainlikeimfive</li>
-</ol>
-
-
-</section>
-
- ]]></description>
-  <category>Programming</category>
-  <category>Explainer</category>
-  <guid>https://www.statmania.info/blog/posts/hex-color-code-explained.html</guid>
-  <pubDate>Sun, 01 Nov 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/hex-color-code-explained.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>
