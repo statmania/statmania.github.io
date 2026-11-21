@@ -10,7 +10,298 @@
 <atom:link href="https://www.statmania.info/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Posts on statistics theory, R &amp; Python, and developer tips from Stat Mania.</description>
 <generator>quarto-1.9.38</generator>
-<lastBuildDate>Thu, 12 Nov 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Fri, 20 Nov 2026 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>Weighted Average Explained with Examples</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/weighted-average-explained-with-examples.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/weighted-average-explained.svg" class="img-fluid figure-img" alt="Left: a uniform bar balanced at its midpoint. Right: a hammer with a heavy head, balanced near the head, away from its midpoint."></p>
+<figcaption>A uniform bar balances at its midpoint; a hammer, heavy at one end, balances near its head. Weights shift the average the same way.</figcaption>
+</figure>
+</div>
+<section id="starting-with-the-simple-mean" class="level2">
+<h2 class="anchored" data-anchor-id="starting-with-the-simple-mean">Starting with the simple mean</h2>
+<p>Let’s consider this data:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1">2, 4, 6</span></code></pre></div></div>
+<p>The arithmetic mean is 4, since (2 + 4 + 6) / 3 = 4. Here every value counts equally.</p>
+</section>
+<section id="when-values-are-not-equally-important" class="level2">
+<h2 class="anchored" data-anchor-id="when-values-are-not-equally-important">When values are not equally important</h2>
+<p>Now let’s say these are marks given by three judges to a participant in a competition. The first judge is more experienced, so whatever that judge gives should carry more weight. We multiply each mark by a weight:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Judge</th>
+<th style="text-align: center;">Mark (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx">)</th>
+<th style="text-align: center;">Weight (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dw">)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">1.5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">1</td>
+</tr>
+</tbody>
+</table>
+<p>The average now tilts toward the marks with more weight. Like a hammer, more weight on one side shifts the centre of gravity.</p>
+</section>
+<section id="the-formula" class="level2">
+<h2 class="anchored" data-anchor-id="the-formula">The formula</h2>
+<p>The weighted average is the sum of each value times its weight, divided by the sum of the weights:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cbar%7Bx%7D_w%20=%20%5Cfrac%7B%5Csum_%7Bi=1%7D%5E%7Bn%7D%20w_i%20x_i%7D%7B%5Csum_%7Bi=1%7D%5E%7Bn%7D%20w_i%7D%0A"></p>
+<p>Dividing by the total weight keeps the result on the same scale as the data. If all weights are equal, it reduces to the ordinary mean.</p>
+</section>
+<section id="example-1-the-judges" class="level2">
+<h2 class="anchored" data-anchor-id="example-1-the-judges">Example 1: the judges</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Judge</th>
+<th style="text-align: center;">Mark (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx">)</th>
+<th style="text-align: center;">Weight (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dw">)</th>
+<th style="text-align: center;"><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dw%20%5Ctimes%20x"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">1.5</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>Total</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>4.5</strong></td>
+<td style="text-align: center;"><strong>16</strong></td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cbar%7Bx%7D_w%20=%20%5Cfrac%7B2%20%5Ctimes%202%20+%204%20%5Ctimes%201.5%20+%206%20%5Ctimes%201%7D%7B2%20+%201.5%20+%201%7D%20=%20%5Cfrac%7B4%20+%206%20+%206%7D%7B4.5%7D%20=%20%5Cfrac%7B16%7D%7B4.5%7D%20%5Capprox%203.56%0A"></p>
+<p>The weighted average (3.56) is lower than the simple mean (4), because the lowest mark came from the most trusted judge.</p>
+</section>
+<section id="example-2-course-grades" class="level2">
+<h2 class="anchored" data-anchor-id="example-2-course-grades">Example 2: course grades</h2>
+<p>A student scores 90 in Math (4 credits), 80 in English (3 credits) and 70 in Art (2 credits). The simple mean is 80, but a 4-credit course should count more than a 2-credit one.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Course</th>
+<th style="text-align: center;">Score (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx">)</th>
+<th style="text-align: center;">Credits (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dw">)</th>
+<th style="text-align: center;"><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dw%20%5Ctimes%20x"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Math</td>
+<td style="text-align: center;">90</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">360</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">English</td>
+<td style="text-align: center;">80</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">240</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Art</td>
+<td style="text-align: center;">70</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">140</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>Total</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>9</strong></td>
+<td style="text-align: center;"><strong>740</strong></td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cbar%7Bx%7D_w%20=%20%5Cfrac%7B90%20%5Ctimes%204%20+%2080%20%5Ctimes%203%20+%2070%20%5Ctimes%202%7D%7B4%20+%203%20+%202%7D%20=%20%5Cfrac%7B360%20+%20240%20+%20140%7D%7B9%7D%20=%20%5Cfrac%7B740%7D%7B9%7D%20%5Capprox%2082.22%0A"></p>
+<p>The weighted average is higher than the simple mean, since the best score sits in the heaviest course.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Weights need not add up to 1 or 100. Dividing by <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csum%20w"> takes care of that. If they do sum to 1 (for example 0.5, 0.3, 0.2), the denominator is 1 and the average is just <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csum%20w_i%20x_i">.</p>
+</div>
+</div>
+</section>
+<section id="key-takeaway" class="level2">
+<h2 class="anchored" data-anchor-id="key-takeaway">Key takeaway</h2>
+<ul>
+<li>Use the simple mean when every value is equally important.</li>
+<li>Use a weighted average when some values matter more (expert judges, credit hours, group sizes).</li>
+<li>The result always lies between the smallest and largest value, pulled toward the heaviest weights.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>Statistics</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/weighted-average-explained-with-examples.html</guid>
+  <pubDate>Fri, 20 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/weighted-average-explained.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>When Is the Median a Good Measure of Center?</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/when-is-median-a-good-measure.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/when-is-median-a-good-measure.svg" class="img-fluid figure-img" alt="Page load times on a number line: four values near 1 second and one outlier at 45 seconds. The median is 1.3 seconds and the mean is 10 seconds."></p>
+<figcaption>One outlier drags the mean to 10 seconds, while the median stays at 1.3.</figcaption>
+</figure>
+</div>
+<p>The median is the best measure of center when the data is lopsided, contains extreme values, or lacks exact numerical spacing. It simply picks the middle value after sorting, so extreme numbers at either end cannot pull it off-center.</p>
+<p>Let’s go through the cases where the median outperforms the mean, each with a small example and its interpretation.</p>
+<section id="skewed-data" class="level2">
+<h2 class="anchored" data-anchor-id="skewed-data">1. Skewed data</h2>
+<p>When most values cluster on one side and a few stretch into a long tail, the mean is dragged toward the tail. The median stays in the bulk of the data.</p>
+<p><strong>Example:</strong> prices (in thousands of dollars) of five homes sold in a neighbourhood:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1">250, 290, 310, 350, 4000</span></code></pre></div></div>
+<p><strong>Interpretation:</strong> the median is 310, meaning half the homes sold for less and half for more. This is what a typical buyer pays. The mean is 1040, inflated by the single $4 million mansion, and no home in the list is anywhere near that price. The same applies to household income.</p>
+</section>
+<section id="severe-outliers" class="level2">
+<h2 class="anchored" data-anchor-id="severe-outliers">2. Severe outliers</h2>
+<p>Outliers come from rare events or measurement errors. One of them can ruin the mean, while the median barely moves.</p>
+<p><strong>Example:</strong> page load times in seconds for five visitors, one on a terrible connection:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1">1.1, 1.2, 1.3, 1.4, 45.0</span></code></pre></div></div>
+<p><strong>Interpretation:</strong> the median is 1.3 seconds, which matches the normal user experience. The mean is 10.0 seconds, wrongly suggesting the site is slow for everyone.</p>
+</section>
+<section id="ordinal-data-ranked-categories" class="level2">
+<h2 class="anchored" data-anchor-id="ordinal-data-ranked-categories">3. Ordinal data (ranked categories)</h2>
+<p>Ordinal data has a clear order, but the distance between categories is unknown or unequal. Words cannot be added or divided, so the mean cannot be computed.</p>
+<p><strong>Example:</strong> satisfaction ratings from five customers:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1">Poor, Fair, Good, Good, Excellent</span></code></pre></div></div>
+<p><strong>Interpretation:</strong> after sorting, “Good” sits in the middle. We can say the typical customer rated the service “Good” without assigning arbitrary numbers to the words.</p>
+</section>
+<section id="censored-or-open-ended-data" class="level2">
+<h2 class="anchored" data-anchor-id="censored-or-open-ended-data">4. Censored or open-ended data</h2>
+<p>Sometimes extreme values are grouped into brackets such as “100+” or “Under 18”, or observations are cut off by the end of a study. Without the exact end values, the true mean cannot be calculated.</p>
+<p><strong>Example:</strong> survival in a 5-year medical trial where 60% of patients are still alive at the end, recorded only as “5+ years”.</p>
+<p><strong>Interpretation:</strong> we do not know how long those patients will live, but more than half of them passed 5 years, so the median survival time is greater than 5 years.</p>
+</section>
+<section id="skewed-count-data" class="level2">
+<h2 class="anchored" data-anchor-id="skewed-count-data">5. Skewed count data</h2>
+<p>Real-world counts often pile up at zero with a few big spikes.</p>
+<p><strong>Example:</strong> emergency room visits in a year for seven people:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb4-1">0, 0, 0, 0, 1, 2, 14</span></code></pre></div></div>
+<p><strong>Interpretation:</strong> the median is 0, so the typical person never visits the ER. The mean is about 2.4 visits, a figure that matches almost nobody in the group.</p>
+</section>
+<section id="time-to-event-data" class="level2">
+<h2 class="anchored" data-anchor-id="time-to-event-data">6. Time-to-event data</h2>
+<p>Waiting times, delivery durations and task times have a hard floor at zero but no upper limit, which creates a natural right skew.</p>
+<p><strong>Example:</strong> support ticket resolution times in hours, where one complex bug took two days:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb5-1">1, 2, 2, 3, 4, 48</span></code></pre></div></div>
+<p><strong>Interpretation:</strong> with six values the median is the average of the middle two, (2 + 3) / 2 = 2.5 hours, a realistic expectation for customers. The mean is 10 hours, which overstates the typical delay.</p>
+</section>
+<section id="quick-summary-mean-vs-median" class="level2">
+<h2 class="anchored" data-anchor-id="quick-summary-mean-vs-median">Quick summary: mean vs median</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 35%">
+<col style="width: 46%">
+<col style="width: 17%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Scenario</th>
+<th style="text-align: center;">Best choice</th>
+<th style="text-align: left;">Why</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Symmetric data without outliers (e.g.&nbsp;adult heights)</td>
+<td style="text-align: center;">Mean</td>
+<td style="text-align: left;">Uses every value for maximum precision</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Skewed data or extreme outliers (e.g.&nbsp;salaries, home prices)</td>
+<td style="text-align: center;">Median</td>
+<td style="text-align: left;">Ignores the tails and reflects the middle of the crowd</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ranked labels or open-ended brackets (e.g.&nbsp;survey ratings, “65+”)</td>
+<td style="text-align: center;">Median</td>
+<td style="text-align: left;">Needs only order, not exact numbers at the extremes</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Reporting both is often wise. A large gap between the mean and the median is itself a sign of skewness or outliers.</p>
+</div>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>Statistics</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/when-is-median-a-good-measure.html</guid>
+  <pubDate>Fri, 20 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/when-is-median-a-good-measure.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
 <item>
   <title>7 Amazing Results in Statistics</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
@@ -7758,675 +8049,6 @@ Note
   <guid>https://www.statmania.info/blog/posts/hex-color-code-explained.html</guid>
   <pubDate>Sun, 01 Nov 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/hex-color-code-explained.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Hybrid Stem-and-Leaf Plot: Stems of 5 for Finer Bins</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/hybrid-stem-and-leaf-plot.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/hybrid-stem-and-leaf-plot.svg" class="img-fluid figure-img" alt="Two stem-and-leaf plots of the same data: one with three rows using stems of 10, and one with five rows using stems of 5."></p>
-<figcaption>The same 24 values with stems of 10 (3 rows) and stems of 5 (5 rows).</figcaption>
-</figure>
-</div>
-<p>A stem-and-leaf plot shows the shape of a dataset while keeping every original value. The usual version uses the tens digit as the stem, which can leave very few rows. Here is a simple fix: use stems that step by 5.</p>
-<section id="the-data" class="level2">
-<h2 class="anchored" data-anchor-id="the-data">The Data</h2>
-<p>Here are 24 values:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1">13, 12, 6, 8, 15, 18, 17, 24, 28, 23, 27, 23,</span>
-<span id="cb1-2">21, 20, 15, 18, 23, 25, 23, 13, 17, 18, 19, 18</span></code></pre></div></div>
-</section>
-<section id="the-standard-plot-only-3-rows" class="level2">
-<h2 class="anchored" data-anchor-id="the-standard-plot-only-3-rows">The Standard Plot: Only 3 Rows</h2>
-<p>With the tens digit as the stem and the units digit as the leaf, we get:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1">Stem | Leaf</span>
-<span id="cb2-2">  0  | 6 8</span>
-<span id="cb2-3">  1  | 2 3 3 5 5 7 7 8 8 8 8 9</span>
-<span id="cb2-4">  2  | 0 1 3 3 3 3 4 5 7 8</span>
-<span id="cb2-5"></span>
-<span id="cb2-6">Key: 1 | 3 means 13</span></code></pre></div></div>
-<p>This gives only three classes, and most of the data sits in two of them. The shape is hard to see.</p>
-</section>
-<section id="the-hybrid-plot-stems-of-5" class="level2">
-<h2 class="anchored" data-anchor-id="the-hybrid-plot-stems-of-5">The Hybrid Plot: Stems of 5</h2>
-<p>If the stems are 5, 10, 15, 20 and 25, the data fall into <strong>bins of width 5</strong>. Each leaf is the value minus its stem:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1">Stem | Leaf</span>
-<span id="cb3-2">  5  | 1 3</span>
-<span id="cb3-3"> 10  | 2 3 3</span>
-<span id="cb3-4"> 15  | 0 0 2 2 3 3 3 3 4</span>
-<span id="cb3-5"> 20  | 0 1 3 3 3 3 4</span>
-<span id="cb3-6"> 25  | 0 2 3</span>
-<span id="cb3-7"></span>
-<span id="cb3-8">Key: 15 | 3 means 15 + 3 = 18</span></code></pre></div></div>
-<p>For example, the stem 15 covers 15 to 19, so its leaves stand for 15, 15, 17, 17, 18, 18, 18, 18 and 19. We now see five bins instead of three, and the peak in the 15 to 19 range stands out.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>This is a hybrid between a stem-and-leaf plot and a histogram with bins of width 5. Unlike a histogram, it keeps the exact data values.</p>
-</div>
-</div>
-</section>
-<section id="why-it-works" class="level2">
-<h2 class="anchored" data-anchor-id="why-it-works">Why It Works</h2>
-<ol type="1">
-<li><strong>More bins.</strong> Five rows show the shape of the distribution more clearly than three.</li>
-<li><strong>Same as a split-stem plot.</strong> It is equivalent to the usual split-stem plot, which writes each stem twice (low half, high half). Here the stems are written as numbers (<code>10</code>, <code>15</code>) instead of symbols (<code>1*</code>, <code>1.</code>).</li>
-<li><strong>A bridge to histograms.</strong> The rows are the bars of a histogram turned sideways, but every value is still readable.</li>
-</ol>
-</section>
-<section id="the-catch" class="level2">
-<h2 class="anchored" data-anchor-id="the-catch">The Catch</h2>
-<p>A standard plot needs no arithmetic: <code>1 | 4</code> is simply 14. With stems of 5 the reader has to add (<code>15 + 3 = 18</code>). A clear <strong>Key</strong> fixes this, so always include one.</p>
-</section>
-<section id="doing-it-in-r" class="level2">
-<h2 class="anchored" data-anchor-id="doing-it-in-r">Doing It in R</h2>
-<p>R’s <code>stem()</code> function draws this kind of plot. The <code>scale</code> argument controls how many rows we get. With <code>scale = 0.5</code> we get the three-row plot:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">x <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">13</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">12</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">6</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">8</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">15</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">18</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">17</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">24</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">28</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">23</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">27</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">23</span>,</span>
-<span id="cb4-2">       <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">21</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">15</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">18</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">23</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">25</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">23</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">13</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">17</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">18</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">19</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">18</span>)</span>
-<span id="cb4-3"></span>
-<span id="cb4-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">stem</span>(x, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">scale =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.5</span>)</span></code></pre></div></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb5-1">  The decimal point is 1 digit(s) to the right of the |</span>
-<span id="cb5-2"></span>
-<span id="cb5-3">  0 | 68</span>
-<span id="cb5-4">  1 | 233557788889</span>
-<span id="cb5-5">  2 | 0133334578</span></code></pre></div></div>
-<p>By default (<code>scale = 1</code>) R splits each stem in two, which is exactly the width-5 bins:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">stem</span>(x)</span></code></pre></div></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb7-1">  The decimal point is 1 digit(s) to the right of the |</span>
-<span id="cb7-2"></span>
-<span id="cb7-3">  0 | 68</span>
-<span id="cb7-4">  1 | 233</span>
-<span id="cb7-5">  1 | 557788889</span>
-<span id="cb7-6">  2 | 0133334</span>
-<span id="cb7-7">  2 | 578</span></code></pre></div></div>
-<p>Here the lower <code>1</code> row holds 12 to 14 and the upper <code>1</code> row holds 15 to 19. This layout avoids the arithmetic problem, because each leaf is simply the units digit.</p>
-</section>
-<section id="summary" class="level2">
-<h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<p>If the data are tightly clustered and a standard stem-and-leaf plot gives too few rows, use stems of 5 (or R’s default split stems). We get more bins without losing the raw values. Just include a clear key.</p>
-
-
-</section>
-
- ]]></description>
-  <category>Statistics</category>
-  <category>Visualization</category>
-  <guid>https://www.statmania.info/blog/posts/hybrid-stem-and-leaf-plot.html</guid>
-  <pubDate>Sun, 01 Nov 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/hybrid-stem-and-leaf-plot.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>The Monte Carlo Method Explained: Estimating π with Random Points</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/monte-carlo-method-explained.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/monte-carlo-method-explained-fig.png" class="bk-adapt img-fluid figure-img" alt="A square with a circle drawn inside it and hundreds of random points scattered over it; points inside the circle are green and points outside are red."></p>
-<figcaption>Random points in a square: green ones fall inside the circle, red ones outside.</figcaption>
-</figure>
-</div>
-<p>Some problems are too messy for a neat formula: the chance that a portfolio crashes, the path of a particle through a material, the best move in a board game. The <strong>Monte Carlo method</strong> solves them by brute-force randomness. We simulate the situation many times with random inputs, and read the answer off the results. Let’s see the idea on the simplest example, and then build it in R.</p>
-<section id="what-is-the-monte-carlo-method" class="level2">
-<h2 class="anchored" data-anchor-id="what-is-the-monte-carlo-method">What Is the Monte Carlo Method?</h2>
-<p>A Monte Carlo method estimates a quantity by repeating a random experiment many times and averaging what happens. The name comes from the Monte Carlo casino in Monaco, a nod to the role of chance. The recipe has the same four steps every time:</p>
-<ol type="1">
-<li>Define the range of possible inputs.</li>
-<li>Generate random inputs from it.</li>
-<li>Compute the result for each input (here, a simple yes/no).</li>
-<li>Combine the results, usually by averaging, into the estimate.</li>
-</ol>
-<p>It works because of the <strong>law of large numbers</strong>: the more random samples we use, the closer their average gets to the true value. The error shrinks roughly like <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D1/%5Csqrt%7Bn%7D">, so ten times the accuracy costs a hundred times the samples. This is slow, but it works for almost any problem, however complicated.</p>
-</section>
-<section id="the-dirt-throwing-analogy" class="level2">
-<h2 class="anchored" data-anchor-id="the-dirt-throwing-analogy">The Dirt-Throwing Analogy</h2>
-<p>Imagine a perfectly round circle drawn inside a square on a wall. We want the area of the circle, but we pretend we do not know its formula. So we play a game:</p>
-<ol type="1">
-<li><strong>Throw blindfolded.</strong> We throw 1,000 handfuls of dirt at the wall.</li>
-<li><strong>One rule.</strong> Every throw must land somewhere inside the square.</li>
-<li><strong>Count.</strong> We count how many splatters landed inside the circle, and how many landed outside.</li>
-</ol>
-<p>If 785 of 1,000 splatters land inside the circle, the circle covers about 78.5% of the square. Since the square’s area is easy (width × height), the circle’s area is that area times 0.785.</p>
-<ul>
-<li>With <strong>10 throws</strong> the estimate is poor, because of pure luck.</li>
-<li>With <strong>a million throws</strong> the splatters fill the shape evenly and the estimate is very accurate.</li>
-</ul>
-</section>
-<section id="estimating-π" class="level2">
-<h2 class="anchored" data-anchor-id="estimating-π">Estimating π</h2>
-<p>Take a square from <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D-1"> to <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D1"> on both axes, with a circle of radius 1 inside it. The square has area <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D2%20%5Ctimes%202%20=%204"> and the circle has area <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cpi%20r%5E2%20=%20%5Cpi">. So the share of points inside the circle should be <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cpi%20/%204">, which gives</p>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cpi%20%5Capprox%204%20%5Ctimes%20%5Cfrac%7B%5Ctext%7Bpoints%20inside%20the%20circle%7D%7D%7B%5Ctext%7Btotal%20points%7D%7D."></p>
-<p>A point <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D(x,%20y)"> is inside the circle when <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx%5E2%20+%20y%5E2%20%5Cle%201">.</p>
-<section id="throwing-the-points-in-r" class="level3">
-<h3 class="anchored" data-anchor-id="throwing-the-points-in-r">Throwing the points in R</h3>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(tidyverse)</span>
-<span id="cb1-2"></span>
-<span id="cb1-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2026</span>)</span>
-<span id="cb1-4">n <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2000</span></span>
-<span id="cb1-5"></span>
-<span id="cb1-6">points <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(</span>
-<span id="cb1-7">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">runif</span>(n, <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>),</span>
-<span id="cb1-8">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">runif</span>(n, <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb1-9">) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb1-10">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">inside =</span> x<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> y<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb1-11"></span>
-<span id="cb1-12"><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(points<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>inside)</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 3.172</code></pre>
-</div>
-</div>
-<p><code>runif()</code> draws uniform random numbers, and <code>mean()</code> of a logical column is the share of <code>TRUE</code> values, so <code>4 * mean(inside)</code> is exactly the formula above. The true value is 3.1416.</p>
-</section>
-<section id="seeing-the-points" class="level3">
-<h3 class="anchored" data-anchor-id="seeing-the-points">Seeing the points</h3>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">circle <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">t =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> pi, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">length.out =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">300</span>)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cos</span>(t), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sin</span>(t))</span>
-<span id="cb3-3"></span>
-<span id="cb3-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(points, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(x, y, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> inside)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-5">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_point</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-6">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_path</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data =</span> circle, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(x, y), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"black"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">inherit.aes =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-7">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">coord_fixed</span>() <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-8">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">scale_colour_manual</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">values =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"TRUE"</span> <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"seagreen"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"FALSE"</span> <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"tomato"</span>),</span>
-<span id="cb3-9">                      <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">labels =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"TRUE"</span> <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Inside"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"FALSE"</span> <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Outside"</span>)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-10">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"2000 random points in the square"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NULL</span>)</span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/posts/monte-carlo-method-explained_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="528"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>The green points inside the circle make up about <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cpi/4%20%5Capprox%2078.5%5C%25"> of all points.</p>
-</section>
-</section>
-<section id="more-throws-better-estimate" class="level2">
-<h2 class="anchored" data-anchor-id="more-throws-better-estimate">More Throws, Better Estimate</h2>
-<p>How many points do we need? Let’s keep a running estimate as the points arrive and plot it.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2026</span>)</span>
-<span id="cb4-2">N <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100000</span></span>
-<span id="cb4-3"></span>
-<span id="cb4-4">running <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(</span>
-<span id="cb4-5">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">n =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span>N,</span>
-<span id="cb4-6">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">inside =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">runif</span>(N, <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">runif</span>(N, <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span></span>
-<span id="cb4-7">) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb4-8">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">estimate =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cumsum</span>(inside) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> n)</span>
-<span id="cb4-9"></span>
-<span id="cb4-10"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(running, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(n, estimate)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb4-11">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_line</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"steelblue"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb4-12">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_hline</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">yintercept =</span> pi, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"tomato"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">linetype =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"dashed"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb4-13">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">scale_x_log10</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">labels =</span> scales<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span>comma) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb4-14">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"The estimate settles down as n grows"</span>,</span>
-<span id="cb4-15">       <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Number of points (log scale)"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Estimate of π"</span>)</span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/posts/monte-carlo-method-explained_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>At the start the line jumps around, which is the “pure luck” of few throws. After a few thousand points it hugs the dashed line at <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cpi">. A table shows the same story:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">running <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb5-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">filter</span>(n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%in%</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10000</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100000</span>)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb5-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">transmute</span>(n, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">estimate =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round</span>(estimate, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">error =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">abs</span>(estimate <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> pi), <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>))</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5 × 3
-       n estimate  error
-   &lt;int&gt;    &lt;dbl&gt;  &lt;dbl&gt;
-1     10     3.2  0.0584
-2    100     3.12 0.0216
-3   1000     3.16 0.0224
-4  10000     3.16 0.02  
-5 100000     3.15 0.0036</code></pre>
-</div>
-</div>
-<p>The error shrinks as <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> grows, though not steadily: a lucky small sample can beat an unlucky larger one.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Run the code again with a different <code>set.seed()</code>. The numbers change, but the pattern (wild at first, then steady) does not. That is the Monte Carlo method at work.</p>
-</div>
-</div>
-</section>
-<section id="why-this-matters-in-real-life" class="level2">
-<h2 class="anchored" data-anchor-id="why-this-matters-in-real-life">Why This Matters in Real Life</h2>
-<p>Computers use this “dirt-throwing” logic to simulate millions of random scenarios in seconds. It is used when the problem is too complex for a straight formula:</p>
-<ul>
-<li><strong>Finance:</strong> throwing random market events at a portfolio to see how often it crashes.</li>
-<li><strong>Physics:</strong> simulating billions of random paths a particle might take.</li>
-<li><strong>Games:</strong> letting an AI play thousands of random futures in chess or Go to choose a move.</li>
-<li><strong>Statistics:</strong> approximating integrals, p-values and posterior distributions that have no closed form.</li>
-</ul>
-<p>Estimating π is not a good use of Monte Carlo, since much better methods exist. We use it because we know the answer, which lets us watch the method work.</p>
-
-
-</section>
-
- ]]></description>
-  <category>R</category>
-  <category>Statistics</category>
-  <category>Probability</category>
-  <guid>https://www.statmania.info/blog/posts/monte-carlo-method-explained.html</guid>
-  <pubDate>Sun, 01 Nov 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/monte-carlo-method-explained.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>
