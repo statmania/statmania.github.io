@@ -12,6 +12,462 @@
 <generator>quarto-1.9.38</generator>
 <lastBuildDate>Fri, 20 Nov 2026 18:00:00 GMT</lastBuildDate>
 <item>
+  <title>The Charisma of the Central Limit Theorem</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/charishma-of-clt.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/charisma-of-clt.svg" class="img-fluid figure-img" alt="A skewed histogram of raw data on the left, an arrow labelled mean of n, and a bell curve of sample averages on the right."></p>
+<figcaption>Raw data can be skewed, but averages of samples from it form a bell curve.</figcaption>
+</figure>
+</div>
+<p>The <strong>central limit theorem</strong> (CLT) says that the average of a large enough random sample is approximately normally distributed, even when the original data is heavily skewed, uniform or U-shaped. That lets us use the normal bell curve to calculate probabilities for sample averages.</p>
+<section id="why-the-clt-is-so-useful" class="level2">
+<h2 class="anchored" data-anchor-id="why-the-clt-is-so-useful">Why the CLT is so useful</h2>
+<ul>
+<li><strong>We need not know the population shape.</strong> In practice we rarely know the true distribution of what we study. The CLT tells us the sample average behaves predictably anyway.</li>
+<li><strong>It powers statistical inference.</strong> Confidence intervals, t-tests, z-tests and A/B tests all rely on it to measure the margin of error.</li>
+<li><strong>It makes sampling practical.</strong> Instead of surveying millions of people, we can sample 1,000 and estimate the national average with a known margin of error.</li>
+</ul>
+</section>
+<section id="seeing-it-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="seeing-it-in-r">Seeing it in R</h2>
+<p>Let’s draw from a strongly right-skewed population (exponential, mean 1) and look at the distribution of sample means for growing <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn">.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(ggplot2)</span>
+<span id="cb1-2"></span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span>)</span>
+<span id="cb1-4">sizes <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>)</span>
+<span id="cb1-5">means <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">do.call</span>(rbind, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">lapply</span>(sizes, <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(n) {</span>
+<span id="cb1-6">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">factor</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"n ="</span>, n), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">levels =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"n ="</span>, sizes)),</span>
+<span id="cb1-7">             <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mean =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">replicate</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5000</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rexp</span>(n))))</span>
+<span id="cb1-8">}))</span>
+<span id="cb1-9"></span>
+<span id="cb1-10"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(means, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(mean)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-11">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_histogram</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bins =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-12">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">facet_wrap</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> n, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">scales =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"free"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-13">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Sample mean"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Count"</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/charishma-of-clt_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" alt="Four histograms of sample means from a skewed exponential population, for n = 1, 5, 30 and 100: strongly skewed at n = 1, then increasingly bell-shaped and narrower." width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The raw data (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20=%201">) is far from normal, yet the sample means become symmetric and bell-shaped as <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> grows. They also get narrower, with spread <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csigma%20/%20%5Csqrt%7Bn%7D">:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> sizes,</span>
+<span id="cb2-2">           <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sd_of_means =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.numeric</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tapply</span>(means<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>mean, means<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>n, sd)), <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>),</span>
+<span id="cb2-3">           <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">theory =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sqrt</span>(sizes), <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>))</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    n sd_of_means theory
+1   1       0.990  1.000
+2   5       0.446  0.447
+3  30       0.183  0.183
+4 100       0.101  0.100</code></pre>
+</div>
+</div>
+</section>
+<section id="when-the-clt-works" class="level2">
+<h2 class="anchored" data-anchor-id="when-the-clt-works">When the CLT works</h2>
+<p>For the classical CLT, the sampling process should meet four conditions:</p>
+<ol type="1">
+<li><strong>Independence:</strong> each observation does not influence the next.</li>
+<li><strong>Identical distribution:</strong> all observations come from the same population or process.</li>
+<li><strong>Large enough <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn">:</strong> a common rule of thumb is <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20%5Cge%2030"> for moderately skewed data. Symmetric data may need only about 10, and heavily skewed data <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20%5Cge%20100"> or more.</li>
+<li><strong>Finite mean and variance:</strong> <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cmu"> must exist and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csigma%5E2%20%3C%20%5Cinfty">.</li>
+</ol>
+</section>
+<section id="when-the-clt-fails" class="level2">
+<h2 class="anchored" data-anchor-id="when-the-clt-fails">When the CLT fails</h2>
+<ul>
+<li><strong>Infinite variance (heavy tails).</strong> The Cauchy distribution and some Pareto distributions (financial crashes, earthquake magnitudes) have tails so heavy that larger samples never smooth out the average, since one huge outlier can wreck the mean at any time.</li>
+<li><strong>Dependent data.</strong> In time series such as daily stock prices or hourly temperatures, today depends on yesterday. Standard CLT formulas then badly underestimate the margin of error.</li>
+<li><strong>Sample too small for extreme skew.</strong> If 99.9% of users pay $0 and 0.1% pay $500, a sample of 30 is almost always all zeros. The sample averages stay skewed until <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> is in the thousands.</li>
+<li><strong>Looking at individual points, not averages.</strong> The CLT is about sums and averages. A larger sample never makes the raw heights, incomes or waiting times look like a bell curve.</li>
+</ul>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 52%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Scenario</th>
+<th style="text-align: center;">Does the CLT work?</th>
+<th style="text-align: left;">Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Average of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20=%2050"> dice rolls</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: left;">Independent, finite variance, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20%5Cge%2030"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Average of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20=%20100"> skewed incomes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: left;">Finite variance and a large sample</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Average of Cauchy random variables</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: left;">Infinite variance: the average never stabilises</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Average of daily stock prices</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: left;">Observations are correlated over time</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Individual customer wait times (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20=%2010%7B,%7D000">)</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: left;">The CLT governs averages, not raw values</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="worked-example-delivery-times" class="level2">
+<h2 class="anchored" data-anchor-id="worked-example-delivery-times">Worked example: delivery times</h2>
+<p>Suppose an online store wants the true average delivery time over all 500,000 orders this year. Delivery times are right-skewed: most parcels arrive in 2 or 3 days, a few take two weeks. We sample <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20=%20100"> orders and get:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Quantity</th>
+<th style="text-align: center;">Symbol</th>
+<th style="text-align: right;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Sample size</td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"></td>
+<td style="text-align: right;">100 orders</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sample mean</td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cbar%7Bx%7D"></td>
+<td style="text-align: right;">3.4 days</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sample standard deviation</td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Ds"></td>
+<td style="text-align: right;">1.5 days</td>
+</tr>
+</tbody>
+</table>
+<section id="step-1-the-standard-error" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-the-standard-error">Step 1: the standard error</h3>
+<p>Since <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20=%20100"> is well above 30, the CLT says the sample mean is approximately normal. Its spread is the <strong>standard error</strong>:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0ASE%20=%20%5Cfrac%7Bs%7D%7B%5Csqrt%7Bn%7D%7D%20=%20%5Cfrac%7B1.5%7D%7B%5Csqrt%7B100%7D%7D%20=%20%5Cfrac%7B1.5%7D%7B10%7D%20=%200.15%20%5Ctext%7B%20days%7D%0A"></p>
+</section>
+<section id="step-2a-a-95-confidence-interval" class="level3">
+<h3 class="anchored" data-anchor-id="step-2a-a-95-confidence-interval">Step 2a: a 95% confidence interval</h3>
+<p>On a normal curve, 95% of sample means fall within 1.96 standard errors of the true mean (the same idea as the 68-95-99.7 <a href="visualizing-empirical-rule.html">Empirical Rule</a>, with 1.96 as the exact multiplier for 95%):</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Ctext%7BMargin%20of%20error%7D%20=%201.96%20%5Ctimes%200.15%20=%200.294%20%5Ctext%7B%20days%7D%0A"></p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Ctext%7BCI%7D%20=%203.4%20%5Cpm%200.294%20=%20%5B3.11,%5C%203.69%5D%20%5Ctext%7B%20days%7D%0A"></p>
+<p>Although the raw delivery data is skewed and we checked only 100 of 500,000 orders, we can be 95% confident that the true average delivery time lies between 3.11 and 3.69 days.</p>
+</section>
+<section id="step-2b-testing-a-claim" class="level3">
+<h3 class="anchored" data-anchor-id="step-2b-testing-a-claim">Step 2b: testing a claim</h3>
+<p>Marketing wants to advertise “Average delivery in 3 days!” Is our 3.4 just sampling noise, or evidence that the true mean is worse than 3? We count how many standard errors 3.4 is above 3.0:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0AZ%20=%20%5Cfrac%7B%5Cbar%7Bx%7D%20-%20%5Cmu_0%7D%7BSE%7D%20=%20%5Cfrac%7B3.4%20-%203.0%7D%7B0.15%7D%20=%20%5Cfrac%7B0.4%7D%7B0.15%7D%20%5Capprox%202.67%0A"></p>
+<p>The one-sided probability of landing 2.67 or more standard errors above the mean by chance is about 0.0038. That is far below the usual 5% cutoff, so we reject the 3-day claim: the true average delivery time is very likely longer than 3 days.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>With <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Ds"> estimated from the data, the exact reference distribution is the t-distribution. For <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20=%20100"> it is almost identical to the normal, so the result is the same here.</p>
+</div>
+</div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 36%">
+<col style="width: 20%">
+<col style="width: 43%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Inference tool</th>
+<th style="text-align: center;">Formula</th>
+<th style="text-align: left;">Question answered</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Standard error</td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cdfrac%7Bs%7D%7B%5Csqrt%7Bn%7D%7D"></td>
+<td style="text-align: left;">How much does the sample average bounce around due to luck?</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Confidence interval</td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cbar%7Bx%7D%20%5Cpm%201.96%20%5Ccdot%20SE"></td>
+<td style="text-align: left;">What is a realistic range for the true average?</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hypothesis test (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DZ">)</td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cdfrac%7B%5Cbar%7Bx%7D%20-%20%5Cmu_0%7D%7BSE%7D"></td>
+<td style="text-align: left;">Is the difference real, or random noise?</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="can-we-use-it-on-non-normal-data" class="level2">
+<h2 class="anchored" data-anchor-id="can-we-use-it-on-non-normal-data">Can we use it on non-normal data?</h2>
+<p>Yes. This is the main superpower of the CLT. It helps to separate two levels of data:</p>
+<ul>
+<li><strong>The raw data stays non-normal.</strong> If most customers spend $0 and a few spend $500, plotting 10,000 individual customers will always look skewed.</li>
+<li><strong>The sample averages become normal.</strong> Take 100 customers at a time, compute the average spend, and repeat: those averages cluster around the true mean in a symmetric bell curve, because high and low values inside each sample cancel out.</li>
+</ul>
+<p>How large <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> must be depends on the skew:</p>
+<ul>
+<li><strong>Mildly skewed or uniform data:</strong> about <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20=%2030">.</li>
+<li><strong>Heavily skewed data</strong> (incomes, website clicks): perhaps <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20=%20100"> to <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D500">.</li>
+<li><strong>Infinite variance</strong> (Cauchy): never, however large <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> gets.</li>
+</ul>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 67%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Goal</th>
+<th style="text-align: center;">Normal / CLT math OK?</th>
+<th style="text-align: left;">Why</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Estimate the population mean (confidence interval)</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: left;">The sample mean is approximately normal for large <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Compare two group means (A/B test, t-test)</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: left;">Both group means become approximately normal</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Predict one individual’s value (prediction interval)</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: left;">Individual values keep the original non-normal shape</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="hypothesis-testing-on-non-normal-data" class="level2">
+<h2 class="anchored" data-anchor-id="hypothesis-testing-on-non-normal-data">Hypothesis testing on non-normal data</h2>
+<p>Standard t-tests and z-tests do not need the raw data to be bell-shaped. They need only the sample mean (or the difference of two means) to be approximately normal, which the CLT provides when the sample is large enough.</p>
+<ul>
+<li><strong>Large sample</strong> (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20%5Cge%2030"> for mild skew, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20%5Cge%20100"> for heavy skew): run the standard t-test or z-test directly.</li>
+<li><strong>Small sample</strong> (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20%3C%2030">) with non-normal data: the CLT has not kicked in, so p-values from a t-test can mislead. Use a non-parametric test (Mann-Whitney U, Wilcoxon signed-rank) or bootstrapping.</li>
+</ul>
+<p>Even with a large sample, avoid CLT-based tests in these situations:</p>
+<ul>
+<li><strong>We care about the median, not the mean.</strong> For skewed data such as income or house prices, the mean is pulled far from the typical value, and a test on the median is more meaningful.</li>
+<li><strong>Extreme outliers or infinite variance.</strong> The sample mean never stabilises, and t-tests lose power.</li>
+<li><strong>One tiny group in an A/B test.</strong> Both groups need enough observations. With <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn_A%20=%20500"> but <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn_B%20=%208">, the CLT assumption still breaks down for group B.</li>
+</ul>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 36%">
+<col style="width: 30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Data shape</th>
+<th style="text-align: center;">Sample size</th>
+<th style="text-align: left;">Best test</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Normal</td>
+<td style="text-align: center;">Any (even <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20=%2010">)</td>
+<td style="text-align: left;">Standard t-test</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Skewed, uniform or U-shaped</td>
+<td style="text-align: center;">Large (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20%5Cge%2030"> to 100+)</td>
+<td style="text-align: left;">Standard t-test (powered by the CLT)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Skewed, uniform or U-shaped</td>
+<td style="text-align: center;">Small (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20%3C%2030">)</td>
+<td style="text-align: left;">Mann-Whitney U or Wilcoxon test</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Heavy outliers (testing medians)</td>
+<td style="text-align: center;">Any</td>
+<td style="text-align: left;">Mann-Whitney U or bootstrap test</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="key-takeaway" class="level2">
+<h2 class="anchored" data-anchor-id="key-takeaway">Key takeaway</h2>
+<ul>
+<li>The CLT is about <strong>averages</strong>, not individual values.</li>
+<li>It lets us do inference without knowing the population’s shape, provided the sample is large, the observations are independent and the variance is finite.</li>
+<li>The more skewed the data, the larger the sample we need.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>Statistics</category>
+  <category>Probability</category>
+  <category>R</category>
+  <guid>https://www.statmania.info/blog/posts/charishma-of-clt.html</guid>
+  <pubDate>Fri, 20 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/charisma-of-clt.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
   <title>The Law of Large Numbers: What It Is and What It Is Not</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
   <link>https://www.statmania.info/blog/posts/what-is-law-of-large-numbers-what-it-is-not.html</link>
@@ -239,6 +695,71 @@ Note
 </div>
 </div>
 </section>
+</section>
+<section id="a-limit-that-is-not-the-law-of-large-numbers" class="level2">
+<h2 class="anchored" data-anchor-id="a-limit-that-is-not-the-law-of-large-numbers">A limit that is not the law of large numbers</h2>
+<p>Not every “settles toward 0.5” story is the LLN. Let’s pick a number <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DX"> uniformly from <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D1,%202,%20%5Cdots,%20n"> with <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> odd, and ask for the probability that it exceeds the mean. The mean is <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D(n+1)/2">, so exactly <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D(n-1)/2"> of the <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> values lie above it:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0AP(X%20%3E%20%5Ctext%7Bmean%7D)%20=%20%5Cfrac%7Bn-1%7D%7B2n%7D%0A"></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;"><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"></th>
+<th style="text-align: center;">3</th>
+<th style="text-align: center;">5</th>
+<th style="text-align: center;">11</th>
+<th style="text-align: center;">101</th>
+<th style="text-align: center;">1001</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DP(X%20%3E%20%5Ctext%7Bmean%7D)"></td>
+<td style="text-align: center;">0.3333</td>
+<td style="text-align: center;">0.4000</td>
+<td style="text-align: center;">0.4545</td>
+<td style="text-align: center;">0.4950</td>
+<td style="text-align: center;">0.4995</td>
+</tr>
+</tbody>
+</table>
+<p>The values creep toward 0.5, but there is no randomness in this table. Each entry is an exact number from algebra, and the limit is the ordinary limit of a sequence.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">This example</th>
+<th style="text-align: left;">Law of large numbers</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">What changes with <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"></td>
+<td style="text-align: left;">the distribution itself (more points)</td>
+<td style="text-align: left;">the number of repeated trials of one fixed experiment</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Randomness</td>
+<td style="text-align: left;">none; exact fixed numbers</td>
+<td style="text-align: left;">each trial is random, so the running average bounces at first</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Type of convergence</td>
+<td style="text-align: left;">deterministic limit of a sequence of probabilities</td>
+<td style="text-align: left;">the random sample mean approaches <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cmu"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Guarantee</td>
+<td style="text-align: left;">follows from the formula</td>
+<td style="text-align: left;">random fluctuations average out over many trials</td>
+</tr>
+</tbody>
+</table>
+<p>If anything, this example is closer to <strong>convergence in distribution</strong>: a discrete uniform distribution on <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> points, rescaled to <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5B0,%201%5D">, approaches the continuous uniform distribution as <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20%5Cto%20%5Cinfty">. The LLN is about something else, namely random sample averages.</p>
 </section>
 <section id="key-takeaway" class="level2">
 <h2 class="anchored" data-anchor-id="key-takeaway">Key takeaway</h2>
@@ -11287,420 +11808,6 @@ font-style: inherit;"># no clean per-script control of the C stack: rewrite the 
   <guid>https://www.statmania.info/blog/posts/stack-overflow-explained-withexamples-from-c-r-python.html</guid>
   <pubDate>Wed, 28 Oct 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/stack-overflow-explained.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>The Dots Argument (…) in R Functions</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/r-dots-in-functions.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/r-shell.jpeg" class="img-fluid figure-img" alt="An R session running in a terminal window."></p>
-<figcaption>Trying out <code>...</code> in the R console.</figcaption>
-</figure>
-</div>
-<p>In R, <code>...</code> (dot-dot-dot, also called the <em>ellipsis</em> or <em>dots</em> argument) is a special parameter that lets a function accept any number of extra arguments. It has two main uses:</p>
-<ol type="1">
-<li>passing arguments on to another function, and</li>
-<li>collecting a variable-length set of inputs, as <code>c()</code>, <code>paste()</code> and <code>list()</code> do.</li>
-</ol>
-<section id="use-1-passing-arguments-to-an-inner-function" class="level2">
-<h2 class="anchored" data-anchor-id="use-1-passing-arguments-to-an-inner-function">Use 1: Passing arguments to an inner function</h2>
-<p>A wrapper can fix some settings and let the caller customise everything else, without listing every possible argument.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Force the colour and symbol, but let the user set titles, labels, axes, ...</span></span>
-<span id="cb1-2">my_plot <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(x, y, ...) {</span>
-<span id="cb1-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot</span>(x, y, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"royalblue"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">pch =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">16</span>, ...)</span>
-<span id="cb1-4">}</span>
-<span id="cb1-5"></span>
-<span id="cb1-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># main and xlab are not named in my_plot(), yet they reach plot()</span></span>
-<span id="cb1-7"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">my_plot</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">main =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"My Custom Chart"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">xlab =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"X Axis Index"</span>)</span></code></pre></div></div>
-</section>
-<section id="use-2-collecting-inputs-with-list..." class="level2">
-<h2 class="anchored" data-anchor-id="use-2-collecting-inputs-with-list...">Use 2: Collecting inputs with <code>list(...)</code></h2>
-<p>To use the extra arguments inside the function, convert <code>...</code> into an ordinary list.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">summarize_inputs <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(...) {</span>
-<span id="cb2-2">  input_list <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(...)</span>
-<span id="cb2-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"We received"</span>, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">length</span>(input_list), <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"arguments.</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>)</span>
-<span id="cb2-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">print</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">names</span>(input_list))</span>
-<span id="cb2-5">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">invisible</span>(input_list)</span>
-<span id="cb2-6">}</span>
-<span id="cb2-7"></span>
-<span id="cb2-8">res <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">summarize_inputs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">a =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">b =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"hello"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">c =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>)</span></code></pre></div></div>
-<pre><code>We received 3 arguments.
-[1] "a" "b" "c"</code></pre>
-<p>Two related helpers are worth knowing: <code>...length()</code> gives the number of arguments, and <code>..1</code>, <code>..2</code>, … pick them by position.</p>
-</section>
-<section id="where-does-...-go" class="level2">
-<h2 class="anchored" data-anchor-id="where-does-...-go">Where does <code>...</code> go?</h2>
-<section id="at-the-end-fixed-inputs-first-extras-last" class="level3">
-<h3 class="anchored" data-anchor-id="at-the-end-fixed-inputs-first-extras-last">At the end: fixed inputs first, extras last</h3>
-<p>Put <code>...</code> last when the function has required inputs and <code>...</code> only catches optional settings for a downstream call.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">my_plot <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(x, y, ...) {</span>
-<span id="cb4-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot</span>(x, y, ...)</span>
-<span id="cb4-3">}</span>
-<span id="cb4-4"></span>
-<span id="cb4-5"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># 1:10 goes to x, 1:10 to y, and col travels down through ...</span></span>
-<span id="cb4-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">my_plot</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"red"</span>)</span></code></pre></div></div>
-</section>
-<section id="at-the-beginning-collect-data-first" class="level3">
-<h3 class="anchored" data-anchor-id="at-the-beginning-collect-data-first">At the beginning: collect data first</h3>
-<p>Put <code>...</code> first when the function’s job is to gather an unknown number of objects (like <code>c()</code> or <code>paste()</code>). Every argument <em>after</em> <code>...</code> must then be named in the call, because R never matches them by position.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">f <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(..., <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">named_arg =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"default"</span>) {</span>
-<span id="cb5-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">n =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">length</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(...)), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">named_arg =</span> named_arg)</span>
-<span id="cb5-3">}</span>
-<span id="cb5-4"></span>
-<span id="cb5-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">str</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">f</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"custom_value"</span>))                       <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># swallowed by ...</span></span>
-<span id="cb5-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">str</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">f</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">named_arg =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"custom_value"</span>))           <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># as intended</span></span></code></pre></div></div>
-<pre><code>List of 2
- $ n        : int 4
- $ named_arg: chr "default"
-List of 2
- $ n        : int 3
- $ named_arg: chr "custom_value"</code></pre>
-<p>In the first call <code>"custom_value"</code> is counted as a fourth data input and <code>named_arg</code> keeps its default.</p>
-</section>
-</section>
-<section id="combining-both-uses" class="level2">
-<h2 class="anchored" data-anchor-id="combining-both-uses">Combining both uses</h2>
-<p>A single <code>...</code> can only do one job. If it collects the data, the styling arguments end up in the data too. In the example below, passing <code>col</code> and <code>border</code> through <code>list(...)</code> makes <code>mean()</code> fail on them. So we take the data as an explicit argument and keep <code>...</code> for the plot settings.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">analyze_and_plot <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(data_list, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">plot_title =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Data Analysis"</span>, ...) {</span>
-<span id="cb7-2">  means <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sapply</span>(data_list, mean, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>)</span>
-<span id="cb7-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Calculated means for"</span>, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">length</span>(data_list), <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"groups:</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>)</span>
-<span id="cb7-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">print</span>(means)</span>
-<span id="cb7-5"></span>
-<span id="cb7-6">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># col, border, las, ... go straight to boxplot()</span></span>
-<span id="cb7-7">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">boxplot</span>(data_list, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">main =</span> plot_title, ...)</span>
-<span id="cb7-8">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">invisible</span>(means)</span>
-<span id="cb7-9">}</span>
-<span id="cb7-10"></span>
-<span id="cb7-11">groups <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(</span>
-<span id="cb7-12">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">A =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">12</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">15</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">14</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">18</span>),</span>
-<span id="cb7-13">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">B =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">22</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">25</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">28</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">21</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">24</span>),</span>
-<span id="cb7-14">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">C =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">7</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">8</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">6</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">9</span>)</span>
-<span id="cb7-15">)</span>
-<span id="cb7-16"></span>
-<span id="cb7-17"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">analyze_and_plot</span>(</span>
-<span id="cb7-18">  groups,</span>
-<span id="cb7-19">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">plot_title =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Experimental Results"</span>,</span>
-<span id="cb7-20">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">col =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"tomato"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"gold"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"deepskyblue"</span>),</span>
-<span id="cb7-21">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">border =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"darkgray"</span></span>
-<span id="cb7-22">)</span></code></pre></div></div>
-<pre><code>Calculated means for 3 groups:
-   A    B    C
-13.8 24.0  7.0</code></pre>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Warning</span>Pitfalls
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ul>
-<li><strong>Misspelt arguments pass silently through <code>...</code>.</strong> <code>plot(1:3, 1:3, colr = "red")</code> raises no error. R only warns that <code>"colr" is not a graphical parameter</code>, and the colour is ignored, so check the warnings.</li>
-<li><strong>One <code>...</code> cannot serve two purposes.</strong> Decide whether it holds data or settings. Use <code>list(...)</code> for the first, and an explicit argument plus <code>...</code> for the second.</li>
-<li><strong>Arguments after <code>...</code> need their full name.</strong> Partial matching does not apply to them.</li>
-</ul>
-</div>
-</div>
-</section>
-<section id="key-takeaways" class="level2">
-<h2 class="anchored" data-anchor-id="key-takeaways">Key takeaways</h2>
-<ul>
-<li><code>list(...)</code> turns the extra arguments into a list you can count, name-check or loop over.</li>
-<li>Passing <code>...</code> to another function forwards settings without the wrapper knowing they exist.</li>
-<li>Put <code>...</code> last for optional pass-through settings, and first for collecting data, remembering that anything after it must be named.</li>
-</ul>
-</section>
-<section id="reference" class="level2">
-<h2 class="anchored" data-anchor-id="reference">Reference</h2>
-<ul>
-<li>DataFlair, <a href="https://data-flair.training/blogs/r-arguments-introduction/">R Arguments Introduction</a></li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>R</category>
-  <category>Programming</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/r-dots-in-functions.html</guid>
-  <pubDate>Mon, 26 Oct 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/r-shell.jpeg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
