@@ -10,7 +10,696 @@
 <atom:link href="https://www.statmania.info/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Posts on statistics theory, R &amp; Python, and developer tips from Stat Mania.</description>
 <generator>quarto-1.9.38</generator>
-<lastBuildDate>Fri, 20 Nov 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sun, 22 Nov 2026 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>When Complex Numbers Are More Natural Than So-Called Real Ones</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/cases-when-complex-numbers-are-more-natural-than-so-called-real-ones.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/complex-numbers-more-natural.svg" class="img-fluid figure-img" alt="A diagram with a horizontal arrow of length 3 and a vertical arrow of length 4 adding up to a diagonal arrow of length 5 at 53 degrees, representing the combined wave 5cos(t + 53 degrees)."></p>
+<figcaption>Adding two waves becomes adding two arrows: 3 and 4i add up to a length-5 arrow at 53°.</figcaption>
+</figure>
+</div>
+<p>Complex numbers are the more natural choice whenever a problem involves <strong>rotations, oscillations, waves or roots of equations</strong>. Forcing a solution through real numbers alone needs messy trigonometry and heavy calculus, while complex numbers reduce the work to addition and multiplication. (If the basics are new, see <a href="complex-numbers.html">Complex Numbers: Why They Are as Real as Real Numbers</a>.)</p>
+<p>Let’s go through six cases. In each we set the real-number approach beside the complex one.</p>
+<section id="combining-waves-and-oscillations" class="level2">
+<h2 class="anchored" data-anchor-id="combining-waves-and-oscillations">1. Combining waves and oscillations</h2>
+<p><strong>Real numbers:</strong> adding sound waves, light waves or alternating currents that start at different times (phases) needs trigonometric identities such as the one for <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csin(A%20+%20B)">.</p>
+<p><strong>Complex numbers:</strong> write each wave as a complex number. Its <strong>length</strong> is the wave’s strength (amplitude) and its <strong>angle</strong> is the timing (phase). Adding waves is then just adding numbers.</p>
+<p><strong>Example:</strong> add <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D3%5Ccos%20t"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D4%5Ccos(t%20+%2090%5E%5Ccirc)">. Represent them as <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D3"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D4i"> (a quarter turn ahead):</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A3%20+%204i%20%5Cquad%5CRightarrow%5Cquad%20%5Ctext%7Blength%20%7D%20%5Csqrt%7B3%5E2%20+%204%5E2%7D%20=%205,%20%5Cquad%20%5Ctext%7Bangle%20%7D%20%5Ctan%5E%7B-1%7D(4/3)%20%5Capprox%2053%5E%5Ccirc%0A"></p>
+<p>So the combined wave is <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D5%5Ccos(t%20+%2053%5E%5Ccirc)">, with no identities needed.</p>
+</section>
+<section id="d-rotations-and-geometry" class="level2">
+<h2 class="anchored" data-anchor-id="d-rotations-and-geometry">2. 2D rotations and geometry</h2>
+<p><strong>Real numbers:</strong> rotating a point <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D(x,%20y)"> needs a <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D2%20%5Ctimes%202"> matrix of sines and cosines.</p>
+<p><strong>Complex numbers:</strong> a point is one number, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx%20+%20yi">, and rotating it is one multiplication. This makes complex numbers a natural choice for 2D physics engines and robotics.</p>
+<p><strong>Example:</strong> rotate <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D(1,%201)"> by 90 degrees. Multiply <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D1%20+%20i"> by <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Di">:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0Ai(1%20+%20i)%20=%20i%20+%20i%5E2%20=%20-1%20+%20i%0A"></p>
+<p>so <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D(1,%201)"> moves to <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D(-1,%201)">.</p>
+</section>
+<section id="differential-equations" class="level2">
+<h2 class="anchored" data-anchor-id="differential-equations">3. Differential equations</h2>
+<p><strong>Real numbers:</strong> equations for vibrating springs, shock absorbers and RLC circuits often have solutions that oscillate while dying away. With real numbers we must guess combinations of sines, cosines and exponentials.</p>
+<p><strong>Complex numbers:</strong> growth, decay and oscillation are all one exponential, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7De%5E%7Brt%7D">, with a complex <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dr">. We just solve a quadratic.</p>
+<p><strong>Example:</strong> solve <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dy''%20+%202y'%20+%205y%20=%200">. Try <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dy%20=%20e%5E%7Brt%7D">:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0Ar%5E2%20+%202r%20+%205%20=%200%20%5Cquad%5CRightarrow%5Cquad%20r%20=%20%5Cfrac%7B-2%20%5Cpm%20%5Csqrt%7B4%20-%2020%7D%7D%7B2%7D%20=%20-1%20%5Cpm%202i%0A"></p>
+<p>The real part <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D-1"> gives the decay (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7De%5E%7B-t%7D">) and the imaginary part <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D2"> gives the oscillation, so the solutions are <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7De%5E%7B-t%7D%5Ccos%202t"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7De%5E%7B-t%7D%5Csin%202t">. No guessing was needed.</p>
+</section>
+<section id="roots-of-polynomials" class="level2">
+<h2 class="anchored" data-anchor-id="roots-of-polynomials">4. Roots of polynomials</h2>
+<p><strong>Real numbers:</strong> <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx%5E2%20+%201%20=%200"> has no solution, while <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx%5E2%20-%201%20=%200"> has two. The degree alone does not tell us how many roots to expect.</p>
+<p><strong>Complex numbers:</strong> they are <em>algebraically closed</em>: every polynomial of degree <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> has exactly <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> roots (counting repeats). This makes stability analysis in control theory predictable.</p>
+<p><strong>Example:</strong> <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx%5E3%20-%201%20=%200"> has a single real root, but three complex ones:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0Ax%20=%201,%20%5Cqquad%20x%20=%20-%5Ctfrac%7B1%7D%7B2%7D%20+%20%5Ctfrac%7B%5Csqrt%7B3%7D%7D%7B2%7D%5C,i,%20%5Cqquad%20x%20=%20-%5Ctfrac%7B1%7D%7B2%7D%20-%20%5Ctfrac%7B%5Csqrt%7B3%7D%7D%7B2%7D%5C,i%0A"></p>
+<p>and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx%5E2%20+%201%20=%200"> has the two roots <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cpm%20i">.</p>
+</section>
+<section id="d-fluid-flow-and-electromagnetism" class="level2">
+<h2 class="anchored" data-anchor-id="d-fluid-flow-and-electromagnetism">5. 2D fluid flow and electromagnetism</h2>
+<p><strong>Real numbers:</strong> describing air flow around a wing, or an electric field around a wire, needs coupled partial differential equations in <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dy">.</p>
+<p><strong>Complex numbers:</strong> complex functions preserve angles (<em>conformal mapping</em>). For ideal, frictionless flow, we can solve the easy case of flow around a circle, then use one complex function to bend the circle into another shape. The classic map <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dw%20=%20z%20+%201/z"> turns a slightly off-centre circle into a wing-like profile, and the flow around the circle is carried along with it.</p>
+</section>
+<section id="hard-real-integrals" class="level2">
+<h2 class="anchored" data-anchor-id="hard-real-integrals">6. Hard real integrals</h2>
+<p><strong>Real numbers:</strong> many integrals, especially in physics and statistics, have no elementary antiderivative, so ordinary calculus gets stuck.</p>
+<p><strong>Complex numbers:</strong> step into the complex plane and use the <em>residue theorem</em>. The answer is still a real number.</p>
+<p><strong>Example:</strong></p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cint_%7B-%5Cinfty%7D%5E%7B%5Cinfty%7D%20%5Cfrac%7B%5Ccos%20x%7D%7B1%20+%20x%5E2%7D%5C,dx%20=%20%5Cfrac%7B%5Cpi%7D%7Be%7D%20%5Capprox%201.156%0A"></p>
+<p>The trick is to replace <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Ccos%20x"> by <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7De%5E%7Biz%7D"> and to look at the function <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7De%5E%7Biz%7D/(1%20+%20z%5E2)">, which has a single trouble spot (a pole) at <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dz%20=%20i"> in the upper half-plane. The residue theorem gives <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D2%5Cpi%20i%20%5Ctimes%20%5Cdfrac%7Be%5E%7B-1%7D%7D%7B2i%7D%20=%20%5Cdfrac%7B%5Cpi%7D%7Be%7D">, and the real part of that is the integral we wanted.</p>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 44%">
+<col style="width: 36%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Problem</th>
+<th style="text-align: left;">Real-number approach</th>
+<th style="text-align: left;">Complex approach</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Adding waves</td>
+<td style="text-align: left;">Trig identities</td>
+<td style="text-align: left;">Add two numbers</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2D rotation</td>
+<td style="text-align: left;"><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D2%20%5Ctimes%202"> matrix</td>
+<td style="text-align: left;">Multiply by <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7De%5E%7Bi%5Ctheta%7D"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Oscillating, decaying solutions</td>
+<td style="text-align: left;">Guess sines, cosines, exponentials</td>
+<td style="text-align: left;">Solve a quadratic, read off <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dr"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Counting roots</td>
+<td style="text-align: left;">Depends on the equation</td>
+<td style="text-align: left;">Always exactly <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Flow around shapes</td>
+<td style="text-align: left;">Coupled PDEs</td>
+<td style="text-align: left;">Map a simple shape with one function</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hard integrals</td>
+<td style="text-align: left;">No elementary antiderivative</td>
+<td style="text-align: left;">Residues</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="key-takeaway" class="level2">
+<h2 class="anchored" data-anchor-id="key-takeaway">Key takeaway</h2>
+<ul>
+<li>Whenever the problem involves a <strong>cycle</strong>, a <strong>rotation</strong> or a <strong>wave</strong>, complex numbers describe it directly.</li>
+<li>They do not replace real numbers: the final answers (amplitudes, positions, integrals) are still real. Complex numbers are the shortcut we take to reach them.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>Mathematics</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/cases-when-complex-numbers-are-more-natural-than-so-called-real-ones.html</guid>
+  <pubDate>Sun, 22 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/complex-numbers-more-natural.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>Complex Numbers in Statistics: Where They Quietly Do the Work</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/complex-numbers-in-statistics.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/complex-numbers-in-statistics.svg" class="img-fluid figure-img" alt="A unit circle on the complex plane with two points at 10 and 350 degrees. The complex average points to 0 degrees, while the naive average of 180 degrees is marked as wrong."></p>
+<figcaption>Averaging 350° and 10° on the complex unit circle gives 0°, while the ordinary average of the two numbers, 180°, points the wrong way.</figcaption>
+</figure>
+</div>
+<p>Complex numbers act as a mathematical shortcut in statistics: they turn messy calculus and probability problems into simple algebra. If complex numbers are new to us, <a href="complex-numbers.html">the earlier post on complex numbers</a> covers the basics. Here we only need one fact: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7De%5E%7Bi%5Ctheta%7D%20=%20%5Ccos%5Ctheta%20+%20i%5Csin%5Ctheta"> is a point on the unit circle.</p>
+<section id="characteristic-functions" class="level2">
+<h2 class="anchored" data-anchor-id="characteristic-functions">1. Characteristic functions</h2>
+<p>Every probability distribution has a “fingerprint” called its <strong>characteristic function</strong>:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cvarphi_X(t)%20=%20E%5Cleft%5Be%5E%7BitX%7D%5Cright%5D%0A"></p>
+<p>Unlike the moment-generating function, it exists for <strong>every</strong> distribution, because <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7De%5E%7BitX%7D"> always stays on a circle of radius 1 and never explodes. That includes chaotic ones such as the Cauchy distribution, where the mean and variance do not exist.</p>
+<section id="example-adding-independent-variables" class="level3">
+<h3 class="anchored" data-anchor-id="example-adding-independent-variables">Example: adding independent variables</h3>
+<p>For a coin flip <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DX"> (1 with probability <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp">, otherwise 0):</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cvarphi_X(t)%20=%20(1%20-%20p)%20+%20p%5C,e%5E%7Bit%7D%0A"></p>
+<p>The total of two independent flips would normally need a convolution (a sum or integral over all ways to get each total). With characteristic functions, adding independent variables just <strong>multiplies</strong> them:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cvarphi_%7BX_1%20+%20X_2%7D(t)%20=%20%5Cleft%5B(1%20-%20p)%20+%20p%5C,e%5E%7Bit%7D%5Cright%5D%5E2%0A"></p>
+<p>This is exactly the characteristic function of a Binomial(2, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp">), which is the right answer. Calculus has become multiplication.</p>
+</section>
+<section id="example-why-the-cauchy-average-never-settles" class="level3">
+<h3 class="anchored" data-anchor-id="example-why-the-cauchy-average-never-settles">Example: why the Cauchy average never settles</h3>
+<p>The standard Cauchy distribution has <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cvarphi(t)%20=%20e%5E%7B-%7Ct%7C%7D">. For the average of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> independent Cauchy values, we multiply <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> copies and rescale <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dt"> by <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D1/n">:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cvarphi_%7B%5Cbar%7BX%7D%7D(t)%20=%20%5Cleft%5Be%5E%7B-%7Ct%7C/n%7D%5Cright%5D%5En%20=%20e%5E%7B-%7Ct%7C%7D%0A"></p>
+<p>The average has the <strong>same</strong> distribution as a single observation. Collecting more data never helps, which is why the <a href="what-is-law-of-large-numbers-what-it-is-not.html">law of large numbers</a> fails for the Cauchy. The same machinery is the standard proof route for the <a href="charishma-of-clt.html">central limit theorem</a>: the characteristic function of a standardised average approaches <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7De%5E%7B-t%5E2/2%7D">, that of the normal distribution.</p>
+</section>
+</section>
+<section id="circular-statistics-averaging-angles" class="level2">
+<h2 class="anchored" data-anchor-id="circular-statistics-averaging-angles">2. Circular statistics: averaging angles</h2>
+<p>Real numbers struggle with angles. The directions <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D350%5E%5Ccirc"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D10%5E%5Ccirc"> are only 20 degrees apart, yet their ordinary average is</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cfrac%7B350%20+%2010%7D%7B2%7D%20=%20180%5E%5Ccirc%0A"></p>
+<p>which points the opposite way. On the complex unit circle, each angle <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Ctheta"> becomes the point <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7De%5E%7Bi%5Ctheta%7D">. We average the points, then read off the angle:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cfrac%7Be%5E%7Bi%5C,350%5E%5Ccirc%7D%20+%20e%5E%7Bi%5C,10%5E%5Ccirc%7D%7D%7B2%7D%20=%20%5Cfrac%7B(%5Ccos%20350%5E%5Ccirc%20+%20%5Ccos%2010%5E%5Ccirc)%20+%20i(%5Csin%20350%5E%5Ccirc%20+%20%5Csin%2010%5E%5Ccirc)%7D%7B2%7D%20=%20%5Ccos%2010%5E%5Ccirc%20%5Capprox%200.985%0A"></p>
+<p>The sines cancel (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csin%20350%5E%5Ccirc%20=%20-%5Csin%2010%5E%5Ccirc">), leaving a point on the positive real axis. Its angle is <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D0%5E%5Ccirc">, the sensible answer. The length of the average, 0.985, is also useful: it is close to 1 when the angles are tightly clustered and close to 0 when they are spread all around.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/complex-numbers-in-statistics_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" alt="The unit circle in the complex plane with Real and Imaginary axes. Two blue points sit at 10 and 350 degrees; their average, a red point inside the circle on the positive real axis, lies at angle 0." width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This is how statisticians average wind directions, bird migration paths, times of day and circadian rhythms.</p>
+</section>
+<section id="time-series-and-spectral-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="time-series-and-spectral-analysis">3. Time series and spectral analysis</h2>
+<p>When data fluctuates over time (ocean tides, brain waves, monthly sales), the <strong>Fourier transform</strong> maps it into complex numbers whose sizes show which cycles are present. A series with a yearly rhythm in monthly data shows a peak at a period of 12 months. Spectral analysis is a standard way to find hidden cycles and periodic trends.</p>
+</section>
+<section id="complex-normal-data" class="level2">
+<h2 class="anchored" data-anchor-id="complex-normal-data">4. Complex normal data</h2>
+<p>In radar, wireless communication and MRI, each measurement arrives as an amplitude and a phase, that is, a pair of numbers. Writing the pair as one complex number <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dz%20=%20x%20+%20iy"> keeps the geometry intact (size and angle) instead of splitting it into two separate real values, and gives a compact way to model signal plus noise.</p>
+</section>
+<section id="why-this-is-useful" class="level2">
+<h2 class="anchored" data-anchor-id="why-this-is-useful">Why this is useful</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 47%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Idea</th>
+<th style="text-align: left;">Without complex numbers</th>
+<th style="text-align: left;">With complex numbers</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Sum of independent variables</td>
+<td style="text-align: left;">Convolution (an integral)</td>
+<td style="text-align: left;">Multiply characteristic functions</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Existence of a transform</td>
+<td style="text-align: left;">Moment-generating function may not exist</td>
+<td style="text-align: left;">Characteristic function always exists</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Averaging angles</td>
+<td style="text-align: left;"><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D350%5E%5Ccirc"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D10%5E%5Ccirc"> give <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D180%5E%5Ccirc"></td>
+<td style="text-align: left;">Gives <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D0%5E%5Ccirc">, as it should</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Two-part measurements</td>
+<td style="text-align: left;">Two separate real values</td>
+<td style="text-align: left;">One complex value</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="key-takeaway" class="level2">
+<h2 class="anchored" data-anchor-id="key-takeaway">Key takeaway</h2>
+<ul>
+<li>Complex numbers are not a curiosity in statistics: they make sums of random variables, proofs and angle averages simpler.</li>
+<li>The unit-circle point <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7De%5E%7Bi%5Ctheta%7D"> is the key object, since it stays bounded and encodes angles naturally.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>Statistics</category>
+  <category>Mathematics</category>
+  <guid>https://www.statmania.info/blog/posts/complex-numbers-in-statistics.html</guid>
+  <pubDate>Sun, 22 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/complex-numbers-in-statistics.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>Waves and Turns: Why Complex Numbers Beat Trigonometry</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/complex-numbers-waves-and-turns-vs-trigonometry.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/complex-numbers-waves-and-turns.svg" class="img-fluid figure-img" alt="A path of three legs: 4 km east, 3 km after a 60 degree left turn, and 2 km after a further 45 degree turn. A dashed arrow from the start to the finish shows the total, 6.73 km at 42 degrees."></p>
+<figcaption>A boatman rows 4 km east, turns left 60° and rows 3 km, then turns 45° more and rows 2 km. The three legs add up, as complex numbers, to 4.98 + 4.53i.</figcaption>
+</figure>
+</div>
+<p>A boatman who keeps changing direction, and waves that start at different times, are the same kind of problem, and both are clumsy with trigonometry. (In <a href="cases-when-complex-numbers-are-more-natural-than-so-called-real-ones.html">an earlier post</a> we saw that complex numbers handle them easily.) Let’s work through examples <strong>both ways</strong>, starting with the boatman.</p>
+<section id="the-idea" class="level2">
+<h2 class="anchored" data-anchor-id="the-idea">The idea</h2>
+<p>A <strong>boat leg</strong>, a distance <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dd"> in a heading <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Ctheta">, is the arrow <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dd%5C,e%5E%7Bi%5Ctheta%7D">: length <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dd">, angle <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Ctheta">. A <strong>wave</strong> <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DA%5Ccos(t%20+%20%5Cphi)"> with strength <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DA"> and timing <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cphi"> works the same way, as the arrow <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DA%5C,e%5E%7Bi%5Cphi%7D">. In both cases:</p>
+<ul>
+<li><strong>Adding waves (or legs) is adding arrows.</strong></li>
+<li><strong>Turning by an angle <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Calpha"> is multiplying by <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7De%5E%7Bi%5Calpha%7D">.</strong></li>
+</ul>
+</section>
+<section id="example-1-a-boatman-who-turns" class="level2">
+<h2 class="anchored" data-anchor-id="example-1-a-boatman-who-turns">Example 1: a boatman who turns</h2>
+<p>A boatman rows <strong>4 km east</strong>, turns <strong>left by 60°</strong>, and rows <strong>3 km</strong>. How far is he from the start, and in which direction?</p>
+<section id="the-trigonometry-way" class="level3">
+<h3 class="anchored" data-anchor-id="the-trigonometry-way">The trigonometry way</h3>
+<p>The two legs and the straight line back to the start form a triangle. The angle inside the triangle at the turn is <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D180%5E%5Ccirc%20-%2060%5E%5Ccirc%20=%20120%5E%5Ccirc"> (an easy place to slip).</p>
+<ol type="1">
+<li><p><strong>Law of cosines</strong> for the distance:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dd%5E2%20=%204%5E2%20+%203%5E2%20-%202(4)(3)%5Ccos%20120%5E%5Ccirc%20=%2025%20+%2012%20=%2037,%20%5Cqquad%20d%20%5Capprox%206.08%20%5Ctext%7B%20km%7D"></p></li>
+<li><p><strong>Law of sines</strong> for the direction at the start:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csin%5Calpha%20=%20%5Cfrac%7B3%5Csin%20120%5E%5Ccirc%7D%7B6.08%7D%20%5Capprox%200.427%20%5Cquad%5CRightarrow%5Cquad%20%5Calpha%20%5Capprox%2025.3%5E%5Ccirc"></p>
+<p>(The sine rule can give two possible angles, so we must check that the acute one is right.)</p></li>
+</ol>
+</section>
+<section id="the-complex-way" class="level3">
+<h3 class="anchored" data-anchor-id="the-complex-way">The complex way</h3>
+<p>East is the direction <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7De%5E%7Bi0%5E%5Ccirc%7D%20=%201">. After a 60° left turn he faces <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7De%5E%7Bi60%5E%5Ccirc%7D">:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A4%20+%203e%5E%7Bi60%5E%5Ccirc%7D%20=%204%20+%203(0.5%20+%200.866i)%20=%205.5%20+%202.598i%0A"></p>
+<p>Distance: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csqrt%7B5.5%5E2%20+%202.598%5E2%7D%20=%20%5Csqrt%7B37%7D%20%5Capprox%206.08"> km. Direction: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Ctan%5E%7B-1%7D(2.598/5.5)%20%5Capprox%2025.3%5E%5Ccirc"> north of east. The same result with no triangle drawing and no ambiguity.</p>
+</section>
+</section>
+<section id="example-2-he-turns-again" class="level2">
+<h2 class="anchored" data-anchor-id="example-2-he-turns-again">Example 2: he turns again</h2>
+<p>After the second leg, the boatman turns left by another <strong>45°</strong> and rows <strong>2 km</strong> more. His heading is now <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D60%5E%5Ccirc%20+%2045%5E%5Ccirc%20=%20105%5E%5Ccirc">.</p>
+<section id="the-trigonometry-way-1" class="level3">
+<h3 class="anchored" data-anchor-id="the-trigonometry-way-1">The trigonometry way</h3>
+<p>We must start a new triangle with the <em>result so far</em> (6.08 km at 25.3°) and the new leg (2 km at 105°):</p>
+<ol type="1">
+<li>Angle between them: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D105%5E%5Ccirc%20-%2025.3%5E%5Ccirc%20=%2079.7%5E%5Ccirc">, so the angle inside the triangle is <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D180%5E%5Ccirc%20-%2079.7%5E%5Ccirc%20=%20100.3%5E%5Ccirc">.</li>
+<li>Law of cosines: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dd%5E2%20=%206.08%5E2%20+%202%5E2%20-%202(6.08)(2)%5Ccos%20100.3%5E%5Ccirc%20%5Capprox%2037%20+%204%20+%204.37%20=%2045.4">, so <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dd%20%5Capprox%206.73"> km.</li>
+<li>Law of sines: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csin%5Cbeta%20=%20%5Cdfrac%7B2%5Csin%20100.3%5E%5Ccirc%7D%7B6.73%7D%20%5Capprox%200.292">, so <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cbeta%20%5Capprox%2017.0%5E%5Ccirc">.</li>
+<li>Direction: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D25.3%5E%5Ccirc%20+%2017.0%5E%5Ccirc%20=%2042.3%5E%5Ccirc">.</li>
+</ol>
+<p>Every extra leg needs a new triangle, a new interior angle to track, and the earlier rounding errors carry along.</p>
+</section>
+<section id="the-complex-way-1" class="level3">
+<h3 class="anchored" data-anchor-id="the-complex-way-1">The complex way</h3>
+<p>The third leg is just another arrow, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D2e%5E%7Bi105%5E%5Ccirc%7D%20=%20-0.518%20+%201.932i">. Add it to what we have:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A4%20+%203e%5E%7Bi60%5E%5Ccirc%7D%20+%202e%5E%7Bi105%5E%5Ccirc%7D%20=%205.5%20+%202.598i%20+%20(-0.518%20+%201.932i)%20=%204.982%20+%204.530i%0A"></p>
+<p>Distance: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csqrt%7B4.982%5E2%20+%204.530%5E2%7D%20%5Capprox%206.73"> km. Direction: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Ctan%5E%7B-1%7D(4.530/4.982)%20%5Capprox%2042.3%5E%5Ccirc">. A fourth leg would be one more term.</p>
+</section>
+</section>
+<section id="example-3-two-waves" class="level2">
+<h2 class="anchored" data-anchor-id="example-3-two-waves">Example 3: two waves</h2>
+<p>Add <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D3%5Ccos%20t"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D4%5Ccos(t%20+%2030%5E%5Ccirc)">.</p>
+<section id="the-trigonometry-way-2" class="level3">
+<h3 class="anchored" data-anchor-id="the-trigonometry-way-2">The trigonometry way</h3>
+<ol type="1">
+<li><p>Expand the second wave with <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Ccos(A%20+%20B)%20=%20%5Ccos%20A%5Ccos%20B%20-%20%5Csin%20A%5Csin%20B">:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D4%5Ccos(t%20+%2030%5E%5Ccirc)%20=%204%5Ccos%20t%5C,%5Ccos%2030%5E%5Ccirc%20-%204%5Csin%20t%5C,%5Csin%2030%5E%5Ccirc%20=%203.464%5Ccos%20t%20-%202%5Csin%20t"></p></li>
+<li><p>Add the first wave:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D3%5Ccos%20t%20+%203.464%5Ccos%20t%20-%202%5Csin%20t%20=%206.464%5Ccos%20t%20-%202%5Csin%20t"></p></li>
+<li><p>This is not yet one wave. We want <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DR%5Ccos(t%20+%20%5Cvarphi)%20=%20R%5Ccos%5Cvarphi%5Ccos%20t%20-%20R%5Csin%5Cvarphi%5Csin%20t">, so we match coefficients:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DR%5Ccos%5Cvarphi%20=%206.464,%20%5Cqquad%20R%5Csin%5Cvarphi%20=%202"></p></li>
+<li><p>Square and add to get the strength: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DR%20=%20%5Csqrt%7B6.464%5E2%20+%202%5E2%7D%20=%20%5Csqrt%7B45.78%7D%20%5Capprox%206.77">.</p></li>
+<li><p>Divide to get the timing: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Ctan%5Cvarphi%20=%202/6.464">, so <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cvarphi%20%5Capprox%2017.2%5E%5Ccirc">.</p></li>
+</ol>
+<p><strong>Result:</strong> <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D6.77%5Ccos(t%20+%2017.2%5E%5Ccirc)">, after five steps and an identity we had to remember.</p>
+</section>
+<section id="the-complex-way-2" class="level3">
+<h3 class="anchored" data-anchor-id="the-complex-way-2">The complex way</h3>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A3%20+%204e%5E%7Bi30%5E%5Ccirc%7D%20=%203%20+%204(%5Ccos%2030%5E%5Ccirc%20+%20i%5Csin%2030%5E%5Ccirc)%20=%206.464%20+%202i%0A"></p>
+<p>The length is <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csqrt%7B6.464%5E2%20+%202%5E2%7D%20%5Capprox%206.77"> and the angle is <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Ctan%5E%7B-1%7D(2/6.464)%20%5Capprox%2017.2%5E%5Ccirc">. The same answer, but there was no identity to recall and no matching step. The length and angle come straight off the number.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/posts/complex-numbers-waves-and-turns-vs-trigonometry_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" alt="Three wave curves over one cycle, 0 to 360 degrees: 3cos t, 4cos(t + 30 degrees) and their sum, a larger wave of height about 6.77 shifted by about 17 degrees." width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="example-4-three-waves" class="level2">
+<h2 class="anchored" data-anchor-id="example-4-three-waves">Example 4: three waves</h2>
+<p>Now add a third wave, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D2%5Ccos(t%20+%20120%5E%5Ccirc)">, to the first two.</p>
+<section id="the-trigonometry-way-3" class="level3">
+<h3 class="anchored" data-anchor-id="the-trigonometry-way-3">The trigonometry way</h3>
+<p>We must expand <strong>every</strong> shifted wave, then collect the cosine and sine terms:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cbegin%7Baligned%7D%0A4%5Ccos(t%20+%2030%5E%5Ccirc)%20&amp;=%203.464%5Ccos%20t%20-%202%5Csin%20t%20%5C%5C%0A2%5Ccos(t%20+%20120%5E%5Ccirc)%20&amp;=%20-1%5Ccos%20t%20-%201.732%5Csin%20t%0A%5Cend%7Baligned%7D%0A"></p>
+<p>Total: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D(3%20+%203.464%20-%201)%5Ccos%20t%20+%20(-2%20-%201.732)%5Csin%20t%20=%205.464%5Ccos%20t%20-%203.732%5Csin%20t">.</p>
+<p>Then match to <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DR%5Ccos(t%20+%20%5Cvarphi)"> again: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DR%20=%20%5Csqrt%7B5.464%5E2%20+%203.732%5E2%7D%20%5Capprox%206.62"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Ctan%5Cvarphi%20=%203.732/5.464">, giving <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cvarphi%20%5Capprox%2034.3%5E%5Ccirc">.</p>
+<p>Each extra wave costs another identity expansion.</p>
+</section>
+<section id="the-complex-way-3" class="level3">
+<h3 class="anchored" data-anchor-id="the-complex-way-3">The complex way</h3>
+<p>Just add another arrow:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A3%20+%204e%5E%7Bi30%5E%5Ccirc%7D%20+%202e%5E%7Bi120%5E%5Ccirc%7D%20=%20(6.464%20+%202i)%20+%20(-1%20+%201.732i)%20=%205.464%20+%203.732i%0A"></p>
+<p>Its length is <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csqrt%7B5.464%5E2%20+%203.732%5E2%7D%20%5Capprox%206.62"> and its angle is <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Ctan%5E%7B-1%7D(3.732/5.464)%20%5Capprox%2034.3%5E%5Ccirc">. A fourth or fifth wave is one more term in the sum.</p>
+</section>
+</section>
+<section id="why-trigonometry-is-clumsy-here" class="level2">
+<h2 class="anchored" data-anchor-id="why-trigonometry-is-clumsy-here">Why trigonometry is clumsy here</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 37%">
+<col style="width: 45%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Task</th>
+<th style="text-align: left;">Trigonometry</th>
+<th style="text-align: left;">Complex numbers</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Keep track of a turn</td>
+<td style="text-align: left;">Interior angles and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D180%5E%5Ccirc%20-%20%5Ctheta"></td>
+<td style="text-align: left;">Multiply by <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7De%5E%7Bi%5Calpha%7D"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Direction</td>
+<td style="text-align: left;">Law of sines (two possible angles)</td>
+<td style="text-align: left;"><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Ctan%5E%7B-1%7D"> of the sum</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Add one more leg or wave</td>
+<td style="text-align: left;">New triangle or new expansion</td>
+<td style="text-align: left;">One more term</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Add a shifted wave</td>
+<td style="text-align: left;">Expand with an identity, then match <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DR%5Ccos(t%20+%20%5Cvarphi)"></td>
+<td style="text-align: left;">Add one arrow</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The final arithmetic is the same: both methods end up with the same cosines and sines of angles. What complex numbers remove is the <strong>bookkeeping</strong>: identities to recall, triangles to draw, and angles to track. That is why engineers use them for AC circuits, where dozens of waves with different phases have to be added.</p>
+</div>
+</div>
+</section>
+<section id="key-takeaway" class="level2">
+<h2 class="anchored" data-anchor-id="key-takeaway">Key takeaway</h2>
+<ul>
+<li>A wave with a phase, or a boat leg with a heading, is an arrow <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DA%5C,e%5E%7Bi%5Ctheta%7D">.</li>
+<li>Adding is adding arrows, and turning is multiplying by <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7De%5E%7Bi%5Calpha%7D">.</li>
+<li>Trigonometry does the same job, but each extra wave or leg means another identity or another triangle.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>Mathematics</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/complex-numbers-waves-and-turns-vs-trigonometry.html</guid>
+  <pubDate>Sun, 22 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/complex-numbers-waves-and-turns.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>Working with .db Files: Open, Edit and Query a SQLite Database</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/working-with-db-files.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/working-with-db-files.svg" class="img-fluid figure-img" alt="A database cylinder labelled data.db with arrows to three tools: DB Browser for SQLite, a VS Code extension and the sqlite3 terminal command."></p>
+<figcaption>A .db file can be opened with a table viewer, a code editor extension or the sqlite3 command line.</figcaption>
+</figure>
+</div>
+<p>Most <code>.db</code> files are <strong>SQLite</strong> databases, so the easiest way to open one is with a dedicated viewer such as DB Browser for SQLite. But <code>.db</code> is a generic extension used by many programs, so the right method depends on what created the file.</p>
+<section id="first-check-what-the-file-is" class="level2">
+<h2 class="anchored" data-anchor-id="first-check-what-the-file-is">First, check what the file is</h2>
+<p>On Linux and macOS, the <code>file</code> command tells us whether it is SQLite:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file</span> yourfile.db</span></code></pre></div></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1">yourfile.db: SQLite 3.x database, last written using SQLite version 3037002, ...</span></code></pre></div></div>
+<p>If it says <code>SQLite 3.x database</code>, everything below applies. If not (a Paradox database or an application cache, for example), open it with the program that created it.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Make a copy of the file before editing it. SQL commands such as <code>UPDATE</code> and <code>DELETE</code> change the data for good once saved.</p>
+</div>
+</div>
+</section>
+<section id="ways-to-open-a-.db-file" class="level2">
+<h2 class="anchored" data-anchor-id="ways-to-open-a-.db-file">Ways to open a .db file</h2>
+<section id="db-browser-for-sqlite-desktop" class="level3">
+<h3 class="anchored" data-anchor-id="db-browser-for-sqlite-desktop">1. DB Browser for SQLite (desktop)</h3>
+<p><a href="https://sqlitebrowser.org/">DB Browser for SQLite</a> is free for Windows, macOS and Linux. Click <strong>Open Database</strong> and pick the file. We can then browse tables, run SQL queries and edit records.</p>
+</section>
+<section id="a-browser-based-viewer" class="level3">
+<h3 class="anchored" data-anchor-id="a-browser-based-viewer">2. A browser-based viewer</h3>
+<p>Local, browser-based SQLite viewers are quick for read-only inspection. Check that the tool runs the file in our browser and does not upload it to a server, especially for private data.</p>
+</section>
+<section id="visual-studio-code" class="level3">
+<h3 class="anchored" data-anchor-id="visual-studio-code">3. Visual Studio Code</h3>
+<p>Install an SQLite extension from the Extensions marketplace. Then press <code>Ctrl+Shift+P</code> (<code>Cmd+Shift+P</code> on macOS), run <strong>SQLite: Open Database</strong>, and choose the file. The tables appear in the <strong>SQLite Explorer</strong> sidebar.</p>
+</section>
+<section id="the-command-line" class="level3">
+<h3 class="anchored" data-anchor-id="the-command-line">4. The command line</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">sqlite3</span> yourfile.db</span></code></pre></div></div>
+<p>Inside the <code>sqlite3</code> prompt, two commands help us look around:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb4-1">.tables</span>
+<span id="cb4-2">.schema</span></code></pre></div></div>
+<p><code>.tables</code> lists the tables and <code>.schema</code> shows how they were created. Type <code>.quit</code> to leave.</p>
+</section>
+</section>
+<section id="editing-data-and-running-sql" class="level2">
+<h2 class="anchored" data-anchor-id="editing-data-and-running-sql">Editing data and running SQL</h2>
+<p>Let’s say the file has a table <code>users</code> created like this:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb5-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">CREATE</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">TABLE</span> users (<span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">id</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">INTEGER</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">PRIMARY</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">KEY</span>, name TEXT, active <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">INTEGER</span>);</span></code></pre></div></div>
+<p>with three rows:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">id</th>
+<th style="text-align: left;">name</th>
+<th style="text-align: center;">active</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: left;">Asha</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: left;">Ben</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: left;">Chitra</td>
+<td style="text-align: center;">0</td>
+</tr>
+</tbody>
+</table>
+<section id="in-db-browser-for-sqlite-recommended" class="level3">
+<h3 class="anchored" data-anchor-id="in-db-browser-for-sqlite-recommended">In DB Browser for SQLite (recommended)</h3>
+<ol type="1">
+<li><p><strong>Open</strong> the file with <strong>Open Database</strong>.</p></li>
+<li><p><strong>Edit visually.</strong> On the <strong>Browse Data</strong> tab, choose the table from the dropdown, double-click any cell to change it, or use <strong>New Record</strong> and <strong>Delete Record</strong>.</p></li>
+<li><p><strong>Run SQL.</strong> On the <strong>Execute SQL</strong> tab, type a statement and press the play button (or <code>F5</code> / <code>Ctrl+Enter</code>):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb6-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">UPDATE</span> users <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">SET</span> active <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">WHERE</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">id</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>;</span>
+<span id="cb6-2"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">SELECT</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">FROM</span> users <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">WHERE</span> active <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>;</span></code></pre></div></div>
+<p>The <code>SELECT</code> now returns Asha and Ben:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">id</th>
+<th style="text-align: left;">name</th>
+<th style="text-align: center;">active</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: left;">Asha</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: left;">Ben</td>
+<td style="text-align: center;">1</td>
+</tr>
+</tbody>
+</table></li>
+<li><p><strong>Save.</strong> Click <strong>Write Changes</strong>. Until we do, the edits are not stored in the file.</p></li>
+</ol>
+</section>
+<section id="in-vs-code" class="level3">
+<h3 class="anchored" data-anchor-id="in-vs-code">In VS Code</h3>
+<p>Right-click a table in the <strong>SQLite Explorer</strong> sidebar and choose <strong>New Query</strong>. A query editor opens, and we can write and run SQL against the database directly.</p>
+</section>
+<section id="in-the-sqlite3-command-line" class="level3">
+<h3 class="anchored" data-anchor-id="in-the-sqlite3-command-line">In the sqlite3 command line</h3>
+<p>Type SQL statements ending with a semicolon:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb7-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">SELECT</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">FROM</span> users;</span>
+<span id="cb7-2"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">INSERT</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">INTO</span> users (name, active) <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">VALUES</span> (<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Dev'</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>);</span></code></pre></div></div>
+<p>Changes made with SQL commands in <code>sqlite3</code> are saved automatically when each statement finishes.</p>
+</section>
+</section>
+<section id="exporting-a-table-to-csv" class="level2">
+<h2 class="anchored" data-anchor-id="exporting-a-table-to-csv">Exporting a table to CSV</h2>
+<p>To open a table in a spreadsheet, export it from <code>sqlite3</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb8-1">.headers on</span>
+<span id="cb8-2">.mode csv</span>
+<span id="cb8-3">.output users.csv</span>
+<span id="cb8-4">SELECT * FROM users;</span>
+<span id="cb8-5">.output stdout</span></code></pre></div></div>
+<p>The last line sends output back to the screen. The file <code>users.csv</code> can now be opened in any spreadsheet program.</p>
+</section>
+<section id="key-takeaway" class="level2">
+<h2 class="anchored" data-anchor-id="key-takeaway">Key takeaway</h2>
+<ul>
+<li>Check the file type first: <code>file yourfile.db</code>.</li>
+<li>For clicking and editing, use DB Browser for SQLite; for scripting, use <code>sqlite3</code>.</li>
+<li>Keep a backup, and remember <strong>Write Changes</strong> in DB Browser.</li>
+</ul>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ul>
+<li><a href="https://sqlitebrowser.org/">DB Browser for SQLite</a></li>
+<li><a href="https://sqlite.org/cli.html">Command Line Shell For SQLite</a></li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>Tools</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/working-with-db-files.html</guid>
+  <pubDate>Sat, 21 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/working-with-db-files.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
 <item>
   <title>The Charisma of the Central Limit Theorem</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
@@ -5544,2584 +6233,6 @@ font-style: inherit;">'ls -lt'</span></span></code></pre></div></div>
   <guid>https://www.statmania.info/blog/posts/linus-command-line-ls-see-last-modified.html</guid>
   <pubDate>Tue, 03 Nov 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/linux-ls-last-modified.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Normal Approximation to the Poisson Distribution (with R)</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/poisson-to-normal-distribution.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/poisson-to-normal-distribution-fig.png" class="bk-adapt img-fluid figure-img" alt="Pink bars of a Poisson distribution with mean 25 and a cyan normal curve drawn over them that follows the bar tops closely."></p>
-<figcaption>A Poisson(25) distribution (bars) and the matching normal curve (line).</figcaption>
-</figure>
-</div>
-<p>A Poisson distribution <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DP(%5Clambda)"> can be approximated accurately by a normal distribution <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DN(%5Cmu,%20%5Csigma%5E2)"> when the average rate <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda"> is large. For small <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda"> the Poisson is skewed to the right. As <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda"> grows, the skew fades and the distribution becomes a symmetric bell. Let’s see when this works, how to use it, and how good it is. (For where the Poisson distribution comes from and what it is used for, see <a href="why-is-poisson-distribution-used.html">Why Is the Poisson Distribution Used?</a>)</p>
-<section id="the-rule-of-thumb" class="level2">
-<h2 class="anchored" data-anchor-id="the-rule-of-thumb">The Rule of Thumb</h2>
-<p>The approximation is reliable when:</p>
-<ul>
-<li><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20%5Cge%2010"> for a rough, quick approximation, and</li>
-<li><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20%5Cge%2020"> for good accuracy.</li>
-</ul>
-</section>
-<section id="matching-the-parameters" class="level2">
-<h2 class="anchored" data-anchor-id="matching-the-parameters">Matching the Parameters</h2>
-<p>A Poisson variable has mean and variance both equal to <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda">. We give the normal distribution the same mean and variance:</p>
-<ul>
-<li>Mean: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cmu%20=%20%5Clambda"></li>
-<li>Variance: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csigma%5E2%20=%20%5Clambda"></li>
-<li>Standard deviation: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csigma%20=%20%5Csqrt%7B%5Clambda%7D"></li>
-</ul>
-<p>So, for large <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda">,</p>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0AX%20%5Csim%20P(%5Clambda)%20%5Cquad%20%5CLongrightarrow%20%5Cquad%20X%20%5Capprox%20N(%5Clambda,%20%5Clambda).%0A"></p>
-</section>
-<section id="the-continuity-correction" class="level2">
-<h2 class="anchored" data-anchor-id="the-continuity-correction">The Continuity Correction</h2>
-<p>The Poisson counts whole numbers, but the normal distribution is continuous. To compensate, we move the boundary by <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D0.5">, so that each whole number <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dk"> is represented by the interval from <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dk%20-%200.5"> to <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dk%20+%200.5">.</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Poisson probability</th>
-<th>Normal calculation</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DP(X%20=%20k)"></td>
-<td><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DP(k%20-%200.5%20%3C%20X_%7B%5Ctext%7Bnormal%7D%7D%20%3C%20k%20+%200.5)"></td>
-</tr>
-<tr class="even">
-<td><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DP(X%20%5Cle%20k)"></td>
-<td><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DP(X_%7B%5Ctext%7Bnormal%7D%7D%20%5Cle%20k%20+%200.5)"></td>
-</tr>
-<tr class="odd">
-<td><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DP(X%20%5Cge%20k)"></td>
-<td><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DP(X_%7B%5Ctext%7Bnormal%7D%7D%20%5Cge%20k%20-%200.5)"></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="example-calls-to-a-call-centre" class="level2">
-<h2 class="anchored" data-anchor-id="example-calls-to-a-call-centre">Example: Calls to a Call Centre</h2>
-<p>A call centre receives on average <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20=%2025"> calls per hour. What is the probability of fewer than 20 calls in an hour?</p>
-<section id="exact-poisson-answer" class="level3">
-<h3 class="anchored" data-anchor-id="exact-poisson-answer">Exact Poisson answer</h3>
-<p>“Fewer than 20” means <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DX%20%5Cle%2019">:</p>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0AP(X%20%5Cle%2019)%20=%20%5Csum_%7Bx=0%7D%5E%7B19%7D%20%5Cfrac%7Be%5E%7B-25%7D%20%5C,%2025%5Ex%7D%7Bx!%7D%20%5Capprox%200.1336.%0A"></p>
-</section>
-<section id="normal-approximation" class="level3">
-<h3 class="anchored" data-anchor-id="normal-approximation">Normal approximation</h3>
-<ol type="1">
-<li><strong>Parameters:</strong> <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cmu%20=%2025"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csigma%20=%20%5Csqrt%7B25%7D%20=%205">.</li>
-<li><strong>Continuity correction:</strong> <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DX%20%5Cle%2019"> becomes <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DX_%7B%5Ctext%7Bnormal%7D%7D%20%5Cle%2019.5">.</li>
-<li><strong>Z-score:</strong></li>
-</ol>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0AZ%20=%20%5Cfrac%7B19.5%20-%2025%7D%7B5%7D%20=%20%5Cfrac%7B-5.5%7D%7B5%7D%20=%20-1.1.%0A"></p>
-<ol start="4" type="1">
-<li><strong>Table lookup:</strong> <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DP(Z%20%5Cle%20-1.1)%20%5Capprox%200.1357">.</li>
-</ol>
-<p>The approximation misses the exact value by only about <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D0.0021">.</p>
-</section>
-<section id="checking-in-r" class="level3">
-<h3 class="anchored" data-anchor-id="checking-in-r">Checking in R</h3>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># exact Poisson</span></span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ppois</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">19</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">lambda =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">25</span>)</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.1335748</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># normal approximation, with continuity correction</span></span>
-<span id="cb3-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">pnorm</span>(<span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">19.5</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mean =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">25</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">sd =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>)</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.1356661</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># normal approximation, without the correction</span></span>
-<span id="cb5-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">pnorm</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">19</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mean =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">25</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">sd =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>)</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.1150697</code></pre>
-</div>
-</div>
-<p>Without the correction the answer is about <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D0.115">, which is much farther from the exact <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D0.1336">. The correction is worth the extra half unit.</p>
-</section>
-</section>
-<section id="watching-the-poisson-become-normal" class="level2">
-<h2 class="anchored" data-anchor-id="watching-the-poisson-become-normal">Watching the Poisson Become Normal</h2>
-<p>Let’s plot the Poisson probabilities (bars) for three values of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda">, with the normal curve <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DN(%5Clambda,%20%5Clambda)"> drawn over each.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(tidyverse)</span>
-<span id="cb7-2"></span>
-<span id="cb7-3">lambdas <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">7</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">25</span>)</span>
-<span id="cb7-4"></span>
-<span id="cb7-5"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># show each panel only over the range where the probability is not negligible</span></span>
-<span id="cb7-6">xrange <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(l) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">max</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, l <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sqrt</span>(l) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>), l <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sqrt</span>(l) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>)</span>
-<span id="cb7-7"></span>
-<span id="cb7-8">plot_data <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">map_dfr</span>(lambdas, <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(l) {</span>
-<span id="cb7-9">  r <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">xrange</span>(l)</span>
-<span id="cb7-10">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">lambda =</span> l, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ceiling</span>(r[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>])<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">floor</span>(r[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>]), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">poisson =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dpois</span>(x, l))</span>
-<span id="cb7-11">}) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb7-12">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">label =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">factor</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"lambda ="</span>, lambda), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">levels =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"lambda ="</span>, lambdas)))</span>
-<span id="cb7-13"></span>
-<span id="cb7-14">curve_data <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">map_dfr</span>(lambdas, <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(l) {</span>
-<span id="cb7-15">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">lambda =</span> l, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">seq</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">xrange</span>(l)[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>], <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">xrange</span>(l)[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>], <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">length.out =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">400</span>),</span>
-<span id="cb7-16">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">normal =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dnorm</span>(x, l, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sqrt</span>(l)))</span>
-<span id="cb7-17">}) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb7-18">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">label =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">factor</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"lambda ="</span>, lambda), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">levels =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"lambda ="</span>, lambdas)))</span>
-<span id="cb7-19"></span>
-<span id="cb7-20"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>() <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb7-21">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_col</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data =</span> plot_data, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(x, poisson), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"steelblue"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">alpha =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.8</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb7-22">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_line</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data =</span> curve_data, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(x, normal), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"tomato"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">linewidth =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb7-23">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">facet_wrap</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> label, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">scales =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"free_x"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb7-24">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Poisson (bars) and the normal curve N(λ, λ) (line)"</span>,</span>
-<span id="cb7-25">       <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Number of events"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Probability"</span>)</span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/posts/poisson-to-normal-distribution_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="864"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>What to look for:</p>
-<ul>
-<li><strong><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20=%202">:</strong> the peak is pressed against zero and the right tail is long. The normal curve even gives some probability to negative values, so it is a poor fit.</li>
-<li><strong><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20=%207">:</strong> the peak has moved away from zero and rounded off, but a slight skew to the right remains.</li>
-<li><strong><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20=%2025">:</strong> the bars are centred and smooth, and the curve follows them closely.</li>
-</ul>
-</section>
-<section id="how-good-is-the-approximation" class="level2">
-<h2 class="anchored" data-anchor-id="how-good-is-the-approximation">How Good Is the Approximation?</h2>
-<p>One way to measure the error is the largest gap between the exact and approximate cumulative probabilities. We compare the normal approximation with and without the continuity correction.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1">max_error <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(l, correction) {</span>
-<span id="cb8-2">  x <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> l <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>)</span>
-<span id="cb8-3">  shift <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> (correction) <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.5</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">else</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span></span>
-<span id="cb8-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">abs</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ppois</span>(x, l) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">pnorm</span>(x <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> shift, l, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sqrt</span>(l))))</span>
-<span id="cb8-5">}</span>
-<span id="cb8-6"></span>
-<span id="cb8-7"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">lambda =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">25</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">50</span>)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb8-8">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">with_correction    =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">map_dbl</span>(lambda, max_error, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">correction =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>),</span>
-<span id="cb8-9">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">without_correction =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">map_dbl</span>(lambda, max_error, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">correction =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb8-10">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">across</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span>lambda, <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round</span>(.x, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>))) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb8-11">  knitr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">kable</span>()</span></code></pre></div></div>
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: right;">lambda</th>
-<th style="text-align: right;">with_correction</th>
-<th style="text-align: right;">without_correction</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">0.0442</td>
-<td style="text-align: right;">0.1767</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">0.0290</td>
-<td style="text-align: right;">0.1160</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">10</td>
-<td style="text-align: right;">0.0207</td>
-<td style="text-align: right;">0.0830</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">20</td>
-<td style="text-align: right;">0.0148</td>
-<td style="text-align: right;">0.0591</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">25</td>
-<td style="text-align: right;">0.0132</td>
-<td style="text-align: right;">0.0529</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">50</td>
-<td style="text-align: right;">0.0094</td>
-<td style="text-align: right;">0.0375</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>Two things stand out. The error shrinks as <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda"> grows, and it is always much smaller with the continuity correction. At <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20=%2020"> the largest error with the correction is about <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D0.015">, which supports the rule of thumb of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20%5Cge%2020">.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>For a single probability, check the exact value with <code>ppois()</code> or <code>dpois()</code> when software is available. The normal approximation is mainly useful for hand calculation, and for seeing why the bell shape appears.</p>
-</div>
-</div>
-</section>
-<section id="summary" class="level2">
-<h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<ul>
-<li>Use <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DP(%5Clambda)%20%5Capprox%20N(%5Clambda,%20%5Clambda)"> when <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda"> is large, say <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20%5Cge%2020"> (a rough check is <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20%5Cge%2010">).</li>
-<li>Always apply the continuity correction of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cpm%200.5">.</li>
-<li>The approximation improves steadily as <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda"> grows.</li>
-</ul>
-<p>Related: <a href="why-is-poisson-distribution-used.html">Why Is the Poisson Distribution Used?</a> covers real-world uses of the Poisson distribution and the conditions under which it fits.</p>
-
-
-</section>
-
- ]]></description>
-  <category>R</category>
-  <category>Statistics</category>
-  <category>Probability</category>
-  <guid>https://www.statmania.info/blog/posts/poisson-to-normal-distribution.html</guid>
-  <pubDate>Tue, 03 Nov 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/poisson-to-normal-distribution.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Visualizing the Empirical Rule (68-95-99.7) in R</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/visualizing-empirical-rule.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/visualizing-empirical-rule-fig.png" class="bk-adapt img-fluid figure-img" alt="A bell curve divided into bands. The central band within one standard deviation holds 68 percent, within two holds 95 percent and within three holds 99.7 percent."></p>
-<figcaption>The 68-95-99.7 rule: bands of one, two and three standard deviations around the mean.</figcaption>
-</figure>
-</div>
-<p>The <strong>Empirical Rule</strong>, also called the 68-95-99.7 rule, tells us how data spread around the mean when the distribution is bell-shaped (normal). Let’s state it, check it with a simulation in R, and then draw it.</p>
-<section id="an-example-first" class="level2">
-<h2 class="anchored" data-anchor-id="an-example-first">An Example First</h2>
-<p>Suppose the marks of a large group of students are bell-shaped, with a mean of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cmu%20=%2070"> and a standard deviation of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csigma%20=%205">. The Empirical Rule then says:</p>
-<ul>
-<li>about <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D68%5C%25"> of the students score within one standard deviation of the mean: between <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cmu%20-%20%5Csigma%20=%2065"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cmu%20+%20%5Csigma%20=%2075">,</li>
-<li>about <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D95%5C%25"> score within two standard deviations: between <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cmu%20-%202%5Csigma%20=%2060"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cmu%20+%202%5Csigma%20=%2080">,</li>
-<li>about <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D99.7%5C%25">, almost everyone, score within three standard deviations: between <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cmu%20-%203%5Csigma%20=%2055"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cmu%20+%203%5Csigma%20=%2085">.</li>
-</ul>
-<p>So a mark below <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D55"> or above <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D85"> is very unusual: fewer than <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D3"> students in <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D1%7B,%7D000">.</p>
-</section>
-<section id="the-empirical-rule" class="level2">
-<h2 class="anchored" data-anchor-id="the-empirical-rule">The Empirical Rule</h2>
-<p>For a normally distributed data set with mean <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cmu"> and standard deviation <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Csigma">:</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Range</th>
-<th>Share of the data</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5B%5Cmu%20-%20%5Csigma,%20%5C;%20%5Cmu%20+%20%5Csigma%5D"></td>
-<td>about <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D68%5C%25"></td>
-</tr>
-<tr class="even">
-<td><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5B%5Cmu%20-%202%5Csigma,%20%5C;%20%5Cmu%20+%202%5Csigma%5D"></td>
-<td>about <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D95%5C%25"></td>
-</tr>
-<tr class="odd">
-<td><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5B%5Cmu%20-%203%5Csigma,%20%5C;%20%5Cmu%20+%203%5Csigma%5D"></td>
-<td>about <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D99.7%5C%25"></td>
-</tr>
-</tbody>
-</table>
-<p>So nearly all the data lie within three standard deviations of the mean, and values further away are rare.</p>
-</section>
-<section id="checking-the-rule-with-simulated-data" class="level2">
-<h2 class="anchored" data-anchor-id="checking-the-rule-with-simulated-data">Checking the Rule with Simulated Data</h2>
-<p>Let’s simulate <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D10%7B,%7D000"> exam marks like these, with mean <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D70"> and standard deviation <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D5">, and measure the share of marks within one, two and three standard deviations.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(tidyverse)</span>
-<span id="cb1-2"></span>
-<span id="cb1-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">42</span>)</span>
-<span id="cb1-4">scores <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rnorm</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">n =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10000</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mean =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">70</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">sd =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>)</span>
-<span id="cb1-5"></span>
-<span id="cb1-6">mean_val <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(scores)</span>
-<span id="cb1-7">sd_val   <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sd</span>(scores)</span>
-<span id="cb1-8"></span>
-<span id="cb1-9">within <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(k) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(scores <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;=</span> mean_val <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> k <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> sd_val <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span></span>
-<span id="cb1-10">                           scores <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> mean_val <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> k <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> sd_val) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span></span>
-<span id="cb1-11"></span>
-<span id="cb1-12"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">sd_range =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"1 SD"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"2 SD"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"3 SD"</span>),</span>
-<span id="cb1-13">       <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">simulated =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">map_dbl</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, within), <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>),</span>
-<span id="cb1-14">       <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">theory    =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round</span>((<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">pnorm</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">pnorm</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>))) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb1-15">  knitr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">kable</span>()</span></code></pre></div></div>
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: left;">sd_range</th>
-<th style="text-align: right;">simulated</th>
-<th style="text-align: right;">theory</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">1 SD</td>
-<td style="text-align: right;">68.29</td>
-<td style="text-align: right;">68.27</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2 SD</td>
-<td style="text-align: right;">95.53</td>
-<td style="text-align: right;">95.45</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">3 SD</td>
-<td style="text-align: right;">99.73</td>
-<td style="text-align: right;">99.73</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>The simulated percentages are very close to the theoretical ones. The theory column is exact: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D68.27%5C%25">, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D95.45%5C%25"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D99.73%5C%25">. The familiar <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D68">, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D95"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D99.7"> are rounded versions of these.</p>
-</section>
-<section id="visualizing-the-results" class="level2">
-<h2 class="anchored" data-anchor-id="visualizing-the-results">Visualizing the Results</h2>
-<p>First, the histogram of the scores, with lines at one, two and three standard deviations from the mean.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">breaks <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> mean_val <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> (<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> sd_val</span>
-<span id="cb2-2"></span>
-<span id="cb2-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(scores), <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(scores)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb2-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_histogram</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">after_stat</span>(density)), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">binwidth =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,</span>
-<span id="cb2-5">                 <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"lightblue"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"white"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb2-6">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">stat_function</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fun =</span> dnorm, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">args =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mean =</span> mean_val, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">sd =</span> sd_val),</span>
-<span id="cb2-7">                <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"royalblue"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">linewidth =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb2-8">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_vline</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">xintercept =</span> breaks, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">linetype =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"dashed"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"grey30"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb2-9">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">scale_x_continuous</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">breaks =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round</span>(breaks)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb2-10">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"10,000 simulated exam marks"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Mark"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Density"</span>)</span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/posts/visualizing-empirical-rule_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Now the curve itself, with the three bands shaded. The darker the shade, the closer to the mean.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">curve <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">seq</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">length.out =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">800</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">density =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dnorm</span>(x))</span>
-<span id="cb3-2"></span>
-<span id="cb3-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(curve, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(x, density)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_area</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"#cfe3f5"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-5">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_area</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">filter</span>(curve, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">abs</span>(x) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"#8fbfe8"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-6">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_area</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">filter</span>(curve, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">abs</span>(x) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"#4a90d9"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-7">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_line</span>() <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-8">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">annotate</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"text"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.15</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">label =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"68%"</span>,   <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"white"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">6</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-9">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">annotate</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"text"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.5</span>,  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.05</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">label =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"95%"</span>,   <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-10">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">annotate</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"text"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.5</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.05</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">label =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"95%"</span>,   <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-11">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">annotate</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"text"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.43</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">label =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"99.7% lie within 3 SD"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-12">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">scale_x_continuous</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">breaks =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">labels =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"-3σ"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"-2σ"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"-1σ"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"μ"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"+1σ"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"+2σ"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"+3σ"</span>)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-13">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"The Empirical Rule"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NULL</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Density"</span>)</span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/posts/visualizing-empirical-rule_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>The “95%” labels mark the whole region within two standard deviations, which includes the central <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D68%5C%25">.</p>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The rule applies to <strong>bell-shaped</strong> data. For skewed or heavy-tailed data the percentages can be quite different, so check the shape with a histogram first.</p>
-</div>
-</div>
-</section>
-<section id="summary" class="level2">
-<h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<ul>
-<li>The Empirical Rule gives <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D68%5C%25">, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D95%5C%25"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D99.7%5C%25"> for one, two and three standard deviations.</li>
-<li>A simulation with <code>rnorm()</code> confirms it: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D68.29%5C%25">, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D95.53%5C%25"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D99.73%5C%25"> in our sample.</li>
-<li>Shaded areas under the normal curve are the clearest way to show it.</li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>R</category>
-  <category>Statistics</category>
-  <category>Probability</category>
-  <guid>https://www.statmania.info/blog/posts/visualizing-empirical-rule.html</guid>
-  <pubDate>Tue, 03 Nov 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/visualizing-empirical-rule.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Why Is the Poisson Distribution Used? Real-World Uses and Key Features</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/why-is-poisson-distribution-used.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/why-is-poisson-distribution-used-fig.png" class="bk-adapt img-fluid figure-img" alt="A timeline cut into eight equal intervals with random events shown as amber ticks and the count for each interval written below: 2, 1, 4, 2, 4, 3, 0 and 1."></p>
-<figcaption>Random events in equal intervals: the counts vary, around a steady average.</figcaption>
-</figure>
-</div>
-<p>Many real situations ask the same question: <strong>how many times will something happen in a fixed stretch of time or space?</strong> How many requests hit a server this second? How many accidents happen at a junction this month? How many customers walk in this hour? The <strong>Poisson distribution</strong> is the standard model for such counts. Let’s see where it is used, and then why it fits.</p>
-<section id="where-the-poisson-distribution-is-used" class="level2">
-<h2 class="anchored" data-anchor-id="where-the-poisson-distribution-is-used">Where the Poisson Distribution Is Used</h2>
-<p>The recipe is always the same: events happen at random, at a steady average rate <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda">, and we count them in a fixed interval. The probability of seeing exactly <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx"> events is</p>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0AP(X%20=%20x)%20=%20%5Cfrac%7Be%5E%7B-%5Clambda%7D%20%5Clambda%5Ex%7D%7Bx!%7D,%20%5Cqquad%20x%20=%200,%201,%202,%20%5Cdots%0A"></p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Field</th>
-<th>What we count</th>
-<th>Interval</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Web and IT</td>
-<td>requests to a server, failed logins</td>
-<td>per second, per minute</td>
-</tr>
-<tr class="even">
-<td>Customer service</td>
-<td>calls to a call centre, customers at a till</td>
-<td>per hour</td>
-</tr>
-<tr class="odd">
-<td>Health</td>
-<td>patients arriving at an emergency department</td>
-<td>per hour, per night</td>
-</tr>
-<tr class="even">
-<td>Insurance and safety</td>
-<td>accidents, claims, machine breakdowns</td>
-<td>per month, per year</td>
-</tr>
-<tr class="odd">
-<td>Quality control</td>
-<td>defects in a roll of fabric, typos in a book</td>
-<td>per metre, per page</td>
-</tr>
-<tr class="even">
-<td>Science</td>
-<td>radioactive decays, stars in a patch of sky</td>
-<td>per second, per area</td>
-</tr>
-<tr class="odd">
-<td>Ecology</td>
-<td>plants or animals in a quadrat</td>
-<td>per square metre</td>
-</tr>
-<tr class="even">
-<td>Sport</td>
-<td>goals in a football match</td>
-<td>per match</td>
-</tr>
-</tbody>
-</table>
-<p>Let’s look at three of these in detail, with R.</p>
-<section id="website-traffic-planning-server-capacity" class="level3">
-<h3 class="anchored" data-anchor-id="website-traffic-planning-server-capacity">1. Website traffic: planning server capacity</h3>
-<p><strong>Scenario.</strong> A server receives on average <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20=%2012"> requests per second. Engineers must decide how many requests it should handle per second. How often would a capacity of 20 requests per second be exceeded?</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(tidyverse)</span>
-<span id="cb1-2"></span>
-<span id="cb1-3">lambda <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">12</span></span>
-<span id="cb1-4">traffic <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">requests =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">30</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">prob =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dpois</span>(requests, lambda)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb1-5">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">overload =</span> requests <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span>)</span>
-<span id="cb1-6"></span>
-<span id="cb1-7"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># probability of more than 20 requests in one second</span></span>
-<span id="cb1-8"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ppois</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span>, lambda, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">lower.tail =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>)</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.01159774</code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(traffic, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(requests, prob, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> overload)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_col</span>() <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">scale_fill_manual</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">values =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"FALSE"</span> <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"steelblue"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"TRUE"</span> <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"tomato"</span>),</span>
-<span id="cb3-4">                    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">labels =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Within capacity"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Overload (above 20)"</span>)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-5">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Requests per second, Poisson(12)"</span>,</span>
-<span id="cb3-6">       <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Requests in one second"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Probability"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NULL</span>)</span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/posts/why-is-poisson-distribution-used_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>An overload is rare in any one second, but a server handles thousands of seconds a day, so even a small probability matters. The Poisson model lets us compute it from the average rate alone.</p>
-</section>
-<section id="accidents-pricing-risk" class="level3">
-<h3 class="anchored" data-anchor-id="accidents-pricing-risk">2. Accidents: pricing risk</h3>
-<p><strong>Scenario.</strong> A junction averages <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20=%203.5"> accidents per month. An insurer wants the probability of a month with no accidents, and of a very bad month with 8 or more.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">lambda <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3.5</span></span>
-<span id="cb4-2"></span>
-<span id="cb4-3"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># exact probabilities</span></span>
-<span id="cb4-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">no_accident =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dpois</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, lambda),</span>
-<span id="cb4-5">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">eight_or_more =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ppois</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">7</span>, lambda, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">lower.tail =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>))</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  no_accident eight_or_more 
-   0.03019738    0.02673892 </code></pre>
-</div>
-</div>
-<p>We can also simulate ten thousand months and check that the simulation agrees with the formula.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">42</span>)</span>
-<span id="cb6-2">months <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">accidents =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rpois</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10000</span>, lambda))</span>
-<span id="cb6-3"></span>
-<span id="cb6-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(months<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>accidents <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>)   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># simulated share of clean months</span></span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.0323</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1">months <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb8-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">count</span>(accidents) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb8-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">simulated =</span> n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum</span>(n), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">exact =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dpois</span>(accidents, lambda)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb8-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(accidents)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb8-5">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_col</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> simulated), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"firebrick"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">alpha =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.7</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb8-6">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_point</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> exact), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb8-7">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">scale_x_continuous</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">breaks =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">12</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb8-8">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"10,000 simulated months (bars) and the exact Poisson(3.5) (points)"</span>,</span>
-<span id="cb8-9">       <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Accidents in a month"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Proportion of months"</span>)</span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/posts/why-is-poisson-distribution-used_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="wildlife-are-the-plants-scattered-at-random" class="level3">
-<h3 class="anchored" data-anchor-id="wildlife-are-the-plants-scattered-at-random">3. Wildlife: are the plants scattered at random?</h3>
-<p>The Poisson distribution works in space as well as in time. Suppose we count orchids in 15 quadrats of one square metre each.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">field <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># orchids per quadrat</span></span>
-<span id="cb9-2"></span>
-<span id="cb9-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(field)</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.533333</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">var</span>(field)</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.409524</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># observed counts against the counts expected from a Poisson with the same mean</span></span>
-<span id="cb13-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">orchids =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb13-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">observed =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">map_int</span>(orchids, <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum</span>(field <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> .x)),</span>
-<span id="cb13-4">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">expected =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">length</span>(field) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dpois</span>(orchids, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(field)), <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>))</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5 × 3
-  orchids observed expected
-    &lt;int&gt;    &lt;int&gt;    &lt;dbl&gt;
-1       0        3      3.2
-2       1        5      5  
-3       2        4      3.8
-4       3        2      1.9
-5       4        1      0.7</code></pre>
-</div>
-</div>
-<p>If the plants are scattered completely at random, the counts per quadrat follow a Poisson distribution, so the variance is close to the mean. If they cluster, the variance is much larger than the mean. Here the two are close, and the observed counts are near the expected ones, so these orchids look randomly scattered. (With only 15 quadrats this is a rough check, not a proof.)</p>
-</section>
-</section>
-<section id="why-it-fits-the-conditions-and-features" class="level2">
-<h2 class="anchored" data-anchor-id="why-it-fits-the-conditions-and-features">Why It Fits: The Conditions and Features</h2>
-<p>The Poisson distribution is a good model when:</p>
-<ol type="1">
-<li><strong>Events are independent.</strong> One event happening does not change the chance of the next. A call arriving does not make another call more or less likely.</li>
-<li><strong>The average rate is steady.</strong> The rate <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda"> is the same across the interval. A call centre with a lunchtime rush does not have a constant rate over the whole day, so we model shorter periods separately.</li>
-<li><strong>Events occur one at a time.</strong> Two events almost never happen at exactly the same instant.</li>
-<li><strong>We only count events.</strong> There is no fixed number of trials. Unlike the binomial distribution, we do not need to know a maximum <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn">, and the count can in principle be any whole number.</li>
-</ol>
-<p>What follows from these conditions:</p>
-<ul>
-<li><strong>One parameter.</strong> The average rate <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda"> is all we need to know.</li>
-<li><strong>The mean equals the variance.</strong> Both are <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda">. This gives a quick check on real data: if the variance is much larger than the mean, the Poisson model is a poor fit (the counts are “overdispersed”, often because events cluster).</li>
-<li><strong>Skewed for small <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda">, bell-shaped for large <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda">.</strong> See <a href="poisson-to-normal-distribution.html">the normal approximation</a>.</li>
-<li><strong>Close to the binomial for rare events.</strong> See <a href="binomial-approximated-by-poisson.html">when a binomial can be approximated by a Poisson</a>.</li>
-</ul>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The “memoryless” property that is sometimes mentioned belongs to the <strong>waiting time</strong> between events, which follows the exponential distribution, and not to the Poisson count itself. If events occur as a Poisson process, the wait until the next event does not depend on how long we have already waited.</p>
-</div>
-</div>
-</section>
-<section id="checking-the-mean-and-variance-in-r" class="level2">
-<h2 class="anchored" data-anchor-id="checking-the-mean-and-variance-in-r">Checking the Mean and Variance in R</h2>
-<p>Here is the check in practice. For real Poisson data the variance is close to the mean, and for clustered data it is not.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb15-2">poisson_data   <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rpois</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>)</span>
-<span id="cb15-3">clustered_data <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rnbinom</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mu =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># events that cluster</span></span>
-<span id="cb15-4"></span>
-<span id="cb15-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mean =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(poisson_data),   <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">variance =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">var</span>(poisson_data))</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>    mean variance 
-4.018000 4.057734 </code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mean =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(clustered_data), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">variance =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">var</span>(clustered_data))</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>    mean variance 
- 4.11400 19.92092 </code></pre>
-</div>
-</div>
-<p>The first pair is close, which supports a Poisson model. The second has a variance several times the mean, so a Poisson model would underestimate how variable the counts are.</p>
-</section>
-<section id="summary" class="level2">
-<h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<ul>
-<li>The Poisson distribution models <strong>counts of random events</strong> in a fixed time or space, at a steady average rate.</li>
-<li>It appears in IT traffic, call centres, hospitals, insurance, quality control, science and ecology.</li>
-<li>It needs only one parameter, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda">, which is both the mean and the variance.</li>
-<li>It fits when events are independent and the rate is steady. If the variance is far above the mean, look for another model.</li>
-</ul>
-<p>Related: for large <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda"> the Poisson looks like a normal curve, see <a href="poisson-to-normal-distribution.html">Normal Approximation to the Poisson Distribution</a>.</p>
-
-
-</section>
-
- ]]></description>
-  <category>R</category>
-  <category>Statistics</category>
-  <category>Probability</category>
-  <guid>https://www.statmania.info/blog/posts/why-is-poisson-distribution-used.html</guid>
-  <pubDate>Tue, 03 Nov 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/why-is-poisson-distribution-used.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>When Can the Binomial Distribution Be Approximated by the Poisson?</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/binomial-approximated-by-poisson.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/binom.jpeg" class="img-fluid figure-img" alt="A statistician at a desk with a laptop, printed binomial distribution charts and a blackboard with the binomial formula behind."></p>
-<figcaption>Working with binomial probabilities.</figcaption>
-</figure>
-</div>
-<p>A binomial distribution <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DB(n,%20p)"> can be approximated reliably by a Poisson distribution <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DP(%5Clambda)"> when the number of trials <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> is large and the probability of success <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp"> is small. In other words, the approximation suits <strong>rare events</strong> counted over many trials. Let’s see the rule, two worked examples, and a picture of how good the fit is.</p>
-<section id="why-it-works" class="level2">
-<h2 class="anchored" data-anchor-id="why-it-works">Why It Works</h2>
-<p>The binomial probability of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx"> successes is</p>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DP(X%20=%20x)%20=%20%5Cbinom%7Bn%7D%7Bx%7D%20p%5Ex%20(1-p)%5E%7Bn-x%7D."></p>
-<p>Suppose <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> grows and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp"> shrinks so that the mean <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dnp%20=%20%5Clambda"> stays fixed. Then this expression tends to</p>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DP(X%20=%20x)%20=%20%5Cfrac%7Be%5E%7B-%5Clambda%7D%20%5Clambda%5Ex%7D%7Bx!%7D,"></p>
-<p>which is the Poisson probability. So the Poisson distribution is the limit of the binomial for many trials, each with a tiny chance of success.</p>
-</section>
-<section id="the-rule-of-thumb" class="level2">
-<h2 class="anchored" data-anchor-id="the-rule-of-thumb">The Rule of Thumb</h2>
-<p>The approximation is accurate when:</p>
-<ul>
-<li><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20%5Cge%2020"> (ideally <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20%5Cge%20100">), and</li>
-<li><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp%20%5Cle%200.05"> (ideally <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp%20%5Cle%200.01">).</li>
-</ul>
-<p>When these hold, we take the Poisson mean as <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20=%20np">.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Feature</th>
-<th>Binomial</th>
-<th>Poisson approximation</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Parameters</td>
-<td><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> (trials), <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp"> (probability)</td>
-<td><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20=%20np"> (average rate)</td>
-</tr>
-<tr class="even">
-<td>Mean</td>
-<td><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dnp"></td>
-<td><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20=%20np"></td>
-</tr>
-<tr class="odd">
-<td>Variance</td>
-<td><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dnp(1-p)"></td>
-<td><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20=%20np"></td>
-</tr>
-<tr class="even">
-<td><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DP(X%20=%20x)"></td>
-<td><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cbinom%7Bn%7D%7Bx%7D%20p%5Ex%20(1-p)%5E%7Bn-x%7D"></td>
-<td><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cdfrac%7Be%5E%7B-%5Clambda%7D%20%5Clambda%5Ex%7D%7Bx!%7D"></td>
-</tr>
-</tbody>
-</table>
-<p>The two variances are nearly equal exactly when <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D1%20-%20p%20%5Capprox%201">, that is, when <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp"> is small. This is another way to see why a small <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp"> is needed.</p>
-</section>
-<section id="example-1-product-defects" class="level2">
-<h2 class="anchored" data-anchor-id="example-1-product-defects">Example 1: Product Defects</h2>
-<p>A factory produces lightbulbs with a defect rate of 2% (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp%20=%200.02">). We inspect a random sample of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20=%20100"> bulbs. What is the probability that exactly 3 are defective?</p>
-<p><strong>Setup:</strong> <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20=%20np%20=%20100%20%5Ctimes%200.02%20=%202">.</p>
-<p><strong>Binomial:</strong></p>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cbegin%7Baligned%7D%0AP(X%20=%203)%20&amp;=%20%5Cbinom%7B100%7D%7B3%7D%20(0.02)%5E3%20(0.98)%5E%7B97%7D%20%5C%5C%0A&amp;%5Capprox%200.18228%0A%5Cend%7Baligned%7D%0A"></p>
-<p><strong>Poisson:</strong></p>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cbegin%7Baligned%7D%0AP(X%20=%203)%20&amp;=%20%5Cfrac%7Be%5E%7B-2%7D%20%5C,%202%5E3%7D%7B3!%7D%20%5C%5C%0A&amp;%5Capprox%200.18045%0A%5Cend%7Baligned%7D%0A"></p>
-<p>The approximation is off by less than <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D0.002">.</p>
-</section>
-<section id="example-2-printing-errors" class="level2">
-<h2 class="anchored" data-anchor-id="example-2-printing-errors">Example 2: Printing Errors</h2>
-<p>The probability that a page has a major printing error is 0.5% (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp%20=%200.005">). In a book of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20=%20500"> pages, what is the probability that at most 1 page has an error?</p>
-<p><strong>Setup:</strong> <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20=%20np%20=%20500%20%5Ctimes%200.005%20=%202.5">.</p>
-<p><strong>Binomial:</strong></p>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cbegin%7Baligned%7D%0AP(X%20%5Cle%201)%20&amp;=%20P(X%20=%200)%20+%20P(X%20=%201)%20%5C%5C%0A&amp;%5Capprox%200.08157%20+%200.20495%20%5C%5C%0A&amp;%5Capprox%200.28653%0A%5Cend%7Baligned%7D%0A"></p>
-<p><strong>Poisson:</strong></p>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cbegin%7Baligned%7D%0AP(X%20%5Cle%201)%20&amp;=%20e%5E%7B-2.5%7D%20+%202.5%5C,e%5E%7B-2.5%7D%20%5C%5C%0A&amp;%5Capprox%200.08208%20+%200.20521%20%5C%5C%0A&amp;%5Capprox%200.28730%0A%5Cend%7Baligned%7D%0A"></p>
-<p>The difference is only about <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D0.0008">.</p>
-</section>
-<section id="checking-both-examples-in-r" class="level2">
-<h2 class="anchored" data-anchor-id="checking-both-examples-in-r">Checking Both Examples in R</h2>
-<p><code>dbinom()</code> and <code>dpois()</code> give the exact probabilities, and <code>pbinom()</code> and <code>ppois()</code> the cumulative ones.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Example 1: P(X = 3), n = 100, p = 0.02</span></span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">binomial =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dbinom</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.02</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">poisson =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dpois</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>))</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code> binomial   poisson 
-0.1822759 0.1804470 </code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Example 2: P(X &lt;= 1), n = 500, p = 0.005</span></span>
-<span id="cb3-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">binomial =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">pbinom</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">500</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.005</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">poisson =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ppois</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2.5</span>))</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code> binomial   poisson 
-0.2865263 0.2872975 </code></pre>
-</div>
-</div>
-<p>The same check in Python with <code>scipy</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> scipy.stats <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> stats</span>
-<span id="cb5-2"></span>
-<span id="cb5-3"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(stats.binom.pmf(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.02</span>), stats.poisson.pmf(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>))</span>
-<span id="cb5-4"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(stats.binom.cdf(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">500</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.005</span>), stats.poisson.cdf(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2.5</span>))</span></code></pre></div></div>
-</section>
-<section id="seeing-the-fit" class="level2">
-<h2 class="anchored" data-anchor-id="seeing-the-fit">Seeing the Fit</h2>
-<p>Let’s compare the two distributions for a good case and a bad case. In each panel the bars are the binomial probabilities and the points are the Poisson approximation with <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20=%20np">.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(tidyverse)</span>
-<span id="cb6-2"></span>
-<span id="cb6-3">compare <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(n, p, xmax) {</span>
-<span id="cb6-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span>xmax,</span>
-<span id="cb6-5">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">Binomial =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dbinom</span>(x, n, p),</span>
-<span id="cb6-6">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">Poisson  =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dpois</span>(x, n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> p),</span>
-<span id="cb6-7">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">case =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sprintf</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"n = %d, p = %s"</span>, n, p))</span>
-<span id="cb6-8">}</span>
-<span id="cb6-9"></span>
-<span id="cb6-10">both <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">bind_rows</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">compare</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.02</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>), <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">compare</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.5</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb6-11">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">case =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fct_inorder</span>(case))</span>
-<span id="cb6-12"></span>
-<span id="cb6-13"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(both, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(x)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb6-14">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_col</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> Binomial), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"steelblue"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">alpha =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.8</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb6-15">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_point</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> Poisson), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"tomato"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb6-16">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">facet_wrap</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> case) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb6-17">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">scale_x_continuous</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">breaks =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb6-18">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Binomial (bars) and its Poisson approximation (points)"</span>,</span>
-<span id="cb6-19">       <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"x"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Probability"</span>)</span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/posts/binomial-approximated-by-poisson_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="768"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>On the left (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20=%20100">, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp%20=%200.02">) the points sit on top of the bars. On the right (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20=%2010">, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp%20=%200.5">) the Poisson with <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20=%205"> is too spread out and has the wrong shape, because <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp"> is far from small.</p>
-</section>
-<section id="how-close-is-it-the-largest-error" class="level2">
-<h2 class="anchored" data-anchor-id="how-close-is-it-the-largest-error">How Close Is It? The Largest Error</h2>
-<p>One number summarises the fit: the largest gap between the two probabilities over all <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx">.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">max_gap <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(n, p) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">abs</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dbinom</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span>n, n, p) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dpois</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span>n, n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> p)))</span>
-<span id="cb7-2"></span>
-<span id="cb7-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">n =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>),</span>
-<span id="cb7-4">       <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">p =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.05</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.02</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.01</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.002</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.5</span>)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb7-5">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">lambda =</span> n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> p,</span>
-<span id="cb7-6">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">max_gap =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">map2_dbl</span>(n, p, max_gap), <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>))</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5 × 4
-      n     p lambda max_gap
-  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
-1    20 0.05       1 0.00947
-2   100 0.02       2 0.00274
-3   100 0.01       1 0.00185
-4  1000 0.002      2 0.00027
-5    10 0.5        5 0.0706 </code></pre>
-</div>
-</div>
-<p>For the rare-event cases the largest gap is tiny, and it shrinks further as <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> grows with <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda"> fixed. For <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20=%2010">, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp%20=%200.5"> the gap is large, so we should not use the approximation there.</p>
-</section>
-<section id="fixed-n-changing-p" class="level2">
-<h2 class="anchored" data-anchor-id="fixed-n-changing-p">Fixed n, Changing p</h2>
-<p>Two summaries measure the difference over all values of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx">:</p>
-<ul>
-<li>the <strong>largest gap</strong> between the two probabilities, and</li>
-<li>the <strong>total variation distance</strong>,</li>
-</ul>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Ctfrac12%20%5Csum_x%20%5Cleft%7C%20P_%7B%5Ctext%7Bbin%7D%7D(x)%20-%20P_%7B%5Ctext%7Bpois%7D%7D(x)%20%5Cright%7C.%0A"></p>
-<p>The total variation distance is the largest error we can make in the probability of any event, so it is the more honest summary. (The Poisson mass beyond <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx%20=%20n"> is included.)</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">gap_table <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(n, p) {</span>
-<span id="cb9-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">n =</span> n, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">p =</span> p) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb9-3">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">lambda  =</span> n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> p,</span>
-<span id="cb9-4">           <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">max_gap =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">map2_dbl</span>(n, p, max_gap),</span>
-<span id="cb9-5">           <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">tv_dist =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">map2_dbl</span>(n, p, <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(n, p)</span>
-<span id="cb9-6">             <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.5</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> (<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">abs</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dbinom</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span>n, n, p) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dpois</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span>n, n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> p))) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb9-7">                    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ppois</span>(n, n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> p, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">lower.tail =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>)))) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb9-8">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">across</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(max_gap, tv_dist), <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round</span>(.x, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>)))</span>
-<span id="cb9-9">}</span>
-<span id="cb9-10"></span>
-<span id="cb9-11">knitr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">kable</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">gap_table</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">n =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">p =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.01</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.02</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.05</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.1</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.2</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.5</span>)))</span></code></pre></div></div>
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: right;">n</th>
-<th style="text-align: right;">p</th>
-<th style="text-align: right;">lambda</th>
-<th style="text-align: right;">max_gap</th>
-<th style="text-align: right;">tv_dist</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">100</td>
-<td style="text-align: right;">0.01</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">0.00185</td>
-<td style="text-align: right;">0.00278</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">100</td>
-<td style="text-align: right;">0.02</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">0.00274</td>
-<td style="text-align: right;">0.00457</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">100</td>
-<td style="text-align: right;">0.05</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">0.00455</td>
-<td style="text-align: right;">0.01260</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">100</td>
-<td style="text-align: right;">0.10</td>
-<td style="text-align: right;">10</td>
-<td style="text-align: right;">0.00676</td>
-<td style="text-align: right;">0.02583</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">100</td>
-<td style="text-align: right;">0.20</td>
-<td style="text-align: right;">20</td>
-<td style="text-align: right;">0.01046</td>
-<td style="text-align: right;">0.05416</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">100</td>
-<td style="text-align: right;">0.50</td>
-<td style="text-align: right;">50</td>
-<td style="text-align: right;">0.02326</td>
-<td style="text-align: right;">0.16662</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>With <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20=%20100"> fixed, both measures grow as <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp"> grows. At <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp%20=%200.01"> the approximation is excellent. By <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp%20=%200.5"> it is poor, even though <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> is large, which shows that a small <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp">, not just a large <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn">, is what matters.</p>
-</section>
-<section id="fixed-p-changing-n" class="level2">
-<h2 class="anchored" data-anchor-id="fixed-p-changing-n">Fixed p, Changing n</h2>
-<p>Now we fix <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp%20=%200.02"> and let <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> grow.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1">knitr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">kable</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">gap_table</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">n =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">50</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">500</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">p =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.02</span>))</span></code></pre></div></div>
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: right;">n</th>
-<th style="text-align: right;">p</th>
-<th style="text-align: right;">lambda</th>
-<th style="text-align: right;">max_gap</th>
-<th style="text-align: right;">tv_dist</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">10</td>
-<td style="text-align: right;">0.02</td>
-<td style="text-align: right;">0.2</td>
-<td style="text-align: right;">0.00300</td>
-<td style="text-align: right;">0.00300</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">20</td>
-<td style="text-align: right;">0.02</td>
-<td style="text-align: right;">0.4</td>
-<td style="text-align: right;">0.00437</td>
-<td style="text-align: right;">0.00437</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">50</td>
-<td style="text-align: right;">0.02</td>
-<td style="text-align: right;">1.0</td>
-<td style="text-align: right;">0.00372</td>
-<td style="text-align: right;">0.00558</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">100</td>
-<td style="text-align: right;">0.02</td>
-<td style="text-align: right;">2.0</td>
-<td style="text-align: right;">0.00274</td>
-<td style="text-align: right;">0.00457</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">500</td>
-<td style="text-align: right;">0.02</td>
-<td style="text-align: right;">10.0</td>
-<td style="text-align: right;">0.00127</td>
-<td style="text-align: right;">0.00494</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">1000</td>
-<td style="text-align: right;">0.02</td>
-<td style="text-align: right;">20.0</td>
-<td style="text-align: right;">0.00090</td>
-<td style="text-align: right;">0.00487</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>Now the two measures behave differently. The largest gap shrinks as <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> increases, because the probability is spread over more values of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx">. The total variation distance does not shrink: it levels off at a small value close to <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D0.005">. It cannot exceed <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp"> (a known bound), so the error of the approximation is controlled mainly by <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp">, however large <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> is.</p>
-<p>So a larger <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> alone does not make the approximation better. A <strong>small <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp"></strong> is what makes it good, and a large <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> then lets us use it for a wide range of counts.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Why bother, when software computes exact binomial probabilities? Historically the Poisson formula was far easier to calculate by hand, and it still gives a clear interpretation: a count of rare events with an average rate <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda">.</p>
-</div>
-</div>
-</section>
-<section id="summary" class="level2">
-<h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<ul>
-<li>Use <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DB(n,%20p)%20%5Capprox%20P(np)"> when <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> is large and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp"> is small.</li>
-<li>Rule of thumb: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20%5Cge%2020"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp%20%5Cle%200.05">, and better with <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20%5Cge%20100"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp%20%5Cle%200.01">.</li>
-<li>Check the fit by comparing the probabilities, as in the examples above.</li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>R</category>
-  <category>Statistics</category>
-  <category>Probability</category>
-  <guid>https://www.statmania.info/blog/posts/binomial-approximated-by-poisson.html</guid>
-  <pubDate>Mon, 02 Nov 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/binom.jpeg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
