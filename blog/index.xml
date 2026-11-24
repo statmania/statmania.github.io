@@ -10,7 +10,451 @@
 <atom:link href="https://www.statmania.info/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Posts on statistics theory, R &amp; Python, and developer tips from Stat Mania.</description>
 <generator>quarto-1.9.38</generator>
-<lastBuildDate>Sun, 22 Nov 2026 18:00:00 GMT</lastBuildDate>
+<lastBuildDate>Mon, 23 Nov 2026 18:00:00 GMT</lastBuildDate>
+<item>
+  <title>When Permutations and Combinations Work Together</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/cases-when-permutation-and-combinations-apply-together.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/cases-when-permutation-and-combinations-apply-together.svg" class="img-fluid figure-img" alt="A pool of five lettered tiles, two of which are picked and placed into two ordered slots, labelled combination and permutation."></p>
+<figcaption>Choose first, arrange second: a combination picks the group, a permutation orders it.</figcaption>
+</figure>
+</div>
+<p>Permutations and combinations often appear in the same problem (if the two ideas are new, start with <a href="understanding-permutation-combination-with-examples.html">Understanding Permutations and Combinations with Examples</a>). Whenever we must first <strong>select</strong> a group of items (a combination) and then <strong>arrange</strong> the chosen items in order (a permutation), we need both. This “choose first, arrange second” approach is the standard way to count when the items come from different categories.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>The pattern
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Ctext%7Btotal%7D%20=%20%5Cunderbrace%7B%5Cbinom%7Bn%7D%7Br%7D%7D_%7B%5Ctext%7Bchoose%20the%20group%7D%7D%20%5Ctimes%20%5Cunderbrace%7Br!%7D_%7B%5Ctext%7Border%20it%7D%7D%0A"></p>
+<p>When there are several categories, Step 1 is a <em>product</em> of combinations, one per category, and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dr"> is the size of the whole chosen group.</p>
+</div>
+</div>
+<section id="passwords-with-a-fixed-mix-of-characters" class="level2">
+<h2 class="anchored" data-anchor-id="passwords-with-a-fixed-mix-of-characters">1. Passwords with a fixed mix of characters</h2>
+<p>Suppose we want a 4-character password made of 2 distinct letters (from 26) and 2 distinct digits (from 10). A single permutation formula cannot guarantee the exact mix, so we fix the mix first.</p>
+<ul>
+<li><strong>Step 1 (combination):</strong> choose the 2 letters and the 2 digits: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cbinom%7B26%7D%7B2%7D%20%5Ctimes%20%5Cbinom%7B10%7D%7B2%7D%20=%20325%20%5Ctimes%2045%20=%2014%7B,%7D625"> groups.</li>
+<li><strong>Step 2 (permutation):</strong> arrange the 4 chosen characters: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D4!%20=%2024"> ways.</li>
+<li><strong>Total:</strong> <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D14%7B,%7D625%20%5Ctimes%2024%20=%20%5Cmathbf%7B351%7B,%7D000%7D"> passwords.</li>
+</ul>
+</section>
+<section id="code-words-from-separate-pools" class="level2">
+<h2 class="anchored" data-anchor-id="code-words-from-separate-pools">2. Code words from separate pools</h2>
+<p>We have 6 consonants and 4 vowels, and we want a 5-letter code word with exactly 3 consonants and 2 vowels (no letter repeated).</p>
+<ul>
+<li><strong>Step 1 (combination):</strong> <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cbinom%7B6%7D%7B3%7D%20%5Ctimes%20%5Cbinom%7B4%7D%7B2%7D%20=%2020%20%5Ctimes%206%20=%20120"> ways to pick the letters.</li>
+<li><strong>Step 2 (permutation):</strong> arrange the 5 letters: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D5!%20=%20120"> orders.</li>
+<li><strong>Total:</strong> <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D120%20%5Ctimes%20120%20=%20%5Cmathbf%7B14%7B,%7D400%7D"> words.</li>
+</ul>
+</section>
+<section id="a-batting-order" class="level2">
+<h2 class="anchored" data-anchor-id="a-batting-order">3. A batting order</h2>
+<p>A cricket squad has 15 players: 8 batsmen and 7 bowlers. The coach picks a starting 11 with 6 batsmen and 5 bowlers, then sets the batting order.</p>
+<ul>
+<li><strong>Step 1 (combination):</strong> <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cbinom%7B8%7D%7B6%7D%20%5Ctimes%20%5Cbinom%7B7%7D%7B5%7D%20=%2028%20%5Ctimes%2021%20=%20588"> possible teams.</li>
+<li><strong>Step 2 (permutation):</strong> put the 11 players in order from #1 to #11: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D11!%20=%2039%7B,%7D916%7B,%7D800"> lineups.</li>
+<li><strong>Total:</strong> <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D588%20%5Ctimes%2039%7B,%7D916%7B,%7D800%20=%2023%7B,%7D471%7B,%7D078%7B,%7D400%20%5Capprox%20%5Cmathbf%7B2.35%20%5Ctimes%2010%5E%7B10%7D%7D"> batting orders.</li>
+</ul>
+</section>
+<section id="seating-guests-on-a-stage" class="level2">
+<h2 class="anchored" data-anchor-id="seating-guests-on-a-stage">4. Seating guests on a stage</h2>
+<p>Twelve executives attend a conference, and 4 of them are chosen to sit in 4 labelled chairs on stage (Chair 1 to Chair 4).</p>
+<ul>
+<li><strong>Step 1 (combination):</strong> choose the 4 executives: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cbinom%7B12%7D%7B4%7D%20=%20495"> groups.</li>
+<li><strong>Step 2 (permutation):</strong> assign the 4 chosen executives to the chairs: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D4!%20=%2024"> ways.</li>
+<li><strong>Total:</strong> <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D495%20%5Ctimes%2024%20=%20%5Cmathbf%7B11%7B,%7D880%7D"> ways.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>A shortcut when there are no categories
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Here nothing restricts who may sit where, so the two steps collapse into one:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cbinom%7Bn%7D%7Br%7D%20%5Ctimes%20r!%20=%20%7B%7D%5E%7Bn%7DP_%7Br%7D%20=%20%5Cfrac%7Bn!%7D%7B(n-r)!%7D%0A"></p>
+<p>Indeed, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5E%7B12%7DP_4%20=%2012%20%5Ctimes%2011%20%5Ctimes%2010%20%5Ctimes%209%20=%2011%7B,%7D880">. The two-step method is needed when categories force a particular mix, as in the first three examples.</p>
+</div>
+</div>
+</section>
+<section id="how-to-recognise-these-problems" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-recognise-these-problems">How to recognise these problems</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">The question asks for…</th>
+<th style="text-align: left;">Use</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">a group, order irrelevant</td>
+<td style="text-align: left;">combination only</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">an ordered arrangement of everything or of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dr"> items from <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"></td>
+<td style="text-align: left;">permutation only</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">a group with a required mix, <em>and</em> then an order</td>
+<td style="text-align: left;">combination(s) first, then <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dr!"></td>
+</tr>
+</tbody>
+</table>
+<p>If the problem says “exactly <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dk"> of this kind and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dm"> of that kind” and then asks for an arrangement, we are in the “choose first, arrange second” case.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>Mathematics</category>
+  <category>Probability</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/cases-when-permutation-and-combinations-apply-together.html</guid>
+  <pubDate>Mon, 23 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/cases-when-permutation-and-combinations-apply-together.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>Combinations When Some Items Are Always Selected or Always Omitted</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/combination-always-selecting-omitting.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/combination-always-selecting-omitting.svg" class="img-fluid figure-img" alt="Two rows of ten circles. In the first, a captain and a vice-captain (marked C and VC) are set aside and 3 players are chosen from the remaining 8. In the second, two crossed-out injured players are set aside and 5 players are chosen from the remaining 8."></p>
+<figcaption>The captain and vice-captain locked in leave 3 spots for the other 8 players; two injured players removed leave 5 spots for the other 8.</figcaption>
+</figure>
+</div>
+<p>Choosing <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dr"> items from <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> (see <a href="understanding-permutation-combination-with-examples.html">Understanding Permutations and Combinations with Examples</a> for the basics) normally gives <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cbinom%7Bn%7D%7Br%7D"> ways. But what if <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp"> particular items <strong>must</strong> be included, or <strong>must not</strong> be? We start with a concrete team and let the logic show us the formula.</p>
+<section id="the-situation" class="level2">
+<h2 class="anchored" data-anchor-id="the-situation">The situation</h2>
+<p>A coach must pick a team of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dr%20=%205"> players from a squad of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20=%2010">. Without any condition there are <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cbinom%7B10%7D%7B5%7D%20=%20252"> teams. Now we add a condition, in two different versions.</p>
+</section>
+<section id="case-1-some-items-are-always-selected" class="level2">
+<h2 class="anchored" data-anchor-id="case-1-some-items-are-always-selected">Case 1: some items are always selected</h2>
+<p>The captain and the vice-captain (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp%20=%202">) must both be on the team.</p>
+<ol type="1">
+<li>The captain and vice-captain already hold 2 of the 5 spots, and their places are settled. They no longer take part in the choosing.</li>
+<li>The spots still open: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D5%20-%202%20=%203">.</li>
+<li>The players still available: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D10%20-%202%20=%208"> (everyone except the captain and vice-captain).</li>
+<li>So the only real decision is which 3 of the other 8 join them:</li>
+</ol>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cbinom%7B8%7D%7B3%7D%20=%20%5Cfrac%7B8%20%5Ctimes%207%20%5Ctimes%206%7D%7B3%20%5Ctimes%202%20%5Ctimes%201%7D%20=%20%5Cmathbf%7B56%7D%20%5Ctext%7B%20ways.%7D%0A"></p>
+</section>
+<section id="case-2-some-items-are-always-omitted" class="level2">
+<h2 class="anchored" data-anchor-id="case-2-some-items-are-always-omitted">Case 2: some items are always omitted</h2>
+<p>Instead, 2 players (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp%20=%202">) are injured and must stay out.</p>
+<ol type="1">
+<li>Injured players can never be picked, so we simply remove them from the squad: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D10%20-%202%20=%208"> players remain.</li>
+<li>Nothing has been filled, so all 5 spots are still open.</li>
+<li>The decision is which 5 of the healthy 8 play:</li>
+</ol>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cbinom%7B8%7D%7B5%7D%20=%20%5Cfrac%7B8%20%5Ctimes%207%20%5Ctimes%206%7D%7B3%20%5Ctimes%202%20%5Ctimes%201%7D%20=%20%5Cmathbf%7B56%7D%20%5Ctext%7B%20ways.%7D%0A"></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The two answers are equal here only by coincidence of the numbers: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cbinom%7B8%7D%7B3%7D%20=%20%5Cbinom%7B8%7D%7B5%7D"> because choosing 3 players to include is the same as choosing 5 to leave out. The two cases are different problems in general.</p>
+</div>
+</div>
+</section>
+<section id="deriving-the-general-formulas" class="level2">
+<h2 class="anchored" data-anchor-id="deriving-the-general-formulas">Deriving the general formulas</h2>
+<p>Replace the numbers by letters: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> items, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dr"> to select, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp"> special items.</p>
+<p><strong>Always selected.</strong> The <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp"> special items are placed, so we remove them from both the pool and the spots:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Ctext%7Bpool%7D%20=%20n%20-%20p,%20%5Cqquad%20%5Ctext%7Bspots%7D%20=%20r%20-%20p%20%5Cquad%5CLongrightarrow%5Cquad%20%5Cboxed%7B%5Cbinom%7Bn-p%7D%7B%5C,r-p%5C,%7D%7D%0A"></p>
+<p>This needs <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp%20%5Cle%20r%20%5Cle%20n">: we cannot force in more items than there are spots.</p>
+<p><strong>Always omitted.</strong> The <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp"> special items leave the pool, but the spots are untouched:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Ctext%7Bpool%7D%20=%20n%20-%20p,%20%5Cqquad%20%5Ctext%7Bspots%7D%20=%20r%20%5Cquad%5CLongrightarrow%5Cquad%20%5Cboxed%7B%5Cbinom%7Bn-p%7D%7B%5C,r%5C,%7D%7D%0A"></p>
+<p>This needs <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dr%20%5Cle%20n%20-%20p">: enough items must remain to fill every spot.</p>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Condition</th>
+<th style="text-align: center;">Pool left</th>
+<th style="text-align: center;">Spots left</th>
+<th style="text-align: center;">Ways</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp"> items always selected</td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn-p"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dr-p"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cbinom%7Bn-p%7D%7Br-p%7D"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp"> items always omitted</td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn-p"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dr"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cbinom%7Bn-p%7D%7Br%7D"></td>
+</tr>
+</tbody>
+</table>
+<p>In both cases the pool shrinks by <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dp">. What differs is whether the spots shrink too: yes if the items are forced in, no if they are kept out.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Notation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Many textbooks write combinations as <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5E%7Bn%7DC_%7Br%7D"> or <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DnCr"> instead of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cbinom%7Bn%7D%7Br%7D">. All three mean the same thing, so the results above read equally well as <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5E%7Bn-p%7DC_%7Br-p%7D"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5E%7Bn-p%7DC_%7Br%7D">.</p>
+</div>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>Mathematics</category>
+  <category>Probability</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/combination-always-selecting-omitting.html</guid>
+  <pubDate>Mon, 23 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/combination-always-selecting-omitting.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>Counting Rule and Addition Rule: When to Add and When to Multiply</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/counting-rule-and-addition-rule-when-to-add-and-multiply.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/counting-rule-and-addition-rule-when-to-add-and-multiply.svg" class="img-fluid figure-img" alt="A tree diagram. Sylhet branches into three ways to reach Dhaka (train, air, bus). Each Dhaka node branches into two ways to reach Rajshahi (bus, train), ending in six leaves."></p>
+<figcaption>A tree of routes from Sylhet to Rajshahi through Dhaka: 3 first legs, each followed by 2 second legs, give 6 complete routes.</figcaption>
+</figure>
+</div>
+<p>Counting problems usually come down to one question: do we <strong>add</strong> the numbers of ways, or <strong>multiply</strong> them? We answer it with two examples, then see why the common slogan is not quite right.</p>
+<section id="multiplying-the-counting-rule" class="level2">
+<h2 class="anchored" data-anchor-id="multiplying-the-counting-rule">Multiplying: the counting rule</h2>
+<p>There are 3 ways to go from Sylhet to Dhaka, and 2 ways to go from Dhaka to Rajshahi. How many ways are there to get from Sylhet to Rajshahi?</p>
+<p>We can list every route with a tree:</p>
+<ul>
+<li>Sylhet to Dhaka by train, then Dhaka to Rajshahi by bus or train: <strong>2</strong> routes.</li>
+<li>Sylhet to Dhaka by air, then bus or train: <strong>2</strong> routes.</li>
+<li>Sylhet to Dhaka by bus, then bus or train: <strong>2</strong> routes.</li>
+</ul>
+<p>The tree diagram above shows the same count.</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Ctext%7BTotal%7D%20=%202%20+%202%20+%202%20=%206%0A"></p>
+<p>Adding the same number three times is just multiplication, so we could have written</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A3%20%5Ctimes%202%20=%206%0A"></p>
+<p>directly. This is the <strong>fundamental counting principle</strong> (the counting rule):</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If one stage can be done in <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dm"> ways and, whichever way it was done, a second stage can be done in <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> ways, then the two stages together can be done in <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dm%20%5Ctimes%20n"> ways.</p>
+</div>
+</div>
+<p>It is the building block behind permutations and combinations: see <a href="understanding-permutation-combination-with-examples.html">Understanding Permutations and Combinations with Examples</a> for it in action.</p>
+</section>
+<section id="adding-the-addition-rule" class="level2">
+<h2 class="anchored" data-anchor-id="adding-the-addition-rule">Adding: the addition rule</h2>
+<p>To travel from Dhaka to Chattogram we can take one of 5 flights <strong>or</strong> one of 3 trains. We will take only one of them, so there is no second stage to carry out:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A5%20+%203%20=%208%20%5Ctext%7B%20ways.%7D%0A"></p>
+<p>The addition rule applies when the options are <strong>alternatives that cannot happen together</strong> (and none is counted twice).</p>
+</section>
+<section id="a-better-way-to-decide" class="level2">
+<h2 class="anchored" data-anchor-id="a-better-way-to-decide">A better way to decide</h2>
+<p>The words “and” and “or” help only sometimes. A more reliable test is to ask whether the choice is <strong>finished</strong> after one pick.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Situation</th>
+<th style="text-align: left;">Is the choice complete?</th>
+<th style="text-align: left;">Operation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Sylhet to Rajshahi: we have reached Dhaka but not Rajshahi</td>
+<td style="text-align: left;">Incomplete: another stage is needed</td>
+<td style="text-align: left;"><strong>Multiply</strong> (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D3%20%5Ctimes%202">)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dhaka to Chattogram: one flight or one train</td>
+<td style="text-align: left;">Complete: the trip is done</td>
+<td style="text-align: left;"><strong>Add</strong> (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D5%20+%203">)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Incomplete choices:</strong> keep multiplying until the whole task is complete.</li>
+<li><strong>Complete alternatives:</strong> add them.</li>
+</ul>
+</section>
+<section id="why-and-means-multiply-or-means-add-can-mislead" class="level2">
+<h2 class="anchored" data-anchor-id="why-and-means-multiply-or-means-add-can-mislead">Why “AND means multiply, OR means add” can mislead</h2>
+<p>In permutations, combinations and probability we often hear that AND leads to multiplication and OR leads to addition. That is a useful shortcut, but it has conditions.</p>
+<ul>
+<li><strong>Multiplication</strong> is valid when the number of ways (or the probability) at the second stage is the one that applies <em>after</em> the first stage. For counting, the second stage must have the same number of options whichever first option we took. For probabilities, we multiply by the conditional probability, which equals the plain probability only when the events are <strong>independent</strong>.</li>
+<li><strong>Addition</strong> is valid when the alternatives are <strong>mutually exclusive</strong>. If they can overlap, we must subtract the overlap.</li>
+</ul>
+<p>In probability notation:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0AP(A%20%5Ccup%20B)%20=%20P(A)%20+%20P(B)%20-%20P(A%20%5Ccap%20B)%0A"></p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0AP(A%20%5Ccap%20B)%20=%20P(A)%5C,P(B%20%5Cmid%20A)%0A"></p>
+<p>The first reduces to simple addition when <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DP(A%20%5Ccap%20B)%20=%200"> (mutually exclusive events). The second reduces to <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DP(A)%5C,P(B)"> when <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DA"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DB"> are independent.</p>
+</section>
+<section id="using-both-in-one-problem" class="level2">
+<h2 class="anchored" data-anchor-id="using-both-in-one-problem">Using both in one problem</h2>
+<p>A bag has 6 red and 4 green balls. We draw 2 balls <strong>with replacement</strong>. What is the probability that both have the same colour?</p>
+<p>Each way of getting “same colour” is a sequence of two draws, so each way is an <em>incomplete</em> choice until both draws are made (multiply). The two ways, red-red and green-green, are <em>complete</em> and cannot happen together (add):</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cbegin%7Baligned%7D%0AP(%5Ctext%7Bsame%7D)%20&amp;=%20P(R_1%20R_2)%20+%20P(G_1%20G_2)%20%5C%5C%0A&amp;=%20P(R_1)%5C,P(R_2)%20+%20P(G_1)%5C,P(G_2)%20%5C%5C%0A&amp;=%20%5Cfrac%7B6%7D%7B10%7D%5Ccdot%5Cfrac%7B6%7D%7B10%7D%20+%20%5Cfrac%7B4%7D%7B10%7D%5Ccdot%5Cfrac%7B4%7D%7B10%7D%20%5C%5C%0A&amp;=%200.36%20+%200.16%20=%20%5Cmathbf%7B0.52%7D%0A%5Cend%7Baligned%7D%0A"></p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Without replacement
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If the first ball is not put back, the second draw depends on the first, so we multiply by conditional probabilities instead:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cbegin%7Baligned%7D%0AP(%5Ctext%7Bsame%7D)%20&amp;=%20%5Cfrac%7B6%7D%7B10%7D%5Ccdot%5Cfrac%7B5%7D%7B9%7D%20+%20%5Cfrac%7B4%7D%7B10%7D%5Ccdot%5Cfrac%7B3%7D%7B9%7D%20%5C%5C%0A&amp;=%20%5Cfrac%7B30%20+%2012%7D%7B90%7D%20=%20%5Cfrac%7B7%7D%7B15%7D%20%5Capprox%200.467%0A%5Cend%7Baligned%7D%0A"></p>
+<p>We still multiply along each sequence and add the two exclusive outcomes.</p>
+</div>
+</div>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<ul>
+<li><strong>Multiply</strong> stages that are carried out one after another until the task is complete.</li>
+<li><strong>Add</strong> complete, mutually exclusive alternatives.</li>
+<li>Check the conditions (dependence and overlap) before applying the slogan.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>Mathematics</category>
+  <category>Probability</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/counting-rule-and-addition-rule-when-to-add-and-multiply.html</guid>
+  <pubDate>Mon, 23 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/counting-rule-and-addition-rule-when-to-add-and-multiply.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
+<item>
+  <title>Understanding Permutations and Combinations with Examples</title>
+  <dc:creator>Abdullah Al Mahmud</dc:creator>
+  <link>https://www.statmania.info/blog/posts/understanding-permutation-combination-with-examples.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.statmania.info/blog/img/understanding-permutation-combination-with-examples.svg" class="img-fluid figure-img" alt="Ordered pairs AB, BA, AC, CA, BC and CB, grouped in twos, each group pointing to a single unordered selection: AB, AC or BC."></p>
+<figcaption>Six ordered pairs of letters collapse into three selections: each combination corresponds to 2! permutations.</figcaption>
+</figure>
+</div>
+<p>Two ideas sit behind most counting problems: <strong>arranging</strong> items and <strong>selecting</strong> them. We separate them on a tiny example first.</p>
+<section id="permutation-order-matters" class="level2">
+<h2 class="anchored" data-anchor-id="permutation-order-matters">Permutation: order matters</h2>
+<p>How many ways can we arrange 2 letters taken from <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DA,%20B,%20C">?</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0AAB,%5C;%20BA,%5C;%20AC,%5C;%20CA,%5C;%20BC,%5C;%20CB%0A"></p>
+<p>That is <strong>6</strong> arrangements. A permutation is an arrangement, so <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DAB"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DBA"> are different.</p>
+</section>
+<section id="combination-order-does-not-matter" class="level2">
+<h2 class="anchored" data-anchor-id="combination-order-does-not-matter">Combination: order does not matter</h2>
+<p>A combination is a selection, like choosing members for a team. Now we only ask <em>which</em> 2 letters are chosen:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5C%7BA,%20B%5C%7D,%20%5Cquad%20%5C%7BA,%20C%5C%7D,%20%5Cquad%20%5C%7BB,%20C%5C%7D%0A"></p>
+<p>That is <strong>3</strong> selections. Each one stands for two permutations: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5C%7BA,%20B%5C%7D"> covers <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DAB"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DBA">, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5C%7BA,%20C%5C%7D"> covers <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DAC"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DCA">, and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5C%7BB,%20C%5C%7D"> covers <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DBC"> and <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DCB">.</p>
+<p>So</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cunderbrace%7B6%7D_%7B%5E%7B3%7DP_%7B2%7D%7D%20=%20%5Cunderbrace%7B3%7D_%7B%5E%7B3%7DC_%7B2%7D%7D%20%5Ctimes%20%5Cunderbrace%7B2!%7D_%7B%5Ctext%7Borders%20of%20each%20pair%7D%7D%0A"></p>
+</section>
+<section id="both-together-a-15-player-squad" class="level2">
+<h2 class="anchored" data-anchor-id="both-together-a-15-player-squad">Both together: a 15-player squad</h2>
+<p>A team needs 11 players from a squad of 15, and then the 11 are placed in specific positions on the ground.</p>
+<ol type="1">
+<li><strong>Select</strong> the players: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5E%7B15%7DC_%7B11%7D%20=%201365"> ways.</li>
+<li><strong>Arrange</strong> the chosen 11: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D11!%20=%2039%7B,%7D916%7B,%7D800"> ways.</li>
+<li>By the counting rule, we multiply the two stages:</li>
+</ol>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%5Cbegin%7Baligned%7D%0A%7B%7D%5E%7B15%7DC_%7B11%7D%20%5Ctimes%2011!%20&amp;=%201365%20%5Ctimes%2039%7B,%7D916%7B,%7D800%20%5C%5C%0A&amp;=%2054%7B,%7D486%7B,%7D432%7B,%7D000%0A%5Cend%7Baligned%7D%0A"></p>
+<p>This is also the number of ways to arrange 11 players out of 15 directly, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5E%7B15%7DP_%7B11%7D">. It is the same relationship we saw with the letters:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0A%7B%7D%5E%7Bn%7DP_%7Br%7D%20=%20%7B%7D%5E%7Bn%7DC_%7Br%7D%20%5Ctimes%20r!%0A"></p>
+<p>This is an example of permutations and combinations used together, and also of the <strong>counting rule</strong>, which tells us when to multiply the number of ways. The counting rule itself, and when to add instead, is the subject of <a href="counting-rule-and-addition-rule-when-to-add-and-multiply.html">Counting Rule and Addition Rule: When to Add and When to Multiply</a>.</p>
+</section>
+<section id="where-to-go-next" class="level2">
+<h2 class="anchored" data-anchor-id="where-to-go-next">Where to go next</h2>
+<ul>
+<li>Many problems need both steps with several categories of items, such as a fixed mix of batsmen and bowlers: see <a href="cases-when-permutation-and-combinations-apply-together.html">When Permutations and Combinations Work Together</a>.</li>
+<li>If some items must always be in the selection, or must always be left out, the pool and spots shrink: see <a href="combination-always-selecting-omitting.html">Combinations When Some Items Are Always Selected or Always Omitted</a>.</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>Mathematics</category>
+  <category>Probability</category>
+  <category>Tutorial</category>
+  <guid>https://www.statmania.info/blog/posts/understanding-permutation-combination-with-examples.html</guid>
+  <pubDate>Mon, 23 Nov 2026 18:00:00 GMT</pubDate>
+  <media:content url="https://www.statmania.info/blog/img/understanding-permutation-combination-with-examples.png" medium="image" type="image/png" height="76" width="144"/>
+</item>
 <item>
   <title>When Complex Numbers Are More Natural Than So-Called Real Ones</title>
   <dc:creator>Abdullah Al Mahmud</dc:creator>
@@ -5208,1031 +5652,6 @@ Tip
   <guid>https://www.statmania.info/blog/posts/choice-of-charts-by-data-type-categorical-quantitative.html</guid>
   <pubDate>Tue, 03 Nov 2026 18:00:00 GMT</pubDate>
   <media:content url="https://www.statmania.info/blog/img/choice-of-charts-by-data-type.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Can a Discrete Variable Have Fractional Values? Examples</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/discrete-variables-examples.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/discrete-variables-examples-fig.png" class="bk-adapt img-fluid figure-img" alt="Two number lines. The top one shows shoe sizes 7, 7.5, 8, 8.5 and 9 as separate dots. The bottom one shows a continuous length as a solid line with markers at 7.23, 7.61, 8.114 and 8.77, any value being possible."></p>
-<figcaption>Discrete values are separate points with gaps; continuous values can be anywhere on the line.</figcaption>
-</figure>
-</div>
-<p>Many people think that a discrete variable must be a whole number, like the number of children. That is not the definition. A variable is <strong>discrete</strong> if it takes <strong>distinct, isolated values that can be counted</strong>, so that there is a gap between any two neighbouring allowed values. Those values may well be fractions or decimals.</p>
-<p>What matters is not whether the numbers are whole, but whether <strong>values between two neighbours are possible</strong>.</p>
-<section id="examples-of-discrete-variables-with-fractional-values" class="level2">
-<h2 class="anchored" data-anchor-id="examples-of-discrete-variables-with-fractional-values">Examples of Discrete Variables with Fractional Values</h2>
-<ul>
-<li><strong>Shoe sizes.</strong> We can buy size 8, 8.5, 9 or 9.5, in steps of 0.5. A size 8.23 does not exist, so the set of values is separate and countable.</li>
-<li><strong>Stock prices before decimalisation.</strong> Before 2001, US stock exchanges quoted prices in fractions such as <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cfrac%7B1%7D%7B8%7D"> or <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cfrac%7B1%7D%7B16%7D"> of a dollar (for example <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D10%5Cfrac%7B1%7D%7B8%7D"> or <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D10%5Cfrac%7B1%7D%7B4%7D">). A price between two fractions was not allowed.</li>
-<li><strong>Pre-decimal British money.</strong> Before 1971, coins included the halfpenny (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cfrac%7B1%7D%7B2%7D">d) and the farthing (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cfrac%7B1%7D%7B4%7D">d). Prices moved in these fixed fractional steps.</li>
-<li><strong>Measuring cups.</strong> A standard set has <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cfrac%7B1%7D%7B4%7D">, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cfrac%7B1%7D%7B3%7D">, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Cfrac%7B1%7D%7B2%7D"> and 1 cup. The capacity we can measure with one cup jumps from one of these fractions to the next.</li>
-<li><strong>Proportions with a fixed denominator.</strong> If we flip a coin 4 times, the proportion of heads can only be <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D0">, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D0.25">, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D0.5">, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D0.75"> or <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D1">. A value like <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D0.33"> is impossible, because the denominator is fixed by <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn%20=%204">.</li>
-</ul>
-</section>
-<section id="seeing-the-last-example-in-r" class="level2">
-<h2 class="anchored" data-anchor-id="seeing-the-last-example-in-r">Seeing the Last Example in R</h2>
-<p>For 4 coin flips, the number of heads follows a binomial distribution. Here are the probabilities of each possible proportion. The bars are separated, with nothing in between.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(ggplot2)</span>
-<span id="cb1-2"></span>
-<span id="cb1-3">flips <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">heads =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>)</span>
-<span id="cb1-4">flips<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>proportion <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> flips<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>heads <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span></span>
-<span id="cb1-5">flips<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>probability <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dbinom</span>(flips<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>heads, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">prob =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.5</span>)</span>
-<span id="cb1-6">flips</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  heads proportion probability
-1     0       0.00      0.0625
-2     1       0.25      0.2500
-3     2       0.50      0.3750
-4     3       0.75      0.2500
-5     4       1.00      0.0625</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(flips, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(proportion, probability)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_col</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">width =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.05</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"steelblue"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">scale_x_continuous</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">breaks =</span> flips<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>proportion, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">limits =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.1</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.1</span>)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb3-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Proportion of heads in 4 flips (discrete)"</span>,</span>
-<span id="cb3-5">       <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Proportion of heads"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Probability"</span>)</span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/posts/discrete-variables-examples_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="624"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Only five proportions can occur. If we had measured something continuous, such as the exact height of 4 people, any value in a range would be possible and the bars would merge into a curve.</p>
-</section>
-<section id="discrete-or-continuous" class="level2">
-<h2 class="anchored" data-anchor-id="discrete-or-continuous">Discrete or Continuous?</h2>
-<p>A useful test: <strong>can we always find another possible value between two given values?</strong> If yes, the variable is continuous. If no, it is discrete.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Variable type</th>
-<th>Value examples</th>
-<th>Countable and isolated?</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Discrete (whole numbers)</td>
-<td>1 child, 2 cars, 3 books</td>
-<td>Yes</td>
-</tr>
-<tr class="even">
-<td>Discrete (fractional)</td>
-<td>Size 7.5, size 8, size 8.5</td>
-<td>Yes</td>
-</tr>
-<tr class="odd">
-<td>Continuous</td>
-<td>7.523 inches, 8.114 seconds</td>
-<td>No: infinitely many values between any two</td>
-</tr>
-</tbody>
-</table>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Measurements are often <strong>recorded</strong> in a discrete way. A person’s height is continuous, but when we write it to the nearest centimetre, the recorded values are discrete. It is the variable itself, not its rounding, that decides the type, so we classify height as continuous.</p>
-</div>
-</div>
-</section>
-<section id="summary" class="level2">
-<h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<ul>
-<li>A discrete variable has separate, countable values with gaps between them.</li>
-<li>Discrete does not mean whole numbers: shoe sizes, old stock prices and proportions of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dn"> trials are all discrete fractions.</li>
-<li>A variable is continuous when any value in a range is possible, with no gaps.</li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>R</category>
-  <category>Statistics</category>
-  <guid>https://www.statmania.info/blog/posts/discrete-variables-examples.html</guid>
-  <pubDate>Tue, 03 Nov 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/discrete-variables-examples.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Is the Poisson Distribution Memoryless? Poisson vs Exponential</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/is-poisson-distribution-memoryless.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/is-poisson-distribution-memoryless-fig.png" class="bk-adapt img-fluid figure-img" alt="A timeline with a person who has already waited 20 minutes at a bus stop and a bar showing 10 more minutes, with the note that the chance of waiting 10 more minutes is the same as for a new arrival."></p>
-<figcaption>A bus that never gets “due”: the wait to the next event ignores how long we have already waited.</figcaption>
-</figure>
-</div>
-<p>A waiting time is <strong>memoryless</strong> if how long we have already waited tells us nothing about how much longer we will wait. Think of waiting for a random event, such as a call or a bus: after 20 minutes of waiting, we are no closer to the event than when we started. Does the Poisson distribution have this property?</p>
-<p>Strictly speaking, <strong>the Poisson distribution itself is not memoryless</strong>. What is memoryless is the <strong>exponential distribution</strong> of the waiting time between events in a Poisson process. The two are closely linked, which is why they get confused. Let’s separate them.</p>
-<section id="what-the-memoryless-property-means" class="level2">
-<h2 class="anchored" data-anchor-id="what-the-memoryless-property-means">What the Memoryless Property Means</h2>
-<p>A waiting time <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DX"> is memoryless if the past does not change the chance of a future outcome:</p>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%0AP(X%20%3E%20s%20+%20t%20%5Cmid%20X%20%3E%20s)%20=%20P(X%20%3E%20t).%0A"></p>
-<ul>
-<li><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Ds"> is the time we have <strong>already waited</strong>.</li>
-<li><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dt"> is the <strong>additional</strong> time we are asking about.</li>
-</ul>
-<p>In plain words: if we have waited <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Ds"> minutes and nothing has happened, the probability of waiting at least <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dt"> more minutes is exactly what it would be for someone who has just arrived. The process “forgets” how long it has run.</p>
-</section>
-<section id="poisson-count-vs-exponential-waiting-time" class="level2">
-<h2 class="anchored" data-anchor-id="poisson-count-vs-exponential-waiting-time">Poisson Count vs Exponential Waiting Time</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th>Poisson</th>
-<th>Exponential</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>What it models</td>
-<td>The <strong>number</strong> of events in a fixed interval</td>
-<td>The <strong>waiting time</strong> between events</td>
-</tr>
-<tr class="even">
-<td>Type of variable</td>
-<td>Discrete (0, 1, 2, …)</td>
-<td>Continuous (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx%20%3E%200">)</td>
-</tr>
-<tr class="odd">
-<td>Example</td>
-<td>Emails arriving in an hour</td>
-<td>Minutes between one email and the next</td>
-</tr>
-<tr class="even">
-<td>Memoryless?</td>
-<td>No</td>
-<td><strong>Yes</strong>, and it is the only continuous distribution that is</td>
-</tr>
-</tbody>
-</table>
-<p>The Poisson process has <strong>independent increments</strong>: counts in non-overlapping time windows do not affect each other. That is a different idea from memorylessness, which is a property of one waiting time.</p>
-<p>If events arrive as a Poisson process with rate <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda">, the counts in a unit interval are Poisson(<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda">), and the waiting times between events are exponential with the same rate <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda">.</p>
-</section>
-<section id="checking-the-memoryless-property-in-r" class="level2">
-<h2 class="anchored" data-anchor-id="checking-the-memoryless-property-in-r">Checking the Memoryless Property in R</h2>
-<p>For an exponential waiting time, the probability of waiting longer than <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dx"> is <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7De%5E%7B-%5Clambda%20x%7D">. Let’s take a rate of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20=%200.1"> events per minute (one event every 10 minutes on average), and ask: having waited <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Ds%20=%2020"> minutes, what is the chance of waiting at least <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dt%20=%2010"> more?</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">rate <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.1</span></span>
-<span id="cb1-2">s <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span></span>
-<span id="cb1-3">t <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span></span>
-<span id="cb1-4"></span>
-<span id="cb1-5"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># P(X &gt; s + t | X &gt; s) = P(X &gt; s + t) / P(X &gt; s)</span></span>
-<span id="cb1-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">pexp</span>(s <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> t, rate, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">lower.tail =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">pexp</span>(s, rate, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">lower.tail =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>)</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.3678794</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># P(X &gt; t), for someone who has just arrived</span></span>
-<span id="cb3-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">pexp</span>(t, rate, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">lower.tail =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>)</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.3678794</code></pre>
-</div>
-</div>
-<p>The two numbers are identical, <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7De%5E%7B-1%7D%20%5Capprox%200.368">. We can also check it by simulation, using only the waits that already exceeded <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Ds">:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb5-2">waits <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rexp</span>(<span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1e6</span>, rate)</span>
-<span id="cb5-3"></span>
-<span id="cb5-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(waits[waits <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> s] <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> s <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> t)   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># among those who waited s, share who waited t more</span></span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.3676605</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(waits <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> t)                  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># share of all waits longer than t</span></span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.368468</code></pre>
-</div>
-</div>
-<p>Both are about <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D0.37">, as the property says.</p>
-</section>
-<section id="a-waiting-time-that-is-not-memoryless" class="level2">
-<h2 class="anchored" data-anchor-id="a-waiting-time-that-is-not-memoryless">A Waiting Time That Is Not Memoryless</h2>
-<p>For contrast, think of a bus that comes <strong>on a timetable</strong>, every 30 minutes. If we arrive at a random moment, the wait is uniform from 0 to 30 minutes. Now the past matters.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(tidyverse)</span>
-<span id="cb9-2"></span>
-<span id="cb9-3">wait <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">60</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">by =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.5</span>)</span>
-<span id="cb9-4">curves <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(</span>
-<span id="cb9-5">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">minutes =</span> wait,</span>
-<span id="cb9-6">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">Exponential =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">pexp</span>(wait, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">15</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">lower.tail =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>),</span>
-<span id="cb9-7">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">Timetable   =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">punif</span>(wait, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">30</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">lower.tail =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>)</span>
-<span id="cb9-8">) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb9-9">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">pivot_longer</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span>minutes, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">names_to =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"bus"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">values_to =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"chance_still_waiting"</span>)</span>
-<span id="cb9-10"></span>
-<span id="cb9-11"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(curves, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(minutes, chance_still_waiting, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> bus)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb9-12">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_line</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">linewidth =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.1</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb9-13">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Chance that we are still waiting after x minutes"</span>,</span>
-<span id="cb9-14">       <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Minutes since we arrived"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Probability"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NULL</span>)</span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/posts/is-poisson-distribution-memoryless_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="768"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>For the timetable bus, once we have waited 20 minutes the bus is certain to come within 10 more. A new arrival could wait up to 30. The wait does depend on the past. For the exponential bus, the chance of waiting <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7Dt"> more minutes is the same no matter how long we have already waited.</p>
-</section>
-<section id="example-the-bus-at-a-random-stop" class="level2">
-<h2 class="anchored" data-anchor-id="example-the-bus-at-a-random-stop">Example: The Bus at a Random Stop</h2>
-<p>Suppose buses at a stop arrive at random, as a Poisson process, with <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D%5Clambda%20=%200.1"> per minute.</p>
-<ul>
-<li>If we have already waited <strong>20 minutes</strong>, the chance that we wait at least <strong>10 more</strong> is <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7De%5E%7B-1%7D%20%5Capprox%200.368">.</li>
-<li>A new passenger who has just walked up has exactly the same <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D0.368"> chance of waiting at least 10 minutes.</li>
-<li>The bus does not become “due” because we have waited longer, and the process does not accumulate wear or memory.</li>
-</ul>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>This is why waiting for a random event is frustrating. It is not that a long wait makes the event more likely. For truly random arrivals, the future is the same however long we have waited. A timetable is different, because there the past does carry information.</p>
-</div>
-</div>
-</section>
-<section id="summary" class="level2">
-<h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<ul>
-<li>The <strong>Poisson</strong> distribution counts events in an interval, and is not memoryless.</li>
-<li>The <strong>exponential</strong> distribution models the waiting time between those events, and <strong>is</strong> memoryless: <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7DP(X%20%3E%20s%20+%20t%20%5Cmid%20X%20%3E%20s)%20=%20P(X%20%3E%20t)">.</li>
-<li>It is the only continuous distribution with this property.</li>
-<li>Related reading: <a href="why-is-poisson-distribution-used.html">Why Is the Poisson Distribution Used?</a></li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>R</category>
-  <category>Statistics</category>
-  <category>Probability</category>
-  <guid>https://www.statmania.info/blog/posts/is-poisson-distribution-memoryless.html</guid>
-  <pubDate>Tue, 03 Nov 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/is-poisson-distribution-memoryless.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>Multi-Line Comments in LaTeX: Three Ways to Comment Out a Block</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/latex-multiline-comments.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/latex-multiline-comments.svg" class="img-fluid figure-img" alt="A short LaTeX source file where the lines between begin comment and end comment are dimmed and marked with percent signs, showing that they are not printed."></p>
-<figcaption>The lines between begin{comment} and end{comment} are ignored when the document is compiled.</figcaption>
-</figure>
-</div>
-<p>Plain LaTeX has only one kind of comment: everything after a <code>%</code> to the end of the line is ignored. To hide a whole paragraph, table or block of code, we have three options. Let’s look at each, and at when it can go wrong.</p>
-<section id="the-fastest-way-an-editor-shortcut" class="level2">
-<h2 class="anchored" data-anchor-id="the-fastest-way-an-editor-shortcut">1. The Fastest Way: an Editor Shortcut</h2>
-<p>Select the block and press the editor’s comment shortcut. The editor puts a <code>%</code> in front of every selected line for us.</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Editor</th>
-<th>Windows / Linux</th>
-<th>macOS</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Overleaf, TeXstudio, VS Code, Texmaker</td>
-<td><code>Ctrl</code> + <code>/</code></td>
-<td><code>Cmd</code> + <code>/</code></td>
-</tr>
-</tbody>
-</table>
-<p>The same shortcut removes the percent signs again. (Some editors use other keys: older TeXstudio versions use <code>Ctrl</code> + <code>T</code> to comment and <code>Ctrl</code> + <code>U</code> to uncomment. Check the editor’s menu if the shortcut does not work.)</p>
-<p>This is the safest method, because the hidden lines are real comments. The cost is that the source now has a <code>%</code> on every line.</p>
-</section>
-<section id="the-cleanest-way-the-comment-package" class="level2">
-<h2 class="anchored" data-anchor-id="the-cleanest-way-the-comment-package">2. The Cleanest Way: the comment Package</h2>
-<p>The <code>comment</code> package gives us an environment that ignores everything inside it.</p>
-<ol type="1">
-<li>Load the package in the preamble: <code>\usepackage{comment}</code>.</li>
-<li>Wrap the block in <code>\begin{comment}</code> and <code>\end{comment}</code>.</li>
-</ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb1-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">\documentclass</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">article</span>}</span>
-<span id="cb1-2"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">\usepackage</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">comment</span>} <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">% required in the preamble</span></span>
-<span id="cb1-3"></span>
-<span id="cb1-4"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">\begin</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">document</span>}</span>
-<span id="cb1-5"></span>
-<span id="cb1-6">This text will be visible in the compiled PDF.</span>
-<span id="cb1-7"></span>
-<span id="cb1-8"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">\begin</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">comment</span>}</span>
-<span id="cb1-9"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">Everything written in this environment is completely ignored.</span></span>
-<span id="cb1-10"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">You can write several paragraphs, tables or code</span></span>
-<span id="cb1-11"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">without adding percent signs.</span></span>
-<span id="cb1-12"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">\end</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">comment</span>}</span>
-<span id="cb1-13"></span>
-<span id="cb1-14">This text will also be visible.</span>
-<span id="cb1-15"></span>
-<span id="cb1-16"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">\end</span>{<span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">document</span>}</span></code></pre></div></div>
-<p>The PDF contains the first and the last paragraph only.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The <code>verbatim</code> package also defines a <code>comment</code> environment, so <code>\usepackage{verbatim}</code> works in the same way. Some LaTeX installations load it already.</p>
-</div>
-</div>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><code>\end{comment}</code> must be on a line of its own, with nothing else before or after it on that line.</p>
-</div>
-</div>
-</section>
-<section id="the-package-free-trick-iffalse-and-fi" class="level2">
-<h2 class="anchored" data-anchor-id="the-package-free-trick-iffalse-and-fi">3. The Package-Free Trick: \iffalse and \fi</h2>
-<p>Without any package, we can use a TeX conditional that is always false. TeX skips everything between <code>\iffalse</code> and <code>\fi</code>.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb2-1">This text will print normally.</span>
-<span id="cb2-2"></span>
-<span id="cb2-3"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\iffalse</span></span>
-<span id="cb2-4"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">This is a multi-line comment.</span></span>
-<span id="cb2-5"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">LaTeX skips this whole section because the condition is false.</span></span>
-<span id="cb2-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">Change \iffalse to \iftrue to switch the block back on.</span></span>
-<span id="cb2-7"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\fi</span></span>
-<span id="cb2-8"></span>
-<span id="cb2-9">This text will also print normally.</span></code></pre></div></div>
-<p>This is handy for blocks we may want to bring back, since changing one word turns the block on again.</p>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>TeX still reads the skipped text to find the matching <code>\fi</code>. If the hidden block contains its own conditional, such as <code>\ifnum</code> or <code>\ifx</code>, then it must also contain the matching <code>\fi</code>. Otherwise LaTeX stops with “Incomplete \iffalse; all text was ignored”. Unknown commands and unmatched braces inside the block are fine.</p>
-</div>
-</div>
-<section id="a-switch-for-draft-notes" class="level3">
-<h3 class="anchored" data-anchor-id="a-switch-for-draft-notes">A Switch for Draft Notes</h3>
-<p>The same idea gives a named switch, which is useful for notes that should appear only in a draft:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb3-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">\newif\ifdraft</span></span>
-<span id="cb3-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">\draftfalse</span>   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">% change to \drafttrue to show the draft notes</span></span>
-<span id="cb3-3"></span>
-<span id="cb3-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">\ifdraft</span></span>
-<span id="cb3-5">Note to self: check this section before submitting.</span>
-<span id="cb3-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">\fi</span></span></code></pre></div></div>
-</section>
-</section>
-<section id="which-method-should-we-use" class="level2">
-<h2 class="anchored" data-anchor-id="which-method-should-we-use">Which Method Should We Use?</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Method</th>
-<th>Needs a package?</th>
-<th>Best for</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Editor shortcut</td>
-<td>No</td>
-<td>Quick debugging and ad-hoc hiding of lines</td>
-</tr>
-<tr class="even">
-<td><code>comment</code> environment</td>
-<td>Yes (<code>comment</code> or <code>verbatim</code>)</td>
-<td>Clean, readable blocks and large sections</td>
-</tr>
-<tr class="odd">
-<td><code>\iffalse</code> … <code>\fi</code></td>
-<td>No</td>
-<td>Package-free fixes and blocks we may switch back on</td>
-</tr>
-</tbody>
-</table>
-<p>In short: use the shortcut for quick edits, the <code>comment</code> environment for large blocks we want to keep tidy, and <code>\iffalse</code> when we cannot add a package.</p>
-
-
-</section>
-
- ]]></description>
-  <category>LaTeX</category>
-  <category>Tools</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/latex-multiline-comments.html</guid>
-  <pubDate>Tue, 03 Nov 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/latex-multiline-comments.png" medium="image" type="image/png" height="76" width="144"/>
-</item>
-<item>
-  <title>List Files by Last Modified Time in Linux with ls -lt</title>
-  <dc:creator>Abdullah Al Mahmud</dc:creator>
-  <link>https://www.statmania.info/blog/posts/linus-command-line-ls-see-last-modified.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.statmania.info/blog/img/linux-ls-last-modified.svg" class="img-fluid figure-img" alt="A terminal window showing the output of ls -lt: five files listed from the most recently modified, script.R, to the oldest, report.txt, with the newest highlighted."></p>
-<figcaption>ls -lt lists the newest file first.</figcaption>
-</figure>
-</div>
-<p>Which file did we edit last? On Linux, the <code>ls</code> command can sort a folder by modification time. Let’s see the options, with real output from a small example folder.</p>
-<section id="the-basic-command" class="level2">
-<h2 class="anchored" data-anchor-id="the-basic-command">The Basic Command</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ls</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-lt</span></span></code></pre></div></div>
-<ul>
-<li><code>-l</code> shows the long format: permissions, owner, size and date.</li>
-<li><code>-t</code> sorts by modification time, newest first.</li>
-</ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1">total 20</span>
-<span id="cb2-2">-rw-rw-r-- 1 abdullah abdullah 2 Oct 20 17:20 script.R</span>
-<span id="cb2-3">-rw-rw-r-- 1 abdullah abdullah 2 Oct 15 08:45 data.csv</span>
-<span id="cb2-4">-rw-rw-r-- 1 abdullah abdullah 2 Oct 12 11:05 plot.png</span>
-<span id="cb2-5">-rw-rw-r-- 1 abdullah abdullah 2 Oct  9 14:10 notes.md</span>
-<span id="cb2-6">-rw-rw-r-- 1 abdullah abdullah 2 Oct  2 09:30 report.txt</span></code></pre></div></div>
-</section>
-<section id="oldest-first" class="level2">
-<h2 class="anchored" data-anchor-id="oldest-first">Oldest First</h2>
-<p>Add <code>-r</code> to reverse the order:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ls</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-ltr</span></span></code></pre></div></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb4-1">total 20</span>
-<span id="cb4-2">-rw-rw-r-- 1 abdullah abdullah 2 Oct  2 09:30 report.txt</span>
-<span id="cb4-3">-rw-rw-r-- 1 abdullah abdullah 2 Oct  9 14:10 notes.md</span>
-<span id="cb4-4">-rw-rw-r-- 1 abdullah abdullah 2 Oct 12 11:05 plot.png</span>
-<span id="cb4-5">-rw-rw-r-- 1 abdullah abdullah 2 Oct 15 08:45 data.csv</span>
-<span id="cb4-6">-rw-rw-r-- 1 abdullah abdullah 2 Oct 20 17:20 script.R</span></code></pre></div></div>
-<p>The newest file is now at the bottom, right above the prompt. This is handy in a long listing.</p>
-</section>
-<section id="only-the-most-recent-files" class="level2">
-<h2 class="anchored" data-anchor-id="only-the-most-recent-files">Only the Most Recent Files</h2>
-<p>To see just the newest few, pipe the listing to <code>head</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ls</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-lt</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">head</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-n</span> 3</span></code></pre></div></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb6-1">total 20</span>
-<span id="cb6-2">-rw-rw-r-- 1 abdullah abdullah 2 Oct 20 17:20 script.R</span>
-<span id="cb6-3">-rw-rw-r-- 1 abdullah abdullah 2 Oct 15 08:45 data.csv</span></code></pre></div></div>
-<p>The first line of <code>ls -l</code> is the <code>total</code> line, so <code>head -n 3</code> shows only two files. To see the newest five files, use <code>head -n 6</code>. Or drop <code>-l</code> and list names only, with no <code>total</code> line:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ls</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-t</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">head</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-n</span> 5</span></code></pre></div></div>
-</section>
-<section id="a-clearer-date-format" class="level2">
-<h2 class="anchored" data-anchor-id="a-clearer-date-format">A Clearer Date Format</h2>
-<p>By default <code>ls</code> shows the time for recent files and the year for old ones. For an unambiguous date and time, use the ISO style (GNU <code>ls</code>):</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ls</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-lt</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--time-style</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>long-iso</span></code></pre></div></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb9-1">total 20</span>
-<span id="cb9-2">-rw-rw-r-- 1 abdullah abdullah 2 2026-10-20 17:20 script.R</span>
-<span id="cb9-3">-rw-rw-r-- 1 abdullah abdullah 2 2026-10-15 08:45 data.csv</span></code></pre></div></div>
-</section>
-<section id="other-timestamps" class="level2">
-<h2 class="anchored" data-anchor-id="other-timestamps">Other Timestamps</h2>
-<p>Every file has three timestamps. <code>-t</code> uses the modification time unless we ask for another one.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Timestamp</th>
-<th>Meaning</th>
-<th>Sort by it</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>mtime</td>
-<td>Last time the contents changed</td>
-<td><code>ls -lt</code></td>
-</tr>
-<tr class="even">
-<td>ctime</td>
-<td>Last time the file or its metadata (permissions, owner) changed</td>
-<td><code>ls -ltc</code></td>
-</tr>
-<tr class="odd">
-<td>atime</td>
-<td>Last time the file was read</td>
-<td><code>ls -ltu</code></td>
-</tr>
-</tbody>
-</table>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Be careful with <code>-c</code> and <code>-u</code> on their own. <code>ls -lc</code> only <em>shows</em> the ctime, but still sorts by name. We need <code>-t</code> as well, as in <code>ls -ltc</code>, to sort by that time.</p>
-</div>
-</div>
-<p>For the exact timestamps of one file, use <code>stat</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">stat</span> report.txt</span></code></pre></div></div>
-</section>
-<section id="is-it-different-in-the-fish-shell" class="level2">
-<h2 class="anchored" data-anchor-id="is-it-different-in-the-fish-shell">Is It Different in the fish Shell?</h2>
-<p>The commands are the same. The sorting options belong to <code>ls</code> itself, not to the shell, and pipes work the same way, so <code>ls -lt | head -n 6</code> runs unchanged in fish.</p>
-<p>The one difference is that in fish, <code>ls</code> is a small wrapper function that adds colours and type indicators, and then calls the real <code>ls</code>. We can see it with <code>type ls</code>. To bypass the wrapper, use <code>command ls</code>.</p>
-<p>fish also makes it easy to save a shortcut. This function lists the five newest files, and <code>funcsave</code> stores it permanently:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"> lt</span></span>
-<span id="cb11-2">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ls</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-lt</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$argv</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">head</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-n</span> 6</span>
-<span id="cb11-3"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">end</span></span>
-<span id="cb11-4"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">funcsave</span> lt</span></code></pre></div></div>
-<p>After that, <code>lt</code> shows the newest files in the current folder, and <code>lt ~/Documents</code> shows them for another folder. A shorter alternative is an abbreviation, which expands as we type:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">abbr</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-a</span> lt <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'ls -lt'</span></span></code></pre></div></div>
-</section>
-<section id="quick-reference" class="level2">
-<h2 class="anchored" data-anchor-id="quick-reference">Quick Reference</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Goal</th>
-<th>Command</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Newest first</td>
-<td><code>ls -lt</code></td>
-</tr>
-<tr class="even">
-<td>Oldest first</td>
-<td><code>ls -ltr</code></td>
-</tr>
-<tr class="odd">
-<td>Five newest files</td>
-<td><code>ls -lt \| head -n 6</code></td>
-</tr>
-<tr class="even">
-<td>Names of the five newest</td>
-<td><code>ls -t \| head -n 5</code></td>
-</tr>
-<tr class="odd">
-<td>ISO dates</td>
-<td><code>ls -lt --time-style=long-iso</code></td>
-</tr>
-<tr class="even">
-<td>Sort by change time</td>
-<td><code>ls -ltc</code></td>
-</tr>
-<tr class="odd">
-<td>Sort by access time</td>
-<td><code>ls -ltu</code></td>
-</tr>
-</tbody>
-</table>
-
-
-</section>
-
- ]]></description>
-  <category>Linux</category>
-  <category>Tools</category>
-  <category>Tutorial</category>
-  <guid>https://www.statmania.info/blog/posts/linus-command-line-ls-see-last-modified.html</guid>
-  <pubDate>Tue, 03 Nov 2026 18:00:00 GMT</pubDate>
-  <media:content url="https://www.statmania.info/blog/img/linux-ls-last-modified.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 </channel>
 </rss>

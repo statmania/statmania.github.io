@@ -98,6 +98,10 @@ Don't geenrate svg if an existing image name (svg or png) matches with the post 
 - Photos/screenshots stay JPEG/PNG as usual.
 - research-paper.jpeg, linux-prog.jpeg can be used as genereic images unless a drawn diagram is better idea for the post. 
 
+## Equations
+
+Adjust them for mobile viewing (gets long on small screen), so use linebreaks. 
+
 ## Writing conventions
 
 - Name files by topic (`c-struct.qmd`), not by number.
