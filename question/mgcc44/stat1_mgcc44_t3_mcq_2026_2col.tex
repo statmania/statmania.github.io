@@ -1,0 +1,756 @@
+% Two-column version of stat1_mgcc44_t3_mcq_2026.tex
+\documentclass[10pt]{exam}
+%\documentclass[11pt,a4paper]{exam}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,dsfont}
+\usepackage{float}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{ifthen}
+\usepackage{array}
+\usepackage{geometry}
+\geometry{
+legalpaper, total={177.8mm, 290mm},left=10mm, right=10mm,
+top=7mm, bottom=10mm,
+}
+\usepackage{enumerate}% http://ctan.org/pkg/enumerate
+\usepackage{multicol}
+\usepackage{hhline}
+\usepackage[table]{xcolor}
+
+
+% Accumulate the answers. Unmodified from Phil Hirschorn's answer
+% https://tex.stackexchange.com/questions/15350/showing-solutions-of-the-questions-separately/15353
+\newbox\allanswers
+\setbox\allanswers=\vbox{}
+
+\newenvironment{answer}
+{%
+    \global\setbox\allanswers=\vbox\bgroup
+    \unvbox\allanswers
+}%
+{%
+    \bigbreak
+    \egroup
+}
+
+\newcommand{\showallanswers}{\par\unvbox\allanswers}
+% End Phil's answer
+
+
+% Is there a better way?
+\newcommand*{\getanswer}[5]{%
+    \ifthenelse{\equal{#5}{a}}
+    {\begin{answer}\thequestion. (a)~#1\end{answer}}
+    {\ifthenelse{\equal{#5}{b}}
+        {\begin{answer}\thequestion. (b)~#2\end{answer}}
+        {\ifthenelse{\equal{#5}{c}}
+            {\begin{answer}\thequestion. (c)~#3\end{answer}}
+            {\ifthenelse{\equal{#5}{d}}
+                {\begin{answer}\thequestion. (d)~#4\end{answer}}
+                {\begin{answer}\textbf{\thequestion. (#5)~Invalid answer choice.}\end{answer}}}}}
+}
+
+\setlength\parindent{0pt}
+%usage \choice{ }{ }{ }{ }
+%(A)(B)(C)(D)
+\newcommand{\fourch}[5]{
+    \par\nobreak
+    \begin{tabular}{*{4}{@{}p{0.24\linewidth}}}
+        (a)~#1 & (b)~#2 & (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)(B)
+%(C)(D)
+\newcommand{\twoch}[5]{
+    \par\nobreak
+    \begin{tabular}{*{2}{@{}p{0.48\linewidth}}}
+        (a)~#1 & (b)~#2
+    \end{tabular}
+    \par\nobreak
+    \begin{tabular}{*{2}{@{}p{0.48\linewidth}}}
+        (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)
+%(B)
+%(C)
+%(D)
+\newcommand{\onech}[5]{
+    \par\nobreak
+    (a)~#1 \par\nobreak (b)~#2 \par\nobreak (c)~#3 \par\nobreak (d)~#4
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+\newlength\widthcha
+\newlength\widthchb
+\newlength\widthchc
+\newlength\widthchd
+\newlength\widthch
+\newlength\tabmaxwidth
+
+\setlength\tabmaxwidth{0.96\textwidth}
+\newlength\fourthtabwidth
+\setlength\fourthtabwidth{0.25\textwidth}
+\newlength\halftabwidth
+\setlength\halftabwidth{0.5\textwidth}
+
+\newcommand{\choice}[5]{%
+\setlength\fourthtabwidth{0.23\linewidth}\setlength\halftabwidth{0.47\linewidth}%
+\settowidth\widthcha{AM.#1}\setlength{\widthch}{\widthcha}%
+\settowidth\widthchb{BM.#2}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{CM.#3}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{DM.#4}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+
+% These if statements were bypassing the \onech option.
+% \ifdim\widthch<\fourthtabwidth
+%     \fourch{#1}{#2}{#3}{#4}{#5}
+% \else\ifdim\widthch<\halftabwidth
+% \ifdim\widthch>\fourthtabwidth
+%     \twoch{#1}{#2}{#3}{#4}{#5}
+% \else
+%      \onech{#1}{#2}{#3}{#4}{#5}
+%  \fi\fi\fi}
+
+% Allows for the \onech option.
+\ifdim\widthch>\halftabwidth
+    \onech{#1}{#2}{#3}{#4}{#5}
+\else\ifdim\widthch<\halftabwidth
+\ifdim\widthch>\fourthtabwidth
+    \twoch{#1}{#2}{#3}{#4}{#5}
+\else
+    \fourch{#1}{#2}{#3}{#4}{#5}
+\fi\fi\fi}
+
+% Start a new page unless at least #1 of space is left on this one
+\newcommand{\keeptogether}[1]{\par
+\ifdim\dimexpr\pagegoal-\pagetotal\relax<#1\relax \vfil\break\fi}
+
+% Header and instructions; #1 = set code
+\newcommand{\examheader}[1]{%
+% ---------- Header ----------
+\noindent
+\begin{minipage}[t]{0.34\textwidth}
+\vspace{0pt}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|l|p{12mm}|}
+\hline
+Q/Setter & \\ \hline
+H/Dept /Moderator & \\ \hline
+\end{tabular}
+\end{minipage}%
+\begin{minipage}[t]{0.37\textwidth}
+\vspace{0pt}
+\raggedright
+Mymensingh Girls' Cadet College\par
+3rd Term End Exam-2026\par
+Subject-Statistics First Paper\par
+Class- XI\par
+\end{minipage}%
+\begin{minipage}[t]{0.29\textwidth}
+\vspace{0pt}
+\raggedleft
+\setlength{\fboxsep}{4pt}
+\renewcommand{\arraystretch}{1.2}
+\fbox{\begin{tabular}{@{}l@{\hspace{6pt}}r@{}}
+Set Code &
+\begin{tabular}{|>{\centering\arraybackslash}p{15.5mm}|}
+\hline #1 \\ \hline
+\end{tabular} \\[10pt]
+Subject Code &
+\begin{tabular}{|c|c|c|}
+\hline 1 & 2 & 9 \\ \hline
+\end{tabular}
+\end{tabular}}\par
+\end{minipage}
+
+\smallskip
+\noindent\textbf{Time 25 minutes}\hfill\textbf{Marks 25}\par\smallskip
+
+\hrule
+\setstretch{0.8}
+\begin{center}
+[N.B. -- Answer all the questions. Each question carries ONE mark. Block fully, with a black ball-point pen, the circle of the letter that stands for the correct/best answer in the ``Answer sheet'' for the Multiple Choice Questions Examination.]\\
+
+  
+  \textbf{Candidates are asked not to leave any mark or spot on the question paper.}
+\end{center}
+}
+
+% Two-column layout
+\setlength\columnsep{7mm}
+\setlength\columnseprule{0.4pt}
+\setlength\multicolsep{3pt}
+
+\begin{document}
+
+% ============================== SET Ka ==============================
+\begingroup
+\setcounter{question}{0}
+\examheader{Ka}
+\begin{multicols}{2}
+\raggedcolumns
+\begin{questions}
+\setlength\itemsep{1pt}\setlength\parsep{0pt}
+
+\question \textbf{Which measure always gives a value from within the values?}
+\choice{Arithmetic Mean}{Geometric Mean}{Median}{Mode}{d}
+
+\question \textbf{If $\displaystyle \sum_{i=1}^{20} x_i^2=60$ and
+$\displaystyle \sum_{i=1}^{20} x_i=30$, what is the value of
+$\displaystyle \sum_{i=1}^{20} x_i^2 + \sum_{i=1}^{20} x_i + 100$?}
+\choice{130}{200}{190}{2130}{c}
+\end{questions}
+
+% Situation Set Starts (one unbreakable box)
+\par\noindent\begin{minipage}{\linewidth}
+\textbf{Answer the next THREE questions based on the following information}
+
+Daily sales (in units) of 100 retail stores are recorded and this frequency distribution is constructed.
+
+
+\begin{center}
+\begin{tabular}{c|c|c|c|c}
+\begin{tabular}[c]{@{}c@{}}Sales (units)\end{tabular} & 0-10 & 10-20 & 20-30 & 30-40 \\ \hline
+No. of Stores & 12 & 28 & 35 & 25
+\end{tabular}
+\end{center}
+\begin{questions}
+\setlength\itemsep{1pt}\setlength\parsep{0pt}
+\setcounter{question}{2}
+
+\question \textbf{How many stores have sales between 10 and 30?}
+\choice{35}{63}{60}{28}{b}
+
+\question \textbf{How many stores have sales at least 20?}
+\choice{60}{35}{25}{47}{a}
+
+\question \textbf{What percent of stores have sales between 20 and 40?}
+\choice{50\%}{55\%}{60\%}{65\%}{c}
+\end{questions}
+\end{minipage}\par
+% Situation Set Ends
+
+\begin{questions}
+\setlength\itemsep{1pt}\setlength\parsep{0pt}
+\setcounter{question}{5}
+
+\question \textbf{What is the value of $\sum (x_i-2)$ if x =\{5, 7, 8\}?}
+\choice{10}{14}{20}{22}{b}
+
+\question \textbf{If a value is zero, which measure is not usable?}
+\choice{Arithmetic Mean}{Harmonic Mean}{Geometric Mean}{Mode}{c}
+
+\question \textbf{Which data set is suitable for Geometric Mean?}
+\choice{$1,-1,2,4,6,7$}{$1,2,4,8,16,32$}{$0,1,2,3,4,6$}{$1,1,2,3,4,4,5$}{b}
+
+\question \textbf{How many sources of data are there?}
+\choice{5}{4}{3}{2}{d}
+
+\question \textbf{Which rule is suggested by H.G. Sturges for determining number of class (k)?}
+\choice{$K=1+3.322logN$}{$K=1+3.222logN$}{$K=1-3.222logN$}{$K=1+2.332logN$}{a}
+
+\question \textbf{Which is not a function of statistics?}
+\choice{Data collection}{Data organization}{Analysis}{Database creation}{d}
+
+\question \textbf{If $x_1=4$, $x_2=1$, $x_3=-2$, and $x_4=3$, find
+$\displaystyle \sum_{i=1}^4 (x_i^2 + 3)$?}
+\choice{40}{50}{42}{56}{c}
+
+\question \textbf{Which one is an example of an infinite population?}
+\choice{Students of Dhaka University}{Cadets of MGCC}
+{Minor planets in the solar system}{Red blood cells in a person's body}{d}
+
+\question \textbf{If $\bar X = 12$, what is $\bar Y$ when $Y = 3X$?}
+\choice{4}{12}{24}{36}{d}
+
+\question \textbf{Which formula is used to find angles for Pie Chart?}
+\choice{$\theta_i = \frac{f_i}{N}\times 100$}{$\theta_i = \frac{f_i}
+{100}\times 360$}{$\theta_i = \frac{f_i}{N}\times 360$}
+{$\theta_i = \frac{f_i}{N-1}\times 360$}{c}
+
+\question \textbf{How many measurement scales are there?}
+\choice{2}{3}{4}{5}{c}
+
+\question \textbf{If $\displaystyle x_1=1, x_2=2, x_3=4, x_4=5$ and $\displaystyle y_1=3, y_2=5, y_3=6, y_4=2;
+ \sum_{i=1}^3 x_iy_i=?$}
+\choice{37}{45}{50}{33}{a}
+
+\question \textbf{Which statement is true about secondary data?}
+\par\nobreak
+i. Already published \\
+ii. Economical \\
+iii. Always up-to-date
+\par\nobreak
+\textbf{Which one is correct?}
+\par\nobreak
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{a}
+
+\question \textbf{To show runs per over in a cricket match, which diagram can be used?}
+\choice{Histogram}{Bar Diagram}{Ogive}{Frequency polygon}{b}
+
+\question \textbf{A pie chart is most appropriate for showing:}
+\choice{Frequency distribution}{Component parts of a total}{Trend over time}{Correlation between two variables}{b}
+
+\question \textbf{Temperature measured in Celsius or Fahrenheit follows which type of measurement scale?}
+\choice{Nominal}{Ordinal}{Interval}{Ratio}{c}
+
+\question \textbf{If $f_i = 2, 4, 6$ and $x_i = 3, 5, 7$, what is the value of $\displaystyle \sum_{i=1}^3 f_ix_i^3$?}
+\choice{950}{1125}{2612}{1330}{c}
+
+\question \textbf{Cities ranked according to habitability level show
+-- measurement scale}
+\choice{Nominal}{Ratio}{Interval}{Ordinal}{d}
+
+\question \textbf{Which is not a measure of central tendency?}
+\choice{Arithmetic mean}{Mode}{Range}{Quadratic mean}{c}
+
+\question \textbf{Which is not an example of shift of scale?}
+\choice{$y_i = \frac{x_i}{a}$}{$y_i = cx_i$}{$y_i = x_i-2$}
+{$y_i = \frac{cx_i}{d}$}{c}
+
+\end{questions}
+\end{multicols}
+
+\begin{center}
+``It is easy to lie with statistics; it is easier to lie without them.''\\
+-- Frederick Mosteller
+\end{center}
+
+\begin{center}
+ \vfill
+
+--AAM--
+\end{center}
+\par\endgroup
+
+% ============================== SET Kha ==============================
+\clearpage
+\begingroup
+\setcounter{question}{0}
+\examheader{Kha}
+\begin{multicols}{2}
+\raggedcolumns
+\begin{questions}
+\setlength\itemsep{1pt}\setlength\parsep{0pt}
+
+\question \textbf{Which is not a function of statistics?}
+\choice{Data collection}{Data organization}{Analysis}{Database creation}{d}
+
+\question \textbf{Which one is an example of an infinite population?}
+\choice{Students of Dhaka University}{Cadets of MGCC}
+{Minor planets in the solar system}{Red blood cells in a person's body}{d}
+
+\question \textbf{Cities ranked according to habitability level show
+-- measurement scale}
+\choice{Nominal}{Ratio}{Interval}{Ordinal}{d}
+
+\question \textbf{Temperature measured in Celsius or Fahrenheit follows which type of measurement scale?}
+\choice{Nominal}{Ordinal}{Interval}{Ratio}{c}
+
+\question \textbf{Which is not an example of shift of scale?}
+\choice{$y_i = \frac{x_i}{a}$}{$y_i = cx_i$}{$y_i = x_i-2$}
+{$y_i = \frac{cx_i}{d}$}{c}
+
+\question \textbf{If $\displaystyle \sum_{i=1}^{20} x_i^2=60$ and
+$\displaystyle \sum_{i=1}^{20} x_i=30$, what is the value of
+$\displaystyle \sum_{i=1}^{20} x_i^2 + \sum_{i=1}^{20} x_i + 100$?}
+\choice{130}{200}{190}{2130}{c}
+
+\question \textbf{How many measurement scales are there?}
+\choice{2}{3}{4}{5}{c}
+
+\question \textbf{If $x_1=4$, $x_2=1$, $x_3=-2$, and $x_4=3$, find
+$\displaystyle \sum_{i=1}^4 (x_i^2 + 3)$?}
+\choice{40}{50}{42}{56}{c}
+
+\question \textbf{If $f_i = 2, 4, 6$ and $x_i = 3, 5, 7$, what is the value of $\displaystyle \sum_{i=1}^3 f_ix_i^3$?}
+\choice{950}{1125}{2612}{1330}{c}
+
+\question \textbf{What is the value of $\sum (x_i-2)$ if x =\{5, 7, 8\}?}
+\choice{10}{14}{20}{22}{b}
+
+\question \textbf{If $\displaystyle x_1=1, x_2=2, x_3=4, x_4=5$ and $\displaystyle y_1=3, y_2=5, y_3=6, y_4=2;
+ \sum_{i=1}^3 x_iy_i=?$}
+\choice{37}{45}{50}{33}{a}
+
+\question \textbf{How many sources of data are there?}
+\choice{5}{4}{3}{2}{d}
+
+\question \textbf{Which formula is used to find angles for Pie Chart?}
+\choice{$\theta_i = \frac{f_i}{N}\times 100$}{$\theta_i = \frac{f_i}
+{100}\times 360$}{$\theta_i = \frac{f_i}{N}\times 360$}
+{$\theta_i = \frac{f_i}{N-1}\times 360$}{c}
+
+\question \textbf{Which rule is suggested by H.G. Sturges for determining number of class (k)?}
+\choice{$K=1+3.322logN$}{$K=1+3.222logN$}{$K=1-3.222logN$}{$K=1+2.332logN$}{a}
+
+\question \textbf{To show runs per over in a cricket match, which diagram can be used?}
+\choice{Histogram}{Bar Diagram}{Ogive}{Frequency polygon}{b}
+
+\question \textbf{A pie chart is most appropriate for showing:}
+\choice{Frequency distribution}{Component parts of a total}{Trend over time}{Correlation between two variables}{b}
+\end{questions}
+
+% Situation Set Starts (one unbreakable box)
+\par\noindent\begin{minipage}{\linewidth}
+\textbf{Answer the next THREE questions based on the following information}
+
+Daily sales (in units) of 100 retail stores are recorded and this frequency distribution is constructed.
+
+
+\begin{center}
+\begin{tabular}{c|c|c|c|c}
+\begin{tabular}[c]{@{}c@{}}Sales (units)\end{tabular} & 0-10 & 10-20 & 20-30 & 30-40 \\ \hline
+No. of Stores & 12 & 28 & 35 & 25
+\end{tabular}
+\end{center}
+\begin{questions}
+\setlength\itemsep{1pt}\setlength\parsep{0pt}
+\setcounter{question}{16}
+
+\question \textbf{How many stores have sales between 10 and 30?}
+\choice{35}{63}{60}{28}{b}
+
+\question \textbf{How many stores have sales at least 20?}
+\choice{60}{35}{25}{47}{a}
+
+\question \textbf{What percent of stores have sales between 20 and 40?}
+\choice{50\%}{55\%}{60\%}{65\%}{c}
+\end{questions}
+\end{minipage}\par
+% Situation Set Ends
+
+\begin{questions}
+\setlength\itemsep{1pt}\setlength\parsep{0pt}
+\setcounter{question}{19}
+
+\question \textbf{Which statement is true about secondary data?}
+\par\nobreak
+i. Already published \\
+ii. Economical \\
+iii. Always up-to-date
+\par\nobreak
+\textbf{Which one is correct?}
+\par\nobreak
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{a}
+
+\question \textbf{Which is not a measure of central tendency?}
+\choice{Arithmetic mean}{Mode}{Range}{Quadratic mean}{c}
+
+\question \textbf{If a value is zero, which measure is not usable?}
+\choice{Arithmetic Mean}{Harmonic Mean}{Geometric Mean}{Mode}{c}
+
+\question \textbf{Which measure always gives a value from within the values?}
+\choice{Arithmetic Mean}{Geometric Mean}{Median}{Mode}{d}
+
+\question \textbf{If $\bar X = 12$, what is $\bar Y$ when $Y = 3X$?}
+\choice{4}{12}{24}{36}{d}
+
+\question \textbf{Which data set is suitable for Geometric Mean?}
+\choice{$1,-1,2,4,6,7$}{$1,2,4,8,16,32$}{$0,1,2,3,4,6$}{$1,1,2,3,4,4,5$}{b}
+
+\end{questions}
+\end{multicols}
+
+\begin{center}
+``It is easy to lie with statistics; it is easier to lie without them.''\\
+-- Frederick Mosteller
+\end{center}
+
+\begin{center}
+ \vfill
+
+--AAM--
+\end{center}
+\par\endgroup
+
+% ============================== SET Ga ==============================
+\clearpage
+\begingroup
+\setcounter{question}{0}
+\examheader{Ga}
+\begin{multicols}{2}
+\raggedcolumns
+\begin{questions}
+\setlength\itemsep{1pt}\setlength\parsep{0pt}
+
+\question \textbf{If $f_i = 2, 4, 6$ and $x_i = 3, 5, 7$, what is the value of $\displaystyle \sum_{i=1}^3 f_ix_i^3$?}
+\choice{950}{1125}{2612}{1330}{c}
+
+\question \textbf{Which rule is suggested by H.G. Sturges for determining number of class (k)?}
+\choice{$K=1+3.322logN$}{$K=1+3.222logN$}{$K=1-3.222logN$}{$K=1+2.332logN$}{a}
+
+\question \textbf{Which one is an example of an infinite population?}
+\choice{Students of Dhaka University}{Cadets of MGCC}
+{Minor planets in the solar system}{Red blood cells in a person's body}{d}
+
+\question \textbf{Which is not a measure of central tendency?}
+\choice{Arithmetic mean}{Mode}{Range}{Quadratic mean}{c}
+
+\question \textbf{If $\displaystyle \sum_{i=1}^{20} x_i^2=60$ and
+$\displaystyle \sum_{i=1}^{20} x_i=30$, what is the value of
+$\displaystyle \sum_{i=1}^{20} x_i^2 + \sum_{i=1}^{20} x_i + 100$?}
+\choice{130}{200}{190}{2130}{c}
+
+\question \textbf{If a value is zero, which measure is not usable?}
+\choice{Arithmetic Mean}{Harmonic Mean}{Geometric Mean}{Mode}{c}
+
+\question \textbf{What is the value of $\sum (x_i-2)$ if x =\{5, 7, 8\}?}
+\choice{10}{14}{20}{22}{b}
+
+\question \textbf{How many sources of data are there?}
+\choice{5}{4}{3}{2}{d}
+
+\question \textbf{Temperature measured in Celsius or Fahrenheit follows which type of measurement scale?}
+\choice{Nominal}{Ordinal}{Interval}{Ratio}{c}
+
+\question \textbf{Cities ranked according to habitability level show
+-- measurement scale}
+\choice{Nominal}{Ratio}{Interval}{Ordinal}{d}
+
+\question \textbf{Which is not an example of shift of scale?}
+\choice{$y_i = \frac{x_i}{a}$}{$y_i = cx_i$}{$y_i = x_i-2$}
+{$y_i = \frac{cx_i}{d}$}{c}
+
+\question \textbf{Which statement is true about secondary data?}
+\par\nobreak
+i. Already published \\
+ii. Economical \\
+iii. Always up-to-date
+\par\nobreak
+\textbf{Which one is correct?}
+\par\nobreak
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{a}
+
+\question \textbf{How many measurement scales are there?}
+\choice{2}{3}{4}{5}{c}
+
+\question \textbf{Which data set is suitable for Geometric Mean?}
+\choice{$1,-1,2,4,6,7$}{$1,2,4,8,16,32$}{$0,1,2,3,4,6$}{$1,1,2,3,4,4,5$}{b}
+
+\question \textbf{A pie chart is most appropriate for showing:}
+\choice{Frequency distribution}{Component parts of a total}{Trend over time}{Correlation between two variables}{b}
+
+\question \textbf{If $\displaystyle x_1=1, x_2=2, x_3=4, x_4=5$ and $\displaystyle y_1=3, y_2=5, y_3=6, y_4=2;
+ \sum_{i=1}^3 x_iy_i=?$}
+\choice{37}{45}{50}{33}{a}
+
+\question \textbf{Which formula is used to find angles for Pie Chart?}
+\choice{$\theta_i = \frac{f_i}{N}\times 100$}{$\theta_i = \frac{f_i}
+{100}\times 360$}{$\theta_i = \frac{f_i}{N}\times 360$}
+{$\theta_i = \frac{f_i}{N-1}\times 360$}{c}
+
+\question \textbf{Which is not a function of statistics?}
+\choice{Data collection}{Data organization}{Analysis}{Database creation}{d}
+
+\question \textbf{If $\bar X = 12$, what is $\bar Y$ when $Y = 3X$?}
+\choice{4}{12}{24}{36}{d}
+
+\question \textbf{If $x_1=4$, $x_2=1$, $x_3=-2$, and $x_4=3$, find
+$\displaystyle \sum_{i=1}^4 (x_i^2 + 3)$?}
+\choice{40}{50}{42}{56}{c}
+
+\question \textbf{To show runs per over in a cricket match, which diagram can be used?}
+\choice{Histogram}{Bar Diagram}{Ogive}{Frequency polygon}{b}
+\end{questions}
+
+% Situation Set Starts (one unbreakable box)
+\par\noindent\begin{minipage}{\linewidth}
+\textbf{Answer the next THREE questions based on the following information}
+
+Daily sales (in units) of 100 retail stores are recorded and this frequency distribution is constructed.
+
+
+\begin{center}
+\begin{tabular}{c|c|c|c|c}
+\begin{tabular}[c]{@{}c@{}}Sales (units)\end{tabular} & 0-10 & 10-20 & 20-30 & 30-40 \\ \hline
+No. of Stores & 12 & 28 & 35 & 25
+\end{tabular}
+\end{center}
+\begin{questions}
+\setlength\itemsep{1pt}\setlength\parsep{0pt}
+\setcounter{question}{21}
+
+\question \textbf{How many stores have sales between 10 and 30?}
+\choice{35}{63}{60}{28}{b}
+
+\question \textbf{How many stores have sales at least 20?}
+\choice{60}{35}{25}{47}{a}
+
+\question \textbf{What percent of stores have sales between 20 and 40?}
+\choice{50\%}{55\%}{60\%}{65\%}{c}
+\end{questions}
+\end{minipage}\par
+% Situation Set Ends
+
+\begin{questions}
+\setlength\itemsep{1pt}\setlength\parsep{0pt}
+\setcounter{question}{24}
+
+\question \textbf{Which measure always gives a value from within the values?}
+\choice{Arithmetic Mean}{Geometric Mean}{Median}{Mode}{d}
+
+\end{questions}
+\end{multicols}
+
+\begin{center}
+``It is easy to lie with statistics; it is easier to lie without them.''\\
+-- Frederick Mosteller
+\end{center}
+
+\begin{center}
+ \vfill
+
+--AAM--
+\end{center}
+\par\endgroup
+
+% ============================== SET Gha ==============================
+\clearpage
+\begingroup
+\setcounter{question}{0}
+\examheader{Gha}
+\begin{multicols}{2}
+\raggedcolumns
+\begin{questions}
+\setlength\itemsep{1pt}\setlength\parsep{0pt}
+
+\question \textbf{How many sources of data are there?}
+\choice{5}{4}{3}{2}{d}
+
+\question \textbf{If a value is zero, which measure is not usable?}
+\choice{Arithmetic Mean}{Harmonic Mean}{Geometric Mean}{Mode}{c}
+
+\question \textbf{If $x_1=4$, $x_2=1$, $x_3=-2$, and $x_4=3$, find
+$\displaystyle \sum_{i=1}^4 (x_i^2 + 3)$?}
+\choice{40}{50}{42}{56}{c}
+
+\question \textbf{Which is not a function of statistics?}
+\choice{Data collection}{Data organization}{Analysis}{Database creation}{d}
+
+\question \textbf{Which statement is true about secondary data?}
+\par\nobreak
+i. Already published \\
+ii. Economical \\
+iii. Always up-to-date
+\par\nobreak
+\textbf{Which one is correct?}
+\par\nobreak
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{a}
+
+\question \textbf{How many measurement scales are there?}
+\choice{2}{3}{4}{5}{c}
+
+\question \textbf{If $f_i = 2, 4, 6$ and $x_i = 3, 5, 7$, what is the value of $\displaystyle \sum_{i=1}^3 f_ix_i^3$?}
+\choice{950}{1125}{2612}{1330}{c}
+
+\question \textbf{What is the value of $\sum (x_i-2)$ if x =\{5, 7, 8\}?}
+\choice{10}{14}{20}{22}{b}
+
+\question \textbf{Which one is an example of an infinite population?}
+\choice{Students of Dhaka University}{Cadets of MGCC}
+{Minor planets in the solar system}{Red blood cells in a person's body}{d}
+
+\question \textbf{Which measure always gives a value from within the values?}
+\choice{Arithmetic Mean}{Geometric Mean}{Median}{Mode}{d}
+
+\question \textbf{If $\bar X = 12$, what is $\bar Y$ when $Y = 3X$?}
+\choice{4}{12}{24}{36}{d}
+
+\question \textbf{Which rule is suggested by H.G. Sturges for determining number of class (k)?}
+\choice{$K=1+3.322logN$}{$K=1+3.222logN$}{$K=1-3.222logN$}{$K=1+2.332logN$}{a}
+
+\question \textbf{To show runs per over in a cricket match, which diagram can be used?}
+\choice{Histogram}{Bar Diagram}{Ogive}{Frequency polygon}{b}
+
+\question \textbf{Which formula is used to find angles for Pie Chart?}
+\choice{$\theta_i = \frac{f_i}{N}\times 100$}{$\theta_i = \frac{f_i}
+{100}\times 360$}{$\theta_i = \frac{f_i}{N}\times 360$}
+{$\theta_i = \frac{f_i}{N-1}\times 360$}{c}
+
+\question \textbf{Which is not a measure of central tendency?}
+\choice{Arithmetic mean}{Mode}{Range}{Quadratic mean}{c}
+
+\question \textbf{If $\displaystyle \sum_{i=1}^{20} x_i^2=60$ and
+$\displaystyle \sum_{i=1}^{20} x_i=30$, what is the value of
+$\displaystyle \sum_{i=1}^{20} x_i^2 + \sum_{i=1}^{20} x_i + 100$?}
+\choice{130}{200}{190}{2130}{c}
+
+\question \textbf{Cities ranked according to habitability level show
+-- measurement scale}
+\choice{Nominal}{Ratio}{Interval}{Ordinal}{d}
+
+\question \textbf{If $\displaystyle x_1=1, x_2=2, x_3=4, x_4=5$ and $\displaystyle y_1=3, y_2=5, y_3=6, y_4=2;
+ \sum_{i=1}^3 x_iy_i=?$}
+\choice{37}{45}{50}{33}{a}
+\end{questions}
+
+% Situation Set Starts (one unbreakable box)
+\par\noindent\begin{minipage}{\linewidth}
+\textbf{Answer the next THREE questions based on the following information}
+
+Daily sales (in units) of 100 retail stores are recorded and this frequency distribution is constructed.
+
+
+\begin{center}
+\begin{tabular}{c|c|c|c|c}
+\begin{tabular}[c]{@{}c@{}}Sales (units)\end{tabular} & 0-10 & 10-20 & 20-30 & 30-40 \\ \hline
+No. of Stores & 12 & 28 & 35 & 25
+\end{tabular}
+\end{center}
+\begin{questions}
+\setlength\itemsep{1pt}\setlength\parsep{0pt}
+\setcounter{question}{18}
+
+\question \textbf{How many stores have sales between 10 and 30?}
+\choice{35}{63}{60}{28}{b}
+
+\question \textbf{How many stores have sales at least 20?}
+\choice{60}{35}{25}{47}{a}
+
+\question \textbf{What percent of stores have sales between 20 and 40?}
+\choice{50\%}{55\%}{60\%}{65\%}{c}
+\end{questions}
+\end{minipage}\par
+% Situation Set Ends
+
+\begin{questions}
+\setlength\itemsep{1pt}\setlength\parsep{0pt}
+\setcounter{question}{21}
+
+\question \textbf{Temperature measured in Celsius or Fahrenheit follows which type of measurement scale?}
+\choice{Nominal}{Ordinal}{Interval}{Ratio}{c}
+
+\question \textbf{Which is not an example of shift of scale?}
+\choice{$y_i = \frac{x_i}{a}$}{$y_i = cx_i$}{$y_i = x_i-2$}
+{$y_i = \frac{cx_i}{d}$}{c}
+
+\question \textbf{Which data set is suitable for Geometric Mean?}
+\choice{$1,-1,2,4,6,7$}{$1,2,4,8,16,32$}{$0,1,2,3,4,6$}{$1,1,2,3,4,4,5$}{b}
+
+\question \textbf{A pie chart is most appropriate for showing:}
+\choice{Frequency distribution}{Component parts of a total}{Trend over time}{Correlation between two variables}{b}
+
+\end{questions}
+\end{multicols}
+
+\begin{center}
+``It is easy to lie with statistics; it is easier to lie without them.''\\
+-- Frederick Mosteller
+\end{center}
+
+\begin{center}
+ \vfill
+
+--AAM--
+\end{center}
+\par\endgroup
+
+\end{document}
