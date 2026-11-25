@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Parses question/bank/stat1_mcq_bank.tex and stat2_mcq_bank.tex and generates
+Parses question/stat_mcq_bank.tex (and the course banks) and generates
 question/stat-prob.html: a self-contained, dark-theme quiz app.
 
 Run: python3 build_quiz.py
@@ -17,8 +17,9 @@ sys.path.insert(0, str(HERE))
 from discover_quiz_banks import discover_quiz_banks  # noqa: E402
 
 SOURCES = [
-    ("Statistics I", HERE / "bank" / "stat1_mcq_bank.tex"),
-    ("Statistics II", HERE / "bank" / "stat2_mcq_bank.tex"),
+    # (subject, file, paper number): both papers live in one file
+    ("Statistics I", HERE / "stat_mcq_bank.tex", 1),
+    ("Statistics II", HERE / "stat_mcq_bank.tex", 2),
 ]
 # The courses live in their own repo (statmania/courses); locally they are
 # reached through the gitignored ../courses symlink (see README "Courses").
@@ -373,11 +374,9 @@ def latexify_block(text):
     text = stash_tables(text, stash)
 
     def _stash_img(m):
-        # Paths in the .tex are relative to question/bank/; stat-prob.html
-        # lives one directory up, in question/, so drop exactly one leading
-        # "../" to re-base them (e.g. "../img/x.png" -> "img/x.png",
-        # "../../slide/img/x.jpg" -> "../slide/img/x.jpg").
-        path = re.sub(r"^\.\./", "", m.group(1).strip(), count=1)
+        # Paths in stat_mcq_bank.tex are relative to question/, where
+        # stat-prob.html also lives, so they are used unchanged.
+        path = m.group(1).strip()
         stash.append('<img src="%s" alt="" class="q-image">' % _esc(path))
         return " @@STASH%d@@ " % (len(stash) - 1)
 
@@ -393,13 +392,24 @@ def latexify_block(text):
     return html
 
 
-def parse_bank(path, subject_label):
+def paper_part(body, paper):
+    """The part of the combined bank under its "% === PAPER n ===" comment line."""
+    marks = {int(m[1]): m.start() for m in re.finditer(r"(?m)^% =+ PAPER (\d+) =+$", body)}
+    if paper not in marks:
+        raise ValueError("No PAPER %d marker line found" % paper)
+    later = [pos for pos in marks.values() if pos > marks[paper]]
+    return body[marks[paper]:min(later, default=len(body))]
+
+
+def parse_bank(path, subject_label, paper=None):
     raw = path.read_text(encoding="utf-8")
     doc_m = re.search(r"\\begin\{document\}", raw)
     end_m = re.search(r"\\end\{document\}", raw)
     if not doc_m:
         raise ValueError("No \\begin{document} found in %s" % path)
     body = raw[doc_m.end():end_m.start() if end_m else len(raw)]
+    if paper is not None:
+        body = paper_part(body, paper)
     stream = strip_comments_with_markers(body)
 
     token_re = re.compile(
@@ -1398,8 +1408,8 @@ document.getElementById('end-quiz-btn').addEventListener('click', endQuizNow);
 
 def main():
     all_questions = []
-    for subject_label, path in SOURCES:
-        qs = parse_bank(path, subject_label)
+    for subject_label, path, *paper in SOURCES:
+        qs = parse_bank(path, subject_label, *paper)
         print(f"{path.name}: parsed {len(qs)} questions")
         all_questions.extend(qs)
 
