@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Abdullah Al Mahmud">
+<meta name="dcterms.date" content="2026-11-26">
+<meta name="description" content="Why n objects have (n−1)! circular arrangements, when to divide by 2, and how to handle people sitting together, apart or alternately, and identical beads.">
+
+<title>Circular Permutations Explained with Pictures and Examples – Stat Mania</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-de63f62b328812d8e578a4d74e282472.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-ccafe2c99a4564d55934ca8539ca9f46.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-de63f62b328812d8e578a4d74e282472.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-52e7a1fd6f08fa3fe250bdb5f5fe2fe1.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-de4fa3b7647c5fefd9d59d6b8dfc486f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-52e7a1fd6f08fa3fe250bdb5f5fe2fe1.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-BEELJ2ZRED"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-BEELJ2ZRED', { 'anonymize_ip': true});
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../site_libs/quarto-contrib/quarto-project/blogkit/styles.css">
+<link rel="stylesheet" href="../site.css">
+<meta property="og:title" content="Circular Permutations Explained with Pictures and Examples – Stat Mania">
+<meta property="og:description" content="Why n objects have (n−1)! circular arrangements, when to divide by 2, and how to handle people sitting together, apart or alternately, and identical beads.">
+<meta property="og:image" content="https://www.statmania.info/blog/img/circular-permutation.png">
+<meta property="og:site_name" content="Stat Mania">
+<meta property="og:image:height" content="630">
+<meta property="og:image:width" content="1200">
+<meta name="twitter:title" content="Circular Permutations Explained with Pictures and Examples – Stat Mania">
+<meta name="twitter:description" content="Why n objects have (n−1)! circular arrangements, when to divide by 2, and how to handle people sitting together, apart or alternately, and identical beads.">
+<meta name="twitter:image" content="https://www.statmania.info/blog/img/circular-permutation.png">
+<meta name="twitter:image-height" content="630">
+<meta name="twitter:image-width" content="1200">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../logo.svg" alt="Stat Mania Logo." class="navbar-logo light-content">
+    <img src="../logo.svg" alt="Stat Mania Logo." class="navbar-logo dark-content">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Stat Mania</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> <i class="bi bi-house" role="img">
+</i> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tags.html"> <i class="bi bi-tags" role="img">
+</i> 
+<span class="menu-text">Tags</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../categories.html"> <i class="bi bi-collection" role="img">
+</i> 
+<span class="menu-text">Categories</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-language" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-code-slash" role="img">
+</i> 
+ <span class="menu-text">Language</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-language">    
+        <li>
+    <a class="dropdown-item" href="../tags.html#tag=r"><i class="bi bi-bar-chart-line" role="img">
+</i> 
+ <span class="dropdown-text">R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../tags.html#tag=c"><i class="bi bi-braces" role="img">
+</i> 
+ <span class="dropdown-text">C</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../tags.html#tag=python"><i class="bi bi-filetype-py" role="img">
+</i> 
+ <span class="dropdown-text">Python</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../tags.html#tag=command-line"><i class="bi bi-terminal" role="img">
+</i> 
+ <span class="dropdown-text">Shell</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://www.statmania.info"> <i class="bi bi-rocket-takeoff" role="img">
+</i> 
+<span class="menu-text">Portal</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> <i class="bi bi-info-circle" role="img">
+</i> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com"> <i class="bi bi-twitter" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Circular Permutations Explained with Pictures and Examples</h1>
+                  <div>
+        <div class="description">
+          Why n objects have (n−1)! circular arrangements, when to divide by 2, and how to handle people sitting together, apart or alternately, and identical beads.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">Mathematics</div>
+                <div class="quarto-category">Probability</div>
+                <div class="quarto-category">Tutorial</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Abdullah Al Mahmud </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">November 26, 2026</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-core-idea" id="toc-the-core-idea" class="nav-link active" data-scroll-target="#the-core-idea">The core idea</a>
+  <ul class="collapse">
+  <li><a href="#fix-one-person" id="toc-fix-one-person" class="nav-link" data-scroll-target="#fix-one-person">Fix one person</a></li>
+  </ul></li>
+  <li><a href="#numbered-chairs" id="toc-numbered-chairs" class="nav-link" data-scroll-target="#numbered-chairs">Numbered chairs</a></li>
+  <li><a href="#necklaces-and-bracelets" id="toc-necklaces-and-bracelets" class="nav-link" data-scroll-target="#necklaces-and-bracelets">Necklaces and bracelets</a></li>
+  <li><a href="#sitting-together" id="toc-sitting-together" class="nav-link" data-scroll-target="#sitting-together">Sitting together</a></li>
+  <li><a href="#sitting-apart" id="toc-sitting-apart" class="nav-link" data-scroll-target="#sitting-apart">Sitting apart</a></li>
+  <li><a href="#no-two-of-a-group-adjacent-the-gap-method" id="toc-no-two-of-a-group-adjacent-the-gap-method" class="nav-link" data-scroll-target="#no-two-of-a-group-adjacent-the-gap-method">No two of a group adjacent: the gap method</a></li>
+  <li><a href="#alternating-seats" id="toc-alternating-seats" class="nav-link" data-scroll-target="#alternating-seats">Alternating seats</a>
+  <ul class="collapse">
+  <li><a href="#why-not-4-times-4" id="toc-why-not-4-times-4" class="nav-link" data-scroll-target="#why-not-4-times-4">Why not <span class="math inline">\(4! \times 4!\)</span>?</a></li>
+  </ul></li>
+  <li><a href="#identical-objects" id="toc-identical-objects" class="nav-link" data-scroll-target="#identical-objects">Identical objects</a>
+  <ul class="collapse">
+  <li><a href="#the-shortcut-and-its-condition" id="toc-the-shortcut-and-its-condition" class="nav-link" data-scroll-target="#the-shortcut-and-its-condition">The shortcut and its condition</a></li>
+  <li><a href="#when-the-shortcut-fails" id="toc-when-the-shortcut-fails" class="nav-link" data-scroll-target="#when-the-shortcut-fails">When the shortcut fails</a></li>
+  </ul></li>
+  <li><a href="#one-more-example-two-conditions" id="toc-one-more-example-two-conditions" class="nav-link" data-scroll-target="#one-more-example-two-conditions">One more example: two conditions</a></li>
+  <li><a href="#quick-reference" id="toc-quick-reference" class="nav-link" data-scroll-target="#quick-reference">Quick reference</a></li>
+  <li><a href="#common-mistakes" id="toc-common-mistakes" class="nav-link" data-scroll-target="#common-mistakes">Common mistakes</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../img/circular-permutation.svg" class="img-fluid figure-img" alt="The orders ABCD, DABC, CDAB and BCDA shown twice. As rows they are marked unequal, four different arrangements. Round a table they are marked equal, one arrangement, so 4 factorial divided by 4 gives 6."></p>
+<figcaption>Four line-ups that differ in a row become one arrangement round a table.</figcaption>
+</figure>
+</div>
+<p>In how many ways can people sit around a round table? The answer differs from that for a row, and one idea explains why. We start with it and then add restrictions one at a time. New to arrangements in a row? See <a href="understanding-permutation-combination-with-examples.html">permutations and combinations with examples</a>.</p>
+<section id="the-core-idea" class="level2">
+<h2 class="anchored" data-anchor-id="the-core-idea">The core idea</h2>
+<p>In a <strong>row</strong>, the positions are different from one another (first, second, third, …), so <span class="math inline">\(n\)</span> distinct objects can be arranged in <span class="math inline">\(n!\)</span> ways.</p>
+<p>In a <strong>circle</strong>, there is no first position. If everyone moves one seat in the same direction, each person keeps the same neighbours on the same sides, so we count it as the same arrangement. Each circular arrangement therefore appears <span class="math inline">\(n\)</span> times among the <span class="math inline">\(n!\)</span> row arrangements, as in the picture above:</p>
+<p><span class="math display">\[
+\frac{n!}{n} = (n-1)!
+\]</span></p>
+<section id="fix-one-person" class="level3">
+<h3 class="anchored" data-anchor-id="fix-one-person">Fix one person</h3>
+<p>Another way to see it: only the positions <strong>relative to each other</strong> matter. So we seat one person anywhere and keep them there. This person now marks a starting point, and the remaining <span class="math inline">\(n-1\)</span> seats are filled as in a row.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../img/circular-permutation-fix.svg" class="img-fluid figure-img" alt="Six seats round a table. The top one is a solid orange dot for the fixed person A, and the other five show 5, 4, 3, 2 and 1 choices, giving 120 ways."></p>
+<figcaption>The solid orange dot is the fixed person. The other seats are filled one after another.</figcaption>
+</figure>
+</div>
+<p><strong>Example.</strong> 8 people can sit around a round table in <span class="math inline">\(7! = 5040\)</span> ways.</p>
+</section>
+</section>
+<section id="numbered-chairs" class="level2">
+<h2 class="anchored" data-anchor-id="numbered-chairs">Numbered chairs</h2>
+<p>If the chairs are numbered, it matters <strong>which chair</strong> each person gets. Moving everyone one seat gives a new seating, so we do not divide by <span class="math inline">\(n\)</span>. We count as in a row: <span class="math inline">\(n!\)</span>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../img/circular-permutation-chairs.svg" class="img-fluid figure-img" alt="Three round tables with chairs numbered 1, 2 and 3. Chair 1 holds A, then C, then B, so these are three different seatings."></p>
+<figcaption>The same order round the table, but a different person in chair 1 each time.</figcaption>
+</figure>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">3 people</th>
+<th style="text-align: left;">Number of seatings</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Chairs not numbered</td>
+<td style="text-align: left;"><span class="math inline">\(2! = 2\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Chairs numbered</td>
+<td style="text-align: left;"><span class="math inline">\(3! = 6\)</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="necklaces-and-bracelets" class="level2">
+<h2 class="anchored" data-anchor-id="necklaces-and-bracelets">Necklaces and bracelets</h2>
+<p>A necklace or bracelet differs from a table in one way: we can <strong>flip it over</strong>. Flipping swaps left and right, so an arrangement and its mirror image are the <strong>same</strong> object. Necklaces, bracelets and garlands are all counted this way.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../img/circular-permutation-flip.svg" class="img-fluid figure-img" alt="The loops A B C D and A D C B are mirror images of each other. Round a table, with no flipping, they are two different arrangements. As a necklace or bracelet, with flipping allowed, they are one."></p>
+<figcaption>The mirror image is new round a table, but not on a necklace or bracelet.</figcaption>
+</figure>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Round table</th>
+<th style="text-align: left;">Necklace or bracelet</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Turn it round</td>
+<td style="text-align: left;">same</td>
+<td style="text-align: left;">same</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Flip it over</td>
+<td style="text-align: left;">not possible</td>
+<td style="text-align: left;">same</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(n\)</span> distinct objects</td>
+<td style="text-align: left;"><span class="math inline">\((n-1)!\)</span></td>
+<td style="text-align: left;"><span class="math inline">\((n-1)!/2\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>The necklace formula needs <span class="math inline">\(n \ge 3\)</span> (with 1 or 2 objects there is only 1 arrangement). With 4 distinct beads, the 6 table arrangements pair up into 3 necklaces:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../img/circular-permutation-mirror.svg" class="img-fluid figure-img" alt="Six round arrangements of A, B, C and D with A at the top, shown in three columns. In each column the lower one is the left to right mirror image of the upper one, so there are three necklaces."></p>
+<figcaption>With A fixed at the top, the six arrangements form three mirror pairs.</figcaption>
+</figure>
+</div>
+<p><strong>Example.</strong> 6 different beads make <span class="math inline">\(\dfrac{5!}{2} = 60\)</span> necklaces.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Some advanced combinatorics books separate the two words: there a “necklace” can only be turned round, while a “bracelet” can also be flipped. Unless a question says so, we flip both.</p>
+</div>
+</div>
+</section>
+<section id="sitting-together" class="level2">
+<h2 class="anchored" data-anchor-id="sitting-together">Sitting together</h2>
+<p>To keep two people together, we <strong>glue them into one block</strong>. We then have <span class="math inline">\(n-1\)</span> units around the table, which gives <span class="math inline">\((n-2)!\)</span> arrangements. Inside the block the two can swap places, so we multiply by <span class="math inline">\(2!\)</span>:</p>
+<p><span class="math display">\[
+2!\,(n-2)!
+\]</span></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../img/circular-permutation-together.svg" class="img-fluid figure-img" alt="Two round tables of six seats with A and B shaded as one block. The order is A then B on one and B then A on the other. Five units give 24 circles, times 2 gives 48."></p>
+<figcaption>A and B form one block, in either order.</figcaption>
+</figure>
+</div>
+<p><strong>Example.</strong> 6 people with A and B together: <span class="math inline">\(2 \times 4! = 48\)</span>.</p>
+<p>The same method works for <span class="math inline">\(k\)</span> particular people (with <span class="math inline">\(k &lt; n\)</span>). The block and the other <span class="math inline">\(n-k\)</span> people make <span class="math inline">\(n-k+1\)</span> units, and the block can be ordered in <span class="math inline">\(k!\)</span> ways:</p>
+<p><span class="math display">\[
+k!\,(n-k)!
+\]</span></p>
+<p><strong>Example.</strong> 7 people with A, B and C together: <span class="math inline">\(3! \times 4! = 144\)</span>.</p>
+</section>
+<section id="sitting-apart" class="level2">
+<h2 class="anchored" data-anchor-id="sitting-apart">Sitting apart</h2>
+<p>For two people who must <strong>not</strong> be neighbours, it is easiest to subtract the “together” cases from the total:</p>
+<p><span class="math display">\[
+(n-1)! - 2\,(n-2)!
+\]</span></p>
+<p><strong>Example.</strong> 6 people with A and B apart: <span class="math inline">\(5! - 48 = 120 - 48 = 72\)</span>.</p>
+</section>
+<section id="no-two-of-a-group-adjacent-the-gap-method" class="level2">
+<h2 class="anchored" data-anchor-id="no-two-of-a-group-adjacent-the-gap-method">No two of a group adjacent: the gap method</h2>
+<p>Suppose 4 boys and 3 girls sit around a table and no two girls may be neighbours.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../img/circular-permutation-gaps.svg" class="img-fluid figure-img" alt="A round table where four boys alternate with four gaps. Three gaps hold girls and one is empty. The boys can be seated in 6 ways and the girls in 24."></p>
+<figcaption>Four boys leave four gaps, and the girls take three of them.</figcaption>
+</figure>
+</div>
+<ol type="1">
+<li>Seat the boys first: <span class="math inline">\(3! = 6\)</span> ways.</li>
+<li>They create 4 gaps, one between each pair of neighbouring boys.</li>
+<li>The girls take 3 of the 4 gaps, in order: <span class="math inline">\({}^4P_3 = 4 \times 3 \times 2 = 24\)</span> ways.</li>
+</ol>
+<p>Total: <span class="math inline">\(6 \times 24 = 144\)</span>.</p>
+<p>In general, with <span class="math inline">\(m\)</span> boys and <span class="math inline">\(g\)</span> girls (<span class="math inline">\(g \le m\)</span>):</p>
+<p><span class="math display">\[
+(m-1)! \times {}^mP_g
+\]</span></p>
+</section>
+<section id="alternating-seats" class="level2">
+<h2 class="anchored" data-anchor-id="alternating-seats">Alternating seats</h2>
+<p>For men and women to alternate <strong>all the way round</strong>, there must be the same number of each. Take 4 men and 4 women, and seat them in two steps.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../img/circular-permutation-steps.svg" class="img-fluid figure-img" alt="Two steps. First, four men take alternate seats with M1 fixed, giving 6 ways. Second, the four gaps offer 4, 3, 2 and 1 choices to the women, giving 24 ways. The total is 144."></p>
+<figcaption>The men are seated round the table first, then the women fill the gaps.</figcaption>
+</figure>
+</div>
+<ol type="1">
+<li><strong>Men:</strong> the table is empty, so rotations look alike. We fix one man and arrange the other three: <span class="math inline">\(3! = 6\)</span> ways.</li>
+<li><strong>Women:</strong> the seated men now mark the places. The gap between M1 and M2 differs from the gap between M2 and M3, so the 4 women fill 4 different places: <span class="math inline">\(4! = 24\)</span> ways.</li>
+</ol>
+<p><span class="math display">\[
+3! \times 4! = 144
+\]</span></p>
+<section id="why-not-4-times-4" class="level3">
+<h3 class="anchored" data-anchor-id="why-not-4-times-4">Why not <span class="math inline">\(4! \times 4!\)</span>?</h3>
+<p>We remove the effect of rotation <strong>once</strong>, because there is only one table to rotate, and seating the men already does that. Using <span class="math inline">\(4!\)</span> for the men as well treats their four seats as different from each other. Then <span class="math inline">\(4! \times 4! = 576\)</span> counts each seating 4 times, since moving everyone 0, 2, 4 or 6 seats keeps the same neighbours.</p>
+<p><span class="math display">\[
+\frac{4! \times 4!}{4} = 144
+\]</span></p>
+<p>With <span class="math inline">\(m\)</span> men and <span class="math inline">\(m\)</span> women, the answer is <span class="math inline">\((m-1)!\; m!\)</span>.</p>
+<p>With 5 men and 4 women, strict alternation is <strong>impossible</strong>: going round the table, two men must end up side by side.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../img/circular-permutation-alternate.svg" class="img-fluid figure-img" alt="On the left, four men and four women alternate around a table. On the right, five men and four women leave two men sitting next to each other."></p>
+<figcaption>Alternating all round needs equal numbers.</figcaption>
+</figure>
+</div>
+<p>If the question only asks that <strong>no two women</strong> sit together, the gap method applies: <span class="math inline">\(4! \times {}^5P_4 = 24 \times 120 = 2880\)</span>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In a <strong>row</strong>, 5 men and 4 women can alternate (M W M W M W M W M), because the two ends do not touch. This gives <span class="math inline">\(5!\,4! = 2880\)</span> ways.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="identical-objects" class="level2">
+<h2 class="anchored" data-anchor-id="identical-objects">Identical objects</h2>
+<p>Now suppose some objects are alike: <span class="math inline">\(p\)</span> of one kind, <span class="math inline">\(q\)</span> of another, and so on, with <span class="math inline">\(n\)</span> in total.</p>
+<section id="the-shortcut-and-its-condition" class="level3">
+<h3 class="anchored" data-anchor-id="the-shortcut-and-its-condition">The shortcut and its condition</h3>
+<p>If <span class="math inline">\(p, q, \ldots\)</span> have <strong>no common factor greater than 1</strong>, the number of table arrangements is</p>
+<p><span class="math display">\[
+\frac{(n-1)!}{p!\,q!\cdots}
+\]</span></p>
+<p><strong>Example.</strong> 3 red and 2 blue beads: <span class="math inline">\(\dfrac{4!}{3!\,2!} = 2\)</span>. The blue beads are either together or apart.</p>
+<p>Flipping either pattern over gives the same pattern again, so there are also <strong>2</strong> necklaces. Dividing by 2 would wrongly give 1.</p>
+</section>
+<section id="when-the-shortcut-fails" class="level3">
+<h3 class="anchored" data-anchor-id="when-the-shortcut-fails">When the shortcut fails</h3>
+<p>With 3 red and 3 green beads, the formula gives <span class="math inline">\(\dfrac{5!}{3!\,3!} = \dfrac{10}{3}\)</span>, which cannot be a count. The reason is that some patterns repeat before a full turn: <code>RGRGRG</code> looks the same after turning two places.</p>
+<p>So we count directly. There are <span class="math inline">\(\dfrac{6!}{3!\,3!} = 20\)</span> row arrangements:</p>
+<ul>
+<li>2 of them come from the repeating pattern <code>RGRGRG</code>, giving 1 circular arrangement.</li>
+<li>The other 18 fall into groups of 6 rotations, giving 3 circular arrangements.</li>
+</ul>
+<p>That makes <strong>4</strong> table arrangements. Now we allow flipping and see which of them become the same:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../img/circular-permutation-beads.svg" class="img-fluid figure-img" alt="Four circular patterns of three red and three green beads. The first two are their own mirror images. The last two are mirror images of each other, so there are three necklaces."></p>
+<figcaption>Three red (R) and three green (G) beads give three different necklaces.</figcaption>
+</figure>
+</div>
+<p>So the count is:</p>
+<ul>
+<li>2 patterns that look the same after flipping: <strong>2</strong> necklaces;</li>
+<li>2 patterns that turn into each other: <strong>1</strong> necklace.</li>
+</ul>
+<p>That is <strong>3</strong> necklaces from 4 table arrangements. In short, if <span class="math inline">\(T\)</span> is the number of table arrangements and <span class="math inline">\(S\)</span> is the number of them unchanged by flipping,</p>
+<p><span class="math display">\[
+\text{Necklaces} = \frac{T + S}{2} = \frac{4+2}{2} = 3
+\]</span></p>
+<p>When all beads are distinct and <span class="math inline">\(n \ge 3\)</span>, no pattern is unchanged by flipping (<span class="math inline">\(S = 0\)</span>), and we are back to <span class="math inline">\(\dfrac{(n-1)!}{2}\)</span>. For larger problems, <strong>Burnside’s lemma</strong> does this kind of counting systematically.</p>
+</section>
+</section>
+<section id="one-more-example-two-conditions" class="level2">
+<h2 class="anchored" data-anchor-id="one-more-example-two-conditions">One more example: two conditions</h2>
+<p>Six people A, B, C, D, E and F sit around a table. A and B must be together, while C and D must be apart.</p>
+<ol type="1">
+<li><strong>A and B together:</strong> <span class="math inline">\(2 \times 4! = 48\)</span>.</li>
+<li><strong>A and B together, C and D also together:</strong> two blocks and two people make 4 units, so <span class="math inline">\(3! \times 2! \times 2! = 24\)</span>.</li>
+<li><strong>Subtract:</strong> <span class="math inline">\(48 - 24 = 24\)</span>.</li>
+</ol>
+</section>
+<section id="quick-reference" class="level2">
+<h2 class="anchored" data-anchor-id="quick-reference">Quick reference</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Condition</th>
+<th style="text-align: left;">Number of ways</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(n\)</span> distinct, round table</td>
+<td style="text-align: left;"><span class="math inline">\((n-1)!\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(n\)</span> distinct, necklace or bracelet (<span class="math inline">\(n \ge 3\)</span>)</td>
+<td style="text-align: left;"><span class="math inline">\((n-1)!/2\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Numbered chairs</td>
+<td style="text-align: left;"><span class="math inline">\(n!\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(k\)</span> particular people together (<span class="math inline">\(k &lt; n\)</span>)</td>
+<td style="text-align: left;"><span class="math inline">\(k!\,(n-k)!\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2 particular people apart</td>
+<td style="text-align: left;"><span class="math inline">\((n-1)! - 2(n-2)!\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(m\)</span> boys, <span class="math inline">\(g\)</span> girls, no two girls adjacent</td>
+<td style="text-align: left;"><span class="math inline">\((m-1)!\;{}^mP_g\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(m\)</span> men and <span class="math inline">\(m\)</span> women alternating</td>
+<td style="text-align: left;"><span class="math inline">\((m-1)!\,m!\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Identical objects, counts with no common factor</td>
+<td style="text-align: left;"><span class="math inline">\((n-1)!/(p!\,q!\cdots)\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Necklace with identical objects</td>
+<td style="text-align: left;"><span class="math inline">\((T+S)/2\)</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="common-mistakes" class="level2">
+<h2 class="anchored" data-anchor-id="common-mistakes">Common mistakes</h2>
+<ul>
+<li><strong>Using <span class="math inline">\(n!\)</span> for a round table</strong> with unnumbered chairs.</li>
+<li><strong>Forgetting to divide by 2</strong> for necklaces and bracelets of distinct objects.</li>
+<li><strong>Dividing by 2 blindly</strong> when some objects are identical.</li>
+<li><strong>Adding instead of multiplying</strong> the <span class="math inline">\(k!\)</span> orders inside a block. See <a href="counting-rule-and-addition-rule-when-to-add-and-multiply.html">when to add and when to multiply</a>.</li>
+<li><strong>Using subtraction for “no two adjacent”</strong> with three or more people: subtracting “all together” still leaves cases where two of them sit side by side. Use the gap method.</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script>
+/* Blog-wide "See hint" / "Reveal code" toggles.
+   Markup in a post:
+     ::: {.reveal-code}
+     ::: {.hint}
+     Hint text
+     :::
+
+     ```c
+     code
+     ```
+     :::
+   Without JavaScript the code and hint simply stay visible. */
+(function () {
+  function init() {
+    document.querySelectorAll('.reveal-code').forEach(function (box, n) {
+      var hint = box.querySelector(':scope > .hint');
+      var code = box.querySelector(':scope > .code-copy-outer-scaffold, :scope > .sourceCode, :scope > pre');
+      if (!code) return;
+      var bar = document.createElement('div');
+      bar.className = 'rc-bar';
+      function button(label, target, shown, hidden) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'rc-btn';
+        b.textContent = shown;
+        b.setAttribute('aria-expanded', 'false');
+        b.setAttribute('aria-controls', target.id);
+        b.addEventListener('click', function () {
+          var open = target.classList.toggle('rc-open');
+          b.textContent = open ? hidden : shown;
+          b.setAttribute('aria-expanded', open);
+        });
+        bar.appendChild(b);
+      }
+      code.id = code.id || 'rc-code-' + n;
+      if (hint) {
+        hint.id = hint.id || 'rc-hint-' + n;
+        button('hint', hint, 'See hint', 'Hide hint');
+      }
+      button('code', code, 'Reveal code', 'Hide code');
+      box.insertBefore(bar, box.firstChild);
+      box.classList.add('rc-ready');
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+<script>
+/* Blogkit: load blogkit.js from the site root, whatever the page depth. */
+(function () {
+  var m = document.querySelector('meta[name="quarto:offset"]');
+  var base = m ? m.getAttribute('content') : '';
+  if (base === './') base = '';
+  var s = document.createElement('script');
+  s.src = base + 'blogkit.js';
+  s.dataset.base = base;
+  document.body.appendChild(s);
+})();
+</script>
+<!-- Shared Quarto include: adds the site-wide starfield to a page.
+     Use from any Quarto project's _quarto.yml (path relative to that project):
+       format: { html: { include-after-body: ../starfield-include.html } }
+     It adds the canvas and loads /starfield.js from the site root, working out
+     the root from the URL so it is the same for every page depth. The page's
+     CSS must still make the canvas fixed at z-index -1 (see blograw/site.css
+     or courses/rprogramming/dark.scss). -->
+<canvas class="sm-canvas" aria-hidden="true"></canvas>
+<script>
+(function () {
+  var p = location.pathname;
+  // Root = everything before the first top-level site section in the URL
+  // (site is served from the domain root; locally may be under a prefix).
+  var m = p.match(/^(.*?\/)(blog|courses|slide|games|utility|question|quiz|ds|research)\//);
+  var s = document.createElement('script');
+  s.src = (m ? m[1] : '/') + 'starfield.js';
+  document.body.appendChild(s);
+})();
+</script>
+<!-- Stat Mania only: "Also on R-bloggers" link. The link is plain HTML in every page (so crawlers
+     and R-bloggers' check see it). The script moves the box in the sidebar, above the Archive
+     widget, once blogkit has built it; without JS the box stays at the end of the page. -->
+<div id="sm-rbloggers" class="bk-widget sm-rbloggers">
+  <h3 class="bk-widget-title">R-bloggers</h3>
+  <p>R posts from Stat Mania are also shared on <a href="https://www.r-bloggers.com/" rel="noopener">R-bloggers</a>, a hub of R blogs.</p>
+</div>
+<style>
+  .sm-rbloggers{ max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
+  .sm-rbloggers p{ margin: 0; line-height: 1.4; }
+  .sm-rbloggers a{ text-decoration: underline; }
+  #bk-widgets .sm-rbloggers{ max-width: none; margin: 0 0 1.5rem 0; padding: 0; }
+</style>
+<script>
+(function () {
+  var box = document.getElementById('sm-rbloggers');
+  if (!box) return;
+  function move() {
+    var archive = document.querySelector('#bk-widgets .bk-archive');
+    if (!archive) return false;
+    archive.parentNode.insertBefore(box, archive);
+    return true;
+  }
+  if (move()) return;
+  var obs = new MutationObserver(function () { if (move()) obs.disconnect(); });
+  obs.observe(document.body, { childList: true, subtree: true });
+  setTimeout(function () { obs.disconnect(); }, 15000);
+})();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/www\.statmania\.info\/blog\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<input type="hidden" id="giscus-base-theme" value="light">
+<input type="hidden" id="giscus-alt-theme" value="dark">
+<script>
+  function loadGiscus() {
+    // Function to get the theme based on body class
+    const getTheme = () => {
+      let baseTheme = document.getElementById('giscus-base-theme').value;
+      let altTheme = document.getElementById('giscus-alt-theme').value;
+      if (authorPrefersDark) {
+          [baseTheme, altTheme] = [altTheme, baseTheme];
+      }
+      return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
+    };
+    const script = document.createElement("script");
+    script.src = "https://giscus.app/client.js";
+    script.async = true;
+    script.dataset.repo = "statmania/statmania.github.io";
+    script.dataset.repoId = "MDEwOlJlcG9zaXRvcnkzNDkzMTE4MjI=";
+    script.dataset.category = "General";
+    script.dataset.categoryId = "DIC_kwDOFNITTs4DJlzF";
+    script.dataset.mapping = "url";
+    script.dataset.reactionsEnabled = "1";
+    script.dataset.emitMetadata = "0";
+    script.dataset.inputPosition = "bottom";
+    script.dataset.theme = getTheme();
+    script.dataset.lang = "en";
+    script.crossOrigin = "anonymous";
+    // Append the script to the desired div instead of at the end of the body
+    document.getElementById("quarto-content").appendChild(script);
+  }
+  loadGiscus();
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026 Stat Mania</p>
+<p>Made with <a href="https://quarto.org">Quarto</a> using the custom template <a href="https://github.com/statmania/quarto-blogkit">blogkit</a> by <a href="https://www.statmania.info">Stat Mania</a></p>
+</div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+    <a class="nav-link" href="../tags.html">
+<p>Tags</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="../categories.html">
+<p>Categories</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="../about.html">
+<p>About</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://www.statmania.info">
+<p>Portal</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="../index.xml">
+<p>RSS</p>
+</a>
+  </li>  
+</ul>
+    </div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

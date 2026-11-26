@@ -1,0 +1,132 @@
+---
+title: "How to Keep LaTeX Auxiliary Files Out of Sight"
+description: "LaTeX fills a folder with aux, log and toc files. We use latexmk to move them into a hidden folder, so only the tex and PDF files stay in view."
+date: "2026-11-25"
+categories: [LaTeX, Tools, Tutorial]
+tags: [latex, command-line, workflow]
+author: "Abdullah Al Mahmud"
+image: ../img/latex-hide-auxiliary-files.png
+---
+
+![With `latexmk`, the helper files move into a hidden folder and only the source and the PDF stay in view.](../img/latex-hide-auxiliary-files.svg){fig-alt="Two folders. The first, made by pdflatex, mixes the tex and PDF files with aux, log, out and toc files. The second, made by latexmk, shows only the PDF and tex files, with the helper files inside a hidden .build folder."}
+
+## The problem
+
+We compile one small file with a table of contents:
+
+```bash
+pdflatex report.tex
+ls -A
+```
+
+and the folder now holds this:
+
+```default
+report.aux
+report.log
+report.pdf
+report.tex
+report.toc
+```
+
+With a dozen documents in the same folder, finding a `.tex` or `.pdf` file gets tiring.
+
+LaTeX needs most of these files. The `.aux` and `.toc` files carry page numbers and references from one run to the next, and the `.log` file records errors and warnings. So the aim is not to stop them from being written, but to put them somewhere else.
+
+## The fix: let `latexmk` use a hidden folder
+
+`latexmk` is a build tool that runs LaTeX for us, as many times as the document needs. It comes with TeX Live, and it can send the helper files to a separate folder:
+
+```bash
+latexmk -pdf -cd -auxdir=.build -outdir=. report.tex
+ls -A
+```
+
+```default
+.build
+report.pdf
+report.tex
+```
+
+The rest is inside `.build`:
+
+```bash
+ls -A .build
+```
+
+```default
+report.aux
+report.fdb_latexmk
+report.fls
+report.log
+report.toc
+```
+
+Since the folder name starts with a dot, `ls` (without `-a` or `-A`) and most file managers hide it.
+
+What the options do:
+
+- `-pdf` builds a PDF with pdfLaTeX.
+- `-auxdir=.build` puts the helper files in `.build`.
+- `-outdir=.` keeps the PDF in the current folder.
+- `-cd` first moves into the folder of the `.tex` file, so the output lands beside it even when we run the command from somewhere else.
+
+::: {.callout-note}
+pdfTeX in TeX Live has no separate option for an auxiliary folder, so `latexmk` emulates it. Version 4.88, used here, does this by default. With an older version, add `-emulate-aux-dir` to the command.
+:::
+
+## Make it permanent
+
+Typing those options every time is no fun. We can save them in a file named `.latexmkrc` in the home folder:
+
+```perl
+$pdf_mode = 1;        # build PDFs with pdflatex
+$aux_dir  = '.build'; # helper files go here
+$out_dir  = '.';      # PDF stays beside the .tex file
+$do_cd    = 1;        # work in the .tex file's folder
+```
+
+From then on, this is enough, for a file in any folder:
+
+```bash
+latexmk path/to/report.tex
+```
+
+The settings apply to all our documents. To limit them to one project, we can put the same lines in a file named `latexmkrc` in the project folder and run `latexmk` from there.
+
+If we build from an editor, we need to set its build command to `latexmk`. Plain `pdflatex` does not read this file.
+
+## Cleaning up
+
+To delete the helper files but keep the PDF:
+
+```bash
+latexmk -c report.tex
+```
+
+A capital `-C` deletes the PDF as well:
+
+```bash
+latexmk -C report.tex
+```
+
+The small `-c` also helps when we have already compiled with plain `pdflatex` and want to clear the clutter from a folder.
+
+## Keep Git clean too
+
+If the project is in a Git repository, one line in `.gitignore` leaves the whole folder out:
+
+```default
+.build/
+```
+
+## Why not `-output-directory`?
+
+`pdflatex` has an option to write into another folder:
+
+```bash
+mkdir -p out
+pdflatex -output-directory=out report.tex
+```
+
+It moves **everything**, including the PDF, so the clutter and the file we want end up together again. The folder also has to exist before the run. The `latexmk` setup above separates the two for us.
