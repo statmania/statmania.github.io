@@ -1,0 +1,333 @@
+\documentclass[10pt]{exam}
+%\documentclass[11pt,a4paper]{exam}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,dsfont}
+\usepackage{float}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{ifthen}
+\usepackage{array}
+\usepackage{geometry}
+\geometry{
+legalpaper, total={177.8mm, 290mm},left=10mm, right=10mm,
+top=7mm, bottom=10mm,
+}
+\usepackage{enumerate}% http://ctan.org/pkg/enumerate
+\usepackage{multicol}
+\usepackage{hhline}
+\usepackage[table]{xcolor}
+
+
+% Accumulate the answers. Unmodified from Phil Hirschorn's answer
+% https://tex.stackexchange.com/questions/15350/showing-solutions-of-the-questions-separately/15353
+\newbox\allanswers
+\setbox\allanswers=\vbox{}
+
+\newenvironment{answer}
+{%
+    \global\setbox\allanswers=\vbox\bgroup
+    \unvbox\allanswers
+}%
+{%
+    \bigbreak
+    \egroup
+}
+
+\newcommand{\showallanswers}{\par\unvbox\allanswers}
+% End Phil's answer
+
+
+% Is there a better way?
+\newcommand*{\getanswer}[5]{%
+    \ifthenelse{\equal{#5}{a}}
+    {\begin{answer}\thequestion. (a)~#1\end{answer}}
+    {\ifthenelse{\equal{#5}{b}}
+        {\begin{answer}\thequestion. (b)~#2\end{answer}}
+        {\ifthenelse{\equal{#5}{c}}
+            {\begin{answer}\thequestion. (c)~#3\end{answer}}
+            {\ifthenelse{\equal{#5}{d}}
+                {\begin{answer}\thequestion. (d)~#4\end{answer}}
+                {\begin{answer}\textbf{\thequestion. (#5)~Invalid answer choice.}\end{answer}}}}}
+}
+
+\setlength\parindent{0pt}
+%usage \choice{ }{ }{ }{ }
+%(A)(B)(C)(D)
+\newcommand{\fourch}[5]{
+    \par\nobreak
+    \begin{tabular}{*{4}{@{}p{0.24\linewidth}}}
+        (a)~#1 & (b)~#2 & (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)(B)
+%(C)(D)
+\newcommand{\twoch}[5]{
+    \par\nobreak
+    \begin{tabular}{*{2}{@{}p{0.48\linewidth}}}
+        (a)~#1 & (b)~#2
+    \end{tabular}
+    \par\nobreak
+    \begin{tabular}{*{2}{@{}p{0.48\linewidth}}}
+        (c)~#3 & (d)~#4
+    \end{tabular}
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+%(A)
+%(B)
+%(C)
+%(D)
+\newcommand{\onech}[5]{
+    \par\nobreak
+    (a)~#1 \par\nobreak (b)~#2 \par\nobreak (c)~#3 \par\nobreak (d)~#4
+    \getanswer{#1}{#2}{#3}{#4}{#5}
+}
+
+\newlength\widthcha
+\newlength\widthchb
+\newlength\widthchc
+\newlength\widthchd
+\newlength\widthch
+\newlength\tabmaxwidth
+
+\setlength\tabmaxwidth{0.96\textwidth}
+\newlength\fourthtabwidth
+\setlength\fourthtabwidth{0.25\textwidth}
+\newlength\halftabwidth
+\setlength\halftabwidth{0.5\textwidth}
+
+\newcommand{\choice}[5]{%
+\setlength\fourthtabwidth{0.23\linewidth}\setlength\halftabwidth{0.47\linewidth}%
+\settowidth\widthcha{AM.#1}\setlength{\widthch}{\widthcha}%
+\settowidth\widthchb{BM.#2}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{CM.#3}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+    \settowidth\widthchb{DM.#4}%
+\ifdim\widthch<\widthchb\relax\setlength{\widthch}{\widthchb}\fi%
+
+% These if statements were bypassing the \onech option.
+% \ifdim\widthch<\fourthtabwidth
+%     \fourch{#1}{#2}{#3}{#4}{#5}
+% \else\ifdim\widthch<\halftabwidth
+% \ifdim\widthch>\fourthtabwidth
+%     \twoch{#1}{#2}{#3}{#4}{#5}
+% \else
+%      \onech{#1}{#2}{#3}{#4}{#5}
+%  \fi\fi\fi}
+
+% Allows for the \onech option.
+\ifdim\widthch>\halftabwidth
+    \onech{#1}{#2}{#3}{#4}{#5}
+\else\ifdim\widthch<\halftabwidth
+\ifdim\widthch>\fourthtabwidth
+    \twoch{#1}{#2}{#3}{#4}{#5}
+\else
+    \fourch{#1}{#2}{#3}{#4}{#5}
+\fi\fi\fi}
+
+% Start a new page unless at least #1 of space is left on this one
+\newcommand{\keeptogether}[1]{\par
+\ifdim\dimexpr\pagegoal-\pagetotal\relax<#1\relax \vfil\break\fi}
+
+% Header and instructions
+\newcommand{\examheader}{%
+% ---------- Header ----------
+\noindent
+\begin{minipage}[t]{0.34\textwidth}
+\vspace{0pt}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|l|p{12mm}|}
+\hline
+Q/Setter & \\ \hline
+H/Dept /Moderator & \\ \hline
+\end{tabular}
+\end{minipage}%
+\begin{minipage}[t]{0.37\textwidth}
+\vspace{0pt}
+\raggedright
+Mymensingh Girls' Cadet College\par
+Pre-Test Exam-2026\par
+Subject-Statistics First Paper\par
+Class- XII\par
+\end{minipage}%
+\begin{minipage}[t]{0.29\textwidth}
+\vspace{0pt}
+\raggedleft
+\setlength{\fboxsep}{4pt}
+\renewcommand{\arraystretch}{1.2}
+\fbox{\begin{tabular}{@{}l@{\hspace{6pt}}r@{}}
+Subject Code &
+\begin{tabular}{|c|c|c|}
+\hline 1 & 2 & 9 \\ \hline
+\end{tabular}
+\end{tabular}}\par
+\end{minipage}
+
+\smallskip
+\noindent\textbf{Time 25 minutes}\hfill\textbf{Marks 25}\par\smallskip
+
+\hrule
+\setstretch{0.8}
+\begin{center}
+[N.B. -- Answer all the questions. Each question carries ONE mark. Block fully, with a black ball-point pen, the circle of the letter that stands for the correct/best answer in the ``Answer sheet'' for the Multiple Choice Questions Examination.]\\
+
+  
+  \textbf{Candidates are asked not to leave any mark or spot on the question paper.}
+\end{center}
+}
+
+% Two-column layout
+\setlength\columnsep{7mm}
+\setlength\columnseprule{0.4pt}
+\setlength\multicolsep{3pt}
+
+\begin{document}
+
+\examheader
+\begin{multicols}{2}
+\raggedcolumns
+\begin{questions}
+\setlength\itemsep{1pt}\setlength\parsep{0pt}
+
+\question \textbf{Who is known as the Father of modern statistics?}
+\choice{P.C. Mahalanobis}{Kazi Motaher Hossain}{Karl Pearson}{R.A. Fisher}{d}
+
+\question \textbf{Which one is an example of an infinite population?}
+\choice{Students of Dhaka University}{Cadets of MGCC}
+{Minor planets in the solar system}{Red blood cells in a person's body}{d}
+
+\question \textbf{A researcher collected data on age and income of the 
+people in a city. The variables are --}
+\par\nobreak
+i. bi-variate \\
+ii. quantitative \\
+iii. qualitative
+\par\nobreak
+\textbf{Which one is correct?}
+\par\nobreak
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{a}
+
+\question \textbf{Which one falls in the category of interval scale?}
+\choice {Temperature}{Speed}{Distance}{Film rating}{a}
+
+\question \textbf{If $x_1=1, x_2=2, x_3=4, x_4=5$ and $y_1=3, y_2=5, y_3=6, y_4=2;
+ \sum_{i=1}^3 x_iy_i=?$}
+\choice{37}{45}{50}{33}{a}
+
+\question \textbf{Find the value of $\sum_{i=1}^{12} f_i(x_i-7)^2$ where $\sum_{i=1}^{12} f_ix_i^2=400, \sum_{i=1}^{12} f_ix_i=40, \sum_{i=1}^{12} f_i=10$}
+\choice{320}{330}{250}{430}{b}
+
+\question \textbf{Who invented Stem and Leaf plot?}
+\choice{Karl Pearson}{R.A. Fisher}{David Cox}{John Tukey}{d}
+
+\question \textbf{Which is an advantage of primary data?}
+\par\nobreak
+i. Specific to the study \\
+ii. More reliable \\
+iii. Less time-consuming
+\par\nobreak
+\textbf{Which one is correct?}
+\par\nobreak
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{a}
+\end{questions}
+
+% Situation Set Starts (one unbreakable box)
+\par\noindent\begin{minipage}{\linewidth}
+\textbf{Answer the next THREE questions based on the following information}
+
+Daily sales (in units) of 100 retail stores are recorded and this frequency distribution is constructed.
+
+\begin{center}
+\begin{tabular}{c|c|c|c|c}
+\begin{tabular}[c]{@{}c@{}}Sales (units)\end{tabular} & 0-10 & 10-20 & 20-30 & 30-40 \\ \hline
+No. of Stores & 12 & 28 & 35 & 25
+\end{tabular}
+\end{center}
+
+\begin{questions}
+\setlength\itemsep{1pt}\setlength\parsep{0pt}
+\setcounter{question}{8}
+
+\question \textbf{How many stores have sales between 10 and 30?}
+\choice{35}{63}{60}{28}{b}
+
+\question \textbf{How many stores have sales at least 20?}
+\choice{60}{35}{25}{47}{a}
+
+\question \textbf{What percent of stores have sales between 20 and 40?}
+\choice{50\%}{55\%}{60\%}{65\%}{c}
+\end{questions}
+\end{minipage}\par
+% Situation Set Ends
+
+\begin{questions}
+\setlength\itemsep{1pt}\setlength\parsep{0pt}
+\setcounter{question}{11}
+
+\question \textbf{The arithmetic mean and geometric mean of two non-zero 
+positive numbers are 15 and 10, respectively. What is harmonic mean?}
+\choice{6.61}{6.67}{7.66}{6.76}{b}
+
+\question \textbf{The values of mode and median of moderately skewed distribution are 60 and 65. What is value of the mean?}
+\choice{70}{67.5}{72}{55}{b}
+
+\question \textbf{Which one is not a proper measure of central tendency?}
+\choice{2nd Quartile}{Third Decile}{3rd Quintile}{110th Percentile}{d}
+
+\question \textbf{Number of students in two classes are 50 and 55 and their combined arithmetic mean (AM) of marks is 82. If AM of the first class is 75, what is the AM of the other class? }
+\choice{88.36}{88.40}{84.55}{78.33}{a}
+
+\question \textbf{Two sets of data are X = 2, 4, 6 and Y = 4, 6, 8; which has higher variance?}
+\choice{X}{Y}{V(X) = V(Y)}{Cannot be determined from the given information}{c}
+
+\question \textbf{If $Q_1 = 25$ and $Q_3 = 45$, the quartile deviation is:}
+\choice{5}{7.5}{10}{12.5}{c}
+
+\question \textbf{The Mean Deviation of two unequal numbers is 3. What is their range?}
+\choice{1.5}{3}{6}{12}{c}
+
+\question \textbf{Which of the following does not depend on change of origin?}
+\par\nobreak
+i. Median \\
+ii. Standard deviation \\
+iii. Regression coefficient
+\par\nobreak
+\textbf{Which one is correct?}
+\par\nobreak
+\choice{i and ii}{i and iii}{ii and iii}{i, ii and iii}{c}
+
+\question \textbf{Which might have a negative value?}
+\choice{$\mu_4$}{$\mu_3$}{$\mu_2'$}{$\mu_2$}{b}
+
+\question \textbf{The first raw moment about 4 is -4. What is the value of 
+arithmetic mean?}
+\choice{2}{-2}{0}{8}{c}
+
+\question \textbf{What is formula of the left inner fence for a box and whisker plot?}
+\choice{$Q_1-1.5 \times IQR$}{$Q_3+1.5 \times IQR$}{$Q_1-3 \times IQR$}{$Q_3+1.5 \times IQR$}{a}
+
+\question \textbf{If the correlation coefficient between X and Y is 0.6, the correlation between 2X and 3Y is:}
+\choice{0.6}{0.2}{1.8}{Cannot be determined}{a}
+
+\question \textbf{If the regression coefficients are 0.8 and 0.5, the correlation coefficient is:}
+\choice{0.40}{0.63}{0.80}{1.30}{b}
+
+\question \textbf{The rank correlation coefficient is used when:}
+\choice{Data is continuous}{Variables are quantitative}{Data is in ranks or ordinal}{Sample size is large}{c}
+
+\end{questions}
+\end{multicols}
+
+\begin{center}
+``All models are wrong, but some are useful.''\\
+-- George E. P. Box
+\end{center}
+
+\vfill
+\begin{center}
+--AAM--
+\end{center}
+
+\end{document}
